@@ -7,10 +7,11 @@ object Dependencies {
 	// Common Versions for libraries
 	val mongoVersion = "2.1.5-1"
 	val liftVersion = "2.4-M4"
-	
+	val scalaLibraryVersion = "2.9.1"
+
 	// Functions to create dependencies
-	val liftDep = (componentId: String, scope: String ) => "net.liftweb" %% componentId % liftVersion % scope
-	val mongoDep = (componentId: String, scope: String)	=> "com.mongodb.casbah" %% componentId % mongoVersion % scope
+	val liftDep = (componentId: String, scope: String ) => "net.liftweb" % (componentId + "_2.9.1") % liftVersion % scope
+	val mongoDep = (componentId: String, scope: String)	=> "com.mongodb.casbah" % (componentId + "_2.9.1") % mongoVersion % scope
 	
 	// Actual dependencies
 	// liftweb
@@ -29,10 +30,10 @@ object Dependencies {
 	val logback = "ch.qos.logback" % "logback-classic" % "0.9.26"
 	
 	// logging
-	val grizzled = "org.clapper" %% "grizzled-slf4j" % "0.6.6"
+	val grizzled = "org.clapper" % "grizzled-slf4j_2.9.1" % "0.6.6"
 	val logging = "org.slf4j" % "slf4j-simple" % "1.6.1"
 
-	val scalatest = "org.scalatest" %% "scalatest" % "1.6.1" % "test"
+	val scalatest = "org.scalatest" % "scalatest_2.9.1" % "1.6.1" % "test"
 	
 	// Dependency groups
 	val testDeps = Seq(scalatest)
