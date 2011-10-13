@@ -8,6 +8,8 @@ If you run the ```eclipse create-src``` task then you will need to remove the ``
 ## Building the Project
 In order to build the project, simply run ```sbt``` or ```sbt.bat``` to enter the sbt prompt. From there run ```test``` to run the project tests. To run the jetty webapp enter the following:
 ```$>project lift
-$>jetty-run```
-This is required as you need to run the ```jetty-run``` task from within the ```lift``` project. This is done by the ```project lift``` command.
+$>container:start```
+This is required as you need to run the ```container:start``` task from within the ```lift``` project. This is done by the ```project lift``` command.
+
+There will be an alias to this command added in the future once the SBT release includes [2e38c84](https://github.com/harrah/xsbt/commit/2e38c8484b8ec81c20c26744ee29bcb3846c608b)
 
