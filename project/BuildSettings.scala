@@ -9,14 +9,13 @@ object BuildSettings {
 
   val buildOrganization = "uk.co.randomcoding"
   val buildVersion      = "1.0-SNAPSHOT"
-  val buildScalaVersion = "2.9.2-SNAPSHOT"
+  val buildScalaVersion = "2.9.1"
 
+ 
   val buildSettings = Defaults.defaultSettings ++ Seq (
     organization := buildOrganization,
     version      := buildVersion,
     scalaVersion := buildScalaVersion,
-    shellPrompt  := ShellPrompt.buildShellPrompt,
-    resolvers := snapshots
-  )
+    shellPrompt  := ShellPrompt.buildShellPrompt
+  ) 
 }
-

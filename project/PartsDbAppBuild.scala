@@ -39,6 +39,5 @@ object PartsDbAppBuild extends Build {
 	val dbProjectDeps = Seq() ++ loggingDeps ++ testDeps ++ mongoDeps
 
 	val liftProjectDeps = Seq() ++ loggingDeps ++ testDeps ++ liftDeps ++ jettyDeps
-
 }
 
