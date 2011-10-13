@@ -1,7 +1,7 @@
 import sbt._
 import Keys._
 
-object PartsDbAppBuild extends Build {
+object ProjectBuild extends Build {
 	import BuildSettings._
 	import ShellPrompt._
 	import Dependencies._

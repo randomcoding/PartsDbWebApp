@@ -26,7 +26,9 @@ object Dependencies {
 	val mongoCommons = mongoDep("casbah-commons", "compile")
 
 	// jetty
-	val jetty7 = "org.eclipse.jetty" % "jetty-webapp" % "7.3.0.v20110203" % "container"
+	val jettyWebappVersion7 = "7.3.0.v20110203"
+	val jettyWebappVersion8 = "8.0.3.v20111011"
+	val jetty7 = "org.eclipse.jetty" % "jetty-webapp" % jettyWebappVersion8 % "container"
 	val logback = "ch.qos.logback" % "logback-classic" % "0.9.26"
 	
 	// logging
