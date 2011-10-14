@@ -10,7 +10,9 @@ package uk.co.randomcoding.partsdb.core.terms
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  *
  */
-sealed abstract class PaymentTerms(val days: Int) {
+sealed abstract class PaymentTerms(val days: Int) {}
+
+object PaymentTerms {
     /**
      * Pattern match types of terms based on days
      */

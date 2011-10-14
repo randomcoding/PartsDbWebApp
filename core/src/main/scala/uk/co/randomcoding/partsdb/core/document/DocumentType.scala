@@ -32,9 +32,7 @@ object DocumentType {
 /**
  * Document type for Invoices
  */
-case object InvoiceType extends DocumentType("INV") {
-    //def unapply(id: String): Option[DocumentType] = if (id == typeId) Some(InvoiceType) else None
-}
+case object InvoiceType extends DocumentType("INV")
 
 /**
  * Document type for Orders
