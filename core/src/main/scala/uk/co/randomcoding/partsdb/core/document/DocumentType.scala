@@ -14,7 +14,10 @@ package uk.co.randomcoding.partsdb.core.document
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  *
  */
-sealed abstract class DocumentType(val typeId: String) {
+sealed class DocumentType(val typeId: String) {
+}
+
+object DocumentType {
     def unapply(docType: String): Option[DocumentType] = docType match {
         case "INV" => Some(InvoiceType)
         case "ORD" => Some(OrderType)
@@ -29,7 +32,9 @@ sealed abstract class DocumentType(val typeId: String) {
 /**
  * Document type for Invoices
  */
-case object InvoiceType extends DocumentType("INV")
+case object InvoiceType extends DocumentType("INV") {
+    //def unapply(id: String): Option[DocumentType] = if (id == typeId) Some(InvoiceType) else None
+}
 
 /**
  * Document type for Orders
