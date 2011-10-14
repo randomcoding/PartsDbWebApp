@@ -60,3 +60,10 @@ case object StatementType extends DocumentType("STM")
  * Document type for Transactions
  */
 case object TransactionType extends DocumentType("TRN")
+
+/**
+ * Null object for document types.
+ *
+ * This '''should not''' be used for matching
+ */
+case object NullDocumentType extends DocumentType("NULL")

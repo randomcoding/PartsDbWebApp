@@ -8,7 +8,7 @@ import uk.co.randomcoding.partsdb.core.id.Identifier
 /**
  * An Identifier for a document.
  *
- * This is composed of a unique number and a type identifier (Invoide, Quote etc.)
+ * This is composed of a unique number and a type identifier (Invoice, Quote etc.)
  *
  * @constructor
  * @param idNum The (unique) id of this document
@@ -18,10 +18,14 @@ import uk.co.randomcoding.partsdb.core.id.Identifier
  *
  */
 sealed class DocumentId(val idNum: Long, val docType: DocumentType) extends Identifier(idNum, docType.typeId) {
-    override def toString = "%s%d".format(docType, idNum)
+    override def toString = "%s%d".format(docType.typeId, idNum)
 }
 
 object DocumentId {
+
+    type docTypeTuple = (Long, DocumentType)
+
+    type docTypeStringTuple = (Long, String)
 
     /**
      * Extractor based on [[uk.co.randomcoding.partsdb.core.document.DocumentType]] to generate the specific type of identifier.
@@ -39,8 +43,15 @@ object DocumentId {
             case DeliveryNoteType => Some(DeliveryNoteId(id))
             case QuoteType => Some(QuoteId(id))
             case StatementType => Some(StatementId(id))
+            case TransactionType => Some(TransactionId(id))
+            case NullDocumentType => None
             case _ => None
         }
+    }
+
+    implicit def stringToDocumentType(stringType: String): DocumentType = stringType match {
+        case DocumentType(f) => f
+        case _ => NullDocumentType
     }
 }
 
@@ -68,3 +79,8 @@ case class QuoteId(id: Long) extends DocumentId(id, QuoteType)
  * Id type for Statements.
  */
 case class StatementId(id: Long) extends DocumentId(id, StatementType)
+
+/**
+ * Id type for Transactions.
+ */
+case class TransactionId(id: Long) extends DocumentId(id, TransactionType)

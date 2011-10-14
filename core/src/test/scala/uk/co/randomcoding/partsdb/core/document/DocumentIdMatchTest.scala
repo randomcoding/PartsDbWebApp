@@ -7,6 +7,7 @@ import org.scalatest.FunSuite
 import org.scalatest.matchers.ShouldMatchers
 
 import uk.co.randomcoding.partsdb.core.document._
+import uk.co.randomcoding.partsdb.core.document.DocumentId._
 
 /**
  * Tests for the matching capabilities of the [[uk.co.randomcoding.partsdb.core.document.DocumentId]] class
@@ -16,39 +17,41 @@ import uk.co.randomcoding.partsdb.core.document._
  */
 class DocumentIdMatchTest extends FunSuite with ShouldMatchers {
     test("Match to Invoice Id") {
-        val tuple: Tuple2[Long, DocumentType] = (123L, InvoiceType)
-        val id = tuple match {
-            case DocumentId(f) => f
-            case _ => None
-        }
-
-        id should be(InvoiceId(123))
-
-        val id2 = (456L, InvoiceType) match {
-            case DocumentId(f) => f
-            case _ => None
-        }
-
-        id2 should be(InvoiceId(456))
+        validateMatch(123, InvoiceType, InvoiceId(123))
     }
 
     test("Match to Statement Id") {
-        pending
+        validateMatch(321, StatementType, StatementId(321))
     }
 
     test("Match to Order Id") {
-        pending
+        validateMatch(567, "ORD", OrderId(567))
     }
 
     test("Match to Quote Id") {
-        pending
+        validateMatch(890, "QUO", QuoteId(890))
     }
 
     test("Match to Delivery Note Id") {
-        pending
+        validateMatch(765, "DEL", DeliveryNoteId(765))
     }
 
     test("Match to Transaction Id") {
-        pending
+        validateMatch(476, "TRN", TransactionId(476))
+    }
+
+    test("Match to Invalid Id") {
+        val dType: DocumentType = "BAD"
+        (908L, dType) match {
+            case DocumentId(dId) => fail()
+            case _ => // pass
+        }
+    }
+
+    private val validateMatch = (id: Long, dType: DocumentType, expected: DocumentId) => {
+        (id, dType) match {
+            case DocumentId(dId) => dId should be(expected)
+            case _ => fail()
+        }
     }
 }
