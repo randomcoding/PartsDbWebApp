@@ -36,7 +36,7 @@ object ProjectBuild extends Build {
 
 	val coreProjectDeps = Seq() ++ testDeps ++ loggingDeps
 
-	val dbProjectDeps = Seq(liftJson) ++ loggingDeps ++ testDeps ++ mongoDeps
+	val dbProjectDeps = Seq(liftJson, liftCommon) ++ loggingDeps ++ testDeps ++ mongoDeps
 
 	val liftProjectDeps = Seq() ++ loggingDeps ++ testDeps ++ liftDeps ++ jettyDeps
 }
