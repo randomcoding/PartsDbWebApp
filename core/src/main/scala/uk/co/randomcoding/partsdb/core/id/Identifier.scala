@@ -15,17 +15,17 @@ package uk.co.randomcoding.partsdb.core.id
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
 abstract class Identifier(val uniqueId: Long, val identifierType: String = "") {
-    override def toString: String = "Identifier: %s%d".format(identifierType, uniqueId)
+  override def toString: String = "Identifier: %s%d".format(identifierType, uniqueId)
 
-    override def hashCode: Int = getClass.hashCode + identifierType.hashCode + uniqueId.hashCode
+  override def hashCode: Int = getClass.hashCode + identifierType.hashCode + uniqueId.hashCode
 
-    override def equals(that: Any): Boolean = {
-        that.isInstanceOf[Identifier] match {
-            case true => {
-                val other = that.asInstanceOf[Identifier]
-                uniqueId == other.uniqueId && identifierType == other.identifierType
-            }
-            case false => false
-        }
+  override def equals(that: Any): Boolean = {
+    that.isInstanceOf[Identifier] match {
+      case true => {
+        val other = that.asInstanceOf[Identifier]
+        uniqueId == other.uniqueId && identifierType == other.identifierType
+      }
+      case false => false
     }
+  }
 }

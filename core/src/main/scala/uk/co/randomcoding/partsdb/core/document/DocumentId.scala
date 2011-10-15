@@ -18,41 +18,41 @@ import uk.co.randomcoding.partsdb.core.id.Identifier
  *
  */
 sealed class DocumentId(val idNum: Long, val docType: DocumentType) extends Identifier(idNum, docType.typeId) {
-    override def toString = "%s%d".format(docType.typeId, idNum)
+  override def toString = "%s%d".format(docType.typeId, idNum)
 }
 
 object DocumentId {
 
-    type docTypeTuple = (Long, DocumentType)
+  type docTypeTuple = (Long, DocumentType)
 
-    type docTypeStringTuple = (Long, String)
+  type docTypeStringTuple = (Long, String)
 
-    /**
-     * Extractor based on [[uk.co.randomcoding.partsdb.core.document.DocumentType]] to generate the specific type of identifier.
-     *
-     * @param tuple A tuple of `('''Long''', '''[[uk.co.randomcoding.partsbd.core.document.DocumentId]]''')`
-     * @return A specialised type of [[uk.co.randomcoding.partsdb.core.document.DocumentType]] or [[scala.None]] if no match is made.
-     */
-    def unapply(tuple: (Long, DocumentType)): Option[DocumentId] = {
-        val id = tuple._1
-        val documentType = tuple._2
+  /**
+   * Extractor based on [[uk.co.randomcoding.partsdb.core.document.DocumentType]] to generate the specific type of identifier.
+   *
+   * @param tuple A tuple of `('''Long''', '''[[uk.co.randomcoding.partsbd.core.document.DocumentId]]''')`
+   * @return A specialised type of [[uk.co.randomcoding.partsdb.core.document.DocumentType]] or [[scala.None]] if no match is made.
+   */
+  def unapply(tuple: (Long, DocumentType)): Option[DocumentId] = {
+    val id = tuple._1
+    val documentType = tuple._2
 
-        documentType match {
-            case InvoiceType => Some(InvoiceId(id))
-            case OrderType => Some(OrderId(id))
-            case DeliveryNoteType => Some(DeliveryNoteId(id))
-            case QuoteType => Some(QuoteId(id))
-            case StatementType => Some(StatementId(id))
-            case TransactionType => Some(TransactionId(id))
-            case NullDocumentType => None
-            case _ => None
-        }
+    documentType match {
+      case InvoiceType => Some(InvoiceId(id))
+      case OrderType => Some(OrderId(id))
+      case DeliveryNoteType => Some(DeliveryNoteId(id))
+      case QuoteType => Some(QuoteId(id))
+      case StatementType => Some(StatementId(id))
+      case TransactionType => Some(TransactionId(id))
+      case NullDocumentType => None
+      case _ => None
     }
+  }
 
-    implicit def stringToDocumentType(stringType: String): DocumentType = stringType match {
-        case DocumentType(f) => f
-        case _ => NullDocumentType
-    }
+  implicit def stringToDocumentType(stringType: String): DocumentType = stringType match {
+    case DocumentType(f) => f
+    case _ => NullDocumentType
+  }
 }
 
 /**

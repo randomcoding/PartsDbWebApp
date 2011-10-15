@@ -20,9 +20,9 @@ package uk.co.randomcoding.partsdb.core.document
  *
  */
 sealed abstract class Document(val documentId: DocumentId) {
-    // add line items
+  // add line items
 
-    // add address details
+  // add address details
 }
 
 /**

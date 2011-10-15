@@ -18,15 +18,15 @@ sealed class DocumentType(val typeId: String) {
 }
 
 object DocumentType {
-    def unapply(docType: String): Option[DocumentType] = docType match {
-        case "INV" => Some(InvoiceType)
-        case "ORD" => Some(OrderType)
-        case "QUO" => Some(QuoteType)
-        case "DEL" => Some(DeliveryNoteType)
-        case "STM" => Some(StatementType)
-        case "TRN" => Some(TransactionType)
-        case _ => None
-    }
+  def unapply(docType: String): Option[DocumentType] = docType match {
+    case "INV" => Some(InvoiceType)
+    case "ORD" => Some(OrderType)
+    case "QUO" => Some(QuoteType)
+    case "DEL" => Some(DeliveryNoteType)
+    case "STM" => Some(StatementType)
+    case "TRN" => Some(TransactionType)
+    case _ => None
+  }
 }
 
 /**

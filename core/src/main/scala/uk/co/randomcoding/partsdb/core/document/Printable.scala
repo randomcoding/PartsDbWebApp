@@ -10,10 +10,10 @@ package uk.co.randomcoding.partsdb.core.document
  *
  */
 trait Printable {
-    /**
-     * Prints the item as a PDF.
-     *
-     * @param pdfPath The the file to print the PDF to. This '''should''' be an absolute path.
-     */
-    def toPdf(pdfPath: String): Unit = {}
+  /**
+   * Prints the item as a PDF.
+   *
+   * @param pdfPath The the file to print the PDF to. This '''should''' be an absolute path.
+   */
+  def toPdf(pdfPath: String): Unit = {}
 }

@@ -13,15 +13,15 @@ package uk.co.randomcoding.partsdb.core.terms
 sealed abstract class PaymentTerms(val days: Int) {}
 
 object PaymentTerms {
-    /**
-     * Pattern match types of terms based on days
-     */
-    def unapply(paymentDays: Int): Option[PaymentTerms] = paymentDays match {
-        case 30 => Some(ThirtyDays)
-        case 60 => Some(SixtyDays)
-        case 90 => Some(NinetyDays)
-        case other => Some(CustomTerms(other))
-    }
+  /**
+   * Pattern match types of terms based on days
+   */
+  def unapply(paymentDays: Int): Option[PaymentTerms] = paymentDays match {
+    case 30 => Some(ThirtyDays)
+    case 60 => Some(SixtyDays)
+    case 90 => Some(NinetyDays)
+    case other => Some(CustomTerms(other))
+  }
 }
 
 /**
