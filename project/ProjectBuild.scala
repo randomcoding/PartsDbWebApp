@@ -12,7 +12,7 @@ object ProjectBuild extends Build {
 		settings = buildSettings
 	) aggregate(coreProject, liftProject, dbProject)
 
-	lazy val coreProject: Project = Project("parts-db-core",
+	lazy val coreProject: Project = Project("core",
 		file("core"),
 		delegates = root :: Nil,
 		settings = buildSettings ++ Seq(libraryDependencies ++= coreProjectDeps,
@@ -36,7 +36,7 @@ object ProjectBuild extends Build {
 
 	val coreProjectDeps = Seq() ++ testDeps ++ loggingDeps
 
-	val dbProjectDeps = Seq() ++ loggingDeps ++ testDeps ++ mongoDeps
+	val dbProjectDeps = Seq(liftJson) ++ loggingDeps ++ testDeps ++ mongoDeps
 
 	val liftProjectDeps = Seq() ++ loggingDeps ++ testDeps ++ liftDeps ++ jettyDeps
 }

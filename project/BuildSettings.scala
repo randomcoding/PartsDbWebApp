@@ -1,5 +1,7 @@
 import sbt._
 import Keys._
+import de.johoop.jacoco4sbt._
+import JacocoPlugin._
 
 /**
  * Common build settings for projects.
@@ -17,5 +19,5 @@ object BuildSettings {
     version      := buildVersion,
     scalaVersion := buildScalaVersion,
     shellPrompt  := ShellPrompt.buildShellPrompt
-  ) 
+  ) ++ jacoco.settings
 }

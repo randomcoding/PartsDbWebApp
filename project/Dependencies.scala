@@ -36,7 +36,7 @@ object Dependencies {
 	val logging = "org.slf4j" % "slf4j-simple" % "1.6.1"
 
 	val scalatest = "org.scalatest" %% "scalatest" % "1.6.1" % "test"
-	
+
 	// Dependency groups
 	val testDeps = Seq(scalatest)
 	val liftDeps = Seq(liftUtil, liftCommon, liftWebkit, liftJson)
