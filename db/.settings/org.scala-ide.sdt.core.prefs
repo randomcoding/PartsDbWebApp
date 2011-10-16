@@ -1,4 +1,4 @@
-#Sat Oct 15 09:19:33 BST 2011
+#Sun Oct 16 10:33:22 BST 2011
 Xcheck-null=false
 Xcheckinit=false
 Xdisable-assertions=false
@@ -52,7 +52,7 @@ optimise=false
 organizeimports.expandcollapse=collapse
 organizeimports.groups=java$scala$org$com$uk.co.randomcoding
 organizeimports.useProjectSpecificSettings=true
-organizeimports.wildcards=scalaz$scalaz.Scalaz
+organizeimports.wildcards=com.mongodb.casbah.Imports$scalaz$scalaz.Scalaz
 scala.compiler.useProjectSettings=true
 syntaxColouring.bracket.bold=false
 syntaxColouring.bracket.colour=0,0,0
