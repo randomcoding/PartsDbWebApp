@@ -9,7 +9,7 @@ import net.liftweb.json.Serialization._
 import uk.co.randomcoding.partsdb.core.address.{ Address, AddressId }
 
 /**
- * Provides implicit conversions between DBObjects and library objects
+ * Provides implicit conversions between `MongoDBObject`s and library objects
  *
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  *
