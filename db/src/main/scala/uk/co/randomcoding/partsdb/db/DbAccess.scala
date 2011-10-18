@@ -15,6 +15,11 @@ import uk.co.randomcoding.partsdb.core.address.{ Address, AddressId }
 trait DbAccess {
 
   /**
+   * Add an entity to the database
+   */
+  def add[T <: AnyRef](t: T): Unit
+
+  /**
    * Get all addresses from the database
    */
   def addresses: Set[Address]
@@ -22,7 +27,7 @@ trait DbAccess {
   /**
    * Get the address with the given id
    */
-  def address(id: AddressId): Address
+  def address(id: AddressId): Option[Address]
 
   /**
    * Convenience conversion for a long to an address id (which is just a typed wrapper for a Long anyway at the moment).

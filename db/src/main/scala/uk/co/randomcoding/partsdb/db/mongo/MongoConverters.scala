@@ -18,21 +18,17 @@ object MongoConverters {
 
   private implicit val formats = DefaultFormats
 
-  implicit def convertFromMongoDbObject[T](mongoObject: DBObject): T = {
+  implicit def convertFromMongoDbObject[T](mongoObject: DBObject)(implicit mf: Manifest[T]): T = {
+    val mObj = mongoObject.removeField("_id")
     val jsonString: String = mongoObject.toString
-    fromJsonString(jsonString)
+    read(jsonString)
   }
 
   implicit def convertToMongoDbObject[T <: AnyRef](t: T): DBObject = {
-    import com.mongodb.util.JSON.{ parse => jsonToMongoDB }
-    jsonToMongoDB(t).asInstanceOf[DBObject]
+    com.mongodb.util.JSON.parse(t).asInstanceOf[DBObject]
   }
 
   private implicit def toJsonString[T <: AnyRef](o: T): String = {
     write(o)
-  }
-
-  private implicit def fromJsonString[T <: AnyRef](o: String): T = {
-    read(o)
   }
 }

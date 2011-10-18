@@ -13,4 +13,4 @@ package uk.co.randomcoding.partsdb.core.address
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  *
  */
-case class Address(val id: AddressId, val shortName: String, val addressText: String, val country: String)
+case class Address(val addressId: AddressId, val shortName: String, val addressText: String, val country: String)

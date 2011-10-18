@@ -59,7 +59,7 @@ object MongoConfig extends Loggable {
   private def init(dbName: String): MongoDB = {
     require(dbName.nonEmpty, "Parameter dbName cannot be an empty string.\nPlease call init(String) with a dbName.")
 
-    logger.info("Env: VCAP_SERVICES: %s".format(Option(System.getenv("VCAP_SERVICES"))))
+    logger.debug("Env: VCAP_SERVICES: %s".format(Option(System.getenv("VCAP_SERVICES"))))
     var user = ""
     var port = 27017
     var host = ""
@@ -86,7 +86,7 @@ object MongoConfig extends Loggable {
             }
           }
         }
-        case _ => logger.info("Not running on Cloud Foundry, assuming localhost connection on port 27017")
+        case _ => logger.debug("Not running on Cloud Foundry, assuming localhost connection on port 27017")
       }
     }
     catch {
