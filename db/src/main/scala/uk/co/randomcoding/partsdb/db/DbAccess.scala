@@ -20,6 +20,11 @@ trait DbAccess {
   def add[T <: AnyRef](t: T): Unit
 
   /**
+   * Get the next Identifier number to use
+   */
+  def nextId: Long
+
+  /**
    * Get all addresses from the database
    */
   def addresses: Set[Address]

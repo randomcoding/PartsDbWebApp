@@ -24,6 +24,36 @@ class MongoDbAccess(val mongoCollection: MongoCollection) extends DbAccess with 
     mongoCollection += dbo
   }
 
+  private val incrementUniqueId = (currentId: Long) => {
+    val newIdObject = MongoDBObject("uniqueId" -> (currentId + 1))
+    val findIdObjectQuery = "uniqueId" $exists true
+    mongoCollection.findOne(findIdObjectQuery) match {
+      case None => mongoCollection += newIdObject
+      case _ => mongoCollection.findAndModify(findIdObjectQuery, newIdObject)
+    }
+  }
+
+  val idQuery = "uniqueId" $exists true
+
+  /**
+   * Gets the next value for the unique id.
+   *
+   * This also increments the current value that is stored in the database
+   */
+  override def nextId(): Long = {
+    val findOneQuery = mongoCollection.findOne(idQuery)
+    val idValue = findOneQuery match {
+      case None => {
+        0
+      }
+      case Some(v) => {
+        v.as[Long]("uniqueId")
+      }
+    }
+    incrementUniqueId(idValue)
+    idValue
+  }
+
   private val addressQuery = (addressId: AddressId) => MongoDBObject("addressId" -> MongoDBObject("id" -> addressId.id))
 
   private val addressesQuery = () => "addressId" $exists true

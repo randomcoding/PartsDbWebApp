@@ -28,7 +28,6 @@ object MongoConverters {
    * @return The converted object. This will be of type '''`T`'''
    */
   implicit def convertFromMongoDbObject[T](mongoObject: DBObject)(implicit mf: Manifest[T]): T = {
-    val mObj = mongoObject.removeField("_id")
     val jsonString: String = mongoObject.toString
     read(jsonString)
   }
