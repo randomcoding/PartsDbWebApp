@@ -3,7 +3,7 @@
  */
 package uk.co.randomcoding.partsdb.core.document
 
-import uk.co.randomcoding.partsdb.core.id._
+import uk.co.randomcoding.partsdb.core.id.document._
 
 /**
  * Base class for documents.
