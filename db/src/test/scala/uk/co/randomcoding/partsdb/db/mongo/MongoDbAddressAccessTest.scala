@@ -12,8 +12,7 @@ import org.scalatest.matchers.ShouldMatchers
  */
 class MongoDbAddressAccessTest extends MongoDbTestBase with ShouldMatchers {
   import MongoDbAccess._
-  val dbName = "AccessTest"
-  val collectionName = "AccessTestCollection"
+  val dbName = "AccessAddressTest"
 
   def dbAccess = MongoDbAccess(dbName, collectionName)
 
