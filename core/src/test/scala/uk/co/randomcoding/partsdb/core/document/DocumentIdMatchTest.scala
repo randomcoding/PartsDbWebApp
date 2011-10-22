@@ -7,7 +7,8 @@ import org.scalatest.FunSuite
 import org.scalatest.matchers.ShouldMatchers
 
 import uk.co.randomcoding.partsdb.core.document._
-import uk.co.randomcoding.partsdb.core.document.DocumentId._
+import uk.co.randomcoding.partsdb.core.id.DocumentId._
+import uk.co.randomcoding.partsdb.core.id._
 
 /**
  * Tests for the matching capabilities of the [[uk.co.randomcoding.partsdb.core.document.DocumentId]] class
