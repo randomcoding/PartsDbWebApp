@@ -6,7 +6,7 @@ package uk.co.randomcoding.partsdb.db.mongo
 import com.mongodb.casbah.Imports._
 import net.liftweb.json._
 import net.liftweb.json.Serialization._
-import uk.co.randomcoding.partsdb.core.address.{ Address, AddressId }
+import uk.co.randomcoding.partsdb.core.address.Address
 
 /**
  * Provides implicit conversions between `MongoDBObject`s and library objects

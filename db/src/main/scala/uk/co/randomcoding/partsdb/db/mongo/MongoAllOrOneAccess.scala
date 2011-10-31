@@ -5,7 +5,7 @@ package uk.co.randomcoding.partsdb.db.mongo
 
 import com.mongodb.casbah.Imports._
 import uk.co.randomcoding.partsdb.db.mongo.MongoConverters._
-import uk.co.randomcoding.partsdb.core.id.Identifier
+import uk.co.randomcoding.partsdb.core.id._
 import net.liftweb.common.Logger
 
 /**
@@ -16,20 +16,14 @@ trait MongoAllOrOneAccess extends Logger {
 
   val collection: MongoCollection
 
-  private implicit def idToMongo(id: Identifier): MongoDBObject = {
-    id.identifierType match {
-      case "" => MongoDBObject("id" -> id.uniqueId)
-      case idType => MongoDBObject("id" -> id.uniqueId,
-        "type" -> idType)
-    }
-  }
+  private implicit def idToMongo(id: Identifier): MongoDBObject = MongoDBObject("id" -> id.id)
 
   /**
    * Define a function that generates a query to get a specific item from the db
    */
-  val queryOne = (idFieldName: String, idFieldValue: Identifier) => {
-    val mondoIDentifier: MongoDBObject = idFieldValue
-    MongoDBObject(idFieldName -> idFieldValue)
+  private val queryOne: (String, Identifier) => MongoDBObject = (idFieldName: String, idFieldValue: Identifier) => {
+    val mongoIdentifier: MongoDBObject = idFieldValue
+    MongoDBObject(idFieldName -> mongoIdentifier)
   }
 
   /**
@@ -37,10 +31,11 @@ trait MongoAllOrOneAccess extends Logger {
    * As all objects have a field `addresId`, `partId` etc that is its unique identifier this
    * only requires the identifier exist by name.
    */
-  val queryAll = (idFieldName: String) => idFieldName $exists true
+  private val queryAll = (idFieldName: String) => idFieldName $exists true
 
-  def getOne[T <: AnyRef](query: MongoDBObject)(implicit mf: Manifest[T]): Option[T] = {
-    collection.findOne(query).toList match {
+  def getOne[T <: AnyRef](idFieldName: String, id: Identifier)(implicit mf: Manifest[T]): Option[T] = {
+    //val query = queryOne(idFieldName, id)
+    collection.findOne(queryOne(idFieldName, id)).toList match {
       case Nil => None
       case head :: Nil => Some(convertFromMongoDbObject(head))
       case head :: tail :: Nil => {
@@ -50,8 +45,9 @@ trait MongoAllOrOneAccess extends Logger {
     }
   }
 
-  def getAll[T <: AnyRef](query: MongoDBObject)(implicit mf: Manifest[T]): List[T] = {
-    for (result <- collection.find(query).toList) yield {
+  def getAll[T <: AnyRef](idFieldName: String)(implicit mf: Manifest[T]): List[T] = {
+    //val query = queryAll(idFieldName)
+    for (result <- collection.find(queryAll(idFieldName)).toList) yield {
       convertFromMongoDbObject(result)
     }
   }

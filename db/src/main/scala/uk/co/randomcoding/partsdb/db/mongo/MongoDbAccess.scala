@@ -5,7 +5,6 @@ package uk.co.randomcoding.partsdb.db.mongo
 
 import scala.collection.mutable.{ Map => MMap }
 import com.mongodb.casbah.Imports._
-import uk.co.randomcoding.partsdb.core.address.{ AddressId, Address }
 import uk.co.randomcoding.partsdb.db.DbAccess
 import uk.co.randomcoding.partsdb.db.mongo.MongoConverters._
 import net.liftweb.common.Logger
@@ -24,7 +23,7 @@ class MongoDbAccess(val mongoCollection: MongoCollection) extends DbAccess with 
     mongoCollection += dbo
   }
 
-  private val incrementUniqueId = (currentId: Long) => {
+  /*private val incrementUniqueId = (currentId: Long) => {
     val newIdObject = MongoDBObject("uniqueId" -> (currentId + 1))
     val findIdObjectQuery = "uniqueId" $exists true
     mongoCollection.findOne(findIdObjectQuery) match {
@@ -35,11 +34,12 @@ class MongoDbAccess(val mongoCollection: MongoCollection) extends DbAccess with 
 
   val idQuery = "uniqueId" $exists true
 
+  */
   /**
    * Gets the next value for the unique id.
    *
    * This also increments the current value that is stored in the database
-   */
+   */ /*
   override def nextId(): Long = {
     val findOneQuery = mongoCollection.findOne(idQuery)
     val idValue = findOneQuery match {
@@ -82,7 +82,7 @@ class MongoDbAccess(val mongoCollection: MongoCollection) extends DbAccess with 
         Some(head)
       }
     }
-  }
+  }*/
 }
 
 /**

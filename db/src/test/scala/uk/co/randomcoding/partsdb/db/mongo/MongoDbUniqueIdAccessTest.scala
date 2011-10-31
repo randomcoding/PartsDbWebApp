@@ -19,7 +19,10 @@ class MongoDbUniqueIdAccessTest extends MongoDbTestBase with ShouldMatchers {
     val mongo = MongoConnection()(dbName)(collectionName)
     val query = uniqueIdField $exists true
     mongo.find(query).isEmpty should be(true)
-    val access = MongoDbAccess(dbName, collectionName)
+    val access = new MongoIdentifierAccess() {
+      override val collection = mongo 
+    }
+    //val access = MongoDbAccess(dbName, collectionName)
     access.nextId() should be(0)
   }
 

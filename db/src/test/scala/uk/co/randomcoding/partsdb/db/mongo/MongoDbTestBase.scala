@@ -29,11 +29,11 @@ abstract class MongoDbTestBase extends FunSuite with BeforeAndAfterEach with Sho
   /**
    * The MongoDB Collection instance that is to be used for all tests
    */
-  //var mongo: MongoCollection = _
+  var mongo: MongoCollection = _
 
   override def beforeEach(): Unit = {
     dbName should not equal collectionName
-    //mongo = MongoConfig.getCollection(dbName, collectionName)
+    mongo = MongoConfig.getCollection(dbName, collectionName)
   }
 
   override def afterEach(): Unit = {
