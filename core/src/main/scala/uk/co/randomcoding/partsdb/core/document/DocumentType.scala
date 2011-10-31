@@ -14,8 +14,7 @@ package uk.co.randomcoding.partsdb.core.document
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  *
  */
-sealed class DocumentType(val typeId: String) {
-}
+sealed abstract class DocumentType(val typeId: String)
 
 object DocumentType {
   def unapply(docType: String): Option[DocumentType] = docType match {
@@ -26,6 +25,14 @@ object DocumentType {
     case "STM" => Some(StatementType)
     case "TRN" => Some(TransactionType)
     case _ => None
+  }
+
+  /**
+   * Conversion for a String into a [[uk.co.randomcoding.partsbd.core.document.DocumentType]]
+   */
+  implicit def stringToDocumentType(stringType: String): DocumentType = stringType match {
+    case DocumentType(f) => f
+    case _ => NullDocumentType
   }
 }
 

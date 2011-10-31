@@ -3,7 +3,7 @@
  */
 package uk.co.randomcoding.partsdb.core.document
 
-import uk.co.randomcoding.partsdb.core.id.document._
+import uk.co.randomcoding.partsdb.core.id.Identifier
 
 /**
  * Base class for documents.
@@ -20,34 +20,10 @@ import uk.co.randomcoding.partsdb.core.id.document._
  *
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  *
+ * @todo Add other details to case class constructor
  */
-sealed abstract class Document(val documentId: DocumentId) {
+case class Document(val documentId: Identifier, val documentType: DocumentType) {
   // add line items
 
   // add address details
 }
-
-/**
- * Document class for an Invoice
- */
-case class Invoice(id: InvoiceId) extends Document(id)
-
-/**
- * Document class for a Delivery Note
- */
-case class DeliveryNote(id: DeliveryNoteId) extends Document(id)
-
-/**
- * Document class for a Quote
- */
-case class Quote(id: QuoteId) extends Document(id)
-
-/**
- * Document class for an Order
- */
-case class Order(id: OrderId) extends Document(id)
-
-/**
- * Document class for a Statement
- */
-case class Statement(id: StatementId) extends Document(id)

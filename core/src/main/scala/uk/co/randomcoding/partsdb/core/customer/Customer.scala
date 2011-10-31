@@ -3,12 +3,9 @@
  */
 package uk.co.randomcoding.partsdb.core.customer
 
-import uk.co.randomcoding.partsdb.core._
-import address.Address
-import terms.PaymentTerms
-import contact.ContactDetails
-import address.AddressId
-import id._
+import uk.co.randomcoding.partsdb.core.contact.ContactDetails
+import uk.co.randomcoding.partsdb.core.id.Identifier
+import uk.co.randomcoding.partsdb.core.terms.PaymentTerms
 
 /**
  * Customer information, including billing and delivery addresses and payment terms
@@ -24,4 +21,4 @@ import id._
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  *
  */
-case class Customer(val customerId: CustomerId, val customerName: String, val billingAddress: AddressId, val deliveryAddresses: Set[AddressId], val terms: PaymentTerms, val contactDetails: ContactDetails)
+case class Customer(val customerId: Identifier, val customerName: String, val billingAddress: Identifier, val deliveryAddresses: Set[Identifier], val terms: PaymentTerms, val contactDetails: ContactDetails)
