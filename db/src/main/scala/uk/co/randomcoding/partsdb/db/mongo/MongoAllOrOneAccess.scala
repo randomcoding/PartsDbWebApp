@@ -14,15 +14,16 @@ import net.liftweb.common.Logger
  */
 trait MongoAllOrOneAccess extends Logger {
 
+  /**
+   * The '''`MongoCollection`''' that this trait will access
+   */
   val collection: MongoCollection
-
-  private implicit def idToMongo(id: Identifier): MongoDBObject = MongoDBObject("id" -> id.id)
 
   /**
    * Define a function that generates a query to get a specific item from the db
    */
   private val queryOne: (String, Identifier) => MongoDBObject = (idFieldName: String, idFieldValue: Identifier) => {
-    val mongoIdentifier: MongoDBObject = idFieldValue
+    val mongoIdentifier = MongoDBObject("id" -> idFieldValue.id)
     MongoDBObject(idFieldName -> mongoIdentifier)
   }
 
@@ -34,7 +35,6 @@ trait MongoAllOrOneAccess extends Logger {
   private val queryAll = (idFieldName: String) => idFieldName $exists true
 
   def getOne[T <: AnyRef](idFieldName: String, id: Identifier)(implicit mf: Manifest[T]): Option[T] = {
-    //val query = queryOne(idFieldName, id)
     collection.findOne(queryOne(idFieldName, id)).toList match {
       case Nil => None
       case head :: Nil => Some(convertFromMongoDbObject(head))
@@ -46,7 +46,6 @@ trait MongoAllOrOneAccess extends Logger {
   }
 
   def getAll[T <: AnyRef](idFieldName: String)(implicit mf: Manifest[T]): List[T] = {
-    //val query = queryAll(idFieldName)
     for (result <- collection.find(queryAll(idFieldName)).toList) yield {
       convertFromMongoDbObject(result)
     }

@@ -10,6 +10,7 @@ import net.liftweb.json._
 import uk.co.randomcoding.partsdb.core.id._
 
 /**
+ * This test class ''should'' contain a test to convert to and from all the different types that are stored in the database and their JSON forms
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  *
  */
@@ -33,6 +34,14 @@ class LiftJsonTests extends FunSuite with ShouldMatchers {
     json should be("""{"id":5432}""")
 
     parse(json).extract[Identifier] should be(Identifier(5432))
+  }
+
+  test("Can convert Address to JSON") {
+    fail("Not Implemented Yet")
+  }
+
+  test("Can convert JSON to Address") {
+    fail("Not Implemented Yet")
   }
 
 }
