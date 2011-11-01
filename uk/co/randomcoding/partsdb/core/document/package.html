@@ -1,0 +1,208 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html>
+        <head>
+          <title>uk.co.randomcoding.partsdb.core.document</title>
+          <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+          
+      <link type="text/css" media="screen" rel="stylesheet" href="../../../../../../lib/template.css" />
+      <script type="text/javascript" src="../../../../../../lib/jquery.js"></script>
+      <script type="text/javascript" src="../../../../../../lib/jquery-ui.js"></script>
+      <script type="text/javascript" src="../../../../../../lib/template.js"></script>
+      <script type="text/javascript" src="../../../../../../lib/tools.tooltip.js"></script>
+    
+        </head>
+        <body class="value">
+      <div id="definition">
+        <img src="../../../../../../lib/package_big.png" />
+        <p id="owner"><a name="uk" class="extype" href="../../../../../package.html">uk</a>.<a name="uk.co" class="extype" href="../../../../package.html">co</a>.<a name="uk.co.randomcoding" class="extype" href="../../../package.html">randomcoding</a>.<a name="uk.co.randomcoding.partsdb" class="extype" href="../../package.html">partsdb</a>.<a name="uk.co.randomcoding.partsdb.core" class="extype" href="../package.html">core</a></p>
+        <h1>document</h1>
+      </div>
+
+      <h4 class="signature" id="signature">
+      <span class="kind">package</span>
+      <span class="symbol"> 
+        <span class="name">document</span>
+        
+        
+      </span>
+      </h4>
+      
+          <div class="fullcommenttop" id="comment"></div>
+        
+
+      <div id="template">
+
+        <div id="mbrsel">
+          <div id="textfilter"><span class="pre"></span><span class="input"><input accesskey="/" type="text" /></span><span class="post"></span></div>
+          
+          
+          <div id="visbl">
+              <span class="filtertype">Visibility</span>
+              <ol><li class="public in"><span>Public</span></li><li class="all out"><span>All</span></li></ol>
+            </div>
+        </div>
+
+        
+
+        <div class="types members" id="types">
+              <h3>Type Members</h3>
+              <ol><li visbl="pub" name="uk.co.randomcoding.partsdb.core.document.Addressable" data-isabs="true">
+      <a id="Addressable:Addressable"></a>
+      <h4 class="signature">
+      <span class="kind">trait</span>
+      <span class="symbol"> 
+        <a href="Addressable.html"><span class="name">Addressable</span></a>
+        
+        <span class="result"> extends AnyRef</span>
+      </span>
+      </h4>
+      <p class="comment cmt">Identifies an entity as addressable, i.</p>
+    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.core.document.Document" data-isabs="false">
+      <a id="Document:Document"></a>
+      <h4 class="signature">
+      <span class="kind">case class</span>
+      <span class="symbol"> 
+        <a href="Document.html"><span class="name">Document</span></a>
+        
+        <span class="params">(<span name="documentId">documentId: Identifier</span>, <span name="documentType">documentType: DocumentType</span>)</span><span class="result"> extends Product with Serializable</span>
+      </span>
+      </h4>
+      <p class="comment cmt">Base class for documents.</p>
+    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.core.document.DocumentType" data-isabs="true">
+      <a id="DocumentType:DocumentType"></a>
+      <h4 class="signature">
+      <span class="kind">class</span>
+      <span class="symbol"> 
+        <a href="DocumentType.html"><span class="name">DocumentType</span></a>
+        
+        <span class="result"> extends AnyRef</span>
+      </span>
+      </h4>
+      <p class="comment cmt">An id type for <a name="uk.co.randomcoding.partsdb.core.document.Document" class="extype" href="Document.html">Document</a>s.</p>
+    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.core.document.Printable" data-isabs="true">
+      <a id="Printable:Printable"></a>
+      <h4 class="signature">
+      <span class="kind">trait</span>
+      <span class="symbol"> 
+        <a href="Printable.html"><span class="name">Printable</span></a>
+        
+        <span class="result"> extends AnyRef</span>
+      </span>
+      </h4>
+      <p class="comment cmt">Identified an entity as able to be printed
+</p>
+    </li></ol>
+            </div>
+        
+        
+
+        <div class="values members" id="values">
+              <h3>Value Members</h3>
+              <ol><li visbl="pub" name="uk.co.randomcoding.partsdb.core.document.DeliveryNoteType" data-isabs="false">
+      <a id="DeliveryNoteType:DeliveryNoteType"></a>
+      <h4 class="signature">
+      <span class="kind">object</span>
+      <span class="symbol"> 
+        <a href="DeliveryNoteType$.html"><span class="name">DeliveryNoteType</span></a>
+        
+        <span class="result"> extends DocumentType with Product with Serializable</span>
+      </span>
+      </h4>
+      <p class="comment cmt">Document type for Delivery notes
+</p>
+    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.core.document.DocumentType" data-isabs="false">
+      <a id="DocumentType:DocumentType"></a>
+      <h4 class="signature">
+      <span class="kind">object</span>
+      <span class="symbol"> 
+        <a href="DocumentType$.html"><span class="name">DocumentType</span></a>
+        
+        <span class="result"> extends AnyRef</span>
+      </span>
+      </h4>
+      
+    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.core.document.InvoiceType" data-isabs="false">
+      <a id="InvoiceType:InvoiceType"></a>
+      <h4 class="signature">
+      <span class="kind">object</span>
+      <span class="symbol"> 
+        <a href="InvoiceType$.html"><span class="name">InvoiceType</span></a>
+        
+        <span class="result"> extends DocumentType with Product with Serializable</span>
+      </span>
+      </h4>
+      <p class="comment cmt">Document type for Invoices
+</p>
+    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.core.document.NullDocumentType" data-isabs="false">
+      <a id="NullDocumentType:NullDocumentType"></a>
+      <h4 class="signature">
+      <span class="kind">object</span>
+      <span class="symbol"> 
+        <a href="NullDocumentType$.html"><span class="name">NullDocumentType</span></a>
+        
+        <span class="result"> extends DocumentType with Product with Serializable</span>
+      </span>
+      </h4>
+      <p class="comment cmt">Null object for document types.</p>
+    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.core.document.OrderType" data-isabs="false">
+      <a id="OrderType:OrderType"></a>
+      <h4 class="signature">
+      <span class="kind">object</span>
+      <span class="symbol"> 
+        <a href="OrderType$.html"><span class="name">OrderType</span></a>
+        
+        <span class="result"> extends DocumentType with Product with Serializable</span>
+      </span>
+      </h4>
+      <p class="comment cmt">Document type for Orders
+</p>
+    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.core.document.QuoteType" data-isabs="false">
+      <a id="QuoteType:QuoteType"></a>
+      <h4 class="signature">
+      <span class="kind">object</span>
+      <span class="symbol"> 
+        <a href="QuoteType$.html"><span class="name">QuoteType</span></a>
+        
+        <span class="result"> extends DocumentType with Product with Serializable</span>
+      </span>
+      </h4>
+      <p class="comment cmt">Document type for Quotes
+</p>
+    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.core.document.StatementType" data-isabs="false">
+      <a id="StatementType:StatementType"></a>
+      <h4 class="signature">
+      <span class="kind">object</span>
+      <span class="symbol"> 
+        <a href="StatementType$.html"><span class="name">StatementType</span></a>
+        
+        <span class="result"> extends DocumentType with Product with Serializable</span>
+      </span>
+      </h4>
+      <p class="comment cmt">Document type for Statements
+</p>
+    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.core.document.TransactionType" data-isabs="false">
+      <a id="TransactionType:TransactionType"></a>
+      <h4 class="signature">
+      <span class="kind">object</span>
+      <span class="symbol"> 
+        <a href="TransactionType$.html"><span class="name">TransactionType</span></a>
+        
+        <span class="result"> extends DocumentType with Product with Serializable</span>
+      </span>
+      </h4>
+      <p class="comment cmt">Document type for Transactions
+</p>
+    </li></ol>
+            </div>
+
+        
+
+        
+
+      </div>
+      
+      <div id="tooltip"></div>
+      
+    </body>
+      </html>
