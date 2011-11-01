@@ -9,7 +9,7 @@ object ProjectBuild extends Build {
 
 	lazy val root = Project("root", 
 		file("."),
-		settings = buildSettings
+		settings = buildSettings ++ Unidoc.settings
 	) aggregate(coreProject, liftProject, dbProject)
 
 	lazy val coreProject: Project = Project("core",
