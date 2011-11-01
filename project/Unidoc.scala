@@ -2,6 +2,9 @@ import sbt._
 import Keys._
 import Project.Initialize
 
+/**
+ * Originally from https://github.com/jboner/akka/blob/master/project/Unidoc.scala
+ */
 object Unidoc {
   val unidocDirectory = SettingKey[File]("unidoc-directory")
   val unidocExclude = SettingKey[Seq[String]]("unidoc-exclude")
