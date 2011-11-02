@@ -9,7 +9,7 @@ import uk.co.randomcoding.partsdb.core.id.Identifier
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  *
  */
-class JsonConversionSimpleObjectTests extends LiftJsonTests {
+class JsonConversionSimpleObjectTests extends JsonConversionTesting {
 
   test("Can convert JSON to Identifier") {
     val json = """{ "id" : 1234 }"""

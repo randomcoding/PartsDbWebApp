@@ -15,7 +15,7 @@ import org.scalatest.matchers.ShouldMatchers
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  *
  */
-class JsonConversionDocumentTests extends LiftJsonTests {
+class JsonConversionDocumentTests extends JsonConversionTesting {
 
   test("Can convert Quote to JSON") {
     fail("Not Implemented Yet")

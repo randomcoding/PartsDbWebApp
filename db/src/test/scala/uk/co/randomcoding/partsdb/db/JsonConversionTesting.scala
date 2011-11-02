@@ -18,7 +18,7 @@ import net.liftweb.json.DefaultFormats
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  *
  */
-trait LiftJsonTests extends FunSuite with ShouldMatchers {
+trait JsonConversionTesting extends FunSuite with ShouldMatchers {
   implicit val formats = DefaultFormats
 
   /**
