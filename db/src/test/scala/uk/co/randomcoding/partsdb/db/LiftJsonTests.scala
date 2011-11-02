@@ -5,43 +5,40 @@ package uk.co.randomcoding.partsdb.db
 
 import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.FunSuite
-import net.liftweb.json.Serialization._
-import net.liftweb.json._
-import uk.co.randomcoding.partsdb.core.id._
+
+import uk.co.randomcoding.partsdb.core.id.Identifier
+
+import net.liftweb.json.Serialization.write
+import net.liftweb.json.{ parseOpt, parse }
+import net.liftweb.json.DefaultFormats
 
 /**
- * This test class ''should'' contain a test to convert to and from all the different types that are stored in the database and their JSON forms
+ * Provides the base testing capabilities for all testing of converting between JSON and objects and vice versa
+ *
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  *
  */
-class LiftJsonTests extends FunSuite with ShouldMatchers {
-  private implicit val formats = DefaultFormats
+trait LiftJsonTests extends FunSuite with ShouldMatchers {
+  implicit val formats = DefaultFormats
 
-  test("Can convert JSON to Identifier") {
-    val json = """{ "id" : 1234 }"""
+  /**
+   * Convert an object to its JSON representation
+   */
+  implicit def toJsonString(obj: AnyRef): String = write(obj)
 
-    parseOpt(json) match {
-      case None => fail("No Match!")
-      case Some(jObj) => jObj.extract[Identifier] should be(Identifier(1234))
-    }
+  /**
+   * Attempt to convert a JSON string into an object of a given type
+   */
+  def fromJsonString[T <: AnyRef](json: String)(implicit mf: Manifest[T]): T = parseOpt(json) match {
+    case None => fail("Failed to convert %s to a %s".format(json, mf))
+    case Some(jObj) => jObj.extract[T]
   }
 
-  test("Can convert Identifier to JSON") {
-    val id = Identifier(5432)
-
-    val json: String = write(id)
-
-    json should be("""{"id":5432}""")
-
-    parse(json).extract[Identifier] should be(Identifier(5432))
-  }
-
-  test("Can convert Address to JSON") {
-    fail("Not Implemented Yet")
-  }
-
-  test("Can convert JSON to Address") {
-    fail("Not Implemented Yet")
-  }
+  /**
+   * Test check method to call for the `convert JSON to ...` tests.
+   *
+   * This performs the conversion of the JSON into an object and then compares it with `expected`
+   */
+  def checkJsonConversion[T <: AnyRef](json: String, expected: T)(implicit mf: Manifest[T]): Unit = fromJsonString(json) should be(expected)
 
 }
