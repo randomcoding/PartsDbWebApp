@@ -13,3 +13,6 @@ This is required as you need to run the ```container:start``` task from within t
 
 There will be an alias to this command added in the future once the SBT release includes [2e38c84](https://github.com/harrah/xsbt/commit/2e38c8484b8ec81c20c26744ee29bcb3846c608b)
 
+## Documentation
+Project Scaladoc can be found at http://randomcoding.github.com/PartsDbWebApp/scaladoc/current/
+
