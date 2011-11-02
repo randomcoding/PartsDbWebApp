@@ -31,6 +31,18 @@ class MongoUpdateAccessTest extends MongoDbTestBase with ShouldMatchers {
     result.toList should be(List(address))
   }
 
+  test("Updating an Address with new details works through the method") {
+    val address1 = Address(Identifier(3579), "Short", "Long", "UK")
+    val address2 = Address(Identifier(3579), "Short", "Long Again", "UK")
+
+    mongoAccess add address1
+    mongoAccess add address2
+
+    val result = mongo.find(MongoDBObject("addressId" -> MongoDBObject("id" -> 3579))).toList map (convertFromMongoDbObject[Address](_))
+
+    result.toList should be(List(address2))
+  }
+
   test("Adding an Identifier") {
     fail("Not Implemented Yet")
   }
