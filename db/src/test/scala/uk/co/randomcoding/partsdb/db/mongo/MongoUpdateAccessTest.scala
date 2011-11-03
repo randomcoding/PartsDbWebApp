@@ -21,26 +21,32 @@ class MongoUpdateAccessTest extends MongoDbTestBase with ShouldMatchers {
     override val collection = mongo
   }
 
+  private def findInDatabase[T](idFieldName: String, id: Long)(implicit mf: Manifest[T]): List[T] = {
+    mongo.find(MongoDBObject(idFieldName -> MongoDBObject("id" -> id))).toList map (convertFromMongoDbObject[T](_))
+  }
+
   test("Adding an Address") {
     val address = Address(Identifier(3579), "Short", "Long", "UK")
 
     mongoAccess add address
 
-    val result = mongo.find(MongoDBObject("addressId" -> MongoDBObject("id" -> 3579))).toList map (convertFromMongoDbObject[Address](_))
+    val result = findInDatabase[Address]("addressId", 3579)
+    //val result = mongo.find(MongoDBObject("addressId" -> MongoDBObject("id" -> 3579))).toList map (convertFromMongoDbObject[Address](_))
 
     result.toList should be(List(address))
   }
 
-  test("Updating an Address with new details works through the method") {
-    val address1 = Address(Identifier(3579), "Short", "Long", "UK")
-    val address2 = Address(Identifier(3579), "Short", "Long Again", "UK")
+  test("Adding an Address with the same id as an existing one but different details does not update the previous one") {
+    val address1 = Address(Identifier(4680), "Short", "Long", "UK")
+    val address2 = Address(Identifier(4680), "Short", "Long Again", "UK")
 
     mongoAccess add address1
     mongoAccess add address2
 
-    val result = mongo.find(MongoDBObject("addressId" -> MongoDBObject("id" -> 3579))).toList map (convertFromMongoDbObject[Address](_))
+    val result = findInDatabase[Address]("addressId", 4680)
+    //val result = mongo.find(MongoDBObject("addressId" -> MongoDBObject("id" -> 3579))).toList map (convertFromMongoDbObject[Address](_))
 
-    result.toList should be(List(address2))
+    result.toList should be(List(address1))
   }
 
   test("Adding an Identifier") {
