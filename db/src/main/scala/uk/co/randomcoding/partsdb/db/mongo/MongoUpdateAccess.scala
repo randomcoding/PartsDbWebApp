@@ -15,42 +15,26 @@ import uk.co.randomcoding.partsdb.db.mongo.MongoConverters._
 trait MongoUpdateAccess {
   val collection: MongoCollection
 
-  def add[T <: AnyRef](t: T): Unit = {
-    val dbo: DBObject = t
-    addIfNotAlreadyInDb(dbo)
-    /*getObjectId(dbo) match {
-      case Some(idValue) => addIfNotAlreadyInDb(dbo)
-      case _ =>
-    }
-    collection += dbo*/
-  }
+  def add[T <: AnyRef](t: T): Unit = addIfNotAlreadyInDb(t)
 
   private def addIfNotAlreadyInDb(dbo: DBObject): Unit = {
-    getObjectId(dbo) match {
-      case Some(idValue) => {
-        val query = MongoDBObject("id" -> idValue)
-        collection.findOne(query).toList match {
-          case Nil => collection += dbo
-          case _ => // TODO throw an exception
-        }
+    objectIdInDbQuery(dbo) match {
+      case Some(idInDbQuery) => {
+        if (!(alreadyInDb(idInDbQuery))) collection += dbo
       }
-      case _ => // throw exception
+      case _ => // throw exception?
     }
   }
 
-  private def getObjectId(dbo: DBObject): Option[Long] = {
-    val vals = dbo.values.toList
-    val idVal = for {
-      value <- dbo.values.toList
-      if value.isInstanceOf[BasicDBObject]
-    } yield {
-      value.asInstanceOf[BasicDBObject].as[Long]("id")
-    }
+  private def alreadyInDb(idQuery: MongoDBObject) = collection.findOne(idQuery).isDefined
 
-    idVal match {
+  private def objectIdInDbQuery(dbo: DBObject): Option[MongoDBObject] = {
+    dbo.filterKeys(_.endsWith("Id")).toList match {
+      case head :: tail => Some(head)
       case Nil => None
-      case head :: tail if head.isInstanceOf[Long] => Some(head)
-      case _ => None
     }
   }
+
+  private implicit def idEntryToMongoDBIdentifierQueryObject(idEntry: (String, AnyRef)): MongoDBObject =
+    MongoDBObject(idEntry._1 -> MongoDBObject("id" -> idEntry._2.asInstanceOf[BasicDBObject].as[Long]("id")))
 }

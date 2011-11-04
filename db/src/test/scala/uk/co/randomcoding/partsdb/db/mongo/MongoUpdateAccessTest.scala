@@ -31,7 +31,6 @@ class MongoUpdateAccessTest extends MongoDbTestBase with ShouldMatchers {
     mongoAccess add address
 
     val result = findInDatabase[Address]("addressId", 3579)
-    //val result = mongo.find(MongoDBObject("addressId" -> MongoDBObject("id" -> 3579))).toList map (convertFromMongoDbObject[Address](_))
 
     result.toList should be(List(address))
   }
@@ -44,7 +43,6 @@ class MongoUpdateAccessTest extends MongoDbTestBase with ShouldMatchers {
     mongoAccess add address2
 
     val result = findInDatabase[Address]("addressId", 4680)
-    //val result = mongo.find(MongoDBObject("addressId" -> MongoDBObject("id" -> 3579))).toList map (convertFromMongoDbObject[Address](_))
 
     result.toList should be(List(address1))
   }
