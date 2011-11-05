@@ -4,7 +4,9 @@
 package uk.co.randomcoding.partsdb.db.mongo
 
 import com.mongodb.casbah.Imports._
-import uk.co.randomcoding.partsdb.db.mongo.MongoConverters._
+import uk.co.randomcoding.partsdb.db.mongo._
+import MongoConverters._
+import MongoAccessHelpers._
 
 /**
  * Provides an implementation of the capability to add an object to a collection
@@ -13,28 +15,21 @@ import uk.co.randomcoding.partsdb.db.mongo.MongoConverters._
  *
  */
 trait MongoUpdateAccess {
+  /**
+   * The `MongoCollection` this trait will operate upon
+   */
   val collection: MongoCollection
 
-  def add[T <: AnyRef](t: T): Unit = addIfNotAlreadyInDb(t)
+  /**
+   * Adds an object into the database if there is not already another item with the same [[uk.co.randomcoding.partsdb.core.id.Identifier]].
+   *
+   * @return `true` iff there was no other object with the same [[uk.co.randomcoding.partsdb.core.id.Identifier]] and
+   * 	the add operation resulted in there being an object with the new [[uk.co.randomcoding.partsdb.core.id.Identifier]] in the db
+   */
+  def add[T <: AnyRef](t: T)(implicit mf: Manifest[T]): Boolean = if (idNotInDb[T](t, collection)) addAndVerify[T](t) else false
 
-  private def addIfNotAlreadyInDb(dbo: DBObject): Unit = {
-    objectIdInDbQuery(dbo) match {
-      case Some(idInDbQuery) => {
-        if (!(alreadyInDb(idInDbQuery))) collection += dbo
-      }
-      case _ => // throw exception?
-    }
+  private def addAndVerify[T <: AnyRef](t: T)(implicit mf: Manifest[T]): Boolean = {
+    collection += t
+    idIsInDb[T](t, collection)
   }
-
-  private def alreadyInDb(idQuery: MongoDBObject) = collection.findOne(idQuery).isDefined
-
-  private def objectIdInDbQuery(dbo: DBObject): Option[MongoDBObject] = {
-    dbo.filterKeys(_.endsWith("Id")).toList match {
-      case head :: tail => Some(head)
-      case Nil => None
-    }
-  }
-
-  private implicit def idEntryToMongoDBIdentifierQueryObject(idEntry: (String, AnyRef)): MongoDBObject =
-    MongoDBObject(idEntry._1 -> MongoDBObject("id" -> idEntry._2.asInstanceOf[BasicDBObject].as[Long]("id")))
 }
