@@ -38,7 +38,7 @@ class MongoUpdateAccessModifyTest extends MongoDbTestBase with ShouldMatchers {
     val address2 = Address(Identifier(9876), "Addr1", "Long Addr 1 Modified", "UK")
     mongoAccess modify address2 should be(true)
 
-    findInDatabase[Address]("addressId", 9876) should be(address2)
+    findInDatabase[Address]("addressId", 9876) should be(List(address2))
   }
 
   test("Multiple modifications to the same Address result in the correct Address in the database") {
@@ -54,7 +54,7 @@ class MongoUpdateAccessModifyTest extends MongoDbTestBase with ShouldMatchers {
     val address4 = Address(Identifier(9876), "Addr2", "Long Addr 2 Modified", "USA")
     mongoAccess modify address4 should be(true)
 
-    findInDatabase[Address]("addressId", 9876) should be(address4)
+    findInDatabase[Address]("addressId", 9876) should be(List(address4))
   }
 
   test("Modify called on Address that is not is database does not add it to database") {
@@ -64,8 +64,8 @@ class MongoUpdateAccessModifyTest extends MongoDbTestBase with ShouldMatchers {
     val address2 = Address(Identifier(98765), "Addr1", "Long Addr 1", "UK")
     mongoAccess modify address2 should be(false)
 
-    findInDatabase[Address]("addressId", 9876) should be(address1)
-    findInDatabase[Address]("addressId", 98765) should be(None)
+    findInDatabase[Address]("addressId", 9876) should be(List(address1))
+    findInDatabase[Address]("addressId", 98765) should be(Nil)
   }
 
 }

@@ -4,13 +4,13 @@
 package uk.co.randomcoding.partsdb.db.mongo
 
 import com.mongodb.casbah.Imports._
-
 import MongoConverters._
+import net.liftweb.common.Logger
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
-object MongoAccessHelpers {
+object MongoAccessHelpers extends Logger {
 
   /**
    * Checks the given collection does not contain an object with the [[uk.co.randomcoding.partsdb.core.id.Identifier]] of the provided object `(t)`.
@@ -21,8 +21,9 @@ object MongoAccessHelpers {
    */
   def idNotInDb[T <: AnyRef](t: T, collection: MongoCollection)(implicit mf: Manifest[T]): Boolean = {
     val dbo: DBObject = t
+
     objectIdInDbQuery(dbo) match {
-      case Some(query) => idNotInDb(query, collection)
+      case Some(query) => idNotInDb(collection, query)
       case _ => false
     }
   }
@@ -36,9 +37,28 @@ object MongoAccessHelpers {
    */
   def idIsInDb[T <: AnyRef](t: T, collection: MongoCollection)(implicit mf: Manifest[T]): Boolean = {
     val dbo: DBObject = t
+
     objectIdInDbQuery(dbo) match {
-      case Some(query) => idIsInDb(query, collection)
+      case Some(query) => idIsInDb(collection, query)
       case _ => false
+    }
+  }
+
+  /**
+   * Gets the MongoDBObject that represents the item with the given id.
+   *
+   * @param item The
+   */
+  def getDbObject[T <: AnyRef](item: T, collection: MongoCollection)(implicit mf: Manifest[T]): MongoDBObject = {
+    val dbItem: DBObject = item
+
+    objectIdInDbQuery(dbItem) match {
+      case Some(query) => {
+        val objectWithIdentifier = collection.findOne(query).getOrElse(DBObject.empty)
+        // This seems to be required to enable a correct implicit conversion to MongoDBObject
+        objectWithIdentifier
+      }
+      case _ => MongoDBObject.empty
     }
   }
 
@@ -46,9 +66,19 @@ object MongoAccessHelpers {
    * Helper conversions and functions for the above functions
    */
 
-  private val idNotInDb = (idQuery: MongoDBObject, collection: MongoCollection) => collection.findOne(idQuery).isEmpty
+  private val idNotInDb = (collection: MongoCollection, idQuery: MongoDBObject) => {
+    debug("Checking for %s in the db".format(idQuery))
+    val notFound = collection.findOne(idQuery).isEmpty
+    debug("Found: %S".format(!notFound))
+    notFound
+  }
 
-  private val idIsInDb = (idQuery: MongoDBObject, collection: MongoCollection) => collection.findOne(idQuery).isDefined
+  private val idIsInDb = (collection: MongoCollection, idQuery: MongoDBObject) => {
+    debug("Checking for %s in the db".format(idQuery))
+    val found = collection.findOne(idQuery).isDefined
+    debug("Found: %S".format(found))
+    found
+  }
 
   private def objectIdInDbQuery(dbo: MongoDBObject): Option[MongoDBObject] = {
     dbo.filterKeys(_.endsWith("Id")).toList match {
@@ -58,6 +88,8 @@ object MongoAccessHelpers {
   }
 
   private implicit def idEntryToMongoDBIdentifierQueryObject(idEntry: (String, AnyRef)): MongoDBObject = {
-    MongoDBObject(idEntry._1 -> MongoDBObject("id" -> idEntry._2.asInstanceOf[BasicDBObject].as[Long]("id")))
+    val idQuery = MongoDBObject(idEntry._1 -> MongoDBObject("id" -> idEntry._2.asInstanceOf[BasicDBObject].as[Long]("id")))
+    debug("Created idQuery: %s".format(idQuery))
+    idQuery
   }
 }
