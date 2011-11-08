@@ -15,23 +15,17 @@ class MongoDbUniqueIdAccessTest extends MongoDbTestBase with ShouldMatchers {
 
   val uniqueIdField = "uniqueId"
 
+  lazy val access = new MongoIdentifierAccess() {
+    override val collection = mongo
+  }
+
   test("Call to nextUniqueId returns 0 when the collection contains no entry for unique id") {
-    val mongo = MongoConnection()(dbName)(collectionName)
     val query = uniqueIdField $exists true
     mongo.find(query).isEmpty should be(true)
-    val access = new MongoIdentifierAccess() {
-      override val collection = mongo 
-    }
-    //val access = MongoDbAccess(dbName, collectionName)
     access.nextId() should be(0)
   }
 
   test("Call to nextUniqueId updates the database with the next value") {
-    val mongo = MongoConnection()(dbName)(collectionName)
-    val access = new MongoIdentifierAccess {
-      override val collection = mongo
-    }
-
     access.nextId() should be(0)
     val query = uniqueIdField $exists true
     val result = mongo.findOne(query).get
@@ -39,11 +33,6 @@ class MongoDbUniqueIdAccessTest extends MongoDbTestBase with ShouldMatchers {
   }
 
   test("Sequential call to nextUniqeId return sequential values") {
-    val mongo = MongoConnection()(dbName)(collectionName)
-    val access = new MongoIdentifierAccess {
-      override val collection = mongo
-    }
-
     access.nextId() should be(0)
     access.nextId() should be(1)
     access.nextId() should be(2)
@@ -54,10 +43,6 @@ class MongoDbUniqueIdAccessTest extends MongoDbTestBase with ShouldMatchers {
 
   test("Multiple calls to nextUniqueId return distinct values") {
     val testCount = 1000
-    val mongo = MongoConnection()(dbName)(collectionName)
-    val access = new MongoIdentifierAccess {
-      override val collection = mongo
-    }
 
     (0 to testCount) foreach { index => access.nextId() should be(index) }
   }
