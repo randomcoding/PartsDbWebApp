@@ -4,6 +4,7 @@
 package uk.co.randomcoding.partsdb.db
 
 import uk.co.randomcoding.partsdb.core.id.Identifier
+import uk.co.randomcoding.partsdb.core.address.Address
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
@@ -28,11 +29,20 @@ class JsonConversionSimpleObjectTests extends JsonConversionTesting {
   }
 
   test("Can convert Address to JSON") {
-    fail("Not Implemented Yet")
+    val address = Address(Identifier(4567), "Addr", "Addr Long", "UK")
+    val json: String = address
+
+    json should be("""{"addressId":{"id":4567},"shortName":"Addr","addressText":"Addr Long","country":"UK"}""")
+    checkJsonConversion[Address](json, Address(Identifier(4567), "Addr", "Addr Long", "UK"))
   }
 
   test("Can convert JSON to Address") {
-    fail("Not Implemented Yet")
+    val json = """{ "addressId" : {"id":4567},
+      "shortName" : "Addr",
+      "addressText" : "Addr Long",
+      "country" : "UK" }"""
+
+    checkJsonConversion[Address](json, Address(Identifier(4567), "Addr", "Addr Long", "UK"))
   }
 
   test("Can convert Customer to JSON") {
