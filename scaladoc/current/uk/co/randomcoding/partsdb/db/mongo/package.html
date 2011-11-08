@@ -65,7 +65,7 @@
       <span class="symbol"> 
         <a href="MongoDbAccess.html"><span class="name">MongoDbAccess</span></a>
         
-        <span class="result"> extends DbAccess with Logger</span>
+        <span class="result"> extends MongoAllOrOneAccess with MongoIdentifierAccess with MongoUpdateAccess with Logger</span>
       </span>
       </h4>
       <p class="comment cmt">Provides access to stored items in a MongoDB Collection
@@ -81,6 +81,18 @@
       </span>
       </h4>
       <p class="comment cmt"></p>
+    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.db.mongo.MongoUpdateAccess" data-isabs="true">
+      <a id="MongoUpdateAccess:MongoUpdateAccess"></a>
+      <h4 class="signature">
+      <span class="kind">trait</span>
+      <span class="symbol"> 
+        <a href="MongoUpdateAccess.html"><span class="name">MongoUpdateAccess</span></a>
+        
+        <span class="result"> extends AnyRef</span>
+      </span>
+      </h4>
+      <p class="comment cmt">Provides an implementation of the capability to add an object to a collection
+</p>
     </li></ol>
             </div>
         
@@ -88,7 +100,18 @@
 
         <div class="values members" id="values">
               <h3>Value Members</h3>
-              <ol><li visbl="pub" name="uk.co.randomcoding.partsdb.db.mongo.MongoConfig" data-isabs="false">
+              <ol><li visbl="pub" name="uk.co.randomcoding.partsdb.db.mongo.MongoAccessHelpers" data-isabs="false">
+      <a id="MongoAccessHelpers:MongoAccessHelpers"></a>
+      <h4 class="signature">
+      <span class="kind">object</span>
+      <span class="symbol"> 
+        <a href="MongoAccessHelpers$.html"><span class="name">MongoAccessHelpers</span></a>
+        
+        <span class="result"> extends Logger</span>
+      </span>
+      </h4>
+      <p class="comment cmt"></p>
+    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.db.mongo.MongoConfig" data-isabs="false">
       <a id="MongoConfig:MongoConfig"></a>
       <h4 class="signature">
       <span class="kind">object</span>

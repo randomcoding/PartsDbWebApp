@@ -24,14 +24,14 @@
       <span class="symbol"> 
         <span class="name">MongoDbAccess</span>
         
-        <span class="result"> extends <a name="uk.co.randomcoding.partsdb.db.DbAccess" class="extype" href="../DbAccess.html">DbAccess</a> with <span name="net.liftweb.common.Logger" class="extype">Logger</span></span>
+        <span class="result"> extends <a name="uk.co.randomcoding.partsdb.db.mongo.MongoAllOrOneAccess" class="extype" href="MongoAllOrOneAccess.html">MongoAllOrOneAccess</a> with <a name="uk.co.randomcoding.partsdb.db.mongo.MongoIdentifierAccess" class="extype" href="MongoIdentifierAccess.html">MongoIdentifierAccess</a> with <a name="uk.co.randomcoding.partsdb.db.mongo.MongoUpdateAccess" class="extype" href="MongoUpdateAccess.html">MongoUpdateAccess</a> with <span name="net.liftweb.common.Logger" class="extype">Logger</span></span>
       </span>
       </h4>
       
           <div class="fullcommenttop" id="comment"><div class="comment cmt"><p>Provides access to stored items in a MongoDB Collection
 </p></div><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><span name="net.liftweb.common.Logger" class="extype">Logger</span>, <a name="uk.co.randomcoding.partsdb.db.DbAccess" class="extype" href="../DbAccess.html">DbAccess</a>, AnyRef, <span name="scala.Any" class="extype">Any</span></div>
+          <div class="superTypes hiddenContent"><a name="uk.co.randomcoding.partsdb.db.mongo.MongoUpdateAccess" class="extype" href="MongoUpdateAccess.html">MongoUpdateAccess</a>, <a name="uk.co.randomcoding.partsdb.db.mongo.MongoIdentifierAccess" class="extype" href="MongoIdentifierAccess.html">MongoIdentifierAccess</a>, <a name="uk.co.randomcoding.partsdb.db.mongo.MongoAllOrOneAccess" class="extype" href="MongoAllOrOneAccess.html">MongoAllOrOneAccess</a>, <span name="net.liftweb.common.Logger" class="extype">Logger</span>, AnyRef, <span name="scala.Any" class="extype">Any</span></div>
         </div></div>
         
 
@@ -47,7 +47,7 @@
                 <span class="filtertype">Inherited</span>
                 <ol><li class="hideall out"><span>Hide All</span></li>
                 <li class="showall in"><span>Show all</span></li></ol>
-                <ol id="linearization"><li name="uk.co.randomcoding.partsdb.db.mongo.MongoDbAccess" class="in"><span>MongoDbAccess</span></li><li name="net.liftweb.common.Logger" class="in"><span>Logger</span></li><li name="uk.co.randomcoding.partsdb.db.DbAccess" class="in"><span>DbAccess</span></li><li name="scala.AnyRef" class="in"><span>AnyRef</span></li><li name="scala.Any" class="in"><span>Any</span></li></ol>
+                <ol id="linearization"><li name="uk.co.randomcoding.partsdb.db.mongo.MongoDbAccess" class="in"><span>MongoDbAccess</span></li><li name="uk.co.randomcoding.partsdb.db.mongo.MongoUpdateAccess" class="in"><span>MongoUpdateAccess</span></li><li name="uk.co.randomcoding.partsdb.db.mongo.MongoIdentifierAccess" class="in"><span>MongoIdentifierAccess</span></li><li name="uk.co.randomcoding.partsdb.db.mongo.MongoAllOrOneAccess" class="in"><span>MongoAllOrOneAccess</span></li><li name="net.liftweb.common.Logger" class="in"><span>Logger</span></li><li name="scala.AnyRef" class="in"><span>AnyRef</span></li><li name="scala.Any" class="in"><span>Any</span></li></ol>
               </div>
           <div id="visbl">
               <span class="filtertype">Visibility</span>
@@ -64,7 +64,7 @@
       <span class="symbol"> 
         <span class="name">MongoDbAccess</span>
         
-        <span class="params">(<span name="mongoCollection">mongoCollection: MongoCollection</span>)</span>
+        <span class="params">(<span name="collection">collection: MongoCollection</span>)</span>
       </span>
       </h4>
       <p class="shortcomment cmt">Creates a new instance of this access object.</p><div class="fullcomment"><div class="comment cmt"><p>Creates a new instance of this access object. Should be called from the companion object</p></div></div>
@@ -143,19 +143,20 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>Logger</dd></dl></div>
-    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.db.mongo.MongoDbAccess#add" data-isabs="false">
-      <a id="add[T&lt;:AnyRef](T):Unit"></a>
+    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.db.mongo.MongoUpdateAccess#add" data-isabs="false">
+      <a id="add[T&lt;:AnyRef](T)(Manifest[T]):Boolean"></a>
       <h4 class="signature">
       <span class="kind">def</span>
       <span class="symbol"> 
         <span class="name">add</span>
         <span class="tparams">[<span name="T">T &lt;: AnyRef</span>]</span>
-        <span class="params">(<span name="t">t: T</span>)</span><span class="result">: <span name="scala.Unit" class="extype">Unit</span></span>
+        <span class="params">(<span name="newItem">newItem: T</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="mf">mf: Manifest[T]</span>)</span><span class="result">: <span name="scala.Boolean" class="extype">Boolean</span></span>
       </span>
       </h4>
-      <p class="shortcomment cmt">Add an entity to the database
-</p><div class="fullcomment"><div class="comment cmt"><p>Add an entity to the database
-</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a name="uk.co.randomcoding.partsdb.db.mongo.MongoDbAccess" class="extype" href="">MongoDbAccess</a> → <a name="uk.co.randomcoding.partsdb.db.DbAccess" class="extype" href="../DbAccess.html">DbAccess</a></dd></dl></div>
+      <p class="shortcomment cmt">Adds an object into the database if there is not already another item with the same <a name="uk.co.randomcoding.partsdb.core.id.Identifier" class="extype" href="../../core/id/Identifier.html">Identifier</a>.</p><div class="fullcomment"><div class="comment cmt"><p>Adds an object into the database if there is not already another item with the same <a name="uk.co.randomcoding.partsdb.core.id.Identifier" class="extype" href="../../core/id/Identifier.html">Identifier</a>.</p><p>In order to be added, the <code>new Entry</code> <b><i>must</i></b> have an <a name="uk.co.randomcoding.partsdb.core.id.Identifier" class="extype" href="../../core/id/Identifier.html">Identifier</a> variable that has a name ending with <i>Id</i>.
+</p></div><dl class="paramcmts block"><dt class="param">newItem</dt><dd class="cmt"><p>The new item to add to the database.</p></dd><dt>returns</dt><dd class="cmt"><p><code>true</code> iff there was no other object with the same <a name="uk.co.randomcoding.partsdb.core.id.Identifier" class="extype" href="../../core/id/Identifier.html">Identifier</a> and
+	the add operation resulted in there being an object with the new <a name="uk.co.randomcoding.partsdb.core.id.Identifier" class="extype" href="../../core/id/Identifier.html">Identifier</a> in the db
+</p></dd></dl><dl class="attributes block"> <dt>Definition Classes</dt><dd><a name="uk.co.randomcoding.partsdb.db.mongo.MongoUpdateAccess" class="extype" href="MongoUpdateAccess.html">MongoUpdateAccess</a></dd></dl></div>
     </li><li visbl="pub" name="scala.Any#asInstanceOf" data-isabs="false">
       <a id="asInstanceOf[T0]:T0"></a>
       <h4 class="signature">
@@ -192,6 +193,19 @@
                 <span class="name">@throws</span><span class="args">()</span>
               
         </dd></dl></div>
+    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.db.mongo.MongoDbAccess#collection" data-isabs="false">
+      <a id="collection:MongoCollection"></a>
+      <h4 class="signature">
+      <span class="kind">val</span>
+      <span class="symbol"> 
+        <span class="name">collection</span>
+        
+        <span class="result">: MongoCollection</span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">The <code>MongoCollection</code> this trait will operate upon
+</p><div class="fullcomment"><div class="comment cmt"><p>The <code>MongoCollection</code> this trait will operate upon
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a name="uk.co.randomcoding.partsdb.db.mongo.MongoDbAccess" class="extype" href="">MongoDbAccess</a> → <a name="uk.co.randomcoding.partsdb.db.mongo.MongoUpdateAccess" class="extype" href="MongoUpdateAccess.html">MongoUpdateAccess</a> → <a name="uk.co.randomcoding.partsdb.db.mongo.MongoIdentifierAccess" class="extype" href="MongoIdentifierAccess.html">MongoIdentifierAccess</a> → <a name="uk.co.randomcoding.partsdb.db.mongo.MongoAllOrOneAccess" class="extype" href="MongoAllOrOneAccess.html">MongoAllOrOneAccess</a></dd></dl></div>
     </li><li visbl="pub" name="net.liftweb.common.Logger#debug" data-isabs="false">
       <a id="debug(⇒ AnyRef,Throwable,Marker):Unit"></a>
       <h4 class="signature">
@@ -338,6 +352,17 @@
                 <span class="name">@throws</span><span class="args">()</span>
               
         </dd></dl></div>
+    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.db.mongo.MongoAllOrOneAccess#getAll" data-isabs="false">
+      <a id="getAll[T&lt;:AnyRef](String)(Manifest[T]):List[T]"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">getAll</span>
+        <span class="tparams">[<span name="T">T &lt;: AnyRef</span>]</span>
+        <span class="params">(<span name="idFieldName">idFieldName: String</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="mf">mf: Manifest[T]</span>)</span><span class="result">: List[T]</span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a name="uk.co.randomcoding.partsdb.db.mongo.MongoAllOrOneAccess" class="extype" href="MongoAllOrOneAccess.html">MongoAllOrOneAccess</a></dd></dl></div>
     </li><li visbl="pub" name="scala.AnyRef#getClass" data-isabs="false">
       <a id="getClass():java.lang.Class[_]"></a>
       <h4 class="signature">
@@ -349,6 +374,17 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>final </dd><dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.db.mongo.MongoAllOrOneAccess#getOne" data-isabs="false">
+      <a id="getOne[T&lt;:AnyRef](String,Identifier)(Manifest[T]):Option[T]"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">getOne</span>
+        <span class="tparams">[<span name="T">T &lt;: AnyRef</span>]</span>
+        <span class="params">(<span name="idFieldName">idFieldName: String</span>, <span name="id">id: <a name="uk.co.randomcoding.partsdb.core.id.Identifier" class="extype" href="../../core/id/Identifier.html">Identifier</a></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="mf">mf: Manifest[T]</span>)</span><span class="result">: <span name="scala.Option" class="extype">Option</span>[T]</span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a name="uk.co.randomcoding.partsdb.db.mongo.MongoAllOrOneAccess" class="extype" href="MongoAllOrOneAccess.html">MongoAllOrOneAccess</a></dd></dl></div>
     </li><li visbl="pub" name="scala.AnyRef#hashCode" data-isabs="false">
       <a id="hashCode():Int"></a>
       <h4 class="signature">
@@ -481,17 +517,19 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Logger</dd></dl></div>
-    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.db.mongo.MongoDbAccess#mongoCollection" data-isabs="false">
-      <a id="mongoCollection:MongoCollection"></a>
+    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.db.mongo.MongoUpdateAccess#modify" data-isabs="false">
+      <a id="modify[T&lt;:AnyRef](T)(Manifest[T]):Boolean"></a>
       <h4 class="signature">
-      <span class="kind">val</span>
+      <span class="kind">def</span>
       <span class="symbol"> 
-        <span class="name">mongoCollection</span>
-        
-        <span class="result">: MongoCollection</span>
+        <span class="name">modify</span>
+        <span class="tparams">[<span name="T">T &lt;: AnyRef</span>]</span>
+        <span class="params">(<span name="modifiedItem">modifiedItem: T</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="mf">mf: Manifest[T]</span>)</span><span class="result">: <span name="scala.Boolean" class="extype">Boolean</span></span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">Modifies an object in the database to have the values of the <code>modifiedItem</code>.</p><div class="fullcomment"><div class="comment cmt"><p>Modifies an object in the database to have the values of the <code>modifiedItem</code>.</p><p>The item must already exist in the database (i.e. there is another entry with the same <a name="uk.co.randomcoding.partsdb.core.id.Identifier" class="extype" href="../../core/id/Identifier.html">Identifier</a>) already added.
+</p></div><dl class="paramcmts block"><dt class="param">modifiedItem</dt><dd class="cmt"><p>The item with the new values to be added to the database</p></dd><dt>returns</dt><dd class="cmt"><p><code>true</code> iff there is an item in the database with the same identifier and the update operation succeeds.
+</p></dd></dl><dl class="attributes block"> <dt>Definition Classes</dt><dd><a name="uk.co.randomcoding.partsdb.db.mongo.MongoUpdateAccess" class="extype" href="MongoUpdateAccess.html">MongoUpdateAccess</a></dd></dl></div>
     </li><li visbl="pub" name="scala.AnyRef#ne" data-isabs="false">
       <a id="ne(AnyRef):Boolean"></a>
       <h4 class="signature">
@@ -503,6 +541,18 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>final </dd><dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.db.mongo.MongoIdentifierAccess#nextId" data-isabs="false">
+      <a id="nextId():Long"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">nextId</span>
+        
+        <span class="params">()</span><span class="result">: <span name="scala.Long" class="extype">Long</span></span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">Gets the next value for the unique id.</p><div class="fullcomment"><div class="comment cmt"><p>Gets the next value for the unique id.</p><p>This also increments the current value that is stored in the database
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a name="uk.co.randomcoding.partsdb.db.mongo.MongoIdentifierAccess" class="extype" href="MongoIdentifierAccess.html">MongoIdentifierAccess</a></dd></dl></div>
     </li><li visbl="pub" name="scala.AnyRef#notify" data-isabs="false">
       <a id="notify():Unit"></a>
       <h4 class="signature">
@@ -525,6 +575,19 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>final </dd><dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.db.mongo.MongoUpdateAccess#remove" data-isabs="false">
+      <a id="remove[T&lt;:AnyRef](T)(Manifest[T]):Boolean"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">remove</span>
+        <span class="tparams">[<span name="T">T &lt;: AnyRef</span>]</span>
+        <span class="params">(<span name="item">item: T</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="mf">mf: Manifest[T]</span>)</span><span class="result">: <span name="scala.Boolean" class="extype">Boolean</span></span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">Removes an item from the database.</p><div class="fullcomment"><div class="comment cmt"><p>Removes an item from the database.</p><p>The item must exist in the database, <b>exactly as passed in to <code>item</code></b> otherwise it will not be found.
+</p></div><dl class="paramcmts block"><dt class="param">item</dt><dd class="cmt"><p>The item to be removed from the database</p></dd><dt>returns</dt><dd class="cmt"><p><code>true</code> iff The item is removed from the database. If it is not present (no match found) then returns <code>false</code>
+</p></dd></dl><dl class="attributes block"> <dt>Definition Classes</dt><dd><a name="uk.co.randomcoding.partsdb.db.mongo.MongoUpdateAccess" class="extype" href="MongoUpdateAccess.html">MongoUpdateAccess</a></dd></dl></div>
     </li><li visbl="pub" name="scala.AnyRef#synchronized" data-isabs="false">
       <a id="synchronized[T0](⇒ T0):T0"></a>
       <h4 class="signature">
@@ -715,10 +778,14 @@
 
         
 
-        <div name="net.liftweb.common.Logger" class="parent">
+        <div name="uk.co.randomcoding.partsdb.db.mongo.MongoUpdateAccess" class="parent">
+              <h3>Inherited from <a name="uk.co.randomcoding.partsdb.db.mongo.MongoUpdateAccess" class="extype" href="MongoUpdateAccess.html">MongoUpdateAccess</a></h3>
+            </div><div name="uk.co.randomcoding.partsdb.db.mongo.MongoIdentifierAccess" class="parent">
+              <h3>Inherited from <a name="uk.co.randomcoding.partsdb.db.mongo.MongoIdentifierAccess" class="extype" href="MongoIdentifierAccess.html">MongoIdentifierAccess</a></h3>
+            </div><div name="uk.co.randomcoding.partsdb.db.mongo.MongoAllOrOneAccess" class="parent">
+              <h3>Inherited from <a name="uk.co.randomcoding.partsdb.db.mongo.MongoAllOrOneAccess" class="extype" href="MongoAllOrOneAccess.html">MongoAllOrOneAccess</a></h3>
+            </div><div name="net.liftweb.common.Logger" class="parent">
               <h3>Inherited from <span name="net.liftweb.common.Logger" class="extype">Logger</span></h3>
-            </div><div name="uk.co.randomcoding.partsdb.db.DbAccess" class="parent">
-              <h3>Inherited from <a name="uk.co.randomcoding.partsdb.db.DbAccess" class="extype" href="../DbAccess.html">DbAccess</a></h3>
             </div><div name="scala.AnyRef" class="parent">
               <h3>Inherited from AnyRef</h3>
             </div><div name="scala.Any" class="parent">

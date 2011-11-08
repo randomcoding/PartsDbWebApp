@@ -2,7 +2,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html>
         <head>
-          <title>uk.co.randomcoding.partsdb.db.mongo.MongoAllOrOneAccess</title>
+          <title>uk.co.randomcoding.partsdb.db.mongo.MongoAccessHelpers</title>
           <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
           
       <link type="text/css" media="screen" rel="stylesheet" href="../../../../../../lib/template.css" />
@@ -12,17 +12,17 @@
       <script type="text/javascript" src="../../../../../../lib/tools.tooltip.js"></script>
     
         </head>
-        <body class="type">
+        <body class="value">
       <div id="definition">
-        <img src="../../../../../../lib/trait_big.png" />
+        <img src="../../../../../../lib/object_big.png" />
         <p id="owner"><a name="uk" class="extype" href="../../../../../package.html">uk</a>.<a name="uk.co" class="extype" href="../../../../package.html">co</a>.<a name="uk.co.randomcoding" class="extype" href="../../../package.html">randomcoding</a>.<a name="uk.co.randomcoding.partsdb" class="extype" href="../../package.html">partsdb</a>.<a name="uk.co.randomcoding.partsdb.db" class="extype" href="../package.html">db</a>.<a name="uk.co.randomcoding.partsdb.db.mongo" class="extype" href="package.html">mongo</a></p>
-        <h1>MongoAllOrOneAccess</h1>
+        <h1>MongoAccessHelpers</h1>
       </div>
 
       <h4 class="signature" id="signature">
-      <span class="kind">trait</span>
+      <span class="kind">object</span>
       <span class="symbol"> 
-        <span class="name">MongoAllOrOneAccess</span>
+        <span class="name">MongoAccessHelpers</span>
         
         <span class="result"> extends <span name="net.liftweb.common.Logger" class="extype">Logger</span></span>
       </span>
@@ -31,9 +31,6 @@
           <div class="fullcommenttop" id="comment"><div class="comment cmt"></div><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
           <div class="superTypes hiddenContent"><span name="net.liftweb.common.Logger" class="extype">Logger</span>, AnyRef, <span name="scala.Any" class="extype">Any</span></div>
-        </div><div class="toggleContainer block">
-          <span class="toggle">Known Subclasses</span>
-          <div class="subClasses hiddenContent"><a name="uk.co.randomcoding.partsdb.db.mongo.MongoDbAccess" class="extype" href="MongoDbAccess.html">MongoDbAccess</a></div>
         </div></div>
         
 
@@ -49,7 +46,7 @@
                 <span class="filtertype">Inherited</span>
                 <ol><li class="hideall out"><span>Hide All</span></li>
                 <li class="showall in"><span>Show all</span></li></ol>
-                <ol id="linearization"><li name="uk.co.randomcoding.partsdb.db.mongo.MongoAllOrOneAccess" class="in"><span>MongoAllOrOneAccess</span></li><li name="net.liftweb.common.Logger" class="in"><span>Logger</span></li><li name="scala.AnyRef" class="in"><span>AnyRef</span></li><li name="scala.Any" class="in"><span>Any</span></li></ol>
+                <ol id="linearization"><li name="uk.co.randomcoding.partsdb.db.mongo.MongoAccessHelpers" class="in"><span>MongoAccessHelpers</span></li><li name="net.liftweb.common.Logger" class="in"><span>Logger</span></li><li name="scala.AnyRef" class="in"><span>AnyRef</span></li><li name="scala.Any" class="in"><span>Any</span></li></ol>
               </div>
           <div id="visbl">
               <span class="filtertype">Visibility</span>
@@ -61,26 +58,10 @@
 
         
         
-        <div class="values members" id="values">
-              <h3>Abstract Value Members</h3>
-              <ol><li visbl="pub" name="uk.co.randomcoding.partsdb.db.mongo.MongoAllOrOneAccess#collection" data-isabs="true">
-      <a id="collection:MongoCollection"></a>
-      <h4 class="signature">
-      <span class="kind">val</span>
-      <span class="symbol"> 
-        <span class="name">collection</span>
         
-        <span class="result">: MongoCollection</span>
-      </span>
-      </h4>
-      <p class="shortcomment cmt">The <b><code>MongoCollection</code></b> that this trait will access
-</p><div class="fullcomment"><div class="comment cmt"><p>The <b><code>MongoCollection</code></b> that this trait will access
-</p></div><dl class="attributes block"> <dt>Attributes</dt><dd>abstract </dd></dl></div>
-    </li></ol>
-            </div>
 
         <div class="values members" id="values">
-              <h3>Concrete Value Members</h3>
+              <h3>Value Members</h3>
               <ol><li visbl="pub" name="scala.AnyRef#!=" data-isabs="false">
       <a id="!=(AnyRef):Boolean"></a>
       <h4 class="signature">
@@ -329,17 +310,6 @@
                 <span class="name">@throws</span><span class="args">()</span>
               
         </dd></dl></div>
-    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.db.mongo.MongoAllOrOneAccess#getAll" data-isabs="false">
-      <a id="getAll[T&lt;:AnyRef](String)(Manifest[T]):List[T]"></a>
-      <h4 class="signature">
-      <span class="kind">def</span>
-      <span class="symbol"> 
-        <span class="name">getAll</span>
-        <span class="tparams">[<span name="T">T &lt;: AnyRef</span>]</span>
-        <span class="params">(<span name="idFieldName">idFieldName: String</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="mf">mf: Manifest[T]</span>)</span><span class="result">: List[T]</span>
-      </span>
-      </h4>
-      
     </li><li visbl="pub" name="scala.AnyRef#getClass" data-isabs="false">
       <a id="getClass():java.lang.Class[_]"></a>
       <h4 class="signature">
@@ -351,17 +321,19 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>final </dd><dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
-    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.db.mongo.MongoAllOrOneAccess#getOne" data-isabs="false">
-      <a id="getOne[T&lt;:AnyRef](String,Identifier)(Manifest[T]):Option[T]"></a>
+    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.db.mongo.MongoAccessHelpers#getDbObject" data-isabs="false">
+      <a id="getDbObject[T&lt;:AnyRef](T,MongoCollection)(Manifest[T]):MongoDBObject"></a>
       <h4 class="signature">
       <span class="kind">def</span>
       <span class="symbol"> 
-        <span class="name">getOne</span>
+        <span class="name">getDbObject</span>
         <span class="tparams">[<span name="T">T &lt;: AnyRef</span>]</span>
-        <span class="params">(<span name="idFieldName">idFieldName: String</span>, <span name="id">id: <a name="uk.co.randomcoding.partsdb.core.id.Identifier" class="extype" href="../../core/id/Identifier.html">Identifier</a></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="mf">mf: Manifest[T]</span>)</span><span class="result">: <span name="scala.Option" class="extype">Option</span>[T]</span>
+        <span class="params">(<span name="item">item: T</span>, <span name="collection">collection: MongoCollection</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="mf">mf: Manifest[T]</span>)</span><span class="result">: MongoDBObject</span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">Gets the MongoDBObject that represents the item with the given id.</p><div class="fullcomment"><div class="comment cmt"><p>Gets the MongoDBObject that represents the item with the given id.
+</p></div><dl class="paramcmts block"><dt class="param">item</dt><dd class="cmt"><p>The
+</p></dd></dl></div>
     </li><li visbl="pub" name="scala.AnyRef#hashCode" data-isabs="false">
       <a id="hashCode():Int"></a>
       <h4 class="signature">
@@ -373,6 +345,32 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.db.mongo.MongoAccessHelpers#idIsInDb" data-isabs="false">
+      <a id="idIsInDb[T&lt;:AnyRef](T,MongoCollection)(Manifest[T]):Boolean"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">idIsInDb</span>
+        <span class="tparams">[<span name="T">T &lt;: AnyRef</span>]</span>
+        <span class="params">(<span name="t">t: T</span>, <span name="collection">collection: MongoCollection</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="mf">mf: Manifest[T]</span>)</span><span class="result">: <span name="scala.Boolean" class="extype">Boolean</span></span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">Checks the given collection contains an object with the <a name="uk.co.randomcoding.partsdb.core.id.Identifier" class="extype" href="../../core/id/Identifier.html">Identifier</a> of the provided object <code>(t)</code>.</p><div class="fullcomment"><div class="comment cmt"><p>Checks the given collection contains an object with the <a name="uk.co.randomcoding.partsdb.core.id.Identifier" class="extype" href="../../core/id/Identifier.html">Identifier</a> of the provided object <code>(t)</code>.</p><p>Can be used to check if an object has been added to the db by its id only
+</p></div><dl class="paramcmts block"><dt>returns</dt><dd class="cmt"><p><code>true</code> If the <a name="uk.co.randomcoding.partsdb.core.id.Identifier" class="extype" href="../../core/id/Identifier.html">Identifier</a> from <code>t</code> is present in the collection
+</p></dd></dl></div>
+    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.db.mongo.MongoAccessHelpers#idNotInDb" data-isabs="false">
+      <a id="idNotInDb[T&lt;:AnyRef](T,MongoCollection)(Manifest[T]):Boolean"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">idNotInDb</span>
+        <span class="tparams">[<span name="T">T &lt;: AnyRef</span>]</span>
+        <span class="params">(<span name="t">t: T</span>, <span name="collection">collection: MongoCollection</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="mf">mf: Manifest[T]</span>)</span><span class="result">: <span name="scala.Boolean" class="extype">Boolean</span></span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">Checks the given collection does not contain an object with the <a name="uk.co.randomcoding.partsdb.core.id.Identifier" class="extype" href="../../core/id/Identifier.html">Identifier</a> of the provided object <code>(t)</code>.</p><div class="fullcomment"><div class="comment cmt"><p>Checks the given collection does not contain an object with the <a name="uk.co.randomcoding.partsdb.core.id.Identifier" class="extype" href="../../core/id/Identifier.html">Identifier</a> of the provided object <code>(t)</code>.</p><p>Can be used to ensure there is not an identifier duplication before adding an object
+</p></div><dl class="paramcmts block"><dt>returns</dt><dd class="cmt"><p><code>true</code> If the <a name="uk.co.randomcoding.partsdb.core.id.Identifier" class="extype" href="../../core/id/Identifier.html">Identifier</a> from <code>t</code> is not present in the collection
+</p></dd></dl></div>
     </li><li visbl="pub" name="net.liftweb.common.Logger#info" data-isabs="false">
       <a id="info(⇒ AnyRef,Throwable,Marker):Unit"></a>
       <h4 class="signature">
