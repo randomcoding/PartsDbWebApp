@@ -16,12 +16,13 @@ import net.liftweb.common.Logger
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  *
  */
-class MongoDbAccess(val mongoCollection: MongoCollection) extends DbAccess with Logger {
+class MongoDbAccess(override val collection: MongoCollection) extends MongoAllOrOneAccess with MongoIdentifierAccess with MongoUpdateAccess with Logger {
+  //override val collection = mongoCollection
 
-  override def add[T <: AnyRef](t: T): Unit = {
+  /*override def add[T <: AnyRef](t: T): Unit = {
     val dbo: DBObject = t
     mongoCollection += dbo
-  }
+  }*/
 
   /*private val incrementUniqueId = (currentId: Long) => {
     val newIdObject = MongoDBObject("uniqueId" -> (currentId + 1))
