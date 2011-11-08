@@ -72,7 +72,10 @@ trait MongoUpdateAccess {
    * @return `true` iff The item is removed from the database. If it is not present (no match found) then returns `false`
    */
   def remove[T <: AnyRef](item: T)(implicit mf: Manifest[T]): Boolean = {
-    false
+    collection.findAndRemove(item) match {
+      case None => false
+      case Some(removed) => idNotInDb(item, collection)
+    }
   }
 
 }
