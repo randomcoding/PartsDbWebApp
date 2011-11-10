@@ -15,8 +15,7 @@ object Unidoc {
   val unidoc = TaskKey[File]("unidoc", "Create unified scaladoc for all aggregates")
 
   lazy val settings = Seq(
-    //unidocDirectory <<= crossTarget / "unidoc",
-    unidocDirectory <<= baseDirectory / "scaladoc/current",
+    unidocDirectory <<= crossTarget / "unidoc",
     unidocExclude := Seq.empty,
     unidocAllSources <<= (thisProjectRef, buildStructure, unidocExclude) flatMap allSources,
     unidocSources <<= unidocAllSources map { _.flatten },
