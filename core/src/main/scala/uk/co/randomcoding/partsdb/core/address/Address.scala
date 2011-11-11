@@ -3,7 +3,7 @@
  */
 package uk.co.randomcoding.partsdb.core.address
 
-import uk.co.randomcoding.partsdb.core.id.Identifier
+import uk.co.randomcoding.partsdb.core.id.{ Identifier, Identifiable }
 
 /**
  * @constructor Create a new address object
@@ -15,4 +15,8 @@ import uk.co.randomcoding.partsdb.core.id.Identifier
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  *
  */
-case class Address(val addressId: Identifier, val shortName: String, val addressText: String, val country: String)
+case class Address(val addressId: Identifier, val shortName: String, val addressText: String, val country: String) extends Identifiable {
+  override val identifierFieldName = "addressId"
+
+  override def id = addressId.id
+}

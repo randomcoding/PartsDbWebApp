@@ -4,10 +4,10 @@
 package uk.co.randomcoding.partsdb.db.mongo
 
 import com.mongodb.casbah.Imports._
-
 import uk.co.randomcoding.partsdb.db.mongo._
 import MongoConverters._
 import MongoAccessHelpers._
+import uk.co.randomcoding.partsdb.core.id.Identifiable
 
 /**
  * Provides an implementation of the capability to add an object to a collection
@@ -32,10 +32,10 @@ trait MongoUpdateAccess {
    * @return `true` iff there was no other object with the same [[uk.co.randomcoding.partsdb.core.id.Identifier]] and
    * 	the add operation resulted in there being an object with the new [[uk.co.randomcoding.partsdb.core.id.Identifier]] in the db
    */
-  def add[T <: AnyRef](newItem: T)(implicit mf: Manifest[T]): Boolean = {
-    if (idNotInDb[T](newItem, collection)) {
+  def add[TYPE <: Identifiable](newItem: TYPE)(implicit mf: Manifest[TYPE]): Boolean = {
+    if (idNotInDb[TYPE](newItem, collection)) {
       collection += newItem
-      idIsInDb[T](newItem, collection)
+      idIsInDb[TYPE](newItem, collection)
     }
     else false
   }
@@ -50,8 +50,8 @@ trait MongoUpdateAccess {
    * @param modifiedItem The item with the new values to be added to the database
    * @return `true` iff there is an item in the database with the same identifier and the update operation succeeds.
    */
-  def modify[T <: AnyRef](modifiedItem: T)(implicit mf: Manifest[T]): Boolean = {
-    if (idIsInDb[T](modifiedItem, collection)) {
+  def modify[TYPE <: Identifiable](modifiedItem: TYPE)(implicit mf: Manifest[TYPE]): Boolean = {
+    if (idIsInDb[TYPE](modifiedItem, collection)) {
       val originalDbEntry = getDbObject(modifiedItem, collection)
 
       collection.findAndModify(originalDbEntry, modifiedItem)
@@ -71,7 +71,7 @@ trait MongoUpdateAccess {
    * @param item The item to be removed from the database
    * @return `true` iff The item is removed from the database. If it is not present (no match found) then returns `false`
    */
-  def remove[T <: AnyRef](item: T)(implicit mf: Manifest[T]): Boolean = {
+  def remove[TYPE <: Identifiable](item: TYPE)(implicit mf: Manifest[TYPE]): Boolean = {
     collection.findAndRemove(item) match {
       case None => false
       case Some(removed) => idNotInDb(item, collection)
