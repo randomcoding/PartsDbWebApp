@@ -46,26 +46,26 @@ class JsonConversionSimpleObjectTests extends JsonConversionTesting {
   }
 
   test("Can convert Customer to JSON") {
-    fail("Not Implemented Yet")
+    pending
   }
 
   test("Can convert JSON to Customer") {
-    fail("Not Implemented Yet")
+    pending
   }
 
   test("Can convert Supplier to JSON") {
-    fail("Not Implemented Yet")
+    pending
   }
 
   test("Can convert JSON to Supplier") {
-    fail("Not Implemented Yet")
+    pending
   }
 
   test("Can convert Part to JSON") {
-    fail("Not Implemented Yet")
+    pending
   }
 
   test("Can convert JSON to Part") {
-    fail("Not Implemented Yet")
+    pending
   }
 }
