@@ -34,7 +34,14 @@ trait MongoAllOrOneAccess extends Logger {
    */
   private val queryAll = (idFieldName: String) => idFieldName $exists true
 
-  def getOne[T <: AnyRef](idFieldName: String, id: Identifier)(implicit mf: Manifest[T]): Option[T] = {
+  /**
+   * Gets the object from the database that has the specified [[uk.co.randomcoding.partsdb.code.id.Identifier]].
+   *
+   * @param idFieldName The name of the field that maps to the [[uk.co.randomcoding.partsdb.code.id.Identifier]].
+   * @param id The [[uk.co.randomcoding.partsdb.code.id.Identifier]] already assigned to the object
+   * @return The object of type `TYPE` that has the [[uk.co.randomcoding.partsdb.code.id.Identifier]] of `id`
+   */
+  def getOne[TYPE <: AnyRef](idFieldName: String, id: Identifier)(implicit mf: Manifest[TYPE]): Option[TYPE] = {
     collection.findOne(queryOne(idFieldName, id)).toList match {
       case Nil => None
       case head :: Nil => Some(convertFromMongoDbObject(head))
@@ -45,7 +52,13 @@ trait MongoAllOrOneAccess extends Logger {
     }
   }
 
-  def getAll[T <: AnyRef](idFieldName: String)(implicit mf: Manifest[T]): List[T] = {
+  /**
+   * Gets all the instances of a type of object from the database
+   *
+   * @param idFieldName The name of the id field in the object.
+   * @return All instances of the objects of type `TYPE` from the database.
+   */
+  def getAll[TYPE <: AnyRef](idFieldName: String)(implicit mf: Manifest[TYPE]): List[TYPE] = {
     for (result <- collection.find(queryAll(idFieldName)).toList) yield {
       convertFromMongoDbObject(result)
     }
