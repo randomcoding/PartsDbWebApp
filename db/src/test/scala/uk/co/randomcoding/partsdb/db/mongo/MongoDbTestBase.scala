@@ -24,7 +24,7 @@ abstract class MongoDbTestBase extends FunSuite with BeforeAndAfterEach with Sho
   /**
    * Define the collection name to use for testing
    */
-  val collectionName: String = dbName + "Collection"
+  lazy val collectionName: String = dbName + "Collection"
 
   /**
    * The MongoDB Collection instance that is to be used for all tests
