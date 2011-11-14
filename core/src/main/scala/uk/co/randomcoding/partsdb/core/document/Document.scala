@@ -4,6 +4,7 @@
 package uk.co.randomcoding.partsdb.core.document
 
 import uk.co.randomcoding.partsdb.core.id.Identifier
+import uk.co.randomcoding.partsdb.core.id.Identifiable
 
 /**
  * Base class for documents.
@@ -13,8 +14,6 @@ import uk.co.randomcoding.partsdb.core.id.Identifier
  *
  * Documents contain line items and address details.
  *
- * Addresses are stored by ID? maybe
- *
  * @constructor Create a new document instance
  * @param documentId The [[uk.co.randomcoding.partsdb.core.document.DocumentId]] of this document. This also identifies its type
  *
@@ -22,7 +21,9 @@ import uk.co.randomcoding.partsdb.core.id.Identifier
  *
  * @todo Add other details to case class constructor
  */
-case class Document(val documentId: Identifier, val documentType: DocumentType) {
+case class Document(val documentId: Identifier, val documentType: DocumentType) extends Identifiable {
+  override val identifierFieldName = "documentId"
+
   // add line items
 
   // add address details

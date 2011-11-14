@@ -21,12 +21,10 @@ trait Identifiable {
   /**
    * Accessor for the actual identifier value to allow building of the MongoDB query to find the item
    *
-   * == Expected Implementation ==
-   * {{{
-   * override def id = <identifierFieldName>.id
-   * }}}
-   * where <identifierFieldName> is the parameter with the same name as `identifierFieldName`
+   * This default implementation uses Java reflection to get the method declared with the name given by `identifierFieldName`
+   * and get the `id` value of the returned [[uk.co.randomcoding.partsdb.core.id.Identifier]]
    *
+   * It is not intended that this be overridden, but can be if required.
    */
-  def id: Long
+  def id: Long = getClass.getMethod(identifierFieldName).invoke(this).asInstanceOf[Identifier].id
 }

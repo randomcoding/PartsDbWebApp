@@ -18,5 +18,5 @@ import uk.co.randomcoding.partsdb.core.id.{ Identifier, Identifiable }
 case class Address(val addressId: Identifier, val shortName: String, val addressText: String, val country: String) extends Identifiable {
   override val identifierFieldName = "addressId"
 
-  override def id = addressId.id
+  //override def id = addressId.id
 }

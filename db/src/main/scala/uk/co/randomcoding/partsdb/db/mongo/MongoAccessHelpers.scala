@@ -20,9 +20,7 @@ object MongoAccessHelpers extends Logger {
    *
    * @return `true` If the [[uk.co.randomcoding.partsdb.core.id.Identifier]] from `t` is not present in the collection
    */
-  def idNotInDb[TYPE <: Identifiable](t: TYPE, collection: MongoCollection)(implicit mf: Manifest[TYPE]): Boolean = {
-    idNotInDb(collection, objectIdInDbQuery(t))
-  }
+  def idNotInDb[TYPE <: Identifiable](t: TYPE, collection: MongoCollection)(implicit mf: Manifest[TYPE]): Boolean = idNotInDb(collection, objectIdInDbQuery(t))
 
   /**
    * Checks the given collection contains an object with the [[uk.co.randomcoding.partsdb.core.id.Identifier]] of the provided object `(t)`.
@@ -31,9 +29,7 @@ object MongoAccessHelpers extends Logger {
    *
    * @return `true` If the [[uk.co.randomcoding.partsdb.core.id.Identifier]] from `t` is present in the collection
    */
-  def idIsInDb[TYPE <: Identifiable](t: TYPE, collection: MongoCollection)(implicit mf: Manifest[TYPE]): Boolean = {
-    idIsInDb(collection, objectIdInDbQuery(t))
-  }
+  def idIsInDb[TYPE <: Identifiable](t: TYPE, collection: MongoCollection)(implicit mf: Manifest[TYPE]): Boolean = idIsInDb(collection, objectIdInDbQuery(t))
 
   /**
    * Gets the MongoDBObject that represents the item with the given id.
@@ -49,7 +45,6 @@ object MongoAccessHelpers extends Logger {
   /*
    * Helper conversions and functions for the above functions
    */
-
   private val idNotInDb = (collection: MongoCollection, idQuery: MongoDBObject) => {
     debug("Checking for %s in the db".format(idQuery))
     val notFound = collection.findOne(idQuery).isEmpty
@@ -65,10 +60,4 @@ object MongoAccessHelpers extends Logger {
   }
 
   private def objectIdInDbQuery(item: Identifiable): MongoDBObject = MongoDBObject(item.identifierFieldName -> MongoDBObject("id" -> item.id))
-
-  private implicit def idEntryToMongoDBIdentifierQueryObject(idEntry: (String, AnyRef)): MongoDBObject = {
-    val idQuery = MongoDBObject(idEntry._1 -> MongoDBObject("id" -> idEntry._2.asInstanceOf[BasicDBObject].as[Long]("id")))
-    debug("Created idQuery: %s".format(idQuery))
-    idQuery
-  }
 }
