@@ -4,11 +4,12 @@
 package uk.co.randomcoding.partsdb.core.contact
 
 import uk.co.randomcoding.partsdb.core.id.Identifier
+import uk.co.randomcoding.partsdb.core.contact.contacttype._
 
 /**
  * Some contact details for a customer or supplier.
  *
- * This provides a map of the name of a contact to the numbers/emails to use to contact them
+ * This associates a Contact's name to
  *
  * @constructor Create a new Contact details instance.
  *
@@ -17,4 +18,5 @@ import uk.co.randomcoding.partsdb.core.id.Identifier
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  *
  */
-case class ContactDetails(val contacts: Map[String, Set[String]])
+case class ContactDetails(val contactName: String, val contacts: Set[ContactType])
+
