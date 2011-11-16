@@ -6,8 +6,8 @@ package uk.co.randomcoding.partsdb.db
 import uk.co.randomcoding.partsdb.core._
 import id.Identifier
 import address.Address
-import contact.ContactDetails
-import contact.contacttype._
+//import contact.ContactDetails
+import contact._
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
@@ -51,30 +51,37 @@ class JsonConversionSimpleObjectTests extends JsonConversionTesting {
   test("Can convert Contact Type to JSON") {
     val emailContact = Email("email@example.com")
     val emailJson: String = emailContact
-    emailJson should be("""{"emailAddress":"email@example.com"}""")
+    emailJson should be("""{"jsonClass":"Email","emailAddress":"email@example.com"}""")
 
     val phoneContact = Phone("+44121 987 4321")
     val phoneJson: String = phoneContact
-    phoneJson should be("""{"phoneNumber":"+44121 987 4321","international":false}""")
+    phoneJson should be("""{"jsonClass":"Phone","phoneNumber":"+44121 987 4321","international":false}""")
 
     val mobileContact = Mobile("+447653890123", true)
     val mobileJson: String = mobileContact
-    mobileJson should be("""{"mobileNumber":"+447653890123","international":true}""")
+    mobileJson should be("""{"jsonClass":"Mobile","mobileNumber":"+447653890123","international":true}""")
   }
 
   test("Can convert JSON to Contact Type ") {
-    val json = """{"emailAddress":"email2@example.com"}"""
-    checkJsonConversion[Email](json, Email("email2@example.com"))
+    val emailJson = """{"emailAddress":"email2@example.com"}"""
+    checkJsonConversion[Email](emailJson, Email("email2@example.com"))
 
-    // TODO Add Mobile & Phone tests
+    val mobileJson = """{"mobileNumber":"+447557345890","international":false}"""
+    checkJsonConversion[Mobile](mobileJson, Mobile("+447557345890", false))
+
+    val phoneJson = """{"phoneNumber":"+1115558934","international":true}"""
+    checkJsonConversion[Phone](phoneJson, Phone("+1115558934", true))
   }
 
   test("Can convert Contact Details to JSON") {
-    pending
+    val contactDetails = ContactDetails("Person 1", List(Phone("+44121345678"), Email("person@somewhere.com")))
+    val json: String = contactDetails
+    json should be("""{"contactName":"Person 1","contacts":[{"jsonClass":"Phone","phoneNumber":"+44121345678","international":false},{"jsonClass":"Email","emailAddress":"person@somewhere.com"}]}""")
   }
 
   test("Can convert JSON to Contact Details") {
-    pending
+    val json = """{"contactName":"Person 1","contacts":[{"phoneNumber":"+44121345678","international":false},{"emailAddress":"person@somewhere.com"}]}"""
+    checkJsonConversion[ContactDetails](json, ContactDetails("Person 1", List(Phone("+44121345678"), Email("person@somewhere.com"))))
   }
 
   test("Can convert Customer to JSON") {

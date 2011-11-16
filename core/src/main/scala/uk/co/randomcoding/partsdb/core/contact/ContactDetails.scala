@@ -4,7 +4,7 @@
 package uk.co.randomcoding.partsdb.core.contact
 
 import uk.co.randomcoding.partsdb.core.id.Identifier
-import uk.co.randomcoding.partsdb.core.contact.contacttype._
+//import uk.co.randomcoding.partsdb.core.contact.contacttype._
 
 /**
  * Some contact details for a customer or supplier.
@@ -18,5 +18,5 @@ import uk.co.randomcoding.partsdb.core.contact.contacttype._
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  *
  */
-case class ContactDetails(val contactName: String, val contacts: Set[ContactType])
+case class ContactDetails(val contactName: String, val contacts: List[ContactType])
 

@@ -6,11 +6,10 @@ package uk.co.randomcoding.partsdb.db
 import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.FunSuite
 
-import uk.co.randomcoding.partsdb.core.id.Identifier
+import uk.co.randomcoding.partsdb.db.mongo.MongoConversionFormats
 
 import net.liftweb.json.Serialization.write
-import net.liftweb.json.{ parseOpt, parse }
-import net.liftweb.json.DefaultFormats
+import net.liftweb.json.parseOpt
 
 /**
  * Provides the base testing capabilities for all testing of converting between JSON and objects and vice versa
@@ -18,8 +17,8 @@ import net.liftweb.json.DefaultFormats
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  *
  */
-trait JsonConversionTesting extends FunSuite with ShouldMatchers {
-  implicit val formats = DefaultFormats
+trait JsonConversionTesting extends FunSuite with ShouldMatchers with MongoConversionFormats {
+  //implicit val formats = DefaultFormats.withHints(contactTypeHints)
 
   /**
    * Convert an object to its JSON representation
