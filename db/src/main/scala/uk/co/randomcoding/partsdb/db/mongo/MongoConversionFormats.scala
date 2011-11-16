@@ -10,5 +10,5 @@ import uk.co.randomcoding.partsdb.db.mongo.MongoConversionHints._
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
 trait MongoConversionFormats {
-  implicit val formats = DefaultFormats.withHints(contactTypeHints)
+  implicit val formats = DefaultFormats //.withHints(contactTypeHints)
 }
