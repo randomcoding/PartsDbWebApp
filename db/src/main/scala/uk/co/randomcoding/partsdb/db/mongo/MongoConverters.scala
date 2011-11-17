@@ -7,7 +7,6 @@ import com.mongodb.casbah.Imports._
 import net.liftweb.json._
 import net.liftweb.json.Serialization._
 import uk.co.randomcoding.partsdb.core.address.Address
-import MongoConversionHints._
 
 /**
  * Provides implicit conversions between `MongoDBObject`s and library objects
@@ -16,9 +15,6 @@ import MongoConversionHints._
  *
  */
 object MongoConverters extends MongoConversionFormats {
-
-  //private implicit val formats = DefaultFormats.withHints(contactTypeHints)
-
   /**
    * Converts from a [[com.mongodb.casbah.Imports.DBObject]] to a class defined within the application codebase.
    *

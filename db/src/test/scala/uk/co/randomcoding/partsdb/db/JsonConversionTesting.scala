@@ -18,8 +18,6 @@ import net.liftweb.json.parseOpt
  *
  */
 trait JsonConversionTesting extends FunSuite with ShouldMatchers with MongoConversionFormats {
-  //implicit val formats = DefaultFormats.withHints(contactTypeHints)
-
   /**
    * Convert an object to its JSON representation
    */
