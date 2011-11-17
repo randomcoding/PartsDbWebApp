@@ -6,8 +6,9 @@ package uk.co.randomcoding.partsdb.db
 import uk.co.randomcoding.partsdb.core._
 import id.Identifier
 import address.Address
-//import contact.ContactDetails
 import contact._
+import customer.Customer
+import terms._
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
@@ -85,11 +86,21 @@ class JsonConversionSimpleObjectTests extends JsonConversionTesting {
   }
 
   test("Can convert Customer to JSON") {
-    pending
+    val customerJson: String = Customer(Identifier(9753), "A Customer", Identifier(4567), Set(Identifier(4567)), PaymentTerms(30), ContactDetails("A Person", phoneNumbers = Some(List(Phone("+44 543 5678 9832")))))
+    val expectedJson = """{"customerId":{"id":9753},"customerName":"A Customer","billingAddress":{"id":4567},""" +
+      """"deliveryAddresses":[{"id":4567}],"terms":{"days":30},""" +
+      """"contactDetails":{"contactName":"A Person","phoneNumbers":[{"phoneNumber":"+44 543 5678 9832","international":false}]}}"""
+
+    customerJson should be(expectedJson)
   }
 
   test("Can convert JSON to Customer") {
-    pending
+    val json = """{"customerId":{"id":9753},"customerName":"A Customer","billingAddress":{"id":4567},""" +
+      """"deliveryAddresses":[{"id":4567}],"terms":{"days":30},""" +
+      """"contactDetails":{"contactName":"A Person","phoneNumbers":[{"phoneNumber":"+44 543 5678 9832","international":false}]}}"""
+    val customer = Customer(Identifier(9753), "A Customer", Identifier(4567), Set(Identifier(4567)), PaymentTerms(30), ContactDetails("A Person", phoneNumbers = Some(List(Phone("+44 543 5678 9832")))))
+
+    checkJsonConversion[Customer](json, customer)
   }
 
   test("Can convert Supplier to JSON") {

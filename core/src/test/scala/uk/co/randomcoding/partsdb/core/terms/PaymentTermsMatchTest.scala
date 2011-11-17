@@ -9,9 +9,10 @@ import org.scalatest.matchers.ShouldMatchers
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  *
+ * @deprecated There is no longer types of payment terms
  */
 class PaymentTermsMatchTest extends FunSuite with ShouldMatchers {
-  test("Match to 30 days terms") {
+  /*test("Match to 30 days terms") {
     30 match {
       case PaymentTerms(terms) => terms should be(ThirtyDays)
       case _ => fail()
@@ -39,5 +40,5 @@ class PaymentTermsMatchTest extends FunSuite with ShouldMatchers {
         case _ => fail()
       }
     })
-  }
+  }*/
 }
