@@ -18,7 +18,7 @@ import auth._
 class Boot extends Loggable {
   def boot {
     // where to search snippet
-    LiftRules.addToPackages("uk.co.randomcoding.partsdb.lift.snippet")
+    LiftRules.addToPackages("uk.co.randomcoding.partsdb.lift")
 
     // authentication
     LiftRules.httpAuthProtectedResource.prepend {
@@ -34,20 +34,15 @@ class Boot extends Loggable {
       }
     }
 
-    // Build SiteMap
     /*
-         * This provides access control to pages. 
-         * In order to allow a page, add an entry here
-         */
+     * This provides access control to pages. 
+     * In order to allow a page, add an entry here
+     */
     def sitemap = SiteMap(
       Menu.i("Home") / "index",
       Menu.i("Customers") / "customers",
       Menu.i("Parts") / "parts",
       Menu.i("Suppliers") / "suppliers")
-
-    // more complex because this menu allows anything in the
-    // /static path to be visible (this will alos require a webapp/static directory to be created as well
-    //Menu(Loc("Static", Link(List("static"), true, "/static/index"), "Static Content"))
 
     // set the sitemap.  Note if you don't want access control for
     // each page, just comment this line out.
@@ -70,5 +65,10 @@ class Boot extends Loggable {
     // Use HTML5 for rendering
     LiftRules.htmlProperties.default.set((r: Req) =>
       new Html5Properties(r.userAgent))
+
+    ResourceServer.allow {
+      case "css" :: _ => true
+    }
+
   }
 }
