@@ -18,42 +18,42 @@ import org.scalatest.matchers.ShouldMatchers
 class JsonConversionDocumentTests extends JsonConversionTesting {
 
   test("Can convert Quote to JSON") {
-    fail("Not Implemented Yet")
+    pending
   }
 
   test("Can convert JSON to Quote") {
-    fail("Not Implemented Yet")
+    pending
   }
 
   test("Can convert Order to JSON") {
-    fail("Not Implemented Yet")
+    pending
   }
 
   test("Can convert JSON to Order") {
-    fail("Not Implemented Yet")
+    pending
   }
 
   test("Can convert Invoice to JSON") {
-    fail("Not Implemented Yet")
+    pending
   }
 
   test("Can convert JSON to Invoice") {
-    fail("Not Implemented Yet")
+    pending
   }
 
   test("Can convert Delivery Note to JSON") {
-    fail("Not Implemented Yet")
+    pending
   }
 
   test("Can convert JSON to Delivery Note") {
-    fail("Not Implemented Yet")
+    pending
   }
 
   test("Can convert Transaction to JSON") {
-    fail("Not Implemented Yet")
+    pending
   }
 
   test("Can convert JSON to Transaction") {
-    fail("Not Implemented Yet")
+    pending
   }
 }

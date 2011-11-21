@@ -4,7 +4,8 @@
 package uk.co.randomcoding.partsdb.core.terms
 
 /**
- * @constructor
+ * Base class for uk.co.randomcoding.partsdb.core.terms.PaymentTerms]] instances
+ *
  * @param days The number of days available to pay
  *
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
@@ -12,6 +13,9 @@ package uk.co.randomcoding.partsdb.core.terms
  */
 sealed abstract class PaymentTerms(val days: Int) {}
 
+/**
+ * Provides matching capabilities for [[uk.co.randomcoding.partsdb.core.terms.PaymentTerms]] based on an `Int` value
+ */
 object PaymentTerms {
   /**
    * Pattern match types of terms based on days

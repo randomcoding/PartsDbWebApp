@@ -8,6 +8,7 @@ import com.mongodb.casbah.Imports._
 
 import uk.co.randomcoding.partsdb._
 import core.address._
+import core.part._
 import core.id._
 import uk.co.randomcoding.partsdb.db.mongo.MongoConverters._
 
@@ -53,6 +54,40 @@ class MongoDbAllOrOneAccessTest extends MongoDbTestBase with ShouldMatchers {
     mongo += convertToMongoDbObject(address2)
     dbAccess.getAll[Address]("addressId") should (contain(address1) and
       contain(address2) and
+      have size (2))
+  }
+
+  test("Access to Part By Id") {
+    val part = Part(Identifier(2345), "woggle sprocket", 1.20)
+    mongo += convertToMongoDbObject(part)
+
+    dbAccess.getOne[Part]("partId", Identifier(2345)).get should be(Part(Identifier(2345), "woggle sprocket", 1.20))
+  }
+
+  test("Access to Part that does not exist") {
+    val id = Identifier(5432)
+    val access = dbAccess
+
+    access.getOne("partId", id) should be(None)
+
+    access.getAll[Part]("partId") should be('empty)
+  }
+
+  test("Access Multiple Parts with Single Part in DB") {
+    val part1 = Part(Identifier(2345), "woggle sprocket", 1.20)
+    mongo += convertToMongoDbObject(part1)
+
+    dbAccess.getAll[Part]("partId") should be(List(part1))
+  }
+
+  test("Access Multiple Parts with Two Parts in DB") {
+    val part1 = Part(Identifier(2345), "woggle sprocket", 1.20)
+    val part2 = Part(Identifier(2346), "big woggle sprocket", 1.60)
+
+    mongo += convertToMongoDbObject(part1)
+    mongo += convertToMongoDbObject(part2)
+    dbAccess.getAll[Part]("partId") should (contain(part1) and
+      contain(part2) and
       have size (2))
   }
 }
