@@ -23,6 +23,7 @@ class MongoDbAllOrOneAccessTest extends MongoDbTestBase with ShouldMatchers {
     override val collection = mongo
   }
 
+  // Address Tests
   test("Access to Address By Id") {
     val address = Address(Identifier(1234), "addr", "Long Addr", "UK")
     mongo += convertToMongoDbObject(address)
@@ -57,6 +58,7 @@ class MongoDbAllOrOneAccessTest extends MongoDbTestBase with ShouldMatchers {
       have size (2))
   }
 
+  // Part Tests
   test("Access to Part By Id") {
     val part = Part(Identifier(2345), "woggle sprocket", 1.20)
     mongo += convertToMongoDbObject(part)
