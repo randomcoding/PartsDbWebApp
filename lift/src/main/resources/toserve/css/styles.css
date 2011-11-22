@@ -1,68 +1,56 @@
 .edit_error_class {
-  display: block;
-  color: red;
+	display: block;
+	color: red;
 }
 
 .sidebar ul {
-	margin:0;
-	padding:0;
-	border-bottom:1px solid #ccc;
+	margin: 0;
+	padding: 0;
 }
-	 
 
 .sidebar ul li {
-	margin:0;
-	padding:0;
-	list-style:none;
-	border:1px solid #ccc;
-	border-bottom:none;
+	list-style: none;
 }
 
 .sidebar ul li a {
-	display:block;
-	padding:3px;
-	text-indent:30px;
-	text-decoration:none;
+	display: block;
+	float: left;
+	font-size: medium;
+	margin-bottom: 5px;
 }
 
-.sidebar ul li span {
-	display:block;
-	padding:3px;
-	text-indent:30px;
-	text-decoration:none;
+.sidebar ul li a span {
+	min-width: 100px;
+	text-align: center;
 }
-
-/* .sidebar ul li a:hover {
-	background-color: #eee;
-} */
-
 
 a.button {
-    background: transparent url('/images/bg_button_a.gif') no-repeat scroll top right;
-    color: #444;
-    display: block;
-    float: left;
-    font: normal 12px arial, sans-serif;
-    height: 24px;
-    margin-right: 6px;
-    padding-right: 18px; /* sliding doors padding */
-    text-decoration: none;
+	background: transparent url('/images/bg_button_a.gif') no-repeat scroll
+		top right;
+	color: #444;
+	display: block;
+	float: left;
+	font: normal 12px arial, sans-serif;
+	height: 24px;
+	margin-right: 6px;
+	padding-right: 18px; /* sliding doors padding */
+	text-decoration: none;
 }
 
 a.button span {
-    background: transparent url('/images/bg_button_span.gif') no-repeat;
-    display: block;
-    line-height: 14px;
-    padding: 5px 0 5px 18px;
-} 
+	background: transparent url('/images/bg_button_span.gif') no-repeat;
+	display: block;
+	line-height: 14px;
+	padding: 5px 0 5px 18px;
+}
 
 a.button:active {
-    background-position: bottom right;
-    color: #000;
-    outline: none; /* hide dotted outline in Firefox */
+	background-position: bottom right;
+	color: #000;
+	outline: none; /* hide dotted outline in Firefox */
 }
 
 a.button:active span {
-    background-position: bottom left;
-    padding: 6px 0 4px 18px; /* push text down 1px */
-} 
+	background-position: bottom left;
+	padding: 6px 0 4px 18px; /* push text down 1px */
+}
