@@ -1,7 +1,7 @@
 /**
  *
  */
-package uk.co.randomcoding.partsdb.lift.snippet
+package uk.co.randomcoding.partsdb.lift.snippet.menu
 
 import net.liftweb.http.S
 import net.liftweb.sitemap._
