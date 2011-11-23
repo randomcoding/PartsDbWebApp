@@ -53,8 +53,8 @@ class AddOrEdit {
     val addText = "Add " + entityType
     val editText = "View or Edit %s".format(entityType)
 
-    "#add" #> buttonLink("add?entityType=%s".format(entityType), addText) &
-      "#edit" #> buttonLink("edit?entityType=%s".format(entityType), editText)
+    "#add" #> buttonLink("add%s".format(entityType), addText) &
+      "#edit" #> buttonLink("edit%s".format(entityType), editText)
   }
 
 }

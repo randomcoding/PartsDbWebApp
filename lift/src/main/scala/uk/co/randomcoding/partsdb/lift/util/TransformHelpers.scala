@@ -5,8 +5,10 @@ package uk.co.randomcoding.partsdb.lift.util
 
 import scala.xml.{ Text, NodeSeq }
 
-import net.liftweb.http.SHtml.{ span, link, ElemAttr }
-import net.liftweb.http.js.JsCmds.Noop
+import net.liftweb.util.Helpers._
+import net.liftweb.http._
+import SHtml.{ span, link, ElemAttr }
+import js.JsCmds.Noop
 
 /**
  * Provides common helper functions for generating elements for transformations

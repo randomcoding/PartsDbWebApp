@@ -20,3 +20,5 @@ case class Address(val addressId: Identifier, val shortName: String, val address
 
   //override def id = addressId.id
 }
+
+object NullAddress extends Address(Identifier(-1), "", "", "")

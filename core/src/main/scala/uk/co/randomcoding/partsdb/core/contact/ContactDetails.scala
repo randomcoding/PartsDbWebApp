@@ -19,3 +19,4 @@ import uk.co.randomcoding.partsdb.core.id.Identifier
  */
 case class ContactDetails(val contactName: String, val phoneNumbers: Option[List[Phone]] = None, val mobileNumbers: Option[List[Mobile]] = None, val emailAddresses: Option[List[Email]] = None)
 
+object NullContactDetails extends ContactDetails("")
