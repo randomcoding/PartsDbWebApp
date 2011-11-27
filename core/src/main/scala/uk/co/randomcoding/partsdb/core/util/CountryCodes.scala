@@ -7,6 +7,33 @@ package uk.co.randomcoding.partsdb.core.util
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
 object CountryCodes {
+
+  /**
+   * Attempts to match a country code from any line of the input lines of the address
+   */
+  def countryCodeFromAddressLines(addressLines: Seq[String]): Option[(String, String)] = {
+    val matchLines = for {
+      line <- addressLines
+      val lineMatch = matchToCountryCode(line)
+      if lineMatch.isDefined
+    } yield {
+      lineMatch
+    }
+
+    matchLines.headOption.getOrElse(None)
+  }
+
+  /**
+   * Matches an input string to either side of a country code entry.
+   *
+   * So this will match country code ("UK", "United Kingdom") to either "UK" or "United Kingdom"
+   *
+   * @return An `Option[(STring, String)]` if there is a matching code otherwise `None`
+   */
+  def matchToCountryCode(input: String): Option[(String, String)] = countryCodes.find(countryCodeOrNameMatch(input, _))
+
+  private val countryCodeOrNameMatch = (input: String, countryCode: (String, String)) => countryCode._1 == input || countryCode._2 == input
+
   /**
    * A list of tuples to display country codes & names in the webapp.
    *
@@ -267,4 +294,5 @@ object CountryCodes {
     ("YE", "Yemen"),
     ("ZM", "Zambia"),
     ("ZW", "Zimbabwe"))
+
 }
