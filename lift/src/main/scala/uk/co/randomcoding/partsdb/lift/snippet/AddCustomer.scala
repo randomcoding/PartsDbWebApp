@@ -5,7 +5,7 @@ package uk.co.randomcoding.partsdb.lift.snippet
 
 import scala.io.Source.fromString
 import uk.co.randomcoding.partsdb.core.address.{ NullAddress, Address }
-import uk.co.randomcoding.partsdb.core.address.Address._
+import uk.co.randomcoding.partsdb.core.address.AddressParser
 import uk.co.randomcoding.partsdb.core.contact.{ NullContactDetails, ContactDetails }
 import uk.co.randomcoding.partsdb.core.id.Identifier
 import uk.co.randomcoding.partsdb.core.id.Identifier._
@@ -109,11 +109,8 @@ class AddCustomer {
   }
 
   private def addressFromInput(addressText: String, country: String): Address = {
-    var addressLines = List(country)
-    addressText.split(",") map (_ trim) foreach (line => addressLines = line :: addressLines)
-
-    addressLines match {
-      case addr: Address => addr
+    addressText match {
+      case AddressParser(addr) => addr
       case _ => NullAddress
     }
   }

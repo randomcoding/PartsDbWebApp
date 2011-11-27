@@ -22,7 +22,7 @@ class Boot extends Loggable {
 
     // authentication
     LiftRules.httpAuthProtectedResource.prepend {
-      case (Req("" :: _, _, _)) => Full(AuthRole("user"))
+      case (Req("/" :: _, _, _)) => Full(AuthRole("user"))
     }
 
     LiftRules.authentication = HttpBasicAuthentication("AM2") {
@@ -42,7 +42,11 @@ class Boot extends Loggable {
       Menu.i("Home") / "index",
       Menu.i("Customers") / "customers",
       Menu.i("Parts") / "parts",
-      Menu.i("Suppliers") / "suppliers")
+      Menu.i("Suppliers") / "suppliers",
+      // hidden entries
+      Menu.i("Add Customer") / "addCustomer" >> Hidden,
+      Menu.i("Add Part") / "addPart" >> Hidden,
+      Menu.i("Add Supplier") / "addSupplier" >> Hidden)
 
     // set the sitemap.  Note if you don't want access control for
     // each page, just comment this line out.
