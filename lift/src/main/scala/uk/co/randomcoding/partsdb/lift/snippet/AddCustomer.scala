@@ -71,6 +71,7 @@ class AddCustomer {
       "#billingAddressCountry" #> select(countryCodes, Full("United Kingdom"), billingAddressCountry = _) &
       "#deliveryAddressEntry" #> textarea("", deliveryAddressText = _) &
       "#deliveryAddressCountry" #> select(countryCodes, Full("United Kingdom"), deliveryAddressCountry = _) &
+      "#contactNameEntry" #> text("", contactName = _) &
       "#paymentTermsEntry" #> text("", paymentTermsText = _) &
       "#phoneNumberEntry" #> text("", phoneNumber = _) &
       "#mobileNumberEntry" #> text("", mobileNumber = _) &
