@@ -11,16 +11,16 @@ object CountryCodes {
   /**
    * Attempts to match a country code from any line of the input lines of the address
    */
-  def countryCodeFromAddressLines(addressLines: Seq[String]): Option[(String, String)] = {
+  def countryCodeFromAddressLines(addressLines: Seq[String]): Option[CountryCode] = {
     val matchLines = for {
       line <- addressLines
       val lineMatch = matchToCountryCode(line)
       if lineMatch.isDefined
     } yield {
-      lineMatch
+      lineMatch.get
     }
 
-    matchLines.headOption.getOrElse(None)
+    matchLines.headOption
   }
 
   /**
@@ -32,7 +32,10 @@ object CountryCodes {
    *
    * @return An `Option[(String, String)]` if there is a matching code otherwise `None`
    */
-  def matchToCountryCode(input: String): Option[(String, String)] = countryCodes.find(countryCodeOrNameMatch(input, _))
+  def matchToCountryCode(input: String): Option[CountryCode] = countryCodes.find(countryCodeOrNameMatch(input, _)) match {
+    case Some(tuple) => Some(CountryCode(tuple))
+    case None => None
+  }
 
   private val countryCodeOrNameMatch = (input: String, countryCode: (String, String)) => countryCode._1 == input.toUpperCase || countryCode._2.equalsIgnoreCase(input)
 

@@ -12,7 +12,7 @@ import CountryCodes._
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
 class CountryCodesTest extends FunSuite with ShouldMatchers {
-  private val ukCode = ("UK", "United Kingdom")
+  private val ukCode = CountryCode("UK", "United Kingdom")
 
   test("Identify Country Code from address lines for UK address") {
     var addressLines = "23 Lane, Addressville, Town, FG9 7DG. United Kingdom".split("""[,\.] """).toList map (_ trim)
@@ -62,6 +62,66 @@ class CountryCodesTest extends FunSuite with ShouldMatchers {
   test("First Country Code is returned if address lines contain multiple matches") {
     val addressLines = "23 Lane, Addressville, Town, UK, US".split(", ").toList map (_ trim)
     countryCodeFromAddressLines(addressLines) should be(Some(ukCode))
+  }
+
+  test("Country Code Pattern Matching against country tag") {
+    val input = List("UK", "uk", "Uk", "uK")
+    input foreach { entry =>
+      entry match {
+        case CountryCode(code) => code should be(ukCode)
+        case _ => fail("%s failed to match country code".format(entry))
+      }
+    }
+  }
+
+  test("Country Code Pattern Matching against country name") {
+    val input = List("United Kingdom", "united kingdom", "UniTEd kingDom", "UNITED KINGDOM")
+    input foreach { entry =>
+      entry match {
+        case CountryCode(code) => code should be(ukCode)
+        case _ => fail("%s failed to match country code".format(entry))
+      }
+    }
+  }
+
+  test("Country Code Pattern Matching against address with country name") {
+    val address = List("A House", "A Street", "A Town", "PO51 3DE", "United Kingdom")
+    address match {
+      case CountryCode(code) => code should be(ukCode)
+      case _ => fail("Failed to match address %s to uk code".format(address.mkString(", ")))
+    }
+  }
+
+  test("Country Code Pattern Matching against address with country tag") {
+    val address = List("A House", "A Street", "A Town", "PO51 3DE", "UK")
+    address match {
+      case CountryCode(code) => code should be(ukCode)
+      case _ => fail("Failed to match address %s to uk code".format(address.mkString(", ")))
+    }
+  }
+
+  test("Country Code Pattern Matching against address with multiple country names") {
+    val address = List("A House", "A Street", "A Town", "PO51 3DE", "United Kingdom", "France")
+    address match {
+      case CountryCode(code) => code should be(ukCode)
+      case _ => fail("Failed to match address %s to uk code".format(address.mkString(", ")))
+    }
+  }
+
+  test("Country Code Pattern Matching against address with multiple country tags") {
+    val address = List("A House", "A Street", "A Town", "PO51 3DE", "UK", "US", "FR")
+    address match {
+      case CountryCode(code) => code should be(ukCode)
+      case _ => fail("Failed to match address %s to uk code".format(address.mkString(", ")))
+    }
+  }
+
+  test("Country Code Pattern Matching against address with no country name or tag") {
+    val address = List("A House", "A Street", "A Town", "PO51 3DE")
+    address match {
+      case CountryCode(code) => fail("Address %s should not match a country code".format(address.mkString(", ")))
+      case _ => //test passes
+    }
   }
 
 }

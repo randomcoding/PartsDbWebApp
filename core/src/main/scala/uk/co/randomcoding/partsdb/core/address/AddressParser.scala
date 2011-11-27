@@ -5,6 +5,8 @@ package uk.co.randomcoding.partsdb.core.address
 
 import uk.co.randomcoding.partsdb.core.id.Identifier
 import uk.co.randomcoding.partsdb.core.util.CountryCodes._
+import uk.co.randomcoding.partsdb.core.util.CountryCode
+import uk.co.randomcoding.partsdb.core.util.CountryCode._
 
 /**
  * Parses address strings into [[uk.co.randomcoding.partsdb.core.address.Address]]es
@@ -38,7 +40,7 @@ object AddressParser {
 
     identifyCountry(lines) match {
       case None => None
-      case Some(code) => Some(Address(Identifier(0), lines(0), lines.mkString("\n").trim, code._2))
+      case Some(code) => Some(Address(Identifier(0), lines(0), lines.mkString("\n").trim, code.countryName))
     }
   }
 
@@ -51,7 +53,7 @@ object AddressParser {
    *
    * This needs a better means of country identification
    */
-  private def identifyCountry(addressLines: Seq[String]): Option[(String, String)] = {
+  private def identifyCountry(addressLines: Seq[String]): Option[CountryCode] = {
     quickCountryMatch(addressLines) match {
       case Some(code) => matchToCountryCode(code)
       case None => countryCodeFromAddressLines(addressLines)
