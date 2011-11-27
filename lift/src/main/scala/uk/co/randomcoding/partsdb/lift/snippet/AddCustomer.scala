@@ -16,8 +16,9 @@ import uk.co.randomcoding.partsdb.core.customer.Customer
 import net.liftweb.common.Full
 import net.liftweb.http.S
 import net.liftweb.http.js.JsCmds.Noop
-import net.liftweb.http.SHtml.{ textarea, text, select }
+import net.liftweb.http.SHtml._
 import net.liftweb.util.Helpers._
+import net.liftweb.http.js.JsCmd
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
@@ -42,7 +43,7 @@ class AddCustomer {
      *
      * On successful addition, this will (possibly display a dialogue and then) redirect to the main customers page
      */
-    def processSubmit() = {
+    def processSubmit(): JsCmd = {
       val billingAddress = addressFromInput(billingAddressText, billingAddressCountry)
       val deliveryAddress = addressFromInput(deliveryAddressText, deliveryAddressCountry)
       val contact = contactDetails(contactName, phoneNumber, mobileNumber, email, billingAddressCountry)
@@ -73,7 +74,8 @@ class AddCustomer {
       "#paymentTermsEntry" #> text("", paymentTermsText = _) &
       "#phoneNumberEntry" #> text("", phoneNumber = _) &
       "#mobileNumberEntry" #> text("", mobileNumber = _) &
-      "#emailEntry" #> text("", email = _)
+      "#emailEntry" #> text("", email = _) &
+      "#submit" #> button("Submit", processSubmit)
 
   }
 
