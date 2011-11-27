@@ -28,11 +28,13 @@ object CountryCodes {
    *
    * So this will match country code ("UK", "United Kingdom") to either "UK" or "United Kingdom"
    *
-   * @return An `Option[(STring, String)]` if there is a matching code otherwise `None`
+   * The matches ignore the case of the input so `uK == UK == uk` and `united kingdom == United Kingdom` etc.
+   *
+   * @return An `Option[(String, String)]` if there is a matching code otherwise `None`
    */
   def matchToCountryCode(input: String): Option[(String, String)] = countryCodes.find(countryCodeOrNameMatch(input, _))
 
-  private val countryCodeOrNameMatch = (input: String, countryCode: (String, String)) => countryCode._1 == input || countryCode._2 == input
+  private val countryCodeOrNameMatch = (input: String, countryCode: (String, String)) => countryCode._1 == input.toUpperCase || countryCode._2.equalsIgnoreCase(input)
 
   /**
    * A list of tuples to display country codes & names in the webapp.
