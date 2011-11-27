@@ -20,6 +20,14 @@ import uk.co.randomcoding.partsdb.core.document._
  */
 case class Identifier(id: Long)
 
+/**
+ * A default [[uk.co.randomcoding.partsdb.core.id.Identifier]] to indicate that a new one needs to be generated from the storage
+ */
+object DefaultIdentifier extends Identifier(-1)
+
+/**
+ * Contains implicit conversions for [[uk.co.randomcoding.partsdb.core.id.Identifier]]s
+ */
 object Identifier {
   implicit def longToIdentifier(id: Long): Identifier = Identifier(id)
 }
