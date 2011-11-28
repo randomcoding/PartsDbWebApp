@@ -2,40 +2,17 @@
  *
  */
 package uk.co.randomcoding.partsdb.db
+import uk.co.randomcoding.partsdb.db.mongo.{ MongoUpdateAccess, MongoIdentifierAccess, MongoConfig, MongoAllOrOneAccess }
 
 /**
- * Defines the database access (getter) interface api for the system.
+ * Encapsulates all the Database access functionality in a single class
  *
- * By extending this trait and defining the
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  *
+ * @constructor Create a new instance of the Database access
+ * @param dbName The name of the database to connect to
+ * @param collectionName The name of the Collection to get from the database
  */
-trait DbAccess {
-
-  /**
-   * Add an entity to the database
-   */
-  def add[T <: AnyRef](t: T): Unit
-
-  /**
-   * Get the next Identifier number to use
-   */
-  //def nextId: Long
-
-  /**
-   * Get all addresses from the database
-   */
-  /*def addresses: Set[Address]
-
-  */
-  /**
-   * Get the address with the given id
-   */ /*
-  def address(id: AddressId): Option[Address]
-
-  */
-  /**
-   * Convenience conversion for a long to an address id (which is just a typed wrapper for a Long anyway at the moment).
-   */ /*
-  implicit def longToAddressId(id: Long): AddressId = AddressId(id)*/
+class DbAccess(dbName: String, collectionName: String) extends MongoIdentifierAccess with MongoUpdateAccess with MongoAllOrOneAccess {
+  override lazy val collection = MongoConfig.getCollection(dbName, collectionName)
 }
