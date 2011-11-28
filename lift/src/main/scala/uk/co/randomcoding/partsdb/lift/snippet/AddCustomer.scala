@@ -4,10 +4,9 @@
 package uk.co.randomcoding.partsdb.lift.snippet
 
 import scala.io.Source.fromString
-import uk.co.randomcoding.partsdb.core.address.{ NullAddress, Address }
-import uk.co.randomcoding.partsdb.core.address.AddressParser
+import uk.co.randomcoding.partsdb.core.address.{ NullAddress, Address, AddressParser }
 import uk.co.randomcoding.partsdb.core.contact.{ NullContactDetails, ContactDetails }
-import uk.co.randomcoding.partsdb.core.id.Identifier
+import uk.co.randomcoding.partsdb.core.id.{ Identifier, DefaultIdentifier }
 import uk.co.randomcoding.partsdb.core.id.Identifier._
 import uk.co.randomcoding.partsdb.core.util.CountryCodes.countryCodes
 import uk.co.randomcoding.partsdb.core.contact._
@@ -19,11 +18,12 @@ import net.liftweb.http.js.JsCmds.Noop
 import net.liftweb.http.SHtml._
 import net.liftweb.util.Helpers._
 import net.liftweb.http.js.JsCmd
+import net.liftweb.common.Logger
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
-class AddCustomer {
+class AddCustomer extends Logger {
   def render = {
     var name = ""
     var billingAddressText = ""
@@ -81,11 +81,11 @@ class AddCustomer {
   }
 
   private def updateDb(contactName: String, billingAddress: Address, deliveryAddress: Address, terms: PaymentTerms, contact: ContactDetails) = {
-
     // check addresses is are in db or not and assign/get their Ids 
-    val billingAddressId = Identifier(-1)
-    val deliveryAddressId = Identifier(-1)
+    val billingAddressId = DefaultIdentifier
+    val deliveryAddressId = DefaultIdentifier
     val customer = Customer(-1L, contactName, billingAddressId, Set(deliveryAddressId), terms, contact)
+    debug("Updating database with customer %s (billing: %s, delivery: %s)".format(customer, billingAddress, deliveryAddress))
   }
 
   private def validate(billingAddress: Address, deliveryAddress: Address, terms: PaymentTerms): List[(String, String)] = {
