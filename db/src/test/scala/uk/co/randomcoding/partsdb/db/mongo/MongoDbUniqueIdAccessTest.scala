@@ -8,7 +8,6 @@ import com.mongodb.casbah.Imports._
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
- *
  */
 class MongoDbUniqueIdAccessTest extends MongoDbTestBase with ShouldMatchers {
   override val dbName = "accessIdTest"

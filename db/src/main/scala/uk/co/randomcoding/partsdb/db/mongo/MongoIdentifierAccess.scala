@@ -4,8 +4,11 @@
 package uk.co.randomcoding.partsdb.db.mongo
 
 import com.mongodb.casbah.Imports._
-import uk.co.randomcoding.partsdb.db.mongo.MongoConverters._
-import uk.co.randomcoding.partsdb.core.id.Identifier
+
+import uk.co.randomcoding.partsdb.core.address.Address
+import uk.co.randomcoding.partsdb.core.customer.Customer
+import uk.co.randomcoding.partsdb.core.id.Identifier._
+import uk.co.randomcoding.partsdb.core.id.{ Identifiable, DefaultIdentifier }
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
@@ -42,5 +45,26 @@ trait MongoIdentifierAccess {
     }
     incrementUniqueId(idValue)
     idValue
+  }
+
+  /**
+   * Assigns a valid id to an [[uk.co.randomcoding.partsdb.id.Identifiable]] if its' id value is a [[uk.co.randomcoding.partsdb.id.DefaultIdentifier]]
+   *
+   * If the [[uk.co.randomcoding.partsdb.id.Identifiable]] has nested items that are themselves [[uk.co.randomcoding.partsdb.id.Identifiable]]s
+   * then this will recurse and assign new ids to those items. However, if there are nested items that are [[uk.co.randomcoding.partsdb.id.Identifier]]s
+   * then these are assumed to be valid and are '''not''' checked.
+   *
+   * @param item The [[uk.co.randomcoding.partsdb.id.Identifiable]] to assign a valid id to
+   * @return A new instance of the [uk.co.randomcoding.partsdb.id.Identifiable]] with a valid id or the same instance if its current id is not
+   * the [[uk.co.randomcoding.partsdb.id.DefaultIdentifier]]
+   */
+  def assignId(item: Identifiable): Identifiable = {
+    val defaultId = (i: Identifiable) => i.id == DefaultIdentifier.id
+
+    item match {
+      case cust: Customer if defaultId(cust) => Customer(nextId(), cust.customerName, cust.billingAddress, cust.deliveryAddresses, cust.terms, cust.contactDetails)
+      case addr: Address if defaultId(addr) => Address(nextId(), addr.shortName, addr.addressText, addr.country)
+      case _ => item
+    }
   }
 }
