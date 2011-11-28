@@ -10,9 +10,9 @@ import uk.co.randomcoding.partsdb.db.mongo.{ MongoUpdateAccess, MongoIdentifierA
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  *
  * @constructor Create a new instance of the Database access
- * @param dbName The name of the database to connect to
- * @param collectionName The name of the Collection to get from the database
+ * @param dbName The name of the database to connect to. Defaults to ''MainDb''
+ * @param collectionName The name of the Collection to get from the database. Defaults to ''MainCollection''
  */
-class DbAccess(dbName: String, collectionName: String) extends MongoIdentifierAccess with MongoUpdateAccess with MongoAllOrOneAccess {
+class DbAccess(dbName: String = "MainDb", collectionName: String = "MainCollection") extends MongoIdentifierAccess with MongoUpdateAccess with MongoAllOrOneAccess {
   override lazy val collection = MongoConfig.getCollection(dbName, collectionName)
 }
