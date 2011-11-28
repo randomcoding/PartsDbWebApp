@@ -28,3 +28,11 @@ trait Identifiable {
    */
   def id: Long = getClass.getMethod(identifierFieldName).invoke(this).asInstanceOf[Identifier].id
 }
+
+/**
+ * Default implementation of an Identifiable. Used (for example) as a default return in pattern matches.
+ */
+object DefaultIdentifiable extends Identifiable {
+  override val identifierFieldName = "idField"
+  val idField = DefaultIdentifier
+}
