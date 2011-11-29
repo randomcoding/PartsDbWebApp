@@ -17,13 +17,17 @@ import net.liftweb.common.Logger
  * Encapsulates all the Database access functionality in a single class
  *
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
- *
- * @constructor Create a new instance of the Database access
- * @param dbName The name of the database to connect to. Defaults to ''MainDb''
- * @param collectionName The name of the Collection to get from the database. Defaults to ''MainCollection''
  */
 trait DbAccess extends MongoIdentifierAccess with MongoUpdateAccess with MongoAllOrOneAccess with Logger {
+
+  /**
+   * @param dbName The name of the database to connect to. Defaults to ''MainDb''
+   */
   val dbName: String = "MainDb"
+
+  /**
+   * @param collectionName The name of the Collection to get from the database. Defaults to ''MainCollection''
+   */
   val collectionName: String = "MainCollection"
 
   override lazy val collection = MongoConfig.getCollection(dbName, collectionName)
