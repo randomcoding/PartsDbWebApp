@@ -19,11 +19,15 @@ import net.liftweb.http.SHtml._
 import net.liftweb.util.Helpers._
 import net.liftweb.http.js.JsCmd
 import net.liftweb.common.Logger
+import uk.co.randomcoding.partsdb.lift.util.snippet.ErrorDisplay
+import uk.co.randomcoding.partsdb.lift.util.snippet.DbAccessSnippet
+import uk.co.randomcoding.partsdb.lift.util.snippet.DataValidation
+import uk.co.randomcoding.partsdb.lift.util.snippet.ValidationItem
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
-class AddCustomer extends Logger {
+class AddCustomer extends DbAccessSnippet with ErrorDisplay with DataValidation with Logger {
   def render = {
     var name = ""
     var billingAddressText = ""
@@ -53,17 +57,20 @@ class AddCustomer extends Logger {
         case _ => PaymentTerms(-1)
       }
 
-      validate(billingAddress, deliveryAddress, paymentTerms) match {
-        case Nil => {
-          updateDb(contactName, billingAddress, deliveryAddress, paymentTerms, contact)
-          // redirect to customer added page or show dialogue and redirect to main customers page
-          S.redirectTo("/customers")
+      validate(ValidationItem(billingAddress, "billingAddressError", "Billing Address is not valid"),
+        ValidationItem(deliveryAddress, "deliveryAddressError", "Delivery Address is not valid"),
+        ValidationItem(paymentTerms, "paymentTermsError", "Payment Terms are not valid")) match {
+          case Nil => {
+            updateDb(contactName, billingAddress, deliveryAddress, paymentTerms, contact)
+            // redirect to customer added page or show dialogue and redirect to main customers page
+            S.redirectTo("/customers")
+          }
+          case errors => {
+            errors foreach (error => displayError(error._1, error._2))
+            // TODO: Need to ensure that the entered details are still present
+            Noop
+          }
         }
-        case errors => {
-          errors foreach (error => displayError(error._1, error._2))
-          Noop
-        }
-      }
     }
 
     "#nameEntry" #> text("", name = _) &
@@ -86,29 +93,6 @@ class AddCustomer extends Logger {
     val deliveryAddressId = DefaultIdentifier
     val customer = Customer(-1L, contactName, billingAddressId, Set(deliveryAddressId), terms, contact)
     debug("Updating database with customer %s (billing: %s, delivery: %s)".format(customer, billingAddress, deliveryAddress))
-  }
-
-  private def validate(billingAddress: Address, deliveryAddress: Address, terms: PaymentTerms): List[(String, String)] = {
-    var errors = List.empty[(String, String)]
-
-    terms match {
-      case PaymentTerms(-1) => errors = ("paymentTermsError", "Payment terms are not valid") :: errors
-    }
-
-    billingAddress match {
-      case NullAddress => errors = ("billingAddressError", "Billing Address details are not valid") :: errors
-    }
-
-    deliveryAddress match {
-      case NullAddress => errors = ("deliveryAddressError", "Delivery Address details are not valid") :: errors
-    }
-
-    errors
-  }
-
-  // TODO: Move this to a super class/trait common to all snippets
-  private def displayError(formId: String, errorMessage: String) = {
-    S.error(formId, errorMessage)
   }
 
   private def addressFromInput(addressText: String, country: String): Address = {
