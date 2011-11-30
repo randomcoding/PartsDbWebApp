@@ -1,4 +1,5 @@
 package uk.co.randomcoding.partsdb.lift.util.snippet
+
 import uk.co.randomcoding.partsdb.db.DbAccess
 
 /**

@@ -10,8 +10,8 @@ import uk.co.randomcoding.partsdb.core.id.Identifier.longToIdentifier
 import uk.co.randomcoding.partsdb.core.id.DefaultIdentifier
 import uk.co.randomcoding.partsdb.core.terms.PaymentTerms
 import uk.co.randomcoding.partsdb.db.mongo.{ MongoUpdateAccess, MongoIdentifierAccess, MongoConfig, MongoAllOrOneAccess }
-
 import net.liftweb.common.Logger
+import uk.co.randomcoding.partsdb.core.customer.DefaultCustomer
 
 /**
  * Encapsulates all the Database access functionality in a single class
@@ -32,11 +32,25 @@ trait DbAccess extends MongoIdentifierAccess with MongoUpdateAccess with MongoAl
 
   override lazy val collection = MongoConfig.getCollection(dbName, collectionName)
 
-  def addNewCustomer(contactName: String, billingAddress: Address, deliveryAddress: Address, terms: PaymentTerms, contact: ContactDetails) = {
+  def addNewCustomer(contactName: String, billingAddress: Address, deliveryAddress: Address, terms: PaymentTerms, contact: ContactDetails): Customer = {
     // check addresses is are in db or not and assign/get their Ids 
-    val billingAddressId = DefaultIdentifier
-    val deliveryAddressId = DefaultIdentifier
-    val customer = Customer(-1L, contactName, billingAddressId, Set(deliveryAddressId), terms, contact)
+    // for now assume addresses are new and assign them ids
+    // FIXME - The cast to Address is nasty and hacky
+    val bAddr = assignId(billingAddress).asInstanceOf[Address]
+    val dAddr = assignId(deliveryAddress).asInstanceOf[Address]
+    add(bAddr)
+    add(dAddr)
+    val customer = assignId(Customer(-1L, contactName, bAddr.addressId, Set(dAddr.addressId), terms, contact)).asInstanceOf[Customer]
     debug("Updating database with customer %s (billing: %s, delivery: %s)".format(customer, billingAddress, deliveryAddress))
+    add(customer) match {
+      case true => {
+        debug("Added new customer %s with billing address %s and delivery address %s".format(customer, bAddr, dAddr))
+        customer
+      }
+      case false => {
+        error("Failed to add customer %s with billing address %s and delivery address %s".format(customer, bAddr, dAddr))
+        DefaultCustomer
+      }
+    }
   }
 }

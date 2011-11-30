@@ -61,8 +61,7 @@ class AddCustomer extends DbAccessSnippet with ErrorDisplay with DataValidation 
         ValidationItem(deliveryAddress, "deliveryAddressError", "Delivery Address is not valid"),
         ValidationItem(paymentTerms, "paymentTermsError", "Payment Terms are not valid")) match {
           case Nil => {
-            updateDb(contactName, billingAddress, deliveryAddress, paymentTerms, contact)
-            // redirect to customer added page or show dialogue and redirect to main customers page
+            addNewCustomer(contactName, billingAddress, deliveryAddress, paymentTerms, contact)
             S.redirectTo("/customers")
           }
           case errors => {
@@ -85,14 +84,6 @@ class AddCustomer extends DbAccessSnippet with ErrorDisplay with DataValidation 
       "#emailEntry" #> text("", email = _) &
       "#submit" #> button("Submit", processSubmit)
 
-  }
-
-  private def updateDb(contactName: String, billingAddress: Address, deliveryAddress: Address, terms: PaymentTerms, contact: ContactDetails) = {
-    // check addresses is are in db or not and assign/get their Ids 
-    val billingAddressId = DefaultIdentifier
-    val deliveryAddressId = DefaultIdentifier
-    val customer = Customer(-1L, contactName, billingAddressId, Set(deliveryAddressId), terms, contact)
-    debug("Updating database with customer %s (billing: %s, delivery: %s)".format(customer, billingAddress, deliveryAddress))
   }
 
   private def addressFromInput(addressText: String, country: String): Address = {

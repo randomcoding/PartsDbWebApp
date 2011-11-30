@@ -4,9 +4,8 @@
 package uk.co.randomcoding.partsdb.core.customer
 
 import uk.co.randomcoding.partsdb.core.contact.ContactDetails
-import uk.co.randomcoding.partsdb.core.id.Identifier
+import uk.co.randomcoding.partsdb.core.id.{Identifier, Identifiable, DefaultIdentifier}
 import uk.co.randomcoding.partsdb.core.terms.PaymentTerms
-import uk.co.randomcoding.partsdb.core.id.Identifiable
 
 /**
  * Customer information, including billing and delivery addresses and payment terms
@@ -25,3 +24,5 @@ import uk.co.randomcoding.partsdb.core.id.Identifiable
 case class Customer(val customerId: Identifier, val customerName: String, val billingAddress: Identifier, val deliveryAddresses: Set[Identifier], val terms: PaymentTerms, val contactDetails: ContactDetails) extends Identifiable {
   override val identifierFieldName = "customerId"
 }
+
+object DefaultCustomer extends Customer(DefaultIdentifier, "No Customer", DefaultIdentifier, Set.empty, PaymentTerms(-1), ContactDetails("No Details"))
