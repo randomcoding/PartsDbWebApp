@@ -14,8 +14,8 @@ import uk.co.randomcoding.partsdb.core.contact.{ ContactDetails, Phone }
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
-class DbAccessTest extends MongoDbTestBase {
-  override val dbName = "DbAccessAddAdddressTest"
+class DbAccessAddCustomerTest extends MongoDbTestBase {
+  override val dbName = "DbAccessAddCustomerTest"
   lazy val databaseName = dbName
   lazy val collName = collectionName
 
