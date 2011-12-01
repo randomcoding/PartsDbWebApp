@@ -30,19 +30,10 @@ trait DataValidation extends Logger {
       case addr: Address => NullAddress == addr
       case terms: PaymentTerms => terms == PaymentTerms(-1)
       case validationItem => {
-        debug("Unhandled validation type %s".format(validationItem))
+        debug("Unhandled validation type %s. Assuming it is valid".format(validationItem))
         true
       }
     }
   }
 }
 
-/**
- * An item that can be checked for a valid status.
- *
- * @constructor Create a new item to check for validation
- * @param toValidate The actual item to validate
- * @param errorLocationId The id of the element on the web page to display the error message at
- * @param errorMessage The message to display
- */
-case class ValidationItem(toValidate: AnyRef, errorLocationId: String, errorMessage: String)
