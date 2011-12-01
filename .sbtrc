@@ -1,3 +1,10 @@
 alias run-webapp = ;project lift;container:start;project root
 alias stop-webapp = ;project lift;container:stop;project root
 alias restart-webapp = ;project lift;container:stop;container:start;project root
+alias test-core = ;project core;test
+alias test-db = ;project db;test
+alias test-lift = ;project lift;test
+alias clean-test-core = ;project core;clean;test
+alias clean-test-db = ;project db;clean;test
+alias clean-test-lift = ;project lift;clean;test
+
