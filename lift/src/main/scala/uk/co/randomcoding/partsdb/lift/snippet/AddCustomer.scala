@@ -61,8 +61,8 @@ class AddCustomer extends DbAccessSnippet with ErrorDisplay with DataValidation 
         ValidationItem(deliveryAddress, "deliveryAddressError", "Delivery Address is not valid"),
         ValidationItem(paymentTerms, "paymentTermsError", "Payment Terms are not valid")) match {
           case Nil => {
-            addNewCustomer(contactName, billingAddress, deliveryAddress, paymentTerms, contact)
-            S.redirectTo("/customers")
+            val newId = addNewCustomer(contactName, billingAddress, deliveryAddress, paymentTerms, contact).customerId
+            S.redirectTo("/customers?highlight=%d".format(newId.id))
           }
           case errors => {
             errors foreach (error => displayError(error._1, error._2))
@@ -87,6 +87,7 @@ class AddCustomer extends DbAccessSnippet with ErrorDisplay with DataValidation 
   }
 
   private def addressFromInput(addressText: String, country: String): Address = {
+    debug("Generating Address from: %s".format(addressText))
     addressText match {
       case AddressParser(addr) => addr
       case _ => NullAddress

@@ -13,12 +13,10 @@ import net.liftweb.common.Logger
  */
 class SideMenu extends Logger {
   def builder: NodeSeq = {
-    info("Called builder")
-
     S.request.map(req => {
       val menu = req.buildMenu
-      info("Menu: %s".format(menu))
-      info("Menu Lines: %s".format(menu.lines))
+      trace("Menu: %s".format(menu))
+      trace("Menu Lines: %s".format(menu.lines))
       menu.lines match {
         case Nil => Text("No Navigation Defined.")
         case x :: xs => <ul id="navlist">{ (x :: xs).flatMap(buildANavItem(_)) }</ul>
