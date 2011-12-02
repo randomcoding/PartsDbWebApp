@@ -7,6 +7,7 @@ import uk.co.randomcoding.partsdb.core.terms.PaymentTerms
 import uk.co.randomcoding.partsdb.core.address.NullAddress
 import net.liftweb.common.Logger
 import uk.co.randomcoding.partsdb.core.address.Address
+import uk.co.randomcoding.partsdb.core.util.CountryCodes._
 
 /**
  * Validates form input items.
@@ -33,6 +34,23 @@ trait DataValidation extends Logger {
         debug("Unhandled validation type %s. Assuming it is valid".format(validationItem))
         true
       }
+    }
+  }
+
+  /**
+   * Performs actual address validation.
+   *
+   * Checks for:
+   *  * [[uk.co.randomcoding.partsdb.core.address.NullAddress]] => false
+   *  * The country being a match in [[uk.co.randomcoding.partsdb.core.util.CountryCodes]]
+   *
+   * @param address The [[uk.co.randomcoding.partsdb.core.address.Address]] to validate
+   * @return true if the address is not a [[uk.co.randomcoding.partsdb.core.address.NullAddress]] and has a valid entry for country
+   */
+  private def validateAddress(address: Address): Boolean = {
+    address match {
+      case NullAddress => false
+      case Address(_, _, _, country) => matchToCountryCode(country).isDefined
     }
   }
 }

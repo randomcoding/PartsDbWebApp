@@ -86,6 +86,7 @@ class DbAccessAddCustomerTest extends MongoDbTestBase {
     access.getAll[Customer]("customerId") should be(List(newCust))
   }
 
+  // This will fail until issue 13 is fixed
   test("Simulate add customer which duplicates a billing address already in database but uses default addressId does not add a duplicate address") {
     val bAddr1 = Address(Identifier(15), "Billing", "Billing Address", "UK")
     (access.add(bAddr1)) should be(true)
@@ -102,6 +103,7 @@ class DbAccessAddCustomerTest extends MongoDbTestBase {
     access.getAll[Customer]("customerId") should be(List(newCust))
   }
 
+  // This will fail until issue 13 is fixed
   test("Simulate add customer which duplicates a delivery address already in database but uses default addressId does not add a duplicate address") {
     val dAddr1 = Address(Identifier(150), "Delivery", "Delivery Address", "UK")
     (access.add(dAddr1)) should be(true)
@@ -118,6 +120,7 @@ class DbAccessAddCustomerTest extends MongoDbTestBase {
     access.getAll[Customer]("customerId") should be(List(newCust))
   }
 
+  // This will fail until issue 13 is fixed
   test("Simulate add customer which duplicates billing and delivery addresses already in database but using default addressId does not add duplicate addresses") {
     val bAddr1 = Address(Identifier(15), "Billing", "Billing Address", "UK")
     (access.add(bAddr1)) should be(true)
