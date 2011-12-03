@@ -28,17 +28,19 @@ object Dependencies {
 	val jettyWebappVersion7 = "7.3.0.v20110203"
 	val jettyWebappVersion8 = "8.0.3.v20111011"
 	val jetty = "org.eclipse.jetty" % "jetty-webapp" % jettyWebappVersion8 % "container"
-	val logback = "ch.qos.logback" % "logback-classic" % "0.9.26"
+	val logback = "ch.qos.logback" % "logback-classic" % "1.0.0"
 	
 	// logging is provided by liftweb common that falls back on slf4j-simple
 	val slf4jSimple = "org.slf4j" % "slf4j-simple" % "1.6.1"
 
 	val scalatest = "org.scalatest" %% "scalatest" % "1.6.1" % "test"
 
+        val groovy = "org.codehaus.groovy" % "groovy-all" % "1.8.4"
+
 	// Dependency groups
 	val testDeps = Seq(scalatest)
 	val liftDeps = Seq(liftUtil, liftCommon, liftWebkit, liftJson)
 	val mongoDeps = Seq(mongoQuery, mongoCore, mongoCommons)
-	val loggingDeps = Seq(slf4jSimple, liftCommon)
+	val loggingDeps = Seq(logback, groovy)
 	val jettyDeps = Seq(jetty)
 }
