@@ -41,6 +41,6 @@ object Dependencies {
 	val testDeps = Seq(scalatest)
 	val liftDeps = Seq(liftUtil, liftCommon, liftWebkit, liftJson)
 	val mongoDeps = Seq(mongoQuery, mongoCore, mongoCommons)
-	val loggingDeps = Seq(logback, groovy)
+	val loggingDeps = Seq(logback, groovy, liftCommon)
 	val jettyDeps = Seq(jetty)
 }
