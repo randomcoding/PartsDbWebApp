@@ -49,7 +49,11 @@ class AddCustomer extends DbAccessSnippet with ErrorDisplay with DataValidation 
      */
     def processSubmit(): JsCmd = {
       val billingAddress = addressFromInput(billingAddressText, billingAddressCountry)
-      val deliveryAddress = addressFromInput(deliveryAddressText, deliveryAddressCountry)
+      val deliveryAddress = deliveryAddressText match {
+        case "" => billingAddress
+        case text => addressFromInput(text, deliveryAddressCountry)
+      }
+
       val contact = contactDetails(contactName, phoneNumber, mobileNumber, email, billingAddressCountry)
 
       val paymentTerms = asInt(paymentTermsText) match {
@@ -87,10 +91,21 @@ class AddCustomer extends DbAccessSnippet with ErrorDisplay with DataValidation 
   }
 
   private def addressFromInput(addressText: String, country: String): Address = {
-    debug("Generating Address from: %s".format(addressText))
-    addressText match {
-      case AddressParser(addr) => addr
-      case _ => NullAddress
+    debug("Input address: %s, country: %s".format(addressText, country))
+    val lines = scala.io.Source.fromString(addressText).getLines.toList
+    val addressLines = lines.map(_.replaceAll(",", "").trim) ::: List(country)
+    debug("Generated Address Lines: %s".format(addressLines))
+    val address = addressLines mkString ","
+    debug("Generating Address from: %s".format(address))
+    address match {
+      case AddressParser(addr) => {
+        debug("Created Address: %s".format(addr))
+        addr
+      }
+      case _ => {
+        error("Null Adress Created from %s".format(address))
+        NullAddress
+      }
     }
   }
 

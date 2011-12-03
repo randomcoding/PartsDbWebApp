@@ -11,13 +11,14 @@ import uk.co.randomcoding.partsdb.core.customer.Customer
 import uk.co.randomcoding.partsdb.core.contact.ContactDetails
 import scala.xml.NodeSeq
 import scala.xml.Text
+import net.liftweb.common.Logger
 
 /**
  * Helper functions for displaying customers in lift pages
  *
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
-object CustomerDisplay {
+object CustomerDisplay extends Logger {
   /**
    * Generates html to display a customer.
    *
@@ -48,12 +49,13 @@ object CustomerDisplay {
   }
 
   private[this] def contactDetail(detail: AnyRef) = {
-    detail match {
-      case p: Phone => Text(p.phoneNumber)
-      case m: Mobile => Text(m.mobileNumber)
-      case em: Email => Text(em.emailAddress)
+    debug("Generating contact detail for: %s".format(detail))
+    val detailNode = detail match {
+      case p: Phone => Text("Phone: %s".format(p.phoneNumber))
+      case m: Mobile => Text("Mobile: %s".format(m.mobileNumber))
+      case em: Email => Text("EMail: %s".format(em.emailAddress))
     }
 
-    (<span>{ detail }</span><br/>).toSeq
+    (<span>{ detailNode }</span><br/>).toSeq
   }
 }

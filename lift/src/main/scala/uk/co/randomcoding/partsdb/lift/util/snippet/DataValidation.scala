@@ -27,9 +27,10 @@ trait DataValidation extends Logger {
   }
 
   private def validateItem(item: ValidationItem): Boolean = {
+    debug("Validating: %s".format(item))
     item.toValidate match {
-      case addr: Address => NullAddress == addr
-      case terms: PaymentTerms => terms == PaymentTerms(-1)
+      case addr: Address => validateAddress(addr)
+      case terms: PaymentTerms => terms != PaymentTerms(-1)
       case validationItem => {
         debug("Unhandled validation type %s. Assuming it is valid".format(validationItem))
         true

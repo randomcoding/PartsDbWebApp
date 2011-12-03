@@ -14,6 +14,6 @@ appender("STDOUT", ConsoleAppender) {
   }
 }
 
-logger("uk.co.randomcoding", DEBUG)
+logger("uk.co.randomcoding.partsdb.lift", DEBUG)
 
 root(WARN, ["STDOUT"])
