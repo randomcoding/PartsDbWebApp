@@ -12,7 +12,7 @@ object ProjectBuild extends Build {
 		settings = buildSettings ++ Unidoc.settings ++ Seq (
                     scaladocOptions := Seq()
                 )
-	) aggregate(coreProject, liftProject, dbProject)
+	) aggregate(coreProject, liftProject, dbProject, loggingProject)
 
 	lazy val coreProject: Project = Project("core",
 		file("core"),
@@ -20,7 +20,7 @@ object ProjectBuild extends Build {
 		settings = buildSettings ++ Seq(libraryDependencies ++= coreProjectDeps,
 			name := "parts-db-app-core"
 		)
-	)
+	) dependsOn (loggingProject)
 
 	lazy val liftProject: Project = Project("lift", 
 		file("lift"),
@@ -36,7 +36,15 @@ object ProjectBuild extends Build {
 		)
 	) dependsOn(coreProject)
 
-	val commonDeps = loggingDeps ++ testDeps
+	lazy val loggingProject: Project = Project("logging",
+		file("logging"),
+		settings = buildSettings ++ Seq(libraryDependencies ++= loggingDeps,
+			name := "parts-db-app-logging"
+		)
+	)
+
+	//val commonDeps = loggingDeps ++ testDeps
+	val commonDeps = testDeps
 
 	val coreProjectDeps = commonDeps
 
