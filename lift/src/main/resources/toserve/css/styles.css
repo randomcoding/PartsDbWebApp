@@ -50,3 +50,11 @@ textarea {
 .form-content {
 	/* Empty for now */
 }
+
+tr {
+	vertical-align: text-top;
+}
+
+td {
+	vertical-align: text-top;
+}

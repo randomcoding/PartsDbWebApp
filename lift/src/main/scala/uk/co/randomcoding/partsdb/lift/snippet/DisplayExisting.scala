@@ -25,11 +25,7 @@ import scala.xml.NodeSeq
 /**
  * Displays the existing entities from the database.
  *
- * The entity type is specified by the `entityType` query parameter
- *
- * This delegates to calling a dedicated page in an iframe.
- *
- * @author RandomCoder <randomcoder@randomcoding.co.uk>
+ * The entity type is specified by the `entityType` query parameter * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
 class DisplayExisting extends DbAccessSnippet with ErrorDisplay with Logger {
 
@@ -37,8 +33,17 @@ class DisplayExisting extends DbAccessSnippet with ErrorDisplay with Logger {
     val entityType = S.attr("entityType") openOr "Unspecified"
     val highlightId = asLong(S.attr("highlight") openOr "No Highlight")
 
-    val detailsPage = "display%sList".format(entityType)
-    "#displayEntity" #> <iframe src={ detailsPage } width="100%" height="100%">No IFrame Support - DOH!</iframe>
+    val entitiesFromDb = matchingTypes(entityType)
+
+    "#displayCurrentTitle" #> Text("%ss".format(entityType)) &
+      "#details" #> displayTable(entitiesFromDb, entityType)
+  }
+
+  private[this] def displayTable(entities: List[Identifiable], entityType: String) = {
+    <table>
+      <tr>{ entitiesTableHeading(entityType) }</tr>
+      { displayEntities(entities) }
+    </table>
   }
 
   private[this] lazy val matchingTypes: String => List[Identifiable] = (entityType: String) => {
@@ -56,11 +61,25 @@ class DisplayExisting extends DbAccessSnippet with ErrorDisplay with Logger {
     }
   }
 
-  private[this] def displayEntities(entities: List[Identifiable]) = {
-    entities match {
-      case Nil => span(Text("Nothing to Display"), Noop)
-      case _ => entities map (displayEntity _)
+  /**
+   * Generates the table headings for the display of each type
+   */
+  private[this] def entitiesTableHeading(entityType: String) = {
+    entityType.toLowerCase match {
+      case "customer" => headings("Customer Name", "Address", "Contact", "Payment Terms")
     }
+  }
+
+  /**
+   * Convert a list of strings into a list to `<th>` elements
+   */
+  private def headings(titles: String*) = titles map (title => <th>{ title }</th>)
+
+  private[this] def displayEntities(entities: List[Identifiable]) = {
+    /*entities match {
+      case Nil => span(Text("Nothing to Display"), Noop)
+      case _ =>*/ entities map (displayEntity _)
+    //}
   }
 
   private[this] def displayEntity(entity: Identifiable) = {

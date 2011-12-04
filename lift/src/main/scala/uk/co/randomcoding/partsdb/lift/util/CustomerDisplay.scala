@@ -12,13 +12,17 @@ import uk.co.randomcoding.partsdb.core.contact.ContactDetails
 import scala.xml.NodeSeq
 import scala.xml.Text
 import net.liftweb.common.Logger
+import scala.io.Source
+import uk.co.randomcoding.partsdb.db.DbAccess
+import uk.co.randomcoding.partsdb.lift.util.snippet.DbAccessSnippet
+import uk.co.randomcoding.partsdb.core.address.{ Address, NullAddress }
 
 /**
  * Helper functions for displaying customers in lift pages
  *
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
-object CustomerDisplay extends Logger {
+object CustomerDisplay extends Logger with DbAccessSnippet {
   /**
    * Generates html to display a customer.
    *
@@ -28,16 +32,33 @@ object CustomerDisplay extends Logger {
    * @return A [[scala.xml.NodeSeq]] to display the customer details
    */
   def displayCustomer(customer: Customer): NodeSeq = {
-    val custNameNodes = span(Text(customer.customerName), Noop)
-    val termsNodes = span(Text("%d days".format(customer.terms.days)), Noop)
-    val contactNodes = displayContacts(customer.contactDetails)
-    val innerSpan = span(custNameNodes ++ termsNodes ++ contactNodes, Noop)
-
-    val outerDiv = <div> { innerSpan } </div>
-    outerDiv
+    <tr valign="top">
+      <td>{ customer.customerName }</td>
+      <td>{ displayAddress(customer) }</td>
+      <td>{ displayContacts(customer) }</td>
+      <td>{ "%d days".format(customer.terms.days) }</td>
+    </tr>
   }
 
-  private[this] def displayContacts(contacts: ContactDetails): NodeSeq = {
+  private[this] def displayAddress(customer: Customer) = {
+    debug("Customer Billing Address Id: %s".format(customer.billingAddress))
+    val addr = getOne[Address]("addressId", customer.billingAddress).getOrElse(NullAddress)
+    addr match {
+      case NullAddress => Text("Unknown Address. Identifier: %d".format(customer.billingAddress.id))
+      case adr: Address => {
+        val addressLines = Source.fromString(addr.addressText).getLines()
+        <span>
+          {
+            addressLines map (line => <span>{ line }</span><br/>)
+          }
+        </span>
+      }
+    }
+  }
+
+  private[this] def displayContacts(customer: Customer): NodeSeq = {
+    val contacts = customer.contactDetails
+
     val detailsNodes = (details: Seq[AnyRef]) => details map (detail => contactDetail(detail)) flatten
     implicit def optionListToList[T](opt: Option[List[T]]): List[T] = opt getOrElse List.empty[T]
 
@@ -45,8 +66,10 @@ object CustomerDisplay extends Logger {
     val mobileNodes = detailsNodes(contacts.mobileNumbers)
     val emailNodes = detailsNodes(contacts.emailAddresses)
 
-    emailNodes ++ mobileNodes ++ phoneNodes
+    nameNode(contacts.contactName) ++ emailNodes ++ mobileNodes ++ phoneNodes
   }
+
+  private[this] val nameNode = (name: String) => { <span>{ name }</span><br/> }
 
   private[this] def contactDetail(detail: AnyRef) = {
     debug("Generating contact detail for: %s".format(detail))
