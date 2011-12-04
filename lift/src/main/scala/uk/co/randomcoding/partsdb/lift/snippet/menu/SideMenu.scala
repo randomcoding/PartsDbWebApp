@@ -25,8 +25,8 @@ class SideMenu extends Logger {
   }
 
   private def buildANavItem(i: MenuItem) = i match {
-    case MenuItem(text, uri, _, true, _, _) => (<li><a href={ uri } class="active button"><span>{ text }</span></a></li>)
-    case MenuItem(text, uri, _, _, true, _) => (<li><a href={ uri } class="active button"><span>{ text }</span></a></li>)
-    case MenuItem(text, uri, _, _, _, _) => (<li><a class="button" href={ uri }><span>{ text }</span></a></li>)
+    case MenuItem(text, uri, _, true, _, _) => (<li><a href={ uri } class="active btn"><span>{ text }</span></a></li>)
+    case MenuItem(text, uri, _, _, true, _) => (<li><a href={ uri } class="active btn"><span>{ text }</span></a></li>)
+    case MenuItem(text, uri, _, _, _, _) => (<li><a class="btn" href={ uri }><span>{ text }</span></a></li>)
   }
 }
