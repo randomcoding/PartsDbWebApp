@@ -24,14 +24,17 @@
       <span class="symbol"> 
         <span class="name">Customer</span>
         
-        <span class="params">(<span name="customerId">customerId: <a name="uk.co.randomcoding.partsdb.core.id.Identifier" class="extype" href="../id/Identifier.html">Identifier</a></span>, <span name="customerName">customerName: String</span>, <span name="billingAddress">billingAddress: <a name="uk.co.randomcoding.partsdb.core.id.Identifier" class="extype" href="../id/Identifier.html">Identifier</a></span>, <span name="deliveryAddresses">deliveryAddresses: Set[<a name="uk.co.randomcoding.partsdb.core.id.Identifier" class="extype" href="../id/Identifier.html">Identifier</a>]</span>, <span name="terms">terms: <a name="uk.co.randomcoding.partsdb.core.terms.PaymentTerms" class="extype" href="../terms/PaymentTerms.html">PaymentTerms</a></span>, <span name="contactDetails">contactDetails: <a name="uk.co.randomcoding.partsdb.core.contact.ContactDetails" class="extype" href="../contact/ContactDetails.html">ContactDetails</a></span>)</span><span class="result"> extends <span name="scala.Product" class="extype">Product</span> with <span name="scala.Serializable" class="extype">Serializable</span></span>
+        <span class="params">(<span name="customerId">customerId: <a name="uk.co.randomcoding.partsdb.core.id.Identifier" class="extype" href="../id/Identifier.html">Identifier</a></span>, <span name="customerName">customerName: String</span>, <span name="billingAddress">billingAddress: <a name="uk.co.randomcoding.partsdb.core.id.Identifier" class="extype" href="../id/Identifier.html">Identifier</a></span>, <span name="deliveryAddresses">deliveryAddresses: Set[<a name="uk.co.randomcoding.partsdb.core.id.Identifier" class="extype" href="../id/Identifier.html">Identifier</a>]</span>, <span name="terms">terms: <a name="uk.co.randomcoding.partsdb.core.terms.PaymentTerms" class="extype" href="../terms/PaymentTerms.html">PaymentTerms</a></span>, <span name="contactDetails">contactDetails: <a name="uk.co.randomcoding.partsdb.core.contact.ContactDetails" class="extype" href="../contact/ContactDetails.html">ContactDetails</a></span>)</span><span class="result"> extends <a name="uk.co.randomcoding.partsdb.core.id.Identifiable" class="extype" href="../id/Identifiable.html">Identifiable</a> with <span name="scala.Product" class="extype">Product</span> with <span name="scala.Serializable" class="extype">Serializable</span></span>
       </span>
       </h4>
       
           <div class="fullcommenttop" id="comment"><div class="comment cmt"><p>Customer information, including billing and delivery addresses and payment terms</p><p>@constructor</p></div><dl class="paramcmts block"><dt class="param">customerId</dt><dd class="cmt"><p>The unique id of this customer</p></dd><dt class="param">customerName</dt><dd class="cmt"><p>The short (friendly) name of the customer</p></dd><dt class="param">billingAddress</dt><dd class="cmt"><p>The uk.co.randomcoding.partsdb.core.address.AddressId of the address to send billing notices to</p></dd><dt class="param">deliveryAddresses</dt><dd class="cmt"><p>The uk.co.randomcoding.partsdb.core.address.AddressIds of the addresses to which goods can be delivered for this customer</p></dd><dt class="param">terms</dt><dd class="cmt"><p>The usual <a name="uk.co.randomcoding.partsdb.core.terms.PaymentTerms" class="extype" href="../terms/PaymentTerms.html">PaymentTerms</a> for this customer</p></dd><dt class="param">contactDetails</dt><dd class="cmt"><p>The contact name(s) and number(s) for this customer
 </p></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><span name="scala.Serializable" class="extype">Serializable</span>, <span name="java.io.Serializable" class="extype">Serializable</span>, <span name="scala.Product" class="extype">Product</span>, <span name="scala.Equals" class="extype">Equals</span>, AnyRef, <span name="scala.Any" class="extype">Any</span></div>
+          <div class="superTypes hiddenContent"><span name="scala.Serializable" class="extype">Serializable</span>, <span name="java.io.Serializable" class="extype">Serializable</span>, <span name="scala.Product" class="extype">Product</span>, <span name="scala.Equals" class="extype">Equals</span>, <a name="uk.co.randomcoding.partsdb.core.id.Identifiable" class="extype" href="../id/Identifiable.html">Identifiable</a>, AnyRef, <span name="scala.Any" class="extype">Any</span></div>
+        </div><div class="toggleContainer block">
+          <span class="toggle">Known Subclasses</span>
+          <div class="subClasses hiddenContent"><a name="uk.co.randomcoding.partsdb.core.customer.DefaultCustomer" class="extype" href="DefaultCustomer$.html">DefaultCustomer</a></div>
         </div></div>
         
 
@@ -47,7 +50,7 @@
                 <span class="filtertype">Inherited</span>
                 <ol><li class="hideall out"><span>Hide All</span></li>
                 <li class="showall in"><span>Show all</span></li></ol>
-                <ol id="linearization"><li name="uk.co.randomcoding.partsdb.core.customer.Customer" class="in"><span>Customer</span></li><li name="scala.Serializable" class="in"><span>Serializable</span></li><li name="java.io.Serializable" class="in"><span>Serializable</span></li><li name="scala.Product" class="in"><span>Product</span></li><li name="scala.Equals" class="in"><span>Equals</span></li><li name="scala.AnyRef" class="in"><span>AnyRef</span></li><li name="scala.Any" class="in"><span>Any</span></li></ol>
+                <ol id="linearization"><li name="uk.co.randomcoding.partsdb.core.customer.Customer" class="in"><span>Customer</span></li><li name="scala.Serializable" class="in"><span>Serializable</span></li><li name="java.io.Serializable" class="in"><span>Serializable</span></li><li name="scala.Product" class="in"><span>Product</span></li><li name="scala.Equals" class="in"><span>Equals</span></li><li name="uk.co.randomcoding.partsdb.core.id.Identifiable" class="in"><span>Identifiable</span></li><li name="scala.AnyRef" class="in"><span>AnyRef</span></li><li name="scala.Any" class="in"><span>Any</span></li></ol>
               </div>
           <div id="visbl">
               <span class="filtertype">Visibility</span>
@@ -283,6 +286,31 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a name="uk.co.randomcoding.partsdb.core.customer.Customer" class="extype" href="">Customer</a> → AnyRef → Any</dd></dl></div>
+    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.core.id.Identifiable#id" data-isabs="false">
+      <a id="id:Long"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">id</span>
+        
+        <span class="result">: <span name="scala.Long" class="extype">Long</span></span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">Accessor for the actual identifier value to allow building of the MongoDB query to find the item</p><div class="fullcomment"><div class="comment cmt"><p>Accessor for the actual identifier value to allow building of the MongoDB query to find the item</p><p>This default implementation uses Java reflection to get the method declared with the name given by <code>identifierFieldName</code>
+and get the <code>id</code> value of the returned <a name="uk.co.randomcoding.partsdb.core.id.Identifier" class="extype" href="../id/Identifier.html">Identifier</a></p><p>It is not intended that this be overridden, but can be if required.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a name="uk.co.randomcoding.partsdb.core.id.Identifiable" class="extype" href="../id/Identifiable.html">Identifiable</a></dd></dl></div>
+    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.core.customer.Customer#identifierFieldName" data-isabs="false">
+      <a id="identifierFieldName:String"></a>
+      <h4 class="signature">
+      <span class="kind">val</span>
+      <span class="symbol"> 
+        <span class="name">identifierFieldName</span>
+        
+        <span class="result">: <span name="java.lang.String" class="extype">String</span></span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">The name of the case class parameter that maps to the object's uk.co.randomcoding.partsdb.code.id.Identifier</p><div class="fullcomment"><div class="comment cmt"><p>The name of the case class parameter that maps to the object's uk.co.randomcoding.partsdb.code.id.Identifier</p><p>This should take the general form of <code>classNameId</code> where <code>className</code> is the appropriately camel cased version of the enclosing class's name
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a name="uk.co.randomcoding.partsdb.core.customer.Customer" class="extype" href="">Customer</a> → <a name="uk.co.randomcoding.partsdb.core.id.Identifiable" class="extype" href="../id/Identifiable.html">Identifiable</a></dd></dl></div>
     </li><li visbl="pub" name="scala.Any#isInstanceOf" data-isabs="false">
       <a id="isInstanceOf[T0]:Boolean"></a>
       <h4 class="signature">
@@ -476,6 +504,8 @@
               <h3>Inherited from <span name="scala.Product" class="extype">Product</span></h3>
             </div><div name="scala.Equals" class="parent">
               <h3>Inherited from <span name="scala.Equals" class="extype">Equals</span></h3>
+            </div><div name="uk.co.randomcoding.partsdb.core.id.Identifiable" class="parent">
+              <h3>Inherited from <a name="uk.co.randomcoding.partsdb.core.id.Identifiable" class="extype" href="../id/Identifiable.html">Identifiable</a></h3>
             </div><div name="scala.AnyRef" class="parent">
               <h3>Inherited from AnyRef</h3>
             </div><div name="scala.Any" class="parent">

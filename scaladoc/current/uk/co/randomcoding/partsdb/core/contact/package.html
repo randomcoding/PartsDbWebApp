@@ -54,16 +54,75 @@
       <span class="symbol"> 
         <a href="ContactDetails.html"><span class="name">ContactDetails</span></a>
         
-        <span class="params">(<span name="id">id: Identifier</span>, <span name="contacts">contacts: Map[String, Set[String]]</span>)</span><span class="result"> extends Product with Serializable</span>
+        <span class="params">(<span name="contactName">contactName: String</span>, <span name="phoneNumbers">phoneNumbers: Option[List[Phone]]</span>, <span name="mobileNumbers">mobileNumbers: Option[List[Mobile]]</span>, <span name="emailAddresses">emailAddresses: Option[List[Email]]</span>)</span><span class="result"> extends Product with Serializable</span>
       </span>
       </h4>
-      <p class="comment cmt">Some contact details.</p>
+      <p class="comment cmt">Some contact details for a customer or supplier.</p>
+    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.core.contact.ContactType" data-isabs="true">
+      <a id="ContactType:ContactType"></a>
+      <h4 class="signature">
+      <span class="kind">class</span>
+      <span class="symbol"> 
+        <a href="ContactType.html"><span class="name">ContactType</span></a>
+        
+        <span class="result"> extends AnyRef</span>
+      </span>
+      </h4>
+      <p class="comment cmt">Defines types of contact, EMail, Phone and Mobile
+</p>
+    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.core.contact.Email" data-isabs="false">
+      <a id="Email:Email"></a>
+      <h4 class="signature">
+      <span class="kind">case class</span>
+      <span class="symbol"> 
+        <a href="Email.html"><span class="name">Email</span></a>
+        
+        <span class="params">(<span name="emailAddress">emailAddress: String</span>)</span><span class="result"> extends ContactType with Product with Serializable</span>
+      </span>
+      </h4>
+      
+    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.core.contact.Mobile" data-isabs="false">
+      <a id="Mobile:Mobile"></a>
+      <h4 class="signature">
+      <span class="kind">case class</span>
+      <span class="symbol"> 
+        <a href="Mobile.html"><span class="name">Mobile</span></a>
+        
+        <span class="params">(<span name="mobileNumber">mobileNumber: String</span>, <span name="international">international: Boolean</span>)</span><span class="result"> extends ContactType with Product with Serializable</span>
+      </span>
+      </h4>
+      
+    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.core.contact.Phone" data-isabs="false">
+      <a id="Phone:Phone"></a>
+      <h4 class="signature">
+      <span class="kind">case class</span>
+      <span class="symbol"> 
+        <a href="Phone.html"><span class="name">Phone</span></a>
+        
+        <span class="params">(<span name="phoneNumber">phoneNumber: String</span>, <span name="international">international: Boolean</span>)</span><span class="result"> extends ContactType with Product with Serializable</span>
+      </span>
+      </h4>
+      
     </li></ol>
             </div>
         
         
 
+        <div class="values members" id="values">
+              <h3>Value Members</h3>
+              <ol><li visbl="pub" name="uk.co.randomcoding.partsdb.core.contact.NullContactDetails" data-isabs="false">
+      <a id="NullContactDetails:NullContactDetails"></a>
+      <h4 class="signature">
+      <span class="kind">object</span>
+      <span class="symbol"> 
+        <a href="NullContactDetails$.html"><span class="name">NullContactDetails</span></a>
         
+        <span class="result"> extends ContactDetails</span>
+      </span>
+      </h4>
+      
+    </li></ol>
+            </div>
 
         
 

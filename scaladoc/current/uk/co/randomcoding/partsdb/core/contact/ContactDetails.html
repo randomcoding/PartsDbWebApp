@@ -24,14 +24,17 @@
       <span class="symbol"> 
         <span class="name">ContactDetails</span>
         
-        <span class="params">(<span name="id">id: <a name="uk.co.randomcoding.partsdb.core.id.Identifier" class="extype" href="../id/Identifier.html">Identifier</a></span>, <span name="contacts">contacts: Map[String, Set[String]]</span>)</span><span class="result"> extends <span name="scala.Product" class="extype">Product</span> with <span name="scala.Serializable" class="extype">Serializable</span></span>
+        <span class="params">(<span name="contactName">contactName: String</span>, <span name="phoneNumbers">phoneNumbers: <span name="scala.Option" class="extype">Option</span>[List[<a name="uk.co.randomcoding.partsdb.core.contact.Phone" class="extype" href="Phone.html">Phone</a>]]</span>, <span name="mobileNumbers">mobileNumbers: <span name="scala.Option" class="extype">Option</span>[List[<a name="uk.co.randomcoding.partsdb.core.contact.Mobile" class="extype" href="Mobile.html">Mobile</a>]]</span>, <span name="emailAddresses">emailAddresses: <span name="scala.Option" class="extype">Option</span>[List[<a name="uk.co.randomcoding.partsdb.core.contact.Email" class="extype" href="Email.html">Email</a>]]</span>)</span><span class="result"> extends <span name="scala.Product" class="extype">Product</span> with <span name="scala.Serializable" class="extype">Serializable</span></span>
       </span>
       </h4>
       
-          <div class="fullcommenttop" id="comment"><div class="comment cmt"><p>Some contact details.</p><p>This provides a map of the name of a contact to the numbers/emails to use to contact them</p><p>@constructor</p></div><dl class="paramcmts block"><dt class="param">id</dt><dd class="cmt"><p>The <a name="uk.co.randomcoding.partsdb.core.id.Identifier" class="extype" href="../id/Identifier.html">Identifier</a> for these details within the database</p></dd><dt class="param">contacts</dt><dd class="cmt"><p>A map of contact name -&gt; contact number(s)
-</p></dd></dl><div class="toggleContainer block">
+          <div class="fullcommenttop" id="comment"><div class="comment cmt"><p>Some contact details for a customer or supplier.</p><p>This associates a Contact's name to
+</p></div><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
           <div class="superTypes hiddenContent"><span name="scala.Serializable" class="extype">Serializable</span>, <span name="java.io.Serializable" class="extype">Serializable</span>, <span name="scala.Product" class="extype">Product</span>, <span name="scala.Equals" class="extype">Equals</span>, AnyRef, <span name="scala.Any" class="extype">Any</span></div>
+        </div><div class="toggleContainer block">
+          <span class="toggle">Known Subclasses</span>
+          <div class="subClasses hiddenContent"><a name="uk.co.randomcoding.partsdb.core.contact.NullContactDetails" class="extype" href="NullContactDetails$.html">NullContactDetails</a></div>
         </div></div>
         
 
@@ -64,11 +67,10 @@
       <span class="symbol"> 
         <span class="name">ContactDetails</span>
         
-        <span class="params">(<span name="id">id: <a name="uk.co.randomcoding.partsdb.core.id.Identifier" class="extype" href="../id/Identifier.html">Identifier</a></span>, <span name="contacts">contacts: Map[String, Set[String]]</span>)</span>
+        <span class="params">(<span name="contactName">contactName: String</span>, <span name="phoneNumbers">phoneNumbers: <span name="scala.Option" class="extype">Option</span>[List[<a name="uk.co.randomcoding.partsdb.core.contact.Phone" class="extype" href="Phone.html">Phone</a>]]</span>, <span name="mobileNumbers">mobileNumbers: <span name="scala.Option" class="extype">Option</span>[List[<a name="uk.co.randomcoding.partsdb.core.contact.Mobile" class="extype" href="Mobile.html">Mobile</a>]]</span>, <span name="emailAddresses">emailAddresses: <span name="scala.Option" class="extype">Option</span>[List[<a name="uk.co.randomcoding.partsdb.core.contact.Email" class="extype" href="Email.html">Email</a>]]</span>)</span>
       </span>
       </h4>
-      <p class="shortcomment cmt"></p><div class="fullcomment"><div class="comment cmt"></div><dl class="paramcmts block"><dt class="param">id</dt><dd class="cmt"><p>The <a name="uk.co.randomcoding.partsdb.core.id.Identifier" class="extype" href="../id/Identifier.html">Identifier</a> for these details within the database</p></dd><dt class="param">contacts</dt><dd class="cmt"><p>A map of contact name -&gt; contact number(s)
-</p></dd></dl></div>
+      <p class="shortcomment cmt">Create a new Contact details instance.</p>
     </li></ol>
             </div>
 
@@ -169,18 +171,28 @@
                 <span class="name">@throws</span><span class="args">()</span>
               
         </dd></dl></div>
-    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.core.contact.ContactDetails#contacts" data-isabs="false">
-      <a id="contacts:Map[String, Set[String]]"></a>
+    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.core.contact.ContactDetails#contactName" data-isabs="false">
+      <a id="contactName:String"></a>
       <h4 class="signature">
       <span class="kind">val</span>
       <span class="symbol"> 
-        <span class="name">contacts</span>
+        <span class="name">contactName</span>
         
-        <span class="result">: Map[String, Set[String]]</span>
+        <span class="result">: String</span>
       </span>
       </h4>
-      <p class="shortcomment cmt">A map of contact name -&gt; contact number(s)
-</p>
+      
+    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.core.contact.ContactDetails#emailAddresses" data-isabs="false">
+      <a id="emailAddresses:Option[List[Email]]"></a>
+      <h4 class="signature">
+      <span class="kind">val</span>
+      <span class="symbol"> 
+        <span class="name">emailAddresses</span>
+        
+        <span class="result">: <span name="scala.Option" class="extype">Option</span>[List[<a name="uk.co.randomcoding.partsdb.core.contact.Email" class="extype" href="Email.html">Email</a>]]</span>
+      </span>
+      </h4>
+      
     </li><li visbl="pub" name="scala.AnyRef#eq" data-isabs="false">
       <a id="eq(AnyRef):Boolean"></a>
       <h4 class="signature">
@@ -239,17 +251,6 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a name="uk.co.randomcoding.partsdb.core.contact.ContactDetails" class="extype" href="">ContactDetails</a> → AnyRef → Any</dd></dl></div>
-    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.core.contact.ContactDetails#id" data-isabs="false">
-      <a id="id:Identifier"></a>
-      <h4 class="signature">
-      <span class="kind">val</span>
-      <span class="symbol"> 
-        <span class="name">id</span>
-        
-        <span class="result">: <a name="uk.co.randomcoding.partsdb.core.id.Identifier" class="extype" href="../id/Identifier.html">Identifier</a></span>
-      </span>
-      </h4>
-      <p class="shortcomment cmt">The <a name="uk.co.randomcoding.partsdb.core.id.Identifier" class="extype" href="../id/Identifier.html">Identifier</a> for these details within the database</p>
     </li><li visbl="pub" name="scala.Any#isInstanceOf" data-isabs="false">
       <a id="isInstanceOf[T0]:Boolean"></a>
       <h4 class="signature">
@@ -261,6 +262,17 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>final </dd><dt>Definition Classes</dt><dd>Any</dd></dl></div>
+    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.core.contact.ContactDetails#mobileNumbers" data-isabs="false">
+      <a id="mobileNumbers:Option[List[Mobile]]"></a>
+      <h4 class="signature">
+      <span class="kind">val</span>
+      <span class="symbol"> 
+        <span class="name">mobileNumbers</span>
+        
+        <span class="result">: <span name="scala.Option" class="extype">Option</span>[List[<a name="uk.co.randomcoding.partsdb.core.contact.Mobile" class="extype" href="Mobile.html">Mobile</a>]]</span>
+      </span>
+      </h4>
+      
     </li><li visbl="pub" name="scala.AnyRef#ne" data-isabs="false">
       <a id="ne(AnyRef):Boolean"></a>
       <h4 class="signature">
@@ -294,6 +306,17 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>final </dd><dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.core.contact.ContactDetails#phoneNumbers" data-isabs="false">
+      <a id="phoneNumbers:Option[List[Phone]]"></a>
+      <h4 class="signature">
+      <span class="kind">val</span>
+      <span class="symbol"> 
+        <span class="name">phoneNumbers</span>
+        
+        <span class="result">: <span name="scala.Option" class="extype">Option</span>[List[<a name="uk.co.randomcoding.partsdb.core.contact.Phone" class="extype" href="Phone.html">Phone</a>]]</span>
+      </span>
+      </h4>
+      
     </li><li visbl="pub" name="uk.co.randomcoding.partsdb.core.contact.ContactDetails#productArity" data-isabs="false">
       <a id="productArity:Int"></a>
       <h4 class="signature">

@@ -144,13 +144,13 @@
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>Logger</dd></dl></div>
     </li><li visbl="pub" name="uk.co.randomcoding.partsdb.db.mongo.MongoUpdateAccess#add" data-isabs="false">
-      <a id="add[T&lt;:AnyRef](T)(Manifest[T]):Boolean"></a>
+      <a id="add[TYPE&lt;:Identifiable](TYPE)(Manifest[TYPE]):Boolean"></a>
       <h4 class="signature">
       <span class="kind">def</span>
       <span class="symbol"> 
         <span class="name">add</span>
-        <span class="tparams">[<span name="T">T &lt;: AnyRef</span>]</span>
-        <span class="params">(<span name="newItem">newItem: T</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="mf">mf: Manifest[T]</span>)</span><span class="result">: <span name="scala.Boolean" class="extype">Boolean</span></span>
+        <span class="tparams">[<span name="TYPE">TYPE &lt;: <a name="uk.co.randomcoding.partsdb.core.id.Identifiable" class="extype" href="../../core/id/Identifiable.html">Identifiable</a></span>]</span>
+        <span class="params">(<span name="newItem">newItem: TYPE</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="mf">mf: Manifest[TYPE]</span>)</span><span class="result">: <span name="scala.Boolean" class="extype">Boolean</span></span>
       </span>
       </h4>
       <p class="shortcomment cmt">Adds an object into the database if there is not already another item with the same <a name="uk.co.randomcoding.partsdb.core.id.Identifier" class="extype" href="../../core/id/Identifier.html">Identifier</a>.</p><div class="fullcomment"><div class="comment cmt"><p>Adds an object into the database if there is not already another item with the same <a name="uk.co.randomcoding.partsdb.core.id.Identifier" class="extype" href="../../core/id/Identifier.html">Identifier</a>.</p><p>In order to be added, the <code>new Entry</code> <b><i>must</i></b> have an <a name="uk.co.randomcoding.partsdb.core.id.Identifier" class="extype" href="../../core/id/Identifier.html">Identifier</a> variable that has a name ending with <i>Id</i>.
@@ -179,6 +179,22 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Logger</dd></dl></div>
+    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.db.mongo.MongoIdentifierAccess#assignId" data-isabs="false">
+      <a id="assignId(Identifiable):Identifiable"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">assignId</span>
+        
+        <span class="params">(<span name="item">item: <a name="uk.co.randomcoding.partsdb.core.id.Identifiable" class="extype" href="../../core/id/Identifiable.html">Identifiable</a></span>)</span><span class="result">: <a name="uk.co.randomcoding.partsdb.core.id.Identifiable" class="extype" href="../../core/id/Identifiable.html">Identifiable</a></span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">Assigns a valid id to an uk.co.randomcoding.partsdb.id.Identifiable if its' id value is a uk.co.randomcoding.partsdb.id.DefaultIdentifier</p><div class="fullcomment"><div class="comment cmt"><p>Assigns a valid id to an uk.co.randomcoding.partsdb.id.Identifiable if its' id value is a uk.co.randomcoding.partsdb.id.DefaultIdentifier</p><p>If the uk.co.randomcoding.partsdb.id.Identifiable has nested items that are themselves uk.co.randomcoding.partsdb.id.Identifiables
+then this will recurse and assign new ids to those items. However, if there are nested items that are uk.co.randomcoding.partsdb.id.Identifiers
+then these are assumed to be valid and are <b>not</b> checked.
+</p></div><dl class="paramcmts block"><dt class="param">item</dt><dd class="cmt"><p>The uk.co.randomcoding.partsdb.id.Identifiable to assign a valid id to</p></dd><dt>returns</dt><dd class="cmt"><p>A new instance of the [uk.co.randomcoding.partsdb.id.Identifiable]] with a valid id or the same instance if its current id is not
+the uk.co.randomcoding.partsdb.id.DefaultIdentifier
+</p></dd></dl><dl class="attributes block"> <dt>Definition Classes</dt><dd><a name="uk.co.randomcoding.partsdb.db.mongo.MongoIdentifierAccess" class="extype" href="MongoIdentifierAccess.html">MongoIdentifierAccess</a></dd></dl></div>
     </li><li visbl="prt" name="scala.AnyRef#clone" data-isabs="false">
       <a id="clone():AnyRef"></a>
       <h4 class="signature">
@@ -353,16 +369,19 @@
               
         </dd></dl></div>
     </li><li visbl="pub" name="uk.co.randomcoding.partsdb.db.mongo.MongoAllOrOneAccess#getAll" data-isabs="false">
-      <a id="getAll[T&lt;:AnyRef](String)(Manifest[T]):List[T]"></a>
+      <a id="getAll[TYPE&lt;:AnyRef](String)(Manifest[TYPE]):List[TYPE]"></a>
       <h4 class="signature">
       <span class="kind">def</span>
       <span class="symbol"> 
         <span class="name">getAll</span>
-        <span class="tparams">[<span name="T">T &lt;: AnyRef</span>]</span>
-        <span class="params">(<span name="idFieldName">idFieldName: String</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="mf">mf: Manifest[T]</span>)</span><span class="result">: List[T]</span>
+        <span class="tparams">[<span name="TYPE">TYPE &lt;: AnyRef</span>]</span>
+        <span class="params">(<span name="idFieldName">idFieldName: String</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="mf">mf: Manifest[TYPE]</span>)</span><span class="result">: List[TYPE]</span>
       </span>
       </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a name="uk.co.randomcoding.partsdb.db.mongo.MongoAllOrOneAccess" class="extype" href="MongoAllOrOneAccess.html">MongoAllOrOneAccess</a></dd></dl></div>
+      <p class="shortcomment cmt">Gets all the instances of a type of object from the database
+</p><div class="fullcomment"><div class="comment cmt"><p>Gets all the instances of a type of object from the database
+</p></div><dl class="paramcmts block"><dt class="param">idFieldName</dt><dd class="cmt"><p>The name of the id field in the object.</p></dd><dt>returns</dt><dd class="cmt"><p>All instances of the objects of type <code>TYPE</code> from the database.
+</p></dd></dl><dl class="attributes block"> <dt>Definition Classes</dt><dd><a name="uk.co.randomcoding.partsdb.db.mongo.MongoAllOrOneAccess" class="extype" href="MongoAllOrOneAccess.html">MongoAllOrOneAccess</a></dd></dl></div>
     </li><li visbl="pub" name="scala.AnyRef#getClass" data-isabs="false">
       <a id="getClass():java.lang.Class[_]"></a>
       <h4 class="signature">
@@ -375,16 +394,18 @@
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>final </dd><dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li visbl="pub" name="uk.co.randomcoding.partsdb.db.mongo.MongoAllOrOneAccess#getOne" data-isabs="false">
-      <a id="getOne[T&lt;:AnyRef](String,Identifier)(Manifest[T]):Option[T]"></a>
+      <a id="getOne[TYPE&lt;:AnyRef](String,Identifier)(Manifest[TYPE]):Option[TYPE]"></a>
       <h4 class="signature">
       <span class="kind">def</span>
       <span class="symbol"> 
         <span class="name">getOne</span>
-        <span class="tparams">[<span name="T">T &lt;: AnyRef</span>]</span>
-        <span class="params">(<span name="idFieldName">idFieldName: String</span>, <span name="id">id: <a name="uk.co.randomcoding.partsdb.core.id.Identifier" class="extype" href="../../core/id/Identifier.html">Identifier</a></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="mf">mf: Manifest[T]</span>)</span><span class="result">: <span name="scala.Option" class="extype">Option</span>[T]</span>
+        <span class="tparams">[<span name="TYPE">TYPE &lt;: AnyRef</span>]</span>
+        <span class="params">(<span name="idFieldName">idFieldName: String</span>, <span name="id">id: <a name="uk.co.randomcoding.partsdb.core.id.Identifier" class="extype" href="../../core/id/Identifier.html">Identifier</a></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="mf">mf: Manifest[TYPE]</span>)</span><span class="result">: <span name="scala.Option" class="extype">Option</span>[TYPE]</span>
       </span>
       </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a name="uk.co.randomcoding.partsdb.db.mongo.MongoAllOrOneAccess" class="extype" href="MongoAllOrOneAccess.html">MongoAllOrOneAccess</a></dd></dl></div>
+      <p class="shortcomment cmt">Gets the object from the database that has the specified uk.co.randomcoding.partsdb.code.id.Identifier.</p><div class="fullcomment"><div class="comment cmt"><p>Gets the object from the database that has the specified uk.co.randomcoding.partsdb.code.id.Identifier.
+</p></div><dl class="paramcmts block"><dt class="param">idFieldName</dt><dd class="cmt"><p>The name of the field that maps to the uk.co.randomcoding.partsdb.code.id.Identifier.</p></dd><dt class="param">id</dt><dd class="cmt"><p>The uk.co.randomcoding.partsdb.code.id.Identifier already assigned to the object</p></dd><dt>returns</dt><dd class="cmt"><p>The object of type <code>TYPE</code> that has the uk.co.randomcoding.partsdb.code.id.Identifier of <code>id</code>
+</p></dd></dl><dl class="attributes block"> <dt>Definition Classes</dt><dd><a name="uk.co.randomcoding.partsdb.db.mongo.MongoAllOrOneAccess" class="extype" href="MongoAllOrOneAccess.html">MongoAllOrOneAccess</a></dd></dl></div>
     </li><li visbl="pub" name="scala.AnyRef#hashCode" data-isabs="false">
       <a id="hashCode():Int"></a>
       <h4 class="signature">
@@ -518,13 +539,13 @@
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Logger</dd></dl></div>
     </li><li visbl="pub" name="uk.co.randomcoding.partsdb.db.mongo.MongoUpdateAccess#modify" data-isabs="false">
-      <a id="modify[T&lt;:AnyRef](T)(Manifest[T]):Boolean"></a>
+      <a id="modify[TYPE&lt;:Identifiable](TYPE)(Manifest[TYPE]):Boolean"></a>
       <h4 class="signature">
       <span class="kind">def</span>
       <span class="symbol"> 
         <span class="name">modify</span>
-        <span class="tparams">[<span name="T">T &lt;: AnyRef</span>]</span>
-        <span class="params">(<span name="modifiedItem">modifiedItem: T</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="mf">mf: Manifest[T]</span>)</span><span class="result">: <span name="scala.Boolean" class="extype">Boolean</span></span>
+        <span class="tparams">[<span name="TYPE">TYPE &lt;: <a name="uk.co.randomcoding.partsdb.core.id.Identifiable" class="extype" href="../../core/id/Identifiable.html">Identifiable</a></span>]</span>
+        <span class="params">(<span name="modifiedItem">modifiedItem: TYPE</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="mf">mf: Manifest[TYPE]</span>)</span><span class="result">: <span name="scala.Boolean" class="extype">Boolean</span></span>
       </span>
       </h4>
       <p class="shortcomment cmt">Modifies an object in the database to have the values of the <code>modifiedItem</code>.</p><div class="fullcomment"><div class="comment cmt"><p>Modifies an object in the database to have the values of the <code>modifiedItem</code>.</p><p>The item must already exist in the database (i.e. there is another entry with the same <a name="uk.co.randomcoding.partsdb.core.id.Identifier" class="extype" href="../../core/id/Identifier.html">Identifier</a>) already added.
@@ -576,13 +597,13 @@
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>final </dd><dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
     </li><li visbl="pub" name="uk.co.randomcoding.partsdb.db.mongo.MongoUpdateAccess#remove" data-isabs="false">
-      <a id="remove[T&lt;:AnyRef](T)(Manifest[T]):Boolean"></a>
+      <a id="remove[TYPE&lt;:Identifiable](TYPE)(Manifest[TYPE]):Boolean"></a>
       <h4 class="signature">
       <span class="kind">def</span>
       <span class="symbol"> 
         <span class="name">remove</span>
-        <span class="tparams">[<span name="T">T &lt;: AnyRef</span>]</span>
-        <span class="params">(<span name="item">item: T</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="mf">mf: Manifest[T]</span>)</span><span class="result">: <span name="scala.Boolean" class="extype">Boolean</span></span>
+        <span class="tparams">[<span name="TYPE">TYPE &lt;: <a name="uk.co.randomcoding.partsdb.core.id.Identifiable" class="extype" href="../../core/id/Identifiable.html">Identifiable</a></span>]</span>
+        <span class="params">(<span name="item">item: TYPE</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="mf">mf: Manifest[TYPE]</span>)</span><span class="result">: <span name="scala.Boolean" class="extype">Boolean</span></span>
       </span>
       </h4>
       <p class="shortcomment cmt">Removes an item from the database.</p><div class="fullcomment"><div class="comment cmt"><p>Removes an item from the database.</p><p>The item must exist in the database, <b>exactly as passed in to <code>item</code></b> otherwise it will not be found.

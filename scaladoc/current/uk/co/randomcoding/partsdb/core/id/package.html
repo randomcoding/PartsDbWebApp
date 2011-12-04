@@ -47,7 +47,18 @@
 
         <div class="types members" id="types">
               <h3>Type Members</h3>
-              <ol><li visbl="pub" name="uk.co.randomcoding.partsdb.core.id.Identifier" data-isabs="false">
+              <ol><li visbl="pub" name="uk.co.randomcoding.partsdb.core.id.Identifiable" data-isabs="true">
+      <a id="Identifiable:Identifiable"></a>
+      <h4 class="signature">
+      <span class="kind">trait</span>
+      <span class="symbol"> 
+        <a href="Identifiable.html"><span class="name">Identifiable</span></a>
+        
+        <span class="result"> extends AnyRef</span>
+      </span>
+      </h4>
+      <p class="comment cmt">Marks an object as being identifiable (within the Database).</p>
+    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.core.id.Identifier" data-isabs="false">
       <a id="Identifier:Identifier"></a>
       <h4 class="signature">
       <span class="kind">case class</span>
@@ -65,7 +76,30 @@
 
         <div class="values members" id="values">
               <h3>Value Members</h3>
-              <ol><li visbl="pub" name="uk.co.randomcoding.partsdb.core.id.Identifier" data-isabs="false">
+              <ol><li visbl="pub" name="uk.co.randomcoding.partsdb.core.id.DefaultIdentifiable" data-isabs="false">
+      <a id="DefaultIdentifiable:DefaultIdentifiable"></a>
+      <h4 class="signature">
+      <span class="kind">object</span>
+      <span class="symbol"> 
+        <a href="DefaultIdentifiable$.html"><span class="name">DefaultIdentifiable</span></a>
+        
+        <span class="result"> extends Identifiable</span>
+      </span>
+      </h4>
+      <p class="comment cmt">Default implementation of an Identifiable.</p>
+    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.core.id.DefaultIdentifier" data-isabs="false">
+      <a id="DefaultIdentifier:DefaultIdentifier"></a>
+      <h4 class="signature">
+      <span class="kind">object</span>
+      <span class="symbol"> 
+        <a href="DefaultIdentifier$.html"><span class="name">DefaultIdentifier</span></a>
+        
+        <span class="result"> extends Identifier</span>
+      </span>
+      </h4>
+      <p class="comment cmt">A default <a name="uk.co.randomcoding.partsdb.core.id.Identifier" class="extype" href="Identifier.html">Identifier</a> to indicate that a new one needs to be generated from the storage
+</p>
+    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.core.id.Identifier" data-isabs="false">
       <a id="Identifier:Identifier"></a>
       <h4 class="signature">
       <span class="kind">object</span>
@@ -75,7 +109,8 @@
         <span class="result"> extends Serializable</span>
       </span>
       </h4>
-      
+      <p class="comment cmt">Contains implicit conversions for <a name="uk.co.randomcoding.partsdb.core.id.Identifier" class="extype" href="Identifier.html">Identifier</a>s
+</p>
     </li></ol>
             </div>
 

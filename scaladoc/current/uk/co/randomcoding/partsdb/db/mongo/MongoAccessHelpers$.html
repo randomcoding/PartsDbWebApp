@@ -322,13 +322,13 @@
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>final </dd><dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li visbl="pub" name="uk.co.randomcoding.partsdb.db.mongo.MongoAccessHelpers#getDbObject" data-isabs="false">
-      <a id="getDbObject[T&lt;:AnyRef](T,MongoCollection)(Manifest[T]):MongoDBObject"></a>
+      <a id="getDbObject[TYPE&lt;:Identifiable](TYPE,MongoCollection)(Manifest[TYPE]):MongoDBObject"></a>
       <h4 class="signature">
       <span class="kind">def</span>
       <span class="symbol"> 
         <span class="name">getDbObject</span>
-        <span class="tparams">[<span name="T">T &lt;: AnyRef</span>]</span>
-        <span class="params">(<span name="item">item: T</span>, <span name="collection">collection: MongoCollection</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="mf">mf: Manifest[T]</span>)</span><span class="result">: MongoDBObject</span>
+        <span class="tparams">[<span name="TYPE">TYPE &lt;: <a name="uk.co.randomcoding.partsdb.core.id.Identifiable" class="extype" href="../../core/id/Identifiable.html">Identifiable</a></span>]</span>
+        <span class="params">(<span name="item">item: TYPE</span>, <span name="collection">collection: MongoCollection</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="mf">mf: Manifest[TYPE]</span>)</span><span class="result">: MongoDBObject</span>
       </span>
       </h4>
       <p class="shortcomment cmt">Gets the MongoDBObject that represents the item with the given id.</p><div class="fullcomment"><div class="comment cmt"><p>Gets the MongoDBObject that represents the item with the given id.
@@ -346,26 +346,26 @@
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li visbl="pub" name="uk.co.randomcoding.partsdb.db.mongo.MongoAccessHelpers#idIsInDb" data-isabs="false">
-      <a id="idIsInDb[T&lt;:AnyRef](T,MongoCollection)(Manifest[T]):Boolean"></a>
+      <a id="idIsInDb[TYPE&lt;:Identifiable](TYPE,MongoCollection)(Manifest[TYPE]):Boolean"></a>
       <h4 class="signature">
       <span class="kind">def</span>
       <span class="symbol"> 
         <span class="name">idIsInDb</span>
-        <span class="tparams">[<span name="T">T &lt;: AnyRef</span>]</span>
-        <span class="params">(<span name="t">t: T</span>, <span name="collection">collection: MongoCollection</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="mf">mf: Manifest[T]</span>)</span><span class="result">: <span name="scala.Boolean" class="extype">Boolean</span></span>
+        <span class="tparams">[<span name="TYPE">TYPE &lt;: <a name="uk.co.randomcoding.partsdb.core.id.Identifiable" class="extype" href="../../core/id/Identifiable.html">Identifiable</a></span>]</span>
+        <span class="params">(<span name="t">t: TYPE</span>, <span name="collection">collection: MongoCollection</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="mf">mf: Manifest[TYPE]</span>)</span><span class="result">: <span name="scala.Boolean" class="extype">Boolean</span></span>
       </span>
       </h4>
       <p class="shortcomment cmt">Checks the given collection contains an object with the <a name="uk.co.randomcoding.partsdb.core.id.Identifier" class="extype" href="../../core/id/Identifier.html">Identifier</a> of the provided object <code>(t)</code>.</p><div class="fullcomment"><div class="comment cmt"><p>Checks the given collection contains an object with the <a name="uk.co.randomcoding.partsdb.core.id.Identifier" class="extype" href="../../core/id/Identifier.html">Identifier</a> of the provided object <code>(t)</code>.</p><p>Can be used to check if an object has been added to the db by its id only
 </p></div><dl class="paramcmts block"><dt>returns</dt><dd class="cmt"><p><code>true</code> If the <a name="uk.co.randomcoding.partsdb.core.id.Identifier" class="extype" href="../../core/id/Identifier.html">Identifier</a> from <code>t</code> is present in the collection
 </p></dd></dl></div>
     </li><li visbl="pub" name="uk.co.randomcoding.partsdb.db.mongo.MongoAccessHelpers#idNotInDb" data-isabs="false">
-      <a id="idNotInDb[T&lt;:AnyRef](T,MongoCollection)(Manifest[T]):Boolean"></a>
+      <a id="idNotInDb[TYPE&lt;:Identifiable](TYPE,MongoCollection)(Manifest[TYPE]):Boolean"></a>
       <h4 class="signature">
       <span class="kind">def</span>
       <span class="symbol"> 
         <span class="name">idNotInDb</span>
-        <span class="tparams">[<span name="T">T &lt;: AnyRef</span>]</span>
-        <span class="params">(<span name="t">t: T</span>, <span name="collection">collection: MongoCollection</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="mf">mf: Manifest[T]</span>)</span><span class="result">: <span name="scala.Boolean" class="extype">Boolean</span></span>
+        <span class="tparams">[<span name="TYPE">TYPE &lt;: <a name="uk.co.randomcoding.partsdb.core.id.Identifiable" class="extype" href="../../core/id/Identifiable.html">Identifiable</a></span>]</span>
+        <span class="params">(<span name="t">t: TYPE</span>, <span name="collection">collection: MongoCollection</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="mf">mf: Manifest[TYPE]</span>)</span><span class="result">: <span name="scala.Boolean" class="extype">Boolean</span></span>
       </span>
       </h4>
       <p class="shortcomment cmt">Checks the given collection does not contain an object with the <a name="uk.co.randomcoding.partsdb.core.id.Identifier" class="extype" href="../../core/id/Identifier.html">Identifier</a> of the provided object <code>(t)</code>.</p><div class="fullcomment"><div class="comment cmt"><p>Checks the given collection does not contain an object with the <a name="uk.co.randomcoding.partsdb.core.id.Identifier" class="extype" href="../../core/id/Identifier.html">Identifier</a> of the provided object <code>(t)</code>.</p><p>Can be used to ensure there is not an identifier duplication before adding an object

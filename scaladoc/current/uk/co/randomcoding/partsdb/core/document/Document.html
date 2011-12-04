@@ -24,16 +24,16 @@
       <span class="symbol"> 
         <span class="name">Document</span>
         
-        <span class="params">(<span name="documentId">documentId: <a name="uk.co.randomcoding.partsdb.core.id.Identifier" class="extype" href="../id/Identifier.html">Identifier</a></span>, <span name="documentType">documentType: <a name="uk.co.randomcoding.partsdb.core.document.DocumentType" class="extype" href="DocumentType.html">DocumentType</a></span>)</span><span class="result"> extends <span name="scala.Product" class="extype">Product</span> with <span name="scala.Serializable" class="extype">Serializable</span></span>
+        <span class="params">(<span name="documentId">documentId: <a name="uk.co.randomcoding.partsdb.core.id.Identifier" class="extype" href="../id/Identifier.html">Identifier</a></span>, <span name="documentType">documentType: <a name="uk.co.randomcoding.partsdb.core.document.DocumentType" class="extype" href="DocumentType.html">DocumentType</a></span>)</span><span class="result"> extends <a name="uk.co.randomcoding.partsdb.core.id.Identifiable" class="extype" href="../id/Identifiable.html">Identifiable</a> with <span name="scala.Product" class="extype">Product</span> with <span name="scala.Serializable" class="extype">Serializable</span></span>
       </span>
       </h4>
       
           <div class="fullcommenttop" id="comment"><div class="comment cmt"><p>Base class for documents.</p><p>A document is a entity that is stored in the database, and has a document is.
-It is likely that a document will also be <a name="uk.co.randomcoding.partsdb.core.document.Printable" class="extype" href="Printable.html">Printable</a> in the future</p><p>Documents contain line items and address details.</p><p>Addresses are stored by ID? maybe
+It is likely that a document will also be <a name="uk.co.randomcoding.partsdb.core.document.Printable" class="extype" href="Printable.html">Printable</a> in the future</p><p>Documents contain line items and address details.
 </p></div><dl class="paramcmts block"><dt class="param">documentId</dt><dd class="cmt"><p>The uk.co.randomcoding.partsdb.core.document.DocumentId of this document. This also identifies its type
 </p></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><span name="scala.Serializable" class="extype">Serializable</span>, <span name="java.io.Serializable" class="extype">Serializable</span>, <span name="scala.Product" class="extype">Product</span>, <span name="scala.Equals" class="extype">Equals</span>, AnyRef, <span name="scala.Any" class="extype">Any</span></div>
+          <div class="superTypes hiddenContent"><span name="scala.Serializable" class="extype">Serializable</span>, <span name="java.io.Serializable" class="extype">Serializable</span>, <span name="scala.Product" class="extype">Product</span>, <span name="scala.Equals" class="extype">Equals</span>, <a name="uk.co.randomcoding.partsdb.core.id.Identifiable" class="extype" href="../id/Identifiable.html">Identifiable</a>, AnyRef, <span name="scala.Any" class="extype">Any</span></div>
         </div></div>
         
 
@@ -49,7 +49,7 @@ It is likely that a document will also be <a name="uk.co.randomcoding.partsdb.co
                 <span class="filtertype">Inherited</span>
                 <ol><li class="hideall out"><span>Hide All</span></li>
                 <li class="showall in"><span>Show all</span></li></ol>
-                <ol id="linearization"><li name="uk.co.randomcoding.partsdb.core.document.Document" class="in"><span>Document</span></li><li name="scala.Serializable" class="in"><span>Serializable</span></li><li name="java.io.Serializable" class="in"><span>Serializable</span></li><li name="scala.Product" class="in"><span>Product</span></li><li name="scala.Equals" class="in"><span>Equals</span></li><li name="scala.AnyRef" class="in"><span>AnyRef</span></li><li name="scala.Any" class="in"><span>Any</span></li></ol>
+                <ol id="linearization"><li name="uk.co.randomcoding.partsdb.core.document.Document" class="in"><span>Document</span></li><li name="scala.Serializable" class="in"><span>Serializable</span></li><li name="java.io.Serializable" class="in"><span>Serializable</span></li><li name="scala.Product" class="in"><span>Product</span></li><li name="scala.Equals" class="in"><span>Equals</span></li><li name="uk.co.randomcoding.partsdb.core.id.Identifiable" class="in"><span>Identifiable</span></li><li name="scala.AnyRef" class="in"><span>AnyRef</span></li><li name="scala.Any" class="in"><span>Any</span></li></ol>
               </div>
           <div id="visbl">
               <span class="filtertype">Visibility</span>
@@ -252,6 +252,31 @@ It is likely that a document will also be <a name="uk.co.randomcoding.partsdb.co
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a name="uk.co.randomcoding.partsdb.core.document.Document" class="extype" href="">Document</a> → AnyRef → Any</dd></dl></div>
+    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.core.id.Identifiable#id" data-isabs="false">
+      <a id="id:Long"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">id</span>
+        
+        <span class="result">: <span name="scala.Long" class="extype">Long</span></span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">Accessor for the actual identifier value to allow building of the MongoDB query to find the item</p><div class="fullcomment"><div class="comment cmt"><p>Accessor for the actual identifier value to allow building of the MongoDB query to find the item</p><p>This default implementation uses Java reflection to get the method declared with the name given by <code>identifierFieldName</code>
+and get the <code>id</code> value of the returned <a name="uk.co.randomcoding.partsdb.core.id.Identifier" class="extype" href="../id/Identifier.html">Identifier</a></p><p>It is not intended that this be overridden, but can be if required.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a name="uk.co.randomcoding.partsdb.core.id.Identifiable" class="extype" href="../id/Identifiable.html">Identifiable</a></dd></dl></div>
+    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.core.document.Document#identifierFieldName" data-isabs="false">
+      <a id="identifierFieldName:String"></a>
+      <h4 class="signature">
+      <span class="kind">val</span>
+      <span class="symbol"> 
+        <span class="name">identifierFieldName</span>
+        
+        <span class="result">: <span name="java.lang.String" class="extype">String</span></span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">The name of the case class parameter that maps to the object's uk.co.randomcoding.partsdb.code.id.Identifier</p><div class="fullcomment"><div class="comment cmt"><p>The name of the case class parameter that maps to the object's uk.co.randomcoding.partsdb.code.id.Identifier</p><p>This should take the general form of <code>classNameId</code> where <code>className</code> is the appropriately camel cased version of the enclosing class's name
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a name="uk.co.randomcoding.partsdb.core.document.Document" class="extype" href="">Document</a> → <a name="uk.co.randomcoding.partsdb.core.id.Identifiable" class="extype" href="../id/Identifiable.html">Identifiable</a></dd></dl></div>
     </li><li visbl="pub" name="scala.Any#isInstanceOf" data-isabs="false">
       <a id="isInstanceOf[T0]:Boolean"></a>
       <h4 class="signature">
@@ -434,6 +459,8 @@ It is likely that a document will also be <a name="uk.co.randomcoding.partsdb.co
               <h3>Inherited from <span name="scala.Product" class="extype">Product</span></h3>
             </div><div name="scala.Equals" class="parent">
               <h3>Inherited from <span name="scala.Equals" class="extype">Equals</span></h3>
+            </div><div name="uk.co.randomcoding.partsdb.core.id.Identifiable" class="parent">
+              <h3>Inherited from <a name="uk.co.randomcoding.partsdb.core.id.Identifiable" class="extype" href="../id/Identifiable.html">Identifiable</a></h3>
             </div><div name="scala.AnyRef" class="parent">
               <h3>Inherited from AnyRef</h3>
             </div><div name="scala.Any" class="parent">

@@ -24,13 +24,17 @@
       <span class="symbol"> 
         <span class="name">DbAccess</span>
         
-        <span class="result"> extends AnyRef</span>
+        <span class="result"> extends <a name="uk.co.randomcoding.partsdb.db.mongo.MongoIdentifierAccess" class="extype" href="mongo/MongoIdentifierAccess.html">MongoIdentifierAccess</a> with <a name="uk.co.randomcoding.partsdb.db.mongo.MongoUpdateAccess" class="extype" href="mongo/MongoUpdateAccess.html">MongoUpdateAccess</a> with <a name="uk.co.randomcoding.partsdb.db.mongo.MongoAllOrOneAccess" class="extype" href="mongo/MongoAllOrOneAccess.html">MongoAllOrOneAccess</a> with <span name="net.liftweb.common.Logger" class="extype">Logger</span></span>
       </span>
       </h4>
       
-          <div class="fullcommenttop" id="comment"><div class="comment cmt"><p>Defines the database access (getter) interface api for the system.</p><p>By extending this trait and defining the</p></div><div class="toggleContainer block">
+          <div class="fullcommenttop" id="comment"><div class="comment cmt"><p>Encapsulates all the Database access functionality in a single class
+</p></div><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent">AnyRef, <span name="scala.Any" class="extype">Any</span></div>
+          <div class="superTypes hiddenContent"><a name="uk.co.randomcoding.partsdb.db.mongo.MongoAllOrOneAccess" class="extype" href="mongo/MongoAllOrOneAccess.html">MongoAllOrOneAccess</a>, <span name="net.liftweb.common.Logger" class="extype">Logger</span>, <a name="uk.co.randomcoding.partsdb.db.mongo.MongoUpdateAccess" class="extype" href="mongo/MongoUpdateAccess.html">MongoUpdateAccess</a>, <a name="uk.co.randomcoding.partsdb.db.mongo.MongoIdentifierAccess" class="extype" href="mongo/MongoIdentifierAccess.html">MongoIdentifierAccess</a>, AnyRef, <span name="scala.Any" class="extype">Any</span></div>
+        </div><div class="toggleContainer block">
+          <span class="toggle">Known Subclasses</span>
+          <div class="subClasses hiddenContent"><a name="uk.co.randomcoding.partsdb.lift.snippet.AddCustomer" class="extype" href="../lift/snippet/AddCustomer.html">AddCustomer</a>, <a name="uk.co.randomcoding.partsdb.lift.util.snippet.DbAccessSnippet" class="extype" href="../lift/util/snippet/DbAccessSnippet.html">DbAccessSnippet</a>, <a name="uk.co.randomcoding.partsdb.lift.snippet.DisplayExisting" class="extype" href="../lift/snippet/DisplayExisting.html">DisplayExisting</a></div>
         </div></div>
         
 
@@ -46,7 +50,7 @@
                 <span class="filtertype">Inherited</span>
                 <ol><li class="hideall out"><span>Hide All</span></li>
                 <li class="showall in"><span>Show all</span></li></ol>
-                <ol id="linearization"><li name="uk.co.randomcoding.partsdb.db.DbAccess" class="in"><span>DbAccess</span></li><li name="scala.AnyRef" class="in"><span>AnyRef</span></li><li name="scala.Any" class="in"><span>Any</span></li></ol>
+                <ol id="linearization"><li name="uk.co.randomcoding.partsdb.db.DbAccess" class="in"><span>DbAccess</span></li><li name="uk.co.randomcoding.partsdb.db.mongo.MongoAllOrOneAccess" class="in"><span>MongoAllOrOneAccess</span></li><li name="net.liftweb.common.Logger" class="in"><span>Logger</span></li><li name="uk.co.randomcoding.partsdb.db.mongo.MongoUpdateAccess" class="in"><span>MongoUpdateAccess</span></li><li name="uk.co.randomcoding.partsdb.db.mongo.MongoIdentifierAccess" class="in"><span>MongoIdentifierAccess</span></li><li name="scala.AnyRef" class="in"><span>AnyRef</span></li><li name="scala.Any" class="in"><span>Any</span></li></ol>
               </div>
           <div id="visbl">
               <span class="filtertype">Visibility</span>
@@ -58,26 +62,10 @@
 
         
         
-        <div class="values members" id="values">
-              <h3>Abstract Value Members</h3>
-              <ol><li visbl="pub" name="uk.co.randomcoding.partsdb.db.DbAccess#add" data-isabs="true">
-      <a id="add[T&lt;:AnyRef](T):Unit"></a>
-      <h4 class="signature">
-      <span class="kind">def</span>
-      <span class="symbol"> 
-        <span class="name">add</span>
-        <span class="tparams">[<span name="T">T &lt;: AnyRef</span>]</span>
-        <span class="params">(<span name="t">t: T</span>)</span><span class="result">: <span name="scala.Unit" class="extype">Unit</span></span>
-      </span>
-      </h4>
-      <p class="shortcomment cmt">Add an entity to the database
-</p><div class="fullcomment"><div class="comment cmt"><p>Add an entity to the database
-</p></div><dl class="attributes block"> <dt>Attributes</dt><dd>abstract </dd></dl></div>
-    </li></ol>
-            </div>
+        
 
         <div class="values members" id="values">
-              <h3>Concrete Value Members</h3>
+              <h3>Value Members</h3>
               <ol><li visbl="pub" name="scala.AnyRef#!=" data-isabs="false">
       <a id="!=(AnyRef):Boolean"></a>
       <h4 class="signature">
@@ -133,6 +121,42 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>final </dd><dt>Definition Classes</dt><dd>Any</dd></dl></div>
+    </li><li visbl="prt" name="net.liftweb.common.Logger#_logger" data-isabs="false">
+      <a id="_logger:Logger"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">_logger</span>
+        
+        <span class="result">: <span name="org.slf4j.Logger" class="extype">Logger</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>Logger</dd></dl></div>
+    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.db.mongo.MongoUpdateAccess#add" data-isabs="false">
+      <a id="add[TYPE&lt;:Identifiable](TYPE)(Manifest[TYPE]):Boolean"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">add</span>
+        <span class="tparams">[<span name="TYPE">TYPE &lt;: <a name="uk.co.randomcoding.partsdb.core.id.Identifiable" class="extype" href="../core/id/Identifiable.html">Identifiable</a></span>]</span>
+        <span class="params">(<span name="newItem">newItem: TYPE</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="mf">mf: Manifest[TYPE]</span>)</span><span class="result">: <span name="scala.Boolean" class="extype">Boolean</span></span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">Adds an object into the database if there is not already another item with the same <a name="uk.co.randomcoding.partsdb.core.id.Identifier" class="extype" href="../core/id/Identifier.html">Identifier</a>.</p><div class="fullcomment"><div class="comment cmt"><p>Adds an object into the database if there is not already another item with the same <a name="uk.co.randomcoding.partsdb.core.id.Identifier" class="extype" href="../core/id/Identifier.html">Identifier</a>.</p><p>In order to be added, the <code>new Entry</code> <b><i>must</i></b> have an <a name="uk.co.randomcoding.partsdb.core.id.Identifier" class="extype" href="../core/id/Identifier.html">Identifier</a> variable that has a name ending with <i>Id</i>.
+</p></div><dl class="paramcmts block"><dt class="param">newItem</dt><dd class="cmt"><p>The new item to add to the database.</p></dd><dt>returns</dt><dd class="cmt"><p><code>true</code> iff there was no other object with the same <a name="uk.co.randomcoding.partsdb.core.id.Identifier" class="extype" href="../core/id/Identifier.html">Identifier</a> and
+	the add operation resulted in there being an object with the new <a name="uk.co.randomcoding.partsdb.core.id.Identifier" class="extype" href="../core/id/Identifier.html">Identifier</a> in the db
+</p></dd></dl><dl class="attributes block"> <dt>Definition Classes</dt><dd><a name="uk.co.randomcoding.partsdb.db.mongo.MongoUpdateAccess" class="extype" href="mongo/MongoUpdateAccess.html">MongoUpdateAccess</a></dd></dl></div>
+    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.db.DbAccess#addNewCustomer" data-isabs="false">
+      <a id="addNewCustomer(String,Address,Address,PaymentTerms,ContactDetails):Customer"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">addNewCustomer</span>
+        
+        <span class="params">(<span name="contactName">contactName: String</span>, <span name="billingAddress">billingAddress: <a name="uk.co.randomcoding.partsdb.core.address.Address" class="extype" href="../core/address/Address.html">Address</a></span>, <span name="deliveryAddress">deliveryAddress: <a name="uk.co.randomcoding.partsdb.core.address.Address" class="extype" href="../core/address/Address.html">Address</a></span>, <span name="terms">terms: <a name="uk.co.randomcoding.partsdb.core.terms.PaymentTerms" class="extype" href="../core/terms/PaymentTerms.html">PaymentTerms</a></span>, <span name="contact">contact: <a name="uk.co.randomcoding.partsdb.core.contact.ContactDetails" class="extype" href="../core/contact/ContactDetails.html">ContactDetails</a></span>)</span><span class="result">: <a name="uk.co.randomcoding.partsdb.core.customer.Customer" class="extype" href="../core/customer/Customer.html">Customer</a></span>
+      </span>
+      </h4>
+      
     </li><li visbl="pub" name="scala.Any#asInstanceOf" data-isabs="false">
       <a id="asInstanceOf[T0]:T0"></a>
       <h4 class="signature">
@@ -144,6 +168,33 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>final </dd><dt>Definition Classes</dt><dd>Any</dd></dl></div>
+    </li><li visbl="pub" name="net.liftweb.common.Logger#assertLog" data-isabs="false">
+      <a id="assertLog(Boolean,⇒ String):Unit"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">assertLog</span>
+        
+        <span class="params">(<span name="assertion">assertion: <span name="scala.Boolean" class="extype">Boolean</span></span>, <span name="msg">msg: ⇒ String</span>)</span><span class="result">: <span name="scala.Unit" class="extype">Unit</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Logger</dd></dl></div>
+    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.db.mongo.MongoIdentifierAccess#assignId" data-isabs="false">
+      <a id="assignId(Identifiable):Identifiable"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">assignId</span>
+        
+        <span class="params">(<span name="item">item: <a name="uk.co.randomcoding.partsdb.core.id.Identifiable" class="extype" href="../core/id/Identifiable.html">Identifiable</a></span>)</span><span class="result">: <a name="uk.co.randomcoding.partsdb.core.id.Identifiable" class="extype" href="../core/id/Identifiable.html">Identifiable</a></span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">Assigns a valid id to an uk.co.randomcoding.partsdb.id.Identifiable if its' id value is a uk.co.randomcoding.partsdb.id.DefaultIdentifier</p><div class="fullcomment"><div class="comment cmt"><p>Assigns a valid id to an uk.co.randomcoding.partsdb.id.Identifiable if its' id value is a uk.co.randomcoding.partsdb.id.DefaultIdentifier</p><p>If the uk.co.randomcoding.partsdb.id.Identifiable has nested items that are themselves uk.co.randomcoding.partsdb.id.Identifiables
+then this will recurse and assign new ids to those items. However, if there are nested items that are uk.co.randomcoding.partsdb.id.Identifiers
+then these are assumed to be valid and are <b>not</b> checked.
+</p></div><dl class="paramcmts block"><dt class="param">item</dt><dd class="cmt"><p>The uk.co.randomcoding.partsdb.id.Identifiable to assign a valid id to</p></dd><dt>returns</dt><dd class="cmt"><p>A new instance of the [uk.co.randomcoding.partsdb.id.Identifiable]] with a valid id or the same instance if its current id is not
+the uk.co.randomcoding.partsdb.id.DefaultIdentifier
+</p></dd></dl><dl class="attributes block"> <dt>Definition Classes</dt><dd><a name="uk.co.randomcoding.partsdb.db.mongo.MongoIdentifierAccess" class="extype" href="mongo/MongoIdentifierAccess.html">MongoIdentifierAccess</a></dd></dl></div>
     </li><li visbl="prt" name="scala.AnyRef#clone" data-isabs="false">
       <a id="clone():AnyRef"></a>
       <h4 class="signature">
@@ -158,6 +209,94 @@
                 <span class="name">@throws</span><span class="args">()</span>
               
         </dd></dl></div>
+    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.db.DbAccess#collection" data-isabs="false">
+      <a id="collection:MongoCollection"></a>
+      <h4 class="signature">
+      <span class="kind">lazy val</span>
+      <span class="symbol"> 
+        <span class="name">collection</span>
+        
+        <span class="result">: MongoCollection</span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a name="uk.co.randomcoding.partsdb.db.DbAccess" class="extype" href="">DbAccess</a> → <a name="uk.co.randomcoding.partsdb.db.mongo.MongoAllOrOneAccess" class="extype" href="mongo/MongoAllOrOneAccess.html">MongoAllOrOneAccess</a> → <a name="uk.co.randomcoding.partsdb.db.mongo.MongoUpdateAccess" class="extype" href="mongo/MongoUpdateAccess.html">MongoUpdateAccess</a> → <a name="uk.co.randomcoding.partsdb.db.mongo.MongoIdentifierAccess" class="extype" href="mongo/MongoIdentifierAccess.html">MongoIdentifierAccess</a></dd></dl></div>
+    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.db.DbAccess#collectionName" data-isabs="false">
+      <a id="collectionName:String"></a>
+      <h4 class="signature">
+      <span class="kind">val</span>
+      <span class="symbol"> 
+        <span class="name">collectionName</span>
+        
+        <span class="result">: String</span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt"></p>
+    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.db.DbAccess#dbName" data-isabs="false">
+      <a id="dbName:String"></a>
+      <h4 class="signature">
+      <span class="kind">val</span>
+      <span class="symbol"> 
+        <span class="name">dbName</span>
+        
+        <span class="result">: String</span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt"></p>
+    </li><li visbl="pub" name="net.liftweb.common.Logger#debug" data-isabs="false">
+      <a id="debug(⇒ AnyRef,Throwable,Marker):Unit"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">debug</span>
+        
+        <span class="params">(<span name="msg">msg: ⇒ AnyRef</span>, <span name="t">t: Throwable</span>, <span name="marker">marker: <span name="org.slf4j.Marker" class="extype">Marker</span></span>)</span><span class="result">: <span name="scala.Unit" class="extype">Unit</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Logger</dd></dl></div>
+    </li><li visbl="pub" name="net.liftweb.common.Logger#debug" data-isabs="false">
+      <a id="debug(⇒ AnyRef,Marker):Unit"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">debug</span>
+        
+        <span class="params">(<span name="msg">msg: ⇒ AnyRef</span>, <span name="marker">marker: <span name="org.slf4j.Marker" class="extype">Marker</span></span>)</span><span class="result">: <span name="scala.Unit" class="extype">Unit</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Logger</dd></dl></div>
+    </li><li visbl="pub" name="net.liftweb.common.Logger#debug" data-isabs="false">
+      <a id="debug(⇒ AnyRef,Throwable):Unit"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">debug</span>
+        
+        <span class="params">(<span name="msg">msg: ⇒ AnyRef</span>, <span name="t">t: Throwable</span>)</span><span class="result">: <span name="scala.Unit" class="extype">Unit</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Logger</dd></dl></div>
+    </li><li visbl="pub" name="net.liftweb.common.Logger#debug" data-isabs="false">
+      <a id="debug(⇒ AnyRef):Unit"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">debug</span>
+        
+        <span class="params">(<span name="msg">msg: ⇒ AnyRef</span>)</span><span class="result">: <span name="scala.Unit" class="extype">Unit</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Logger</dd></dl></div>
+    </li><li visbl="pub" name="net.liftweb.common.Logger#debug" data-isabs="false">
+      <a id="debug(⇒ AnyRef,net.liftweb.common.Box[_]):Unit"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">debug</span>
+        
+        <span class="params">(<span name="msg">msg: ⇒ AnyRef</span>, <span name="box">box: net.liftweb.common.Box[_]</span>)</span><span class="result">: <span name="scala.Unit" class="extype">Unit</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Logger</dd></dl></div>
     </li><li visbl="pub" name="scala.AnyRef#eq" data-isabs="false">
       <a id="eq(AnyRef):Boolean"></a>
       <h4 class="signature">
@@ -180,6 +319,61 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li visbl="pub" name="net.liftweb.common.Logger#error" data-isabs="false">
+      <a id="error(⇒ AnyRef,Throwable,Marker):Unit"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">error</span>
+        
+        <span class="params">(<span name="msg">msg: ⇒ AnyRef</span>, <span name="t">t: Throwable</span>, <span name="marker">marker: <span name="org.slf4j.Marker" class="extype">Marker</span></span>)</span><span class="result">: <span name="scala.Unit" class="extype">Unit</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Logger</dd></dl></div>
+    </li><li visbl="pub" name="net.liftweb.common.Logger#error" data-isabs="false">
+      <a id="error(⇒ AnyRef,Marker):Unit"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">error</span>
+        
+        <span class="params">(<span name="msg">msg: ⇒ AnyRef</span>, <span name="marker">marker: <span name="org.slf4j.Marker" class="extype">Marker</span></span>)</span><span class="result">: <span name="scala.Unit" class="extype">Unit</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Logger</dd></dl></div>
+    </li><li visbl="pub" name="net.liftweb.common.Logger#error" data-isabs="false">
+      <a id="error(⇒ AnyRef,Throwable):Unit"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">error</span>
+        
+        <span class="params">(<span name="msg">msg: ⇒ AnyRef</span>, <span name="t">t: Throwable</span>)</span><span class="result">: <span name="scala.Unit" class="extype">Unit</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Logger</dd></dl></div>
+    </li><li visbl="pub" name="net.liftweb.common.Logger#error" data-isabs="false">
+      <a id="error(⇒ AnyRef):Unit"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">error</span>
+        
+        <span class="params">(<span name="msg">msg: ⇒ AnyRef</span>)</span><span class="result">: <span name="scala.Unit" class="extype">Unit</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Logger</dd></dl></div>
+    </li><li visbl="pub" name="net.liftweb.common.Logger#error" data-isabs="false">
+      <a id="error(⇒ AnyRef,net.liftweb.common.Box[_]):Unit"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">error</span>
+        
+        <span class="params">(<span name="msg">msg: ⇒ AnyRef</span>, <span name="box">box: net.liftweb.common.Box[_]</span>)</span><span class="result">: <span name="scala.Unit" class="extype">Unit</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Logger</dd></dl></div>
     </li><li visbl="prt" name="scala.AnyRef#finalize" data-isabs="false">
       <a id="finalize():Unit"></a>
       <h4 class="signature">
@@ -194,6 +388,20 @@
                 <span class="name">@throws</span><span class="args">()</span>
               
         </dd></dl></div>
+    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.db.mongo.MongoAllOrOneAccess#getAll" data-isabs="false">
+      <a id="getAll[TYPE&lt;:AnyRef](String)(Manifest[TYPE]):List[TYPE]"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">getAll</span>
+        <span class="tparams">[<span name="TYPE">TYPE &lt;: AnyRef</span>]</span>
+        <span class="params">(<span name="idFieldName">idFieldName: String</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="mf">mf: Manifest[TYPE]</span>)</span><span class="result">: List[TYPE]</span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">Gets all the instances of a type of object from the database
+</p><div class="fullcomment"><div class="comment cmt"><p>Gets all the instances of a type of object from the database
+</p></div><dl class="paramcmts block"><dt class="param">idFieldName</dt><dd class="cmt"><p>The name of the id field in the object.</p></dd><dt>returns</dt><dd class="cmt"><p>All instances of the objects of type <code>TYPE</code> from the database.
+</p></dd></dl><dl class="attributes block"> <dt>Definition Classes</dt><dd><a name="uk.co.randomcoding.partsdb.db.mongo.MongoAllOrOneAccess" class="extype" href="mongo/MongoAllOrOneAccess.html">MongoAllOrOneAccess</a></dd></dl></div>
     </li><li visbl="pub" name="scala.AnyRef#getClass" data-isabs="false">
       <a id="getClass():java.lang.Class[_]"></a>
       <h4 class="signature">
@@ -205,6 +413,19 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>final </dd><dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.db.mongo.MongoAllOrOneAccess#getOne" data-isabs="false">
+      <a id="getOne[TYPE&lt;:AnyRef](String,Identifier)(Manifest[TYPE]):Option[TYPE]"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">getOne</span>
+        <span class="tparams">[<span name="TYPE">TYPE &lt;: AnyRef</span>]</span>
+        <span class="params">(<span name="idFieldName">idFieldName: String</span>, <span name="id">id: <a name="uk.co.randomcoding.partsdb.core.id.Identifier" class="extype" href="../core/id/Identifier.html">Identifier</a></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="mf">mf: Manifest[TYPE]</span>)</span><span class="result">: <span name="scala.Option" class="extype">Option</span>[TYPE]</span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">Gets the object from the database that has the specified uk.co.randomcoding.partsdb.code.id.Identifier.</p><div class="fullcomment"><div class="comment cmt"><p>Gets the object from the database that has the specified uk.co.randomcoding.partsdb.code.id.Identifier.
+</p></div><dl class="paramcmts block"><dt class="param">idFieldName</dt><dd class="cmt"><p>The name of the field that maps to the uk.co.randomcoding.partsdb.code.id.Identifier.</p></dd><dt class="param">id</dt><dd class="cmt"><p>The uk.co.randomcoding.partsdb.code.id.Identifier already assigned to the object</p></dd><dt>returns</dt><dd class="cmt"><p>The object of type <code>TYPE</code> that has the uk.co.randomcoding.partsdb.code.id.Identifier of <code>id</code>
+</p></dd></dl><dl class="attributes block"> <dt>Definition Classes</dt><dd><a name="uk.co.randomcoding.partsdb.db.mongo.MongoAllOrOneAccess" class="extype" href="mongo/MongoAllOrOneAccess.html">MongoAllOrOneAccess</a></dd></dl></div>
     </li><li visbl="pub" name="scala.AnyRef#hashCode" data-isabs="false">
       <a id="hashCode():Int"></a>
       <h4 class="signature">
@@ -216,6 +437,94 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li visbl="pub" name="net.liftweb.common.Logger#info" data-isabs="false">
+      <a id="info(⇒ AnyRef,Throwable,Marker):Unit"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">info</span>
+        
+        <span class="params">(<span name="msg">msg: ⇒ AnyRef</span>, <span name="t">t: Throwable</span>, <span name="marker">marker: <span name="org.slf4j.Marker" class="extype">Marker</span></span>)</span><span class="result">: <span name="scala.Unit" class="extype">Unit</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Logger</dd></dl></div>
+    </li><li visbl="pub" name="net.liftweb.common.Logger#info" data-isabs="false">
+      <a id="info(⇒ AnyRef,Marker):Unit"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">info</span>
+        
+        <span class="params">(<span name="msg">msg: ⇒ AnyRef</span>, <span name="marker">marker: <span name="org.slf4j.Marker" class="extype">Marker</span></span>)</span><span class="result">: <span name="scala.Unit" class="extype">Unit</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Logger</dd></dl></div>
+    </li><li visbl="pub" name="net.liftweb.common.Logger#info" data-isabs="false">
+      <a id="info(⇒ AnyRef,⇒ Throwable):Unit"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">info</span>
+        
+        <span class="params">(<span name="msg">msg: ⇒ AnyRef</span>, <span name="t">t: ⇒ Throwable</span>)</span><span class="result">: <span name="scala.Unit" class="extype">Unit</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Logger</dd></dl></div>
+    </li><li visbl="pub" name="net.liftweb.common.Logger#info" data-isabs="false">
+      <a id="info(⇒ AnyRef):Unit"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">info</span>
+        
+        <span class="params">(<span name="msg">msg: ⇒ AnyRef</span>)</span><span class="result">: <span name="scala.Unit" class="extype">Unit</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Logger</dd></dl></div>
+    </li><li visbl="pub" name="net.liftweb.common.Logger#info" data-isabs="false">
+      <a id="info(⇒ AnyRef,net.liftweb.common.Box[_]):Unit"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">info</span>
+        
+        <span class="params">(<span name="msg">msg: ⇒ AnyRef</span>, <span name="box">box: net.liftweb.common.Box[_]</span>)</span><span class="result">: <span name="scala.Unit" class="extype">Unit</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Logger</dd></dl></div>
+    </li><li visbl="pub" name="net.liftweb.common.Logger#isDebugEnabled" data-isabs="false">
+      <a id="isDebugEnabled:Boolean"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">isDebugEnabled</span>
+        
+        <span class="result">: <span name="scala.Boolean" class="extype">Boolean</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Logger</dd></dl></div>
+    </li><li visbl="pub" name="net.liftweb.common.Logger#isErrorEnabled" data-isabs="false">
+      <a id="isErrorEnabled:Boolean"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">isErrorEnabled</span>
+        
+        <span class="result">: <span name="scala.Boolean" class="extype">Boolean</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Logger</dd></dl></div>
+    </li><li visbl="pub" name="net.liftweb.common.Logger#isInfoEnabled" data-isabs="false">
+      <a id="isInfoEnabled:Boolean"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">isInfoEnabled</span>
+        
+        <span class="result">: <span name="scala.Boolean" class="extype">Boolean</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Logger</dd></dl></div>
     </li><li visbl="pub" name="scala.Any#isInstanceOf" data-isabs="false">
       <a id="isInstanceOf[T0]:Boolean"></a>
       <h4 class="signature">
@@ -227,6 +536,41 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>final </dd><dt>Definition Classes</dt><dd>Any</dd></dl></div>
+    </li><li visbl="pub" name="net.liftweb.common.Logger#isTraceEnabled" data-isabs="false">
+      <a id="isTraceEnabled:Boolean"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">isTraceEnabled</span>
+        
+        <span class="result">: <span name="scala.Boolean" class="extype">Boolean</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Logger</dd></dl></div>
+    </li><li visbl="pub" name="net.liftweb.common.Logger#isWarnEnabled" data-isabs="false">
+      <a id="isWarnEnabled:Boolean"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">isWarnEnabled</span>
+        
+        <span class="result">: <span name="scala.Boolean" class="extype">Boolean</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Logger</dd></dl></div>
+    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.db.mongo.MongoUpdateAccess#modify" data-isabs="false">
+      <a id="modify[TYPE&lt;:Identifiable](TYPE)(Manifest[TYPE]):Boolean"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">modify</span>
+        <span class="tparams">[<span name="TYPE">TYPE &lt;: <a name="uk.co.randomcoding.partsdb.core.id.Identifiable" class="extype" href="../core/id/Identifiable.html">Identifiable</a></span>]</span>
+        <span class="params">(<span name="modifiedItem">modifiedItem: TYPE</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="mf">mf: Manifest[TYPE]</span>)</span><span class="result">: <span name="scala.Boolean" class="extype">Boolean</span></span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">Modifies an object in the database to have the values of the <code>modifiedItem</code>.</p><div class="fullcomment"><div class="comment cmt"><p>Modifies an object in the database to have the values of the <code>modifiedItem</code>.</p><p>The item must already exist in the database (i.e. there is another entry with the same <a name="uk.co.randomcoding.partsdb.core.id.Identifier" class="extype" href="../core/id/Identifier.html">Identifier</a>) already added.
+</p></div><dl class="paramcmts block"><dt class="param">modifiedItem</dt><dd class="cmt"><p>The item with the new values to be added to the database</p></dd><dt>returns</dt><dd class="cmt"><p><code>true</code> iff there is an item in the database with the same identifier and the update operation succeeds.
+</p></dd></dl><dl class="attributes block"> <dt>Definition Classes</dt><dd><a name="uk.co.randomcoding.partsdb.db.mongo.MongoUpdateAccess" class="extype" href="mongo/MongoUpdateAccess.html">MongoUpdateAccess</a></dd></dl></div>
     </li><li visbl="pub" name="scala.AnyRef#ne" data-isabs="false">
       <a id="ne(AnyRef):Boolean"></a>
       <h4 class="signature">
@@ -238,6 +582,18 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>final </dd><dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.db.mongo.MongoIdentifierAccess#nextId" data-isabs="false">
+      <a id="nextId():Long"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">nextId</span>
+        
+        <span class="params">()</span><span class="result">: <span name="scala.Long" class="extype">Long</span></span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">Gets the next value for the unique id.</p><div class="fullcomment"><div class="comment cmt"><p>Gets the next value for the unique id.</p><p>This also increments the current value that is stored in the database
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a name="uk.co.randomcoding.partsdb.db.mongo.MongoIdentifierAccess" class="extype" href="mongo/MongoIdentifierAccess.html">MongoIdentifierAccess</a></dd></dl></div>
     </li><li visbl="pub" name="scala.AnyRef#notify" data-isabs="false">
       <a id="notify():Unit"></a>
       <h4 class="signature">
@@ -260,6 +616,19 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>final </dd><dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.db.mongo.MongoUpdateAccess#remove" data-isabs="false">
+      <a id="remove[TYPE&lt;:Identifiable](TYPE)(Manifest[TYPE]):Boolean"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">remove</span>
+        <span class="tparams">[<span name="TYPE">TYPE &lt;: <a name="uk.co.randomcoding.partsdb.core.id.Identifiable" class="extype" href="../core/id/Identifiable.html">Identifiable</a></span>]</span>
+        <span class="params">(<span name="item">item: TYPE</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="mf">mf: Manifest[TYPE]</span>)</span><span class="result">: <span name="scala.Boolean" class="extype">Boolean</span></span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">Removes an item from the database.</p><div class="fullcomment"><div class="comment cmt"><p>Removes an item from the database.</p><p>The item must exist in the database, <b>exactly as passed in to <code>item</code></b> otherwise it will not be found.
+</p></div><dl class="paramcmts block"><dt class="param">item</dt><dd class="cmt"><p>The item to be removed from the database</p></dd><dt>returns</dt><dd class="cmt"><p><code>true</code> iff The item is removed from the database. If it is not present (no match found) then returns <code>false</code>
+</p></dd></dl><dl class="attributes block"> <dt>Definition Classes</dt><dd><a name="uk.co.randomcoding.partsdb.db.mongo.MongoUpdateAccess" class="extype" href="mongo/MongoUpdateAccess.html">MongoUpdateAccess</a></dd></dl></div>
     </li><li visbl="pub" name="scala.AnyRef#synchronized" data-isabs="false">
       <a id="synchronized[T0](⇒ T0):T0"></a>
       <h4 class="signature">
@@ -282,6 +651,72 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li visbl="pub" name="net.liftweb.common.Logger#trace" data-isabs="false">
+      <a id="trace(⇒ AnyRef,Throwable,⇒ Marker):Unit"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">trace</span>
+        
+        <span class="params">(<span name="msg">msg: ⇒ AnyRef</span>, <span name="t">t: Throwable</span>, <span name="marker">marker: ⇒ <span name="org.slf4j.Marker" class="extype">Marker</span></span>)</span><span class="result">: <span name="scala.Unit" class="extype">Unit</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Logger</dd></dl></div>
+    </li><li visbl="pub" name="net.liftweb.common.Logger#trace" data-isabs="false">
+      <a id="trace(⇒ AnyRef,Marker):Unit"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">trace</span>
+        
+        <span class="params">(<span name="msg">msg: ⇒ AnyRef</span>, <span name="marker">marker: <span name="org.slf4j.Marker" class="extype">Marker</span></span>)</span><span class="result">: <span name="scala.Unit" class="extype">Unit</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Logger</dd></dl></div>
+    </li><li visbl="pub" name="net.liftweb.common.Logger#trace" data-isabs="false">
+      <a id="trace(⇒ AnyRef,Throwable):Unit"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">trace</span>
+        
+        <span class="params">(<span name="msg">msg: ⇒ AnyRef</span>, <span name="t">t: Throwable</span>)</span><span class="result">: <span name="scala.Unit" class="extype">Unit</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Logger</dd></dl></div>
+    </li><li visbl="pub" name="net.liftweb.common.Logger#trace" data-isabs="false">
+      <a id="trace(⇒ AnyRef):Unit"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">trace</span>
+        
+        <span class="params">(<span name="msg">msg: ⇒ AnyRef</span>)</span><span class="result">: <span name="scala.Unit" class="extype">Unit</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Logger</dd></dl></div>
+    </li><li visbl="pub" name="net.liftweb.common.Logger#trace" data-isabs="false">
+      <a id="trace(⇒ AnyRef,net.liftweb.common.Box[_]):Unit"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">trace</span>
+        
+        <span class="params">(<span name="msg">msg: ⇒ AnyRef</span>, <span name="box">box: net.liftweb.common.Box[_]</span>)</span><span class="result">: <span name="scala.Unit" class="extype">Unit</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Logger</dd></dl></div>
+    </li><li visbl="pub" name="net.liftweb.common.Logger#trace" data-isabs="false">
+      <a id="trace[T](String,T):T"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">trace</span>
+        <span class="tparams">[<span name="T">T</span>]</span>
+        <span class="params">(<span name="msg">msg: String</span>, <span name="v">v: T</span>)</span><span class="result">: T</span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Logger</dd></dl></div>
     </li><li visbl="pub" name="scala.AnyRef#wait" data-isabs="false">
       <a id="wait():Unit"></a>
       <h4 class="signature">
@@ -324,12 +759,75 @@
                 <span class="name">@throws</span><span class="args">()</span>
               
         </dd></dl></div>
+    </li><li visbl="pub" name="net.liftweb.common.Logger#warn" data-isabs="false">
+      <a id="warn(⇒ AnyRef,Throwable,Marker):Unit"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">warn</span>
+        
+        <span class="params">(<span name="msg">msg: ⇒ AnyRef</span>, <span name="t">t: Throwable</span>, <span name="marker">marker: <span name="org.slf4j.Marker" class="extype">Marker</span></span>)</span><span class="result">: <span name="scala.Unit" class="extype">Unit</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Logger</dd></dl></div>
+    </li><li visbl="pub" name="net.liftweb.common.Logger#warn" data-isabs="false">
+      <a id="warn(⇒ AnyRef,Marker):Unit"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">warn</span>
+        
+        <span class="params">(<span name="msg">msg: ⇒ AnyRef</span>, <span name="marker">marker: <span name="org.slf4j.Marker" class="extype">Marker</span></span>)</span><span class="result">: <span name="scala.Unit" class="extype">Unit</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Logger</dd></dl></div>
+    </li><li visbl="pub" name="net.liftweb.common.Logger#warn" data-isabs="false">
+      <a id="warn(⇒ AnyRef,Throwable):Unit"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">warn</span>
+        
+        <span class="params">(<span name="msg">msg: ⇒ AnyRef</span>, <span name="t">t: Throwable</span>)</span><span class="result">: <span name="scala.Unit" class="extype">Unit</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Logger</dd></dl></div>
+    </li><li visbl="pub" name="net.liftweb.common.Logger#warn" data-isabs="false">
+      <a id="warn(⇒ AnyRef):Unit"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">warn</span>
+        
+        <span class="params">(<span name="msg">msg: ⇒ AnyRef</span>)</span><span class="result">: <span name="scala.Unit" class="extype">Unit</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Logger</dd></dl></div>
+    </li><li visbl="pub" name="net.liftweb.common.Logger#warn" data-isabs="false">
+      <a id="warn(⇒ AnyRef,net.liftweb.common.Box[_]):Unit"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">warn</span>
+        
+        <span class="params">(<span name="msg">msg: ⇒ AnyRef</span>, <span name="box">box: net.liftweb.common.Box[_]</span>)</span><span class="result">: <span name="scala.Unit" class="extype">Unit</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Logger</dd></dl></div>
     </li></ol>
             </div>
 
         
 
-        <div name="scala.AnyRef" class="parent">
+        <div name="uk.co.randomcoding.partsdb.db.mongo.MongoAllOrOneAccess" class="parent">
+              <h3>Inherited from <a name="uk.co.randomcoding.partsdb.db.mongo.MongoAllOrOneAccess" class="extype" href="mongo/MongoAllOrOneAccess.html">MongoAllOrOneAccess</a></h3>
+            </div><div name="net.liftweb.common.Logger" class="parent">
+              <h3>Inherited from <span name="net.liftweb.common.Logger" class="extype">Logger</span></h3>
+            </div><div name="uk.co.randomcoding.partsdb.db.mongo.MongoUpdateAccess" class="parent">
+              <h3>Inherited from <a name="uk.co.randomcoding.partsdb.db.mongo.MongoUpdateAccess" class="extype" href="mongo/MongoUpdateAccess.html">MongoUpdateAccess</a></h3>
+            </div><div name="uk.co.randomcoding.partsdb.db.mongo.MongoIdentifierAccess" class="parent">
+              <h3>Inherited from <a name="uk.co.randomcoding.partsdb.db.mongo.MongoIdentifierAccess" class="extype" href="mongo/MongoIdentifierAccess.html">MongoIdentifierAccess</a></h3>
+            </div><div name="scala.AnyRef" class="parent">
               <h3>Inherited from AnyRef</h3>
             </div><div name="scala.Any" class="parent">
               <h3>Inherited from <span name="scala.Any" class="extype">Any</span></h3>

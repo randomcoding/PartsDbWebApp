@@ -33,7 +33,7 @@
           <div class="superTypes hiddenContent"><span name="net.liftweb.common.Logger" class="extype">Logger</span>, AnyRef, <span name="scala.Any" class="extype">Any</span></div>
         </div><div class="toggleContainer block">
           <span class="toggle">Known Subclasses</span>
-          <div class="subClasses hiddenContent"><a name="uk.co.randomcoding.partsdb.db.mongo.MongoDbAccess" class="extype" href="MongoDbAccess.html">MongoDbAccess</a></div>
+          <div class="subClasses hiddenContent"><a name="uk.co.randomcoding.partsdb.lift.snippet.AddCustomer" class="extype" href="../../lift/snippet/AddCustomer.html">AddCustomer</a>, <a name="uk.co.randomcoding.partsdb.db.DbAccess" class="extype" href="../DbAccess.html">DbAccess</a>, <a name="uk.co.randomcoding.partsdb.lift.util.snippet.DbAccessSnippet" class="extype" href="../../lift/util/snippet/DbAccessSnippet.html">DbAccessSnippet</a>, <a name="uk.co.randomcoding.partsdb.lift.snippet.DisplayExisting" class="extype" href="../../lift/snippet/DisplayExisting.html">DisplayExisting</a>, <a name="uk.co.randomcoding.partsdb.db.mongo.MongoDbAccess" class="extype" href="MongoDbAccess.html">MongoDbAccess</a></div>
         </div></div>
         
 
@@ -330,16 +330,19 @@
               
         </dd></dl></div>
     </li><li visbl="pub" name="uk.co.randomcoding.partsdb.db.mongo.MongoAllOrOneAccess#getAll" data-isabs="false">
-      <a id="getAll[T&lt;:AnyRef](String)(Manifest[T]):List[T]"></a>
+      <a id="getAll[TYPE&lt;:AnyRef](String)(Manifest[TYPE]):List[TYPE]"></a>
       <h4 class="signature">
       <span class="kind">def</span>
       <span class="symbol"> 
         <span class="name">getAll</span>
-        <span class="tparams">[<span name="T">T &lt;: AnyRef</span>]</span>
-        <span class="params">(<span name="idFieldName">idFieldName: String</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="mf">mf: Manifest[T]</span>)</span><span class="result">: List[T]</span>
+        <span class="tparams">[<span name="TYPE">TYPE &lt;: AnyRef</span>]</span>
+        <span class="params">(<span name="idFieldName">idFieldName: String</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="mf">mf: Manifest[TYPE]</span>)</span><span class="result">: List[TYPE]</span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">Gets all the instances of a type of object from the database
+</p><div class="fullcomment"><div class="comment cmt"><p>Gets all the instances of a type of object from the database
+</p></div><dl class="paramcmts block"><dt class="param">idFieldName</dt><dd class="cmt"><p>The name of the id field in the object.</p></dd><dt>returns</dt><dd class="cmt"><p>All instances of the objects of type <code>TYPE</code> from the database.
+</p></dd></dl></div>
     </li><li visbl="pub" name="scala.AnyRef#getClass" data-isabs="false">
       <a id="getClass():java.lang.Class[_]"></a>
       <h4 class="signature">
@@ -352,16 +355,18 @@
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>final </dd><dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li visbl="pub" name="uk.co.randomcoding.partsdb.db.mongo.MongoAllOrOneAccess#getOne" data-isabs="false">
-      <a id="getOne[T&lt;:AnyRef](String,Identifier)(Manifest[T]):Option[T]"></a>
+      <a id="getOne[TYPE&lt;:AnyRef](String,Identifier)(Manifest[TYPE]):Option[TYPE]"></a>
       <h4 class="signature">
       <span class="kind">def</span>
       <span class="symbol"> 
         <span class="name">getOne</span>
-        <span class="tparams">[<span name="T">T &lt;: AnyRef</span>]</span>
-        <span class="params">(<span name="idFieldName">idFieldName: String</span>, <span name="id">id: <a name="uk.co.randomcoding.partsdb.core.id.Identifier" class="extype" href="../../core/id/Identifier.html">Identifier</a></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="mf">mf: Manifest[T]</span>)</span><span class="result">: <span name="scala.Option" class="extype">Option</span>[T]</span>
+        <span class="tparams">[<span name="TYPE">TYPE &lt;: AnyRef</span>]</span>
+        <span class="params">(<span name="idFieldName">idFieldName: String</span>, <span name="id">id: <a name="uk.co.randomcoding.partsdb.core.id.Identifier" class="extype" href="../../core/id/Identifier.html">Identifier</a></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="mf">mf: Manifest[TYPE]</span>)</span><span class="result">: <span name="scala.Option" class="extype">Option</span>[TYPE]</span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">Gets the object from the database that has the specified uk.co.randomcoding.partsdb.code.id.Identifier.</p><div class="fullcomment"><div class="comment cmt"><p>Gets the object from the database that has the specified uk.co.randomcoding.partsdb.code.id.Identifier.
+</p></div><dl class="paramcmts block"><dt class="param">idFieldName</dt><dd class="cmt"><p>The name of the field that maps to the uk.co.randomcoding.partsdb.code.id.Identifier.</p></dd><dt class="param">id</dt><dd class="cmt"><p>The uk.co.randomcoding.partsdb.code.id.Identifier already assigned to the object</p></dd><dt>returns</dt><dd class="cmt"><p>The object of type <code>TYPE</code> that has the uk.co.randomcoding.partsdb.code.id.Identifier of <code>id</code>
+</p></dd></dl></div>
     </li><li visbl="pub" name="scala.AnyRef#hashCode" data-isabs="false">
       <a id="hashCode():Int"></a>
       <h4 class="signature">

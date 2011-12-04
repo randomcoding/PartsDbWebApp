@@ -33,7 +33,7 @@
           <div class="superTypes hiddenContent">AnyRef, <span name="scala.Any" class="extype">Any</span></div>
         </div><div class="toggleContainer block">
           <span class="toggle">Known Subclasses</span>
-          <div class="subClasses hiddenContent"><a name="uk.co.randomcoding.partsdb.db.mongo.MongoDbAccess" class="extype" href="MongoDbAccess.html">MongoDbAccess</a></div>
+          <div class="subClasses hiddenContent"><a name="uk.co.randomcoding.partsdb.lift.snippet.AddCustomer" class="extype" href="../../lift/snippet/AddCustomer.html">AddCustomer</a>, <a name="uk.co.randomcoding.partsdb.db.DbAccess" class="extype" href="../DbAccess.html">DbAccess</a>, <a name="uk.co.randomcoding.partsdb.lift.util.snippet.DbAccessSnippet" class="extype" href="../../lift/util/snippet/DbAccessSnippet.html">DbAccessSnippet</a>, <a name="uk.co.randomcoding.partsdb.lift.snippet.DisplayExisting" class="extype" href="../../lift/snippet/DisplayExisting.html">DisplayExisting</a>, <a name="uk.co.randomcoding.partsdb.db.mongo.MongoDbAccess" class="extype" href="MongoDbAccess.html">MongoDbAccess</a></div>
         </div></div>
         
 
@@ -145,6 +145,22 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>final </dd><dt>Definition Classes</dt><dd>Any</dd></dl></div>
+    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.db.mongo.MongoIdentifierAccess#assignId" data-isabs="false">
+      <a id="assignId(Identifiable):Identifiable"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">assignId</span>
+        
+        <span class="params">(<span name="item">item: <a name="uk.co.randomcoding.partsdb.core.id.Identifiable" class="extype" href="../../core/id/Identifiable.html">Identifiable</a></span>)</span><span class="result">: <a name="uk.co.randomcoding.partsdb.core.id.Identifiable" class="extype" href="../../core/id/Identifiable.html">Identifiable</a></span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">Assigns a valid id to an uk.co.randomcoding.partsdb.id.Identifiable if its' id value is a uk.co.randomcoding.partsdb.id.DefaultIdentifier</p><div class="fullcomment"><div class="comment cmt"><p>Assigns a valid id to an uk.co.randomcoding.partsdb.id.Identifiable if its' id value is a uk.co.randomcoding.partsdb.id.DefaultIdentifier</p><p>If the uk.co.randomcoding.partsdb.id.Identifiable has nested items that are themselves uk.co.randomcoding.partsdb.id.Identifiables
+then this will recurse and assign new ids to those items. However, if there are nested items that are uk.co.randomcoding.partsdb.id.Identifiers
+then these are assumed to be valid and are <b>not</b> checked.
+</p></div><dl class="paramcmts block"><dt class="param">item</dt><dd class="cmt"><p>The uk.co.randomcoding.partsdb.id.Identifiable to assign a valid id to</p></dd><dt>returns</dt><dd class="cmt"><p>A new instance of the [uk.co.randomcoding.partsdb.id.Identifiable]] with a valid id or the same instance if its current id is not
+the uk.co.randomcoding.partsdb.id.DefaultIdentifier
+</p></dd></dl></div>
     </li><li visbl="prt" name="scala.AnyRef#clone" data-isabs="false">
       <a id="clone():AnyRef"></a>
       <h4 class="signature">
