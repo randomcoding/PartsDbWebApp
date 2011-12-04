@@ -21,5 +21,32 @@
 
 .sidebar ul li a span {
 	min-width: 100px;
+	max-width: 100px;
 	text-align: center;
+}
+
+input {
+	width: 95%;
+}
+
+textarea {
+  width: 93%;
+  height: 5em;
+}
+
+.form-label {
+	font-size:larger;
+	font-weight: bold;
+	font-variant: small-caps;
+}
+
+.form-title {
+	font-size: xx-large;
+	font-weight: bolder;
+	text-decoration:underline;
+	font-variant: small-caps;
+}
+
+.form-content {
+	/* Empty for now */
 }

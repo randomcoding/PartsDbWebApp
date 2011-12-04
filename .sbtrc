@@ -1,4 +1,5 @@
 alias run-webapp = ;project lift;container:start;project root
+alias start-webapp = ;project lift;container:start;project root
 alias stop-webapp = ;project lift;container:stop;project root
 alias restart-webapp = ;project lift;container:stop;container:start;project root
 alias test-core = ;project core;test

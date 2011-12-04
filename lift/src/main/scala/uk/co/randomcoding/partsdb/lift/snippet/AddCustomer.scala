@@ -10,7 +10,6 @@ import uk.co.randomcoding.partsdb.core.util.CountryCodes.countryCodes
 import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
 import uk.co.randomcoding.partsdb.lift.util.snippet.{ ValidationItem, ErrorDisplay, DbAccessSnippet, DataValidation, StyleAttributes }
 import uk.co.randomcoding.partsdb.lift.util.snippet.StyleAttributes._
-
 import net.liftweb.common.StringOrNodeSeq.strTo
 import net.liftweb.common.{ Logger, Full }
 import net.liftweb.http.SHtml.{ select, button }
@@ -18,6 +17,7 @@ import net.liftweb.http.js.JsCmds.Noop
 import net.liftweb.http.js.JsCmd
 import net.liftweb.http.S
 import net.liftweb.util.Helpers._
+import scala.xml.Text
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
@@ -73,7 +73,8 @@ class AddCustomer extends DbAccessSnippet with ErrorDisplay with DataValidation 
         }
     }
 
-    "#nameEntry" #> styledText("", name = _) &
+    "#formTitle" #> Text("Add Customer") &
+      "#nameEntry" #> styledText("", name = _) &
       "#billingAddressEntry" #> styledTextArea("", billingAddressText = _) &
       "#billingAddressCountry" #> styledSelect(countryCodes, "United Kingdom", billingAddressCountry = _) &
       "#deliveryAddressEntry" #> styledTextArea("", deliveryAddressText = _) &
