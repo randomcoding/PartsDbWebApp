@@ -34,9 +34,7 @@ class DisplayExisting extends DbAccessSnippet with ErrorDisplay with Logger {
     val entityType = S.attr("entityType") openOr "Unspecified"
     val highlightId = asLong(S.attr("highlight") openOr "No Highlight")
 
-    val entitiesFromDb = matchingTypes(entityType)
-
-    "#displayEntity *" #> displayEntities(entitiesFromDb)
+    "#displayEntity" #> span(Text("Page Details"), Noop, "class" -> "lift:Display%s".format(entityType))
   }
 
   private[this] lazy val matchingTypes: String => List[Identifiable] = (entityType: String) => {
