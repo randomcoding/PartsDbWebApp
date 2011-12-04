@@ -8,6 +8,7 @@ import uk.co.randomcoding.partsdb.core.address.NullAddress
 import net.liftweb.common.Logger
 import uk.co.randomcoding.partsdb.core.address.Address
 import uk.co.randomcoding.partsdb.core.util.CountryCodes._
+import uk.co.randomcoding.partsdb.core.contact.ContactDetails
 
 /**
  * Validates form input items.
@@ -31,6 +32,7 @@ trait DataValidation extends Logger {
     item.toValidate match {
       case addr: Address => validateAddress(addr)
       case terms: PaymentTerms => terms != PaymentTerms(-1)
+      case contacts: ContactDetails => validateContactDetails(contacts)
       case validationItem => {
         debug("Unhandled validation type %s. Assuming it is valid".format(validationItem))
         true
@@ -46,12 +48,31 @@ trait DataValidation extends Logger {
    *  * The country being a match in [[uk.co.randomcoding.partsdb.core.util.CountryCodes]]
    *
    * @param address The [[uk.co.randomcoding.partsdb.core.address.Address]] to validate
-   * @return true if the address is not a [[uk.co.randomcoding.partsdb.core.address.NullAddress]] and has a valid entry for country
+   * @return `true` if the address is not a [[uk.co.randomcoding.partsdb.core.address.NullAddress]] and has a valid entry for country
    */
-  private def validateAddress(address: Address): Boolean = {
+  private def validateAddress(address: Address) = {
     address match {
       case NullAddress => false
       case Address(_, _, _, country) => matchToCountryCode(country).isDefined
+    }
+  }
+
+  /**
+   * Validates [[uk.co.randomcoding.partsdb.core.contact.ContactDetails]]
+   *
+   * They are valid if they contain a name and at least one of `phoneNumbers`, `mobileNumbers` or `emailAddresses` contains a value.
+   *
+   * @param contacts The contact details to validate
+   * @return `true` If the contact details validate
+   */
+  private def validateContactDetails(contacts: ContactDetails) = {
+    def areValid(details: Option[Seq[_]]*): Boolean = {
+      details filterNot (detail => (detail == None || detail.get.isEmpty)) nonEmpty
+    }
+
+    contacts.contactName.trim match {
+      case "" => false
+      case _ => areValid(contacts.phoneNumbers, contacts.mobileNumbers, contacts.emailAddresses)
     }
   }
 }

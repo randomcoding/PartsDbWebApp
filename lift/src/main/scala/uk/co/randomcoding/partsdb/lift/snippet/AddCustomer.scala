@@ -18,14 +18,20 @@ import net.liftweb.http.js.JsCmd
 import net.liftweb.http.S
 import net.liftweb.util.Helpers._
 import scala.xml.Text
+import net.liftweb.http.StatefulSnippet
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
-class AddCustomer extends DbAccessSnippet with ErrorDisplay with DataValidation with Logger {
+class AddCustomer extends StatefulSnippet with DbAccessSnippet with ErrorDisplay with DataValidation with Logger {
   val terms = List(("30" -> "30"), ("45" -> "45"), ("60" -> "60"), ("90" -> "90"))
 
+  def dispatch = {
+    case "render" => render
+  }
+
   def render = {
+    val cameFrom = S.referer openOr "/customers"
     var name = ""
     var billingAddressText = ""
     var billingAddressCountry = ""
@@ -60,15 +66,16 @@ class AddCustomer extends DbAccessSnippet with ErrorDisplay with DataValidation 
 
       validate(ValidationItem(billingAddress, "billingAddressError", "Billing Address is not valid"),
         ValidationItem(deliveryAddress, "deliveryAddressError", "Delivery Address is not valid"),
-        ValidationItem(paymentTerms, "paymentTermsError", "Payment Terms are not valid")) match {
+        ValidationItem(paymentTerms, "paymentTermsError", "Payment Terms are not valid"),
+        ValidationItem(contact, "contactDetailsError", "Contact Details are not valid")) match {
           case Nil => {
             val newId = addNewCustomer(contactName, billingAddress, deliveryAddress, paymentTerms, contact).customerId
-            S.redirectTo("/customers?highlight=%d".format(newId.id))
+            S redirectTo "/customers?highlight=%d".format(newId.id)
           }
           case errors => {
             errors foreach (error => displayError(error._1, error._2))
             // TODO: Need to ensure that the entered details are still present
-            Noop
+            S redirectTo cameFrom
           }
         }
     }
