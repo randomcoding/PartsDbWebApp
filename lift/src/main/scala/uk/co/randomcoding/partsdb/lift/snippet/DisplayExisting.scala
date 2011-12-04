@@ -26,6 +26,9 @@ import scala.xml.NodeSeq
  * Displays the existing entities from the database.
  *
  * The entity type is specified by the `entityType` query parameter
+ *
+ * This delegates to calling a dedicated page in an iframe.
+ *
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
 class DisplayExisting extends DbAccessSnippet with ErrorDisplay with Logger {
@@ -34,7 +37,8 @@ class DisplayExisting extends DbAccessSnippet with ErrorDisplay with Logger {
     val entityType = S.attr("entityType") openOr "Unspecified"
     val highlightId = asLong(S.attr("highlight") openOr "No Highlight")
 
-    "#displayEntity" #> span(Text("Page Details"), Noop, "class" -> "lift:Display%s".format(entityType))
+    val detailsPage = "display%sList".format(entityType)
+    "#displayEntity" #> <iframe src={ detailsPage } width="100%" height="100%">No IFrame Support - DOH!</iframe>
   }
 
   private[this] lazy val matchingTypes: String => List[Identifiable] = (entityType: String) => {
