@@ -69,6 +69,13 @@ class AddressParserTest extends FunSuite with ShouldMatchers {
     }
   }
 
+  test("Address with only a country code fails to generate address") {
+    "UK" match {
+      case AddressParser(addr) => fail("UK should not generate an address")
+      case _ => //passed
+    }
+  }
+
   private val addressStringMatch = (addressString: String) => {
     val expectedAddress = List("15 Holly Lane", "A Town", "A County", "AC23 8FD", "UK").mkString("\n")
     addressString match {

@@ -26,73 +26,75 @@ import net.liftweb.http.StatefulSnippet
 class AddCustomer extends StatefulSnippet with DbAccessSnippet with ErrorDisplay with DataValidation with Logger {
   val terms = List(("30" -> "30"), ("45" -> "45"), ("60" -> "60"), ("90" -> "90"))
 
+  val cameFrom = S.referer openOr "/customers"
+  var name = ""
+  var billingAddressText = ""
+  var billingAddressCountry = "United Kingdom"
+  var deliveryAddressText = ""
+  var deliveryAddressCountry = "United Kingdom"
+  var paymentTermsText = "30"
+  var contactName = ""
+  var phoneNumber = ""
+  var mobileNumber = ""
+  var email = ""
+
   def dispatch = {
     case "render" => render
   }
 
   def render = {
-    val cameFrom = S.referer openOr "/customers"
-    var name = ""
-    var billingAddressText = ""
-    var billingAddressCountry = ""
-    var deliveryAddressText = ""
-    var deliveryAddressCountry = ""
-    var paymentTermsText = ""
-    var contactName = ""
-    var phoneNumber = ""
-    var mobileNumber = ""
-    var email = ""
+    "#formTitle" #> Text("Add Customer") &
+      "#nameEntry" #> styledText(name, name = _) &
+      "#billingAddressEntry" #> styledTextArea(billingAddressText, billingAddressText = _) &
+      "#billingAddressCountry" #> styledSelect(countryCodes, billingAddressCountry, billingAddressCountry = _) &
+      "#deliveryAddressEntry" #> styledTextArea(deliveryAddressText, deliveryAddressText = _) &
+      "#deliveryAddressCountry" #> styledSelect(countryCodes, deliveryAddressCountry, deliveryAddressCountry = _) &
+      "#paymentTermsEntry" #> styledSelect(terms, paymentTermsText, paymentTermsText = _) &
+      "#contactNameEntry" #> styledText(contactName, contactName = _) &
+      "#phoneNumberEntry" #> styledText(phoneNumber, phoneNumber = _) &
+      "#mobileNumberEntry" #> styledText(mobileNumber, mobileNumber = _) &
+      "#emailEntry" #> styledText(email, email = _) &
+      "#submit" #> button("Submit", processSubmit)
+  }
 
-    /**
-     * Method called when the submit button is pressed.
-     *
-     * This extracts the details required to make the Customer object and if they validate, adds them to the database.
-     *
-     * On successful addition, this will (possibly display a dialogue and then) redirect to the main customers page
-     */
-    def processSubmit(): JsCmd = {
-      val billingAddress = addressFromInput(billingAddressText, billingAddressCountry)
-      val deliveryAddress = deliveryAddressText match {
-        case "" => billingAddress
-        case text => addressFromInput(text, deliveryAddressCountry)
-      }
-
-      val contact = contactDetails(contactName, phoneNumber, mobileNumber, email, billingAddressCountry)
-
-      val paymentTerms = asInt(paymentTermsText) match {
-        case Full(terms) => PaymentTerms(terms)
-        case _ => PaymentTerms(-1)
-      }
-
-      validate(ValidationItem(billingAddress, "billingAddressError", "Billing Address is not valid"),
-        ValidationItem(deliveryAddress, "deliveryAddressError", "Delivery Address is not valid"),
-        ValidationItem(paymentTerms, "paymentTermsError", "Payment Terms are not valid"),
-        ValidationItem(contact, "contactDetailsError", "Contact Details are not valid")) match {
-          case Nil => {
-            val newId = addNewCustomer(contactName, billingAddress, deliveryAddress, paymentTerms, contact).customerId
-            S redirectTo "/customers?highlight=%d".format(newId.id)
-          }
-          case errors => {
-            errors foreach (error => displayError(error._1, error._2))
-            // TODO: Need to ensure that the entered details are still present
-            S redirectTo cameFrom
-          }
-        }
+  /**
+   * Method called when the submit button is pressed.
+   *
+   * This extracts the details required to make the Customer object and if they validate, adds them to the database.
+   *
+   * On successful addition, this will (possibly display a dialogue and then) redirect to the main customers page
+   */
+  private[this] def processSubmit() = {
+    val billingAddress = addressFromInput(billingAddressText, billingAddressCountry)
+    val deliveryAddress = deliveryAddressText match {
+      case "" => billingAddress
+      case text => addressFromInput(text, deliveryAddressCountry)
     }
 
-    "#formTitle" #> Text("Add Customer") &
-      "#nameEntry" #> styledText("", name = _) &
-      "#billingAddressEntry" #> styledTextArea("", billingAddressText = _) &
-      "#billingAddressCountry" #> styledSelect(countryCodes, "United Kingdom", billingAddressCountry = _) &
-      "#deliveryAddressEntry" #> styledTextArea("", deliveryAddressText = _) &
-      "#deliveryAddressCountry" #> styledSelect(countryCodes, "United Kingdom", deliveryAddressCountry = _) &
-      "#contactNameEntry" #> styledText("", contactName = _) &
-      "#paymentTermsEntry" #> styledSelect(terms, "30", paymentTermsText = _) &
-      "#phoneNumberEntry" #> styledText("", phoneNumber = _) &
-      "#mobileNumberEntry" #> styledText("", mobileNumber = _) &
-      "#emailEntry" #> styledText("", email = _) &
-      "#submit" #> button("Submit", processSubmit)
+    val contact = contactDetails(contactName, phoneNumber, mobileNumber, email, billingAddressCountry)
 
+    val paymentTerms = asInt(paymentTermsText) match {
+      case Full(terms) => PaymentTerms(terms)
+      case _ => PaymentTerms(-1)
+    }
+
+    val validationChecks = Seq(ValidationItem(billingAddress, "billingAddressError", "Billing Address is not valid"),
+      ValidationItem(deliveryAddress, "deliveryAddressError", "Delivery Address is not valid"),
+      ValidationItem(paymentTerms, "paymentTermsError", "Payment Terms are not valid"),
+      ValidationItem(contact, "contactDetailsError", "Contact Details are not valid"),
+      ValidationItem(name, "customerNameError", "Customer Name must be entered"))
+
+    validate(validationChecks: _*) match {
+      case Nil => {
+        val newId = addNewCustomer(name, billingAddress, deliveryAddress, paymentTerms, contact).customerId
+        S redirectTo "/customers?highlight=%d".format(newId.id)
+      }
+      case errors => {
+        errors foreach (error => displayError(error._1, error._2))
+        // TODO: Need to ensure that the entered details are still present
+        Noop
+      }
+    }
   }
 
   private def addressFromInput(addressText: String, country: String): Address = {

@@ -41,8 +41,8 @@ object AddressParser {
     val lines = addressString.split("""[,\.]+""") map (_ trim)
 
     identifyCountry(lines) match {
-      case None => None
-      case Some(code) => Some(Address(Identifier(0), lines(0), lines.mkString("\n").trim, code.countryName))
+      case Some(code) if (lines.size > 1) => Some(Address(Identifier(0), lines(0), lines.mkString("\n").trim, code.countryName))
+      case _ => None
     }
   }
 
