@@ -3,31 +3,28 @@
  */
 package uk.co.randomcoding.partsdb.lift.snippet
 
-import scala.io.Source.fromString
-import uk.co.randomcoding.partsdb.core.address.{ NullAddress, Address, AddressParser }
-import uk.co.randomcoding.partsdb.core.contact.{ NullContactDetails, ContactDetails }
-import uk.co.randomcoding.partsdb.core.id.{ Identifier, DefaultIdentifier }
-import uk.co.randomcoding.partsdb.core.id.Identifier._
-import uk.co.randomcoding.partsdb.core.util.CountryCodes.countryCodes
-import uk.co.randomcoding.partsdb.core.contact._
+import uk.co.randomcoding.partsdb.core.address.{ NullAddress, AddressParser, Address }
+import uk.co.randomcoding.partsdb.core.contact.{ Phone, Mobile, Email, ContactDetails }
 import uk.co.randomcoding.partsdb.core.terms.PaymentTerms
-import uk.co.randomcoding.partsdb.core.customer.Customer
-import net.liftweb.common.Full
-import net.liftweb.http.S
+import uk.co.randomcoding.partsdb.core.util.CountryCodes.countryCodes
+import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
+import uk.co.randomcoding.partsdb.lift.util.snippet.{ ValidationItem, ErrorDisplay, DbAccessSnippet, DataValidation, StyleAttributes }
+import uk.co.randomcoding.partsdb.lift.util.snippet.StyleAttributes._
+
+import net.liftweb.common.StringOrNodeSeq.strTo
+import net.liftweb.common.{ Logger, Full }
+import net.liftweb.http.SHtml.{ select, button }
 import net.liftweb.http.js.JsCmds.Noop
-import net.liftweb.http.SHtml._
-import net.liftweb.util.Helpers._
 import net.liftweb.http.js.JsCmd
-import net.liftweb.common.Logger
-import uk.co.randomcoding.partsdb.lift.util.snippet.ErrorDisplay
-import uk.co.randomcoding.partsdb.lift.util.snippet.DbAccessSnippet
-import uk.co.randomcoding.partsdb.lift.util.snippet.DataValidation
-import uk.co.randomcoding.partsdb.lift.util.snippet.ValidationItem
+import net.liftweb.http.S
+import net.liftweb.util.Helpers._
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
 class AddCustomer extends DbAccessSnippet with ErrorDisplay with DataValidation with Logger {
+  val terms = List(("30" -> "30"), ("45" -> "45"), ("60" -> "60"), ("90" -> "90"))
+
   def render = {
     var name = ""
     var billingAddressText = ""
@@ -76,16 +73,16 @@ class AddCustomer extends DbAccessSnippet with ErrorDisplay with DataValidation 
         }
     }
 
-    "#nameEntry" #> text("", name = _) &
-      "#billingAddressEntry" #> textarea("", billingAddressText = _) &
-      "#billingAddressCountry" #> select(countryCodes, Full("United Kingdom"), billingAddressCountry = _) &
-      "#deliveryAddressEntry" #> textarea("", deliveryAddressText = _) &
-      "#deliveryAddressCountry" #> select(countryCodes, Full("United Kingdom"), deliveryAddressCountry = _) &
-      "#contactNameEntry" #> text("", contactName = _) &
-      "#paymentTermsEntry" #> text("", paymentTermsText = _) &
-      "#phoneNumberEntry" #> text("", phoneNumber = _) &
-      "#mobileNumberEntry" #> text("", mobileNumber = _) &
-      "#emailEntry" #> text("", email = _) &
+    "#nameEntry" #> styledText("", name = _) &
+      "#billingAddressEntry" #> styledTextArea("", billingAddressText = _) &
+      "#billingAddressCountry" #> styledSelect(countryCodes, "United Kingdom", billingAddressCountry = _) &
+      "#deliveryAddressEntry" #> styledTextArea("", deliveryAddressText = _) &
+      "#deliveryAddressCountry" #> styledSelect(countryCodes, "United Kingdom", deliveryAddressCountry = _) &
+      "#contactNameEntry" #> styledText("", contactName = _) &
+      "#paymentTermsEntry" #> styledSelect(terms, "30", paymentTermsText = _) &
+      "#phoneNumberEntry" #> styledText("", phoneNumber = _) &
+      "#mobileNumberEntry" #> styledText("", mobileNumber = _) &
+      "#emailEntry" #> styledText("", email = _) &
       "#submit" #> button("Submit", processSubmit)
 
   }

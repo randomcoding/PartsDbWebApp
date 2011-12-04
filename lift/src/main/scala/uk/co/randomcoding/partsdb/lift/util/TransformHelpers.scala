@@ -5,10 +5,13 @@ package uk.co.randomcoding.partsdb.lift.util
 
 import scala.xml.{ Text, NodeSeq }
 
-import net.liftweb.util.Helpers._
-import net.liftweb.http._
-import SHtml.{ span, link, ElemAttr }
-import js.JsCmds.Noop
+import uk.co.randomcoding.partsdb.lift.util.snippet.StyleAttributes._
+
+import net.liftweb.common.Full
+import net.liftweb.http.SHtml.ElemAttr.pairToBasic
+import net.liftweb.http.SHtml.{ textarea, text, span, select, link, ElemAttr }
+import net.liftweb.http.js.JsCmds.Noop
+import net.liftweb.util.Helpers.strToSuperArrowAssoc
 
 /**
  * Provides common helper functions for generating elements for transformations
@@ -48,5 +51,17 @@ object TransformHelpers {
    */
   def attrLink(linkText: String, linkTarget: String, linkAttrs: ElemAttr*): NodeSeq = {
     link(linkTarget, () => Unit, span(Text(linkText), Noop), linkAttrs: _*)
+  }
+
+  def styledTextArea(initialText: String, func: String => Any): NodeSeq = {
+    textarea(initialText, func, jqueryUiTextStyled)
+  }
+
+  def styledText(initialText: String, func: String => Any): NodeSeq = {
+    text(initialText, func, jqueryUiTextStyled)
+  }
+
+  def styledSelect(values: Seq[(String, String)], initialValue: String, func: String => Any): NodeSeq = {
+    select(values, Full(initialValue), func, jqueryUiTextStyled)
   }
 }
