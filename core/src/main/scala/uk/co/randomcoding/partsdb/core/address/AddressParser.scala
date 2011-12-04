@@ -12,10 +12,12 @@ import uk.co.randomcoding.partsdb.core.util.CountryCode._
  * Parses address strings into [[uk.co.randomcoding.partsdb.core.address.Address]]es
  *
  * == Example
+ *
  * This will generate an [[uk.co.randomcoding.partsdb.core.address.Address]] object from the input string
+ *
  * {{{
- * val addressText = "4 House Lane, A Village, A Town, DG6 9GH. UK"
- * val address = addressText match {
+ * scala> val addressText = "4 House Lane, A Village, A Town, DG6 9GH. UK"
+ * scala> val address = addressText match {
  *   case AddressParser(addr) => addr
  *   case _ => NullAddress
  * }

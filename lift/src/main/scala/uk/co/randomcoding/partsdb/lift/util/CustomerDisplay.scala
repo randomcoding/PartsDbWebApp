@@ -24,7 +24,7 @@ object CustomerDisplay extends Logger {
    *
    * Currently displays the name, terms and contact details
    *
-   * @param customer The [[import uk.co.randomcoding.partsdb.core.customer.Customer]] to display
+   * @param customer The [[uk.co.randomcoding.partsdb.core.customer.Customer]] to display
    * @return A [[scala.xml.NodeSeq]] to display the customer details
    */
   def displayCustomer(customer: Customer): NodeSeq = {

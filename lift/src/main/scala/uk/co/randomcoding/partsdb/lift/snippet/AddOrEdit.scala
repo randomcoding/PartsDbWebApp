@@ -14,30 +14,15 @@ import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
 /**
  * Simple snippet that displays Add or Edit buttons.
  *
- * This snippet expects a parametr called ''entityType'' that determines the
+ * This snippet expects a parameter called ''entityType'' that determines the
  * text that is displayed and the link that is generated.
  *
- * It is also expecting `<div>` elements with two specific ids:
- *  * `add`
- *  * `edit`
+ * It is also expecting `div` elements with two specific ids:
+ *  - `add`
+ *  - `edit`
+ *
  * Which are transformed into the add and edit links respectively.
  *
- * == Example
- * {{{
- * <div class="lift:AddOrEdit?entityType=Customer">
- *   <div id="add">Add Link is created here</div>
- *   <div id="edit">Edit Link is created here</div>
- * </div>
- * }}}
- *
- * will create the html
- *
- * {{{
- * <div class="lift:AddOrEdit?entityType=Customer">
- *   <a href="add?entityType=Customer" class="button"><span>Add Customer</span></a></div>
- *   <a href="edit?entityType=Customer" class="button"><span>Edit Customer</span></a></div>
- * </div>
- * }}}
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
 class AddOrEdit {
