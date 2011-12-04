@@ -33,6 +33,7 @@ trait DataValidation extends Logger {
       case addr: Address => validateAddress(addr)
       case terms: PaymentTerms => terms != PaymentTerms(-1)
       case contacts: ContactDetails => validateContactDetails(contacts)
+      case string: String => string.trim nonEmpty
       case validationItem => {
         debug("Unhandled validation type %s. Assuming it is valid".format(validationItem))
         true

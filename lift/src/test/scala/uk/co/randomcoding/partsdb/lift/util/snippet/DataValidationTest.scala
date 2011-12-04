@@ -75,4 +75,20 @@ class DataValidationTest extends FunSuite with ShouldMatchers {
     validate(contactsItem1) should be(List(("contactsError", "Contacts failed validation")))
   }
 
+  test("Non Empty String validates ok") {
+    val stringItem = ValidationItem("Valid String", "", "")
+    validate(stringItem) should be('empty)
+  }
+
+  test("Empty or padding only string fails validation") {
+    var stringItem = ValidationItem("", "stringError", "String failed validation")
+    validate(stringItem) should be(List(("stringError", "String failed validation")))
+    stringItem = ValidationItem("  ", "stringError", "String failed validation")
+    validate(stringItem) should be(List(("stringError", "String failed validation")))
+    stringItem = ValidationItem("\n", "stringError", "String failed validation")
+    validate(stringItem) should be(List(("stringError", "String failed validation")))
+    stringItem = ValidationItem("\t", "stringError", "String failed validation")
+    validate(stringItem) should be(List(("stringError", "String failed validation")))
+  }
+
 }
