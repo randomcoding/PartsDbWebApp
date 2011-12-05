@@ -22,7 +22,7 @@ class Boot extends Loggable {
 
     // authentication
     LiftRules.httpAuthProtectedResource.prepend {
-      case (Req("/" :: _, _, _)) => Full(AuthRole("user"))
+      case (Req(_, _, _)) => Full(AuthRole("user"))
     }
 
     LiftRules.authentication = HttpBasicAuthentication("AM2") {
