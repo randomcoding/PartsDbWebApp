@@ -10,6 +10,7 @@ import Loc._
 import net.liftweb.http.auth.{ HttpBasicAuthentication, AuthRole }
 import http.ParsePath
 import auth._
+import uk.co.randomcoding.partsdb.lift.util.auth.AppAuthentication
 
 /**
  * A class that's instantiated early and run.  It allows the application
@@ -22,17 +23,24 @@ class Boot extends Loggable {
 
     // authentication
     LiftRules.httpAuthProtectedResource.prepend {
+      case (Req("admin" :: _, _, _)) => Full(AuthRole("user"))
       case (Req(_, _, _)) => Full(AuthRole("user"))
     }
 
-    LiftRules.authentication = HttpBasicAuthentication("AM2") {
+    LiftRules.authentication = AppAuthentication.simpleAuth
+    /*HttpBasicAuthentication("AM2") {
       // TODO: Add user access code here
       case ("Am2User", "Am2aM2", req) => {
         logger.info("You are now authenticated !")
         userRoles(AuthRole("user"))
         true
       }
-    }
+      case ("Am2Admin", "Am2AdM1n", req) => {
+        logger.info("Admin Authenticated")
+        userRoles(AuthRole("admin"))
+        true
+      }
+    }*/
 
     /*
      * This provides access control to pages. 
