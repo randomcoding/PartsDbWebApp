@@ -28,19 +28,6 @@ class Boot extends Loggable {
     }
 
     LiftRules.authentication = AppAuthentication.simpleAuth
-    /*HttpBasicAuthentication("AM2") {
-      // TODO: Add user access code here
-      case ("Am2User", "Am2aM2", req) => {
-        logger.info("You are now authenticated !")
-        userRoles(AuthRole("user"))
-        true
-      }
-      case ("Am2Admin", "Am2AdM1n", req) => {
-        logger.info("Admin Authenticated")
-        userRoles(AuthRole("admin"))
-        true
-      }
-    }*/
 
     /*
      * This provides access control to pages. 
