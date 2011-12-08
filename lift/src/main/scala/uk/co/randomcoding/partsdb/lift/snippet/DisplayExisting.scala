@@ -21,6 +21,8 @@ import uk.co.randomcoding.partsdb.core.contact.Phone
 import uk.co.randomcoding.partsdb.core.contact.Mobile
 import uk.co.randomcoding.partsdb.core.contact.Email
 import scala.xml.NodeSeq
+import uk.co.randomcoding.partsdb.core.part.Part
+import uk.co.randomcoding.partsdb.lift.util.PartDisplay._
 
 /**
  * Displays the existing entities from the database.
@@ -50,6 +52,7 @@ class DisplayExisting extends DbAccessSnippet with ErrorDisplay with Logger {
     entityType.toLowerCase match {
       case "customer" => getAll[Customer]("customerId") sortBy (_.customerName)
       case "address" => getAll[Address]("addressId") sortBy (_.shortName)
+      case "part" => getAll[Part]("partId") sortBy (_.partName)
       case "unspecified" => {
         error("Entity Type not specified.")
         List.empty
@@ -67,6 +70,7 @@ class DisplayExisting extends DbAccessSnippet with ErrorDisplay with Logger {
   private[this] def entitiesTableHeading(entityType: String) = {
     entityType.toLowerCase match {
       case "customer" => headings("Customer Name", "Address", "Contact", "Payment Terms")
+      case "part" => headings("Part Name", "Cost")
     }
   }
 
@@ -85,6 +89,7 @@ class DisplayExisting extends DbAccessSnippet with ErrorDisplay with Logger {
   private[this] def displayEntity(entity: Identifiable) = {
     entity match {
       case cust: Customer => displayCustomer(cust)
+      case part: Part => displayPart(part)
       case _ => {
         error("Unhandled entity type %s".format(entity.getClass.getSimpleName))
         val entityError = "Unable to display %s".format(entity)

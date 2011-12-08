@@ -4,11 +4,11 @@
 package uk.co.randomcoding.partsdb.db.mongo
 
 import com.mongodb.casbah.Imports._
-
 import uk.co.randomcoding.partsdb.core.address.Address
 import uk.co.randomcoding.partsdb.core.customer.Customer
 import uk.co.randomcoding.partsdb.core.id.Identifier._
 import uk.co.randomcoding.partsdb.core.id.{ Identifiable, DefaultIdentifier }
+import uk.co.randomcoding.partsdb.core.part.Part
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
@@ -64,6 +64,7 @@ trait MongoIdentifierAccess {
     item match {
       case cust: Customer if defaultId(cust) => Customer(nextId(), cust.customerName, cust.billingAddress, cust.deliveryAddresses, cust.terms, cust.contactDetails)
       case addr: Address if defaultId(addr) => Address(nextId(), addr.shortName, addr.addressText, addr.country)
+      case part: Part if defaultId(part) => Part(nextId(), part.partName, part.partCost)
       case _ => item
     }
   }
