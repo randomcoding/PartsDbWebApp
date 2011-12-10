@@ -15,27 +15,37 @@ import net.liftweb.common.Loggable
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
 object MongoUserAccess extends Loggable {
+  private lazy val defaultAccess = new MongoUserAccess("AuthDb", "Authentication")
+
+  private var accessMap = Map.empty[(String, String), MongoUserAccess].withDefault(tuple => new MongoUserAccess(tuple._1, tuple._2))
+
+  def apply(): MongoUserAccess = defaultAccess
+
+  def apply(dbName: String, collectionName: String): MongoUserAccess = accessMap((dbName, collectionName))
+}
+
+class MongoUserAccess private (dbName: String, collectionName: String) extends Loggable {
   /**
    * Add a new user to the user database.
    *
    * If there is already a user present with the same name then this will not add the user and return an error
    *
    * @param userName The name of the user to add. This is case sensitive
-   * @param password The '''PLAINTEXT''' password for the user. This will be hashed when added to the database so don't forget it.
+   * @param plainPassword The '''PLAINTEXT''' password for the user. This will be hashed when added to the database so don't forget it.
    * @param userRole The role the user will have within the Application. Currently expects ''user'' or ''admin''
    *
    * @return An optional error message. If this is defined then the user was not added to the database and the option contains the error message.
    * An undefined return value (i.e. `None` indicates success)
    */
-  def addUser(userName: String, password: String, userRole: String): Option[String] = {
+  def addUser(userName: String, plainPassword: String, userRole: String): Option[String] = {
     authCollection.findOne(userByNameQuery(userName)) match {
       case Some(dbo) => {
-        val errorMessage = "User %s already exists. Please use modifyUser instead"
+        val errorMessage = "User '%s' already exists. Please use modifyUser instead".format(userName)
         logger.error(errorMessage)
         Some(errorMessage)
       }
       case None => {
-        authCollection += userObject(userName, password, userRole)
+        authCollection += userObject(userName, plainPassword, userRole)
         None
       }
     }
@@ -50,7 +60,7 @@ object MongoUserAccess extends Loggable {
    * It is assumed that you have already verified the modify user operation before calling this method.
    *
    * @param userName The name of the user to modify. This is case sensitive and the user must already be present in the database
-   * @param password The '''PLAINTEXT''' password for the user. This will be hashed when added to the database so don't forget it.
+   * @param plainPassword The '''PLAINTEXT''' password for the user. This will be hashed when added to the database so don't forget it.
    * If this different to the current password then the user's password will be changed.
    * @param userRole The role the user will have within the Application. Currently expects ''user'' or ''admin''.
    * If this is different to the current user's role then it will be changed.
@@ -58,16 +68,16 @@ object MongoUserAccess extends Loggable {
    * @return An optional error message. If this is defined then the user was not modified and the option contains the error message.
    * An undefined return value (i.e. `None` indicates success)
    */
-  def modifyUser(userName: String, password: String, userRole: String): Option[String] = {
+  def modifyUser(userName: String, plainPassword: String, userRole: String): Option[String] = {
     val findUserQuery = userByNameQuery(userName)
     authCollection.findOne(findUserQuery) match {
       case None => {
-        val errorMessage = "User %s does not exist. Please use addUser instead"
+        val errorMessage = "User '%s' does not exist. Please use addUser instead".format(userName)
         logger.error(errorMessage)
         Some(errorMessage)
       }
       case Some(dbo) => {
-        val response = authCollection.findAndModify(findUserQuery, userObject(userName, password, userRole)) match {
+        val response = authCollection.findAndModify(findUserQuery, userObject(userName, plainPassword, userRole)) match {
           case Some(dbo) if (dbo.getAs[String]("user")) == Some(userName) => None
           case Some(dbo) if (dbo.getAs[String]("user")) isDefined => Some("Updating user %s returned a user with name %s".format(userName, dbo.getAs[String]("user").get))
           case Some(dbo) => Some("Updating user %s returned unknown db object %s".format(userName, dbo))
@@ -102,6 +112,29 @@ object MongoUserAccess extends Loggable {
     }
   }
 
+  def removeUser(userName: String, userRole: String): Option[String] = {
+    authCollection.findOne(userByNameAndRoleQuery(userName, userRole)) match {
+      case Some(dbo) => authCollection.findAndRemove(dbo) match {
+        case Some(_) => None
+        case None => Some("Error whie removing user '%s' with role '%s'. Please check the database".format(userName, userRole))
+      }
+      case None => Some("User '%s' with role '%s' does not exist and cannot be removed".format(userName, userRole))
+    }
+  }
+
+  /**
+   * Get the users currently defined in the auth database.
+   *
+   * @return A list of pairs of usernames and user roles
+   */
+  def users: List[(String, String)] = {
+    val query = "user" $exists true
+
+    authCollection.find(query).toList.map {
+      userObj => (userObj.getAs[String]("user").get, userObj.getAsOrElse[String]("userRole", "Role Undefined"))
+    }
+  }
+
   /**
    * Locate a user in the database by name and hashed password
    */
@@ -112,10 +145,12 @@ object MongoUserAccess extends Loggable {
    */
   private[this] val userByNameQuery = (userName: String) => MongoDBObject("user" -> userName)
 
+  private[this] val userByNameAndRoleQuery = (userName: String, userRole: String) => MongoDBObject("user" -> userName, "userRole" -> userRole)
+
   /**
    * Generate a MongoDBObject that will find a user by name and hashed password, i.e. find the user is they are authenticated
    */
-  private[this] val authUserQuery = (userName: String, plainPassword: String) => MongoDBObject("user" -> userName, "hashPw" -> hash(plainPassword))
+  private[this] val authUserQuery = (userName: String, hashedPassword: String) => MongoDBObject("user" -> userName, "hashPw" -> hashedPassword)
 
   /**
    * Generate a user object that can be added to the database (or matched against)
@@ -125,5 +160,5 @@ object MongoUserAccess extends Loggable {
   /**
    * The collection to use for access and storage of authentication information
    */
-  private[this] lazy val authCollection = MongoConfig.getCollection("AuthDb", "Authentication")
+  private[this] lazy val authCollection = MongoConfig.getCollection(dbName, collectionName)
 }
