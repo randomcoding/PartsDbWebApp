@@ -72,4 +72,21 @@ trait DbAccess extends MongoIdentifierAccess with MongoUpdateAccess with MongoAl
       }
     }
   }
+
+  def editPart(partName: String, cost: Double): Part = {
+    // check parts are in db or not and assign/get their Ids 
+    // for now assume parts are new and assign them ids
+    val part = assignId(Part(-1L, partName, cost)).asInstanceOf[Part]
+    debug("Updating database with part %s".format(part))
+    modify(part) match {
+      case true => {
+        debug("Modified new part %s".format(part))
+        part
+      }
+      case false => {
+        error("Failed to modify part %s".format(part))
+        DefaultPart
+      }
+    }
+  }
 }
