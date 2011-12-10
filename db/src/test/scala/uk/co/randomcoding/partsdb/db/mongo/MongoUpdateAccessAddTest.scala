@@ -14,6 +14,7 @@ import uk.co.randomcoding.partsdb.db.mongo.MongoConverters._
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
+ * @author Jane Rowe
  *
  */
 class MongoUpdateAccessAddTest extends MongoDbTestBase with ShouldMatchers {

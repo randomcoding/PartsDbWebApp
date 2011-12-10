@@ -30,9 +30,9 @@ class AddPart extends StatefulSnippet with DbAccessSnippet with ErrorDisplay wit
 
   def render = {
     "#formTitle" #> Text("Add Part") &
-      "#nameEntry" #> styledTextArea(name, name = _) &
-      "#costEntry" #> styledTextArea(cost, cost = _)
-    "#submit" #> button("Submit", processSubmit)
+      "#nameEntry" #> styledText(name, name = _) &
+      "#costEntry" #> styledText(cost, cost = _) &
+      "#submit" #> button("Submit", processSubmit)
   }
 
   /**
