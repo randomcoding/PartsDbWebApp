@@ -16,6 +16,7 @@ import uk.co.randomcoding.partsdb.core.part.Part
  * This should include a test for each of the primary types of object.
  *
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
+ * @author Jane Rowe
  *
  */
 class MongoUpdateAccessModifyTest extends MongoDbTestBase with ShouldMatchers {

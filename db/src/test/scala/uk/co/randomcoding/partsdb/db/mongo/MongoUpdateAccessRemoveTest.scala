@@ -11,6 +11,7 @@ import uk.co.randomcoding.partsdb.core.part.Part
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
+ * @author Jane Rowe
  */
 class MongoUpdateAccessRemoveTest extends MongoDbTestBase {
   val dbName = "AccessRemoveTest"
