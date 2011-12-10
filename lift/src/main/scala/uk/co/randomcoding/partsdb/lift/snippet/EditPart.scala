@@ -43,19 +43,19 @@ class EditPart extends StatefulSnippet with DbAccessSnippet with ErrorDisplay wi
    * On successful addition, this will (possibly display a dialogue and then) redirect to the main parts page
    */
   private[this] def processSubmit() = {
-    val validationChecks = Seq(ValidationItem(name, "partNameError", "Part Name must be entered"),
-      ValidationItem(cost, "partCostError", "Part Cost is not valid"))
-
-    validate(validationChecks: _*) match {
-      case Nil => {
-        val newId = editPart(name, cost.toDouble).partId
-        S redirectTo "/parts?highlight=%d".format(newId.id)
-      }
-      case errors => {
-        errors foreach (error => displayError(error._1, error._2))
-        // TODO: Need to ensure that the entered details are still present
-        Noop
-      }
-    }
+    //      val validationChecks = Seq(ValidationItem(name, "partNameError", "Part Name must be entered"),
+    //        ValidationItem(cost, "partCostError", "Part Cost is not valid"))
+    //  
+    //          validate(validationChecks: _*) match {
+    //            case Nil => {
+    //              val newId = editPart(name, cost.toDouble).partId
+    //              S redirectTo "/parts?highlight=%d".format(newId.id)
+    //            }
+    //            case errors => {
+    //              errors foreach (error => displayError(error._1, error._2))
+    //              // TODO: Need to ensure that the entered details are still present
+    //              Noop
+    //            }
+    //          }
   }
 }
