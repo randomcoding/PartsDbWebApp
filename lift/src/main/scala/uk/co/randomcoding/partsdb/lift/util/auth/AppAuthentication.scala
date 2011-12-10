@@ -3,7 +3,7 @@
  */
 package uk.co.randomcoding.partsdb.lift.util.auth
 
-import uk.co.randomcoding.partsdb.db.mongo.MongoUserAccess._
+import uk.co.randomcoding.partsdb.db.mongo.MongoUserAccess
 import uk.co.randomcoding.partsdb.db.mongo.MongoConversionFormats
 import uk.co.randomcoding.partsdb.db.util.Helpers._
 
@@ -16,6 +16,9 @@ import net.liftweb.http.auth.{ userRoles, HttpBasicAuthentication, AuthRole }
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
 object AppAuthentication extends Loggable with MongoConversionFormats {
+  private lazy val dbAccess = MongoUserAccess()
+  import dbAccess._
+
   /**
    * Provides Http Basic authentication.
    *
