@@ -2,6 +2,7 @@
  *
  */
 package uk.co.randomcoding.partsdb.lift.util
+
 import uk.co.randomcoding.partsdb.core.contact.Mobile
 import uk.co.randomcoding.partsdb.core.contact.Email
 import net.liftweb.http.SHtml._
@@ -41,6 +42,7 @@ object CustomerDisplay extends Logger with DbAccessSnippet {
   }
 
   private[this] def displayAddress(customer: Customer) = {
+    debug("Displaying Details for Customer: %s".format(customer))
     debug("Customer Billing Address Id: %s".format(customer.billingAddress))
     val addr = getOne[Address]("addressId", customer.billingAddress).getOrElse(NullAddress)
     addr match {

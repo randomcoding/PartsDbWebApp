@@ -37,7 +37,9 @@ trait DbAccess extends MongoIdentifierAccess with MongoUpdateAccess with MongoAl
     // for now assume addresses are new and assign them ids
     // FIXME - The cast to Address is nasty and hacky
     val bAddr = assignId(billingAddress).asInstanceOf[Address]
+    debug("Billing Address (with id): %s".format(bAddr))
     val dAddr = assignId(deliveryAddress).asInstanceOf[Address]
+    debug("Delivery Address (with id): %s".format(dAddr))
     add(bAddr)
     add(dAddr)
     val customer = assignId(Customer(-1L, contactName, bAddr.addressId, Set(dAddr.addressId), terms, contact)).asInstanceOf[Customer]

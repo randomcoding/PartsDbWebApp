@@ -26,7 +26,7 @@ import net.liftweb.http.StatefulSnippet
 class AddCustomer extends StatefulSnippet with DbAccessSnippet with ErrorDisplay with DataValidation with Logger {
   val terms = List(("30" -> "30"), ("45" -> "45"), ("60" -> "60"), ("90" -> "90"))
 
-  val cameFrom = S.referer openOr "/customers"
+  val cameFrom = S.referer openOr "/app/customers"
   var name = ""
   var billingAddressText = ""
   var billingAddressCountry = "United Kingdom"
@@ -66,7 +66,7 @@ class AddCustomer extends StatefulSnippet with DbAccessSnippet with ErrorDisplay
    */
   private[this] def processSubmit() = {
     val billingAddress = addressFromInput(billingAddressText, billingAddressCountry)
-    val deliveryAddress = deliveryAddressText match {
+    val deliveryAddress = deliveryAddressText.trim match {
       case "" => billingAddress
       case text => addressFromInput(text, deliveryAddressCountry)
     }
@@ -87,21 +87,20 @@ class AddCustomer extends StatefulSnippet with DbAccessSnippet with ErrorDisplay
     validate(validationChecks: _*) match {
       case Nil => {
         val newId = addNewCustomer(name, billingAddress, deliveryAddress, paymentTerms, contact).customerId
-        S redirectTo "/customers?highlight=%d".format(newId.id)
+        S redirectTo "/app/customers?highlight=%d".format(newId.id)
       }
       case errors => {
         errors foreach (error => displayError(error._1, error._2))
-        // TODO: Need to ensure that the entered details are still present
         Noop
       }
     }
   }
 
   private def addressFromInput(addressText: String, country: String): Address = {
-    debug("Input address: %s, country: %s".format(addressText, country))
+    trace("Input address: %s, country: %s".format(addressText, country))
     val lines = scala.io.Source.fromString(addressText).getLines.toList
     val addressLines = lines.map(_.replaceAll(",", "").trim) ::: List(country)
-    debug("Generated Address Lines: %s".format(addressLines))
+    trace("Generated Address Lines: %s".format(addressLines))
     val address = addressLines mkString ","
     debug("Generating Address from: %s".format(address))
     address match {

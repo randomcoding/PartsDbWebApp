@@ -3,7 +3,7 @@
  */
 package uk.co.randomcoding.partsdb.core.address
 
-import uk.co.randomcoding.partsdb.core.id.Identifier
+import uk.co.randomcoding.partsdb.core.id.DefaultIdentifier
 import uk.co.randomcoding.partsdb.core.util.CountryCodes._
 import uk.co.randomcoding.partsdb.core.util.CountryCode
 import uk.co.randomcoding.partsdb.core.util.CountryCode._
@@ -41,7 +41,7 @@ object AddressParser {
     val lines = addressString.split("""[,\.]+""") map (_ trim)
 
     identifyCountry(lines) match {
-      case Some(code) if (lines.size > 1) => Some(Address(Identifier(0), lines(0), lines.mkString("\n").trim, code.countryName))
+      case Some(code) if (lines.size > 1) => Some(Address(DefaultIdentifier, lines(0), lines.mkString("\n").trim, code.countryName))
       case _ => None
     }
   }
