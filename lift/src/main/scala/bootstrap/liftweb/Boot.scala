@@ -1,16 +1,12 @@
 package bootstrap.liftweb
 
-import net.liftweb._
-import util._
-import Helpers._
-import common._
-import http._
-import sitemap._
-import Loc._
-import net.liftweb.http.auth.{ HttpBasicAuthentication, AuthRole }
-import http.ParsePath
-import auth._
 import uk.co.randomcoding.partsdb.lift.util.auth.AppAuthentication
+
+import net.liftweb.common.{ Loggable, Full }
+import net.liftweb.http._
+import net.liftweb.http.auth.AuthRole
+import net.liftweb.sitemap._
+import net.liftweb.sitemap.Loc._
 
 /**
  * A class that's instantiated early and run.  It allows the application
@@ -18,7 +14,7 @@ import uk.co.randomcoding.partsdb.lift.util.auth.AppAuthentication
  */
 class Boot extends Loggable {
   def boot {
-    // where to search snippet
+    // where to search for snippet code
     LiftRules.addToPackages("uk.co.randomcoding.partsdb.lift")
 
     // authentication
