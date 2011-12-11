@@ -23,8 +23,8 @@ class Boot extends Loggable {
 
     // authentication
     LiftRules.httpAuthProtectedResource.prepend {
-      case (Req("admin" :: _, _, _)) => Full(AuthRole("user"))
-      case (Req(_, _, _)) => Full(AuthRole("user"))
+      case (Req("admin" :: _, _, _)) => Full(AuthRole("Admin"))
+      case (Req("app" :: _, _, _)) => Full(AuthRole("User"))
     }
 
     LiftRules.authentication = AppAuthentication.simpleAuth
@@ -34,15 +34,17 @@ class Boot extends Loggable {
      * In order to allow a page, add an entry here
      */
     def sitemap = SiteMap(
-      Menu.i("Home") / "index",
-      Menu.i("Customers") / "customers",
-      Menu.i("Parts") / "parts",
-      Menu.i("Suppliers") / "suppliers",
+      Menu.i("Home") / "app" / "index",
+      Menu.i("Customers") / "app" / "customers",
+      Menu.i("Parts") / "app" / "parts",
+      Menu.i("Suppliers") / "app" / "suppliers",
       // hidden entries
-      Menu.i("Add Customer") / "addCustomer" >> Hidden,
-      Menu.i("Add Part") / "addPart" >> Hidden,
-      Menu.i("Add Supplier") / "addSupplier" >> Hidden)
-
+      Menu.i("Add Customer") / "app" / "addCustomer" >> Hidden,
+      Menu.i("Add Part") / "app" / "addPart" >> Hidden,
+      Menu.i("Add Supplier") / "app" / "addSupplier" >> Hidden,
+      // Admin Section
+      Menu.i("Admin") / "admin" / "index" >> Hidden,
+      Menu.i("Admin Add User") / "admin" / "addUser" >> Hidden)
     // set the sitemap.  Note if you don't want access control for
     // each page, just comment this line out.
     LiftRules.setSiteMap(sitemap)
