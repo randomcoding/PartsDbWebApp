@@ -9,7 +9,7 @@ import uk.co.randomcoding.partsdb.lift.util.snippet.StyleAttributes._
 
 import net.liftweb.common.Full
 import net.liftweb.http.SHtml.ElemAttr.pairToBasic
-import net.liftweb.http.SHtml.{ textarea, text, span, select, link, ElemAttr }
+import net.liftweb.http.SHtml._
 import net.liftweb.http.js.JsCmds.Noop
 import net.liftweb.util.Helpers.strToSuperArrowAssoc
 
@@ -61,7 +61,12 @@ object TransformHelpers {
     text(initialText, func, jqueryUiTextStyled)
   }
 
+  def styledPassword(initialText: String, func: String => Any): NodeSeq = {
+    password(initialText, func, jqueryUiTextStyled)
+  }
+
   def styledSelect(values: Seq[(String, String)], initialValue: String, func: String => Any): NodeSeq = {
     select(values, Full(initialValue), func, jqueryUiTextStyled)
   }
+
 }

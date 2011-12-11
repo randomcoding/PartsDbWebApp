@@ -1,15 +1,12 @@
 package bootstrap.liftweb
 
-import net.liftweb._
-import util._
-import Helpers._
-import common._
-import http._
-import sitemap._
-import Loc._
-import net.liftweb.http.auth.{ HttpBasicAuthentication, AuthRole }
-import http.ParsePath
-import auth._
+import uk.co.randomcoding.partsdb.lift.util.auth.AppAuthentication
+
+import net.liftweb.common.{ Loggable, Full }
+import net.liftweb.http._
+import net.liftweb.http.auth.AuthRole
+import net.liftweb.sitemap._
+import net.liftweb.sitemap.Loc._
 
 /**
  * A class that's instantiated early and run.  It allows the application
@@ -17,37 +14,33 @@ import auth._
  */
 class Boot extends Loggable {
   def boot {
-    // where to search snippet
+    // where to search for snippet code
     LiftRules.addToPackages("uk.co.randomcoding.partsdb.lift")
 
     // authentication
     LiftRules.httpAuthProtectedResource.prepend {
-      case (Req(_, _, _)) => Full(AuthRole("user"))
+      case (Req("admin" :: _, _, _)) => Full(AuthRole("Admin"))
+      case (Req("app" :: _, _, _)) => Full(AuthRole("User"))
     }
 
-    LiftRules.authentication = HttpBasicAuthentication("AM2") {
-      // TODO: Add user access code here
-      case ("Am2User", "Am2aM2", req) => {
-        logger.info("You are now authenticated !")
-        userRoles(AuthRole("user"))
-        true
-      }
-    }
+    LiftRules.authentication = AppAuthentication.simpleAuth
 
     /*
      * This provides access control to pages. 
      * In order to allow a page, add an entry here
      */
     def sitemap = SiteMap(
-      Menu.i("Home") / "index",
-      Menu.i("Customers") / "customers",
-      Menu.i("Parts") / "parts",
-      Menu.i("Suppliers") / "suppliers",
+      Menu.i("Home") / "app" / "index",
+      Menu.i("Customers") / "app" / "customers",
+      Menu.i("Parts") / "app" / "parts",
+      Menu.i("Suppliers") / "app" / "suppliers",
       // hidden entries
-      Menu.i("Add Customer") / "addCustomer" >> Hidden,
-      Menu.i("Add Part") / "addPart" >> Hidden,
-      Menu.i("Add Supplier") / "addSupplier" >> Hidden)
-
+      Menu.i("Add Customer") / "app" / "addCustomer" >> Hidden,
+      Menu.i("Add Part") / "app" / "addPart" >> Hidden,
+      Menu.i("Add Supplier") / "app" / "addSupplier" >> Hidden,
+      // Admin Section
+      Menu.i("Admin") / "admin" / "index" >> Hidden,
+      Menu.i("Admin Add User") / "admin" / "addUser" >> Hidden)
     // set the sitemap.  Note if you don't want access control for
     // each page, just comment this line out.
     LiftRules.setSiteMap(sitemap)

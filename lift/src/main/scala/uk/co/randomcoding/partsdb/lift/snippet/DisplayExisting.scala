@@ -21,6 +21,7 @@ import uk.co.randomcoding.partsdb.core.contact.Phone
 import uk.co.randomcoding.partsdb.core.contact.Mobile
 import uk.co.randomcoding.partsdb.core.contact.Email
 import scala.xml.NodeSeq
+import uk.co.randomcoding.partsdb.db.mongo.MongoUserAccess
 
 /**
  * Displays the existing entities from the database.
@@ -39,17 +40,22 @@ class DisplayExisting extends DbAccessSnippet with ErrorDisplay with Logger {
       "#details" #> displayTable(entitiesFromDb, entityType)
   }
 
-  private[this] def displayTable(entities: List[Identifiable], entityType: String) = {
+  private[this] def displayTable(entities: List[AnyRef], entityType: String) = {
     <table>
-      <tr>{ entitiesTableHeading(entityType) }</tr>
-      { displayEntities(entities) }
+      <thead>
+        <tr>{ entitiesTableHeading(entityType) }</tr>
+      </thead>
+      <tbody>
+        { displayEntities(entities) }
+      </tbody>
     </table>
   }
 
-  private[this] lazy val matchingTypes: String => List[Identifiable] = (entityType: String) => {
+  private[this] lazy val matchingTypes: String => List[AnyRef] = (entityType: String) => {
     entityType.toLowerCase match {
       case "customer" => getAll[Customer]("customerId") sortBy (_.customerName)
       case "address" => getAll[Address]("addressId") sortBy (_.shortName)
+      case "user" => MongoUserAccess().users sortBy (_._1)
       case "unspecified" => {
         error("Entity Type not specified.")
         List.empty
@@ -67,6 +73,7 @@ class DisplayExisting extends DbAccessSnippet with ErrorDisplay with Logger {
   private[this] def entitiesTableHeading(entityType: String) = {
     entityType.toLowerCase match {
       case "customer" => headings("Customer Name", "Address", "Contact", "Payment Terms")
+      case "user" => headings("User Name", "User Role")
     }
   }
 
@@ -75,16 +82,12 @@ class DisplayExisting extends DbAccessSnippet with ErrorDisplay with Logger {
    */
   private def headings(titles: String*) = titles map (title => <th>{ title }</th>)
 
-  private[this] def displayEntities(entities: List[Identifiable]) = {
-    /*entities match {
-      case Nil => span(Text("Nothing to Display"), Noop)
-      case _ =>*/ entities map (displayEntity _)
-    //}
-  }
+  private[this] def displayEntities(entities: List[AnyRef]) = entities map (displayEntity _)
 
-  private[this] def displayEntity(entity: Identifiable) = {
+  private[this] def displayEntity(entity: AnyRef) = {
     entity match {
       case cust: Customer => displayCustomer(cust)
+      case (userName: String, userRole: String) => <tr><td>{ userName }</td><td>{ userRole }</td></tr>
       case _ => {
         error("Unhandled entity type %s".format(entity.getClass.getSimpleName))
         val entityError = "Unable to display %s".format(entity)

@@ -14,6 +14,7 @@ appender("STDOUT", ConsoleAppender) {
   }
 }
 
-logger("uk.co.randomcoding.partsdb.lift", DEBUG)
+// Sample of setting package logging to DEBUG level
+//logger("uk.co.randomcoding.partsdb.lift", DEBUG)
 
 root(WARN, ["STDOUT"])

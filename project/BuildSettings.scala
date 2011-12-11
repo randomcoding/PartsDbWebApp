@@ -19,5 +19,5 @@ object BuildSettings {
     scalaVersion := buildScalaVersion,
     shellPrompt  := ShellPrompt.buildShellPrompt,
     scalacOptions := Seq("-deprecation", "-unchecked")
-  )// ++ jacoco.settings
+  )
 }

@@ -25,7 +25,7 @@ import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
  *
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
-class AddOrEdit {
+object AddOrEdit {
 
   /**
    * Transforms the `#add` and `#edit` divs into links with `add/edit?entityType=...` targets.
