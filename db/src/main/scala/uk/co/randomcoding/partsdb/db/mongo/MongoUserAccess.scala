@@ -45,7 +45,7 @@ class MongoUserAccess private (dbName: String, collectionName: String) extends L
         Some(errorMessage)
       }
       case None => {
-        authCollection += userObject(userName, plainPassword, userRole)
+        authCollection += userObject(userName, hash(plainPassword), userRole)
         None
       }
     }
@@ -77,7 +77,7 @@ class MongoUserAccess private (dbName: String, collectionName: String) extends L
         Some(errorMessage)
       }
       case Some(dbo) => {
-        val response = authCollection.findAndModify(findUserQuery, userObject(userName, plainPassword, userRole)) match {
+        val response = authCollection.findAndModify(findUserQuery, userObject(userName, hash(plainPassword), userRole)) match {
           case Some(dbo) if (dbo.getAs[String]("user")) == Some(userName) => None
           case Some(dbo) if (dbo.getAs[String]("user")) isDefined => Some("Updating user %s returned a user with name %s".format(userName, dbo.getAs[String]("user").get))
           case Some(dbo) => Some("Updating user %s returned unknown db object %s".format(userName, dbo))
@@ -112,6 +112,16 @@ class MongoUserAccess private (dbName: String, collectionName: String) extends L
     }
   }
 
+  /**
+   * Removed a user from the database.
+   *
+   *  The user is matched on user name are user role
+   *
+   *  @param userName The user name of the entry to remove
+   *  @param userRole The role of the entry to remove
+   *
+   *  @return An optional string containing any error message. If this is empty (i.e. `None`) then the remove operation succeeded
+   */
   def removeUser(userName: String, userRole: String): Option[String] = {
     authCollection.findOne(userByNameAndRoleQuery(userName, userRole)) match {
       case Some(dbo) => authCollection.findAndRemove(dbo) match {
@@ -145,6 +155,9 @@ class MongoUserAccess private (dbName: String, collectionName: String) extends L
    */
   private[this] val userByNameQuery = (userName: String) => MongoDBObject("user" -> userName)
 
+  /**
+   * Generate a MongoDBObject that will find a user by name an role
+   */
   private[this] val userByNameAndRoleQuery = (userName: String, userRole: String) => MongoDBObject("user" -> userName, "userRole" -> userRole)
 
   /**
@@ -153,9 +166,9 @@ class MongoUserAccess private (dbName: String, collectionName: String) extends L
   private[this] val authUserQuery = (userName: String, hashedPassword: String) => MongoDBObject("user" -> userName, "hashPw" -> hashedPassword)
 
   /**
-   * Generate a user object that can be added to the database (or matched against)
+   * Generate a user object that can be added to the database (or matched against) from the name, plain password and role
    */
-  private[this] val userObject = (userName: String, plainPassword: String, userRole: String) => MongoDBObject("user" -> userName, "hashPw" -> hash(plainPassword), "userRole" -> userRole)
+  private[this] val userObject = (userName: String, hashedPassword: String, userRole: String) => MongoDBObject("user" -> userName, "hashPw" -> hashedPassword, "userRole" -> userRole)
 
   /**
    * The collection to use for access and storage of authentication information
