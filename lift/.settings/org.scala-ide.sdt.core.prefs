@@ -1,4 +1,4 @@
-#Thu Dec 08 08:19:24 GMT 2011
+#Sun Dec 11 11:30:10 GMT 2011
 Xcheck-null=false
 Xcheckinit=false
 Xdisable-assertions=false
@@ -52,7 +52,7 @@ optimise=false
 organizeimports.expandcollapse=collapse
 organizeimports.groups=java$scala$org$com$uk.co.randomcoding
 organizeimports.useProjectSpecificSettings=true
-organizeimports.wildcards=com.mongodb.casbah.Imports$uk.co.randomcoding.partsdb.db.mongo.MongoUserAccess$uk.co.randomcoding.partsdb.db.util.Helpers$scalaz$scalaz.Scalaz
+organizeimports.wildcards=net.liftweb.http.SHtml$com.mongodb.casbah.Imports$uk.co.randomcoding.partsdb.db.mongo.MongoUserAccess$uk.co.randomcoding.partsdb.db.util.Helpers$scalaz$scalaz.Scalaz
 scala.compiler.useProjectSettings=true
 syntaxColouring.bracket.bold=false
 syntaxColouring.bracket.colour=0,0,0
