@@ -8,6 +8,7 @@ import org.scalatest.matchers.ShouldMatchers
 import com.mongodb.casbah.Imports._
 
 import uk.co.randomcoding.partsdb.core.address.Address
+import uk.co.randomcoding.partsdb.core.part.Part
 import uk.co.randomcoding.partsdb.core.id.Identifier
 import uk.co.randomcoding.partsdb.db.mongo.MongoConverters._
 
@@ -46,6 +47,29 @@ class MongoUpdateAccessAddTest extends MongoDbTestBase with ShouldMatchers {
     val result = findInDatabase[Address]("addressId", 4680)
 
     result.toList should be(List(address1))
+  }
+
+  //----------------
+  test("Adding a Part") {
+    val part = Part(Identifier(2468), "sprocket", 1.00)
+
+    mongoAccess add part should be(true)
+
+    val result = findInDatabase[Part]("partId", 2468)
+
+    result.toList should be(List(part))
+  }
+
+  test("Adding a Part with the same id as an existing one but different details does not update the previous one") {
+    val part1 = Part(Identifier(4680), "sprocket", 1.51)
+    val part2 = Part(Identifier(4680), "woggle sprocket", 1.52)
+
+    mongoAccess add part1 should be(true)
+    mongoAccess add part2 should be(false)
+
+    val result = findInDatabase[Part]("partId", 4680)
+
+    result.toList should be(List(part1))
   }
 
   // TODO: Add tests for all other major types

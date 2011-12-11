@@ -6,6 +6,7 @@ package uk.co.randomcoding.partsdb.db
 import uk.co.randomcoding.partsdb.core._
 import id.Identifier
 import address.Address
+import part.Part
 import contact._
 import customer.Customer
 import terms._
@@ -130,10 +131,18 @@ class JsonConversionSimpleObjectTests extends JsonConversionTesting {
   }
 
   test("Can convert Part to JSON") {
-    pending
+    val part = Part(Identifier(4568), "MyPart", 1.51)
+    val json: String = part
+
+    json should be("""{"partId":{"id":4568},"partName":"MyPart","partCost":1.51}""")
+    checkJsonConversion[Part](json, Part(Identifier(4568), "MyPart", 1.51))
   }
 
   test("Can convert JSON to Part") {
-    pending
+    val json = """{ "partId" : {"id":4568},
+      "partName" : "MyPart",
+      "partCost" : 1.51 }"""
+
+    checkJsonConversion[Part](json, Part(Identifier(4568), "MyPart", 1.51))
   }
 }
