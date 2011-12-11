@@ -5,7 +5,7 @@ package uk.co.randomcoding.partsdb.core.address
 
 import org.scalatest.FunSuite
 import org.scalatest.matchers.ShouldMatchers
-import uk.co.randomcoding.partsdb.core.id.Identifier
+import uk.co.randomcoding.partsdb.core.id.DefaultIdentifier
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
@@ -20,7 +20,7 @@ class AddressParserTest extends FunSuite with ShouldMatchers {
 
     val expectedAddress = List("15 Holly Lane", "A Town", "A County", "AC23 8FD", "UK").mkString("\n")
     addressString match {
-      case AddressParser(addr) => addr should be(Address(Identifier(0), "15 Holly Lane", expectedAddress, "United Kingdom"))
+      case AddressParser(addr) => addr should be(Address(DefaultIdentifier, "15 Holly Lane", expectedAddress, "United Kingdom"))
       case _ => fail("No Address Match made")
     }
   }
@@ -34,7 +34,7 @@ class AddressParserTest extends FunSuite with ShouldMatchers {
 
     val expectedAddress = List("15 Holly Lane", "A Town", "A County", "AC23 8FD", "UK").mkString("\n")
     addressString match {
-      case AddressParser(addr) => addr should be(Address(Identifier(0), "15 Holly Lane", expectedAddress, "United Kingdom"))
+      case AddressParser(addr) => addr should be(Address(DefaultIdentifier, "15 Holly Lane", expectedAddress, "United Kingdom"))
       case _ => fail("No Address Match made")
     }
   }
@@ -44,7 +44,7 @@ class AddressParserTest extends FunSuite with ShouldMatchers {
 
     val expectedAddress = List("15 Holly Lane", "A Town", "A County", "AC23 8FD", "UK").mkString("\n")
     addressString match {
-      case AddressParser(addr) => addr should be(Address(Identifier(0), "15 Holly Lane", expectedAddress, "United Kingdom"))
+      case AddressParser(addr) => addr should be(Address(DefaultIdentifier, "15 Holly Lane", expectedAddress, "United Kingdom"))
       case _ => fail("No Address Match made")
     }
   }
@@ -54,7 +54,7 @@ class AddressParserTest extends FunSuite with ShouldMatchers {
 
     val expectedAddress = List("15 Holly Lane", "A Town", "A County", "AC23 8FD", "UK").mkString("\n")
     addressString match {
-      case AddressParser(addr) => addr should be(Address(Identifier(0), "15 Holly Lane", expectedAddress, "United Kingdom"))
+      case AddressParser(addr) => addr should be(Address(DefaultIdentifier, "15 Holly Lane", expectedAddress, "United Kingdom"))
       case _ => fail("No Address Match made")
     }
   }
@@ -64,7 +64,7 @@ class AddressParserTest extends FunSuite with ShouldMatchers {
 
     val expectedAddress = List("15 Holly Lane", "A Town", "A County", "AC23 8FD").mkString("\n")
     addressString match {
-      case AddressParser(addr) => addr should be(Address(Identifier(0), "15 Holly Lane", expectedAddress, "United Kingdom"))
+      case AddressParser(addr) => addr should be(Address(DefaultIdentifier, "15 Holly Lane", expectedAddress, "United Kingdom"))
       case _ => fail("No Address Match made")
     }
   }
@@ -79,7 +79,7 @@ class AddressParserTest extends FunSuite with ShouldMatchers {
   private val addressStringMatch = (addressString: String) => {
     val expectedAddress = List("15 Holly Lane", "A Town", "A County", "AC23 8FD", "UK").mkString("\n")
     addressString match {
-      case AddressParser(addr) => addr should be(Address(Identifier(0), "15 Holly Lane", expectedAddress, "United Kingdom"))
+      case AddressParser(addr) => addr should be(Address(DefaultIdentifier, "15 Holly Lane", expectedAddress, "United Kingdom"))
       case _ => fail("No Address Match made")
     }
   }
