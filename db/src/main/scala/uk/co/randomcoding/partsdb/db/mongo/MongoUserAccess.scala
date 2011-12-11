@@ -56,7 +56,7 @@ class MongoUserAccess private (dbName: String, collectionName: String) extends L
    *
    * If there is no user with the given name present then this '''''will not''''' add the user and return an error
    *
-   * == WARNING
+   * == WARNING ==
    * It is assumed that you have already verified the modify user operation before calling this method.
    *
    * @param userName The name of the user to modify. This is case sensitive and the user must already be present in the database

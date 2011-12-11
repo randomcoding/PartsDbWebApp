@@ -22,7 +22,8 @@ object AppAuthentication extends Loggable with MongoConversionFormats {
   /**
    * Provides Http Basic authentication against the user database
    *
-   * == Example
+   * == Example ==
+   *
    * To use simply add
    * {{{
    * LiftRules.authentication = AppAuthentication.simpleAuth

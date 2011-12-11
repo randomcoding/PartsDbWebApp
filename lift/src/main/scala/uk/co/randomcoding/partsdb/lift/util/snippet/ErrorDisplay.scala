@@ -19,7 +19,7 @@ trait ErrorDisplay {
   def displayError(formId: String, errorMessage: String): Unit = S.error(formId, errorMessage)
 
   /**
-   * Delegate to [[uk.co.randomcoding.partsdb.lift.util.snippet.ErrorDisplay.displayError(String, String)]]
+   * Delegate to [[uk.co.randomcoding.partsdb.lift.util.snippet.ErrorDisplay#displayError(String,String)]]
    *
    * @param A `Tuple2[String, String]` which is mapped to the parameters of the delegate method
    */
