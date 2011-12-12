@@ -7,14 +7,17 @@ import scala.xml.Text
 import uk.co.randomcoding.partsdb.core.address.Address
 import uk.co.randomcoding.partsdb.core.customer.Customer
 import uk.co.randomcoding.partsdb.db.mongo.MongoUserAccess
-import uk.co.randomcoding.partsdb.lift.util.CustomerDisplay._
-import uk.co.randomcoding.partsdb.lift.util.UserDisplay._
+import uk.co.randomcoding.partsdb.lift.util.CustomerDisplay
+import uk.co.randomcoding.partsdb.lift.util.UserDisplay
 import uk.co.randomcoding.partsdb.lift.util.TransformHelpers.buttonLink
 import uk.co.randomcoding.partsdb.lift.util.snippet.{ ErrorDisplay, DbAccessSnippet }
 import net.liftweb.common.Logger
 import net.liftweb.http.S
+import net.liftweb.http.SHtml.link
 import net.liftweb.util.Helpers._
 import net.liftweb.common.Full
+import uk.co.randomcoding.partsdb.core.id.Identifier
+import uk.co.randomcoding.partsdb.lift.util.EntityDisplay
 
 /**
  * Displays the existing entities from the database.
@@ -46,14 +49,14 @@ class DisplayExisting extends DbAccessSnippet with ErrorDisplay with Logger {
   }
 
   private[this] def displayTable(entities: List[AnyRef], entityType: String) = {
-    <table>
-      <thead>
-        <tr>{ entitiesTableHeading(entityType) }</tr>
-      </thead>
-      <tbody>
-        { entities map (displayEntity _) }
-      </tbody>
-    </table>
+    entityType.toLowerCase match {
+      case "customer" => CustomerDisplay.displayTable(entities map (_.asInstanceOf[Customer]))
+      case "user" => UserDisplay.displayTable(entities map (_.asInstanceOf[(String, String)]))
+      case _ => {
+        error("Unknown Type: %s".format(entityType))
+        EntityDisplay.emptyTable
+      }
+    }
   }
 
   private[this] lazy val matchingTypes: String => List[AnyRef] = (entityType: String) => {
@@ -75,24 +78,24 @@ class DisplayExisting extends DbAccessSnippet with ErrorDisplay with Logger {
   /**
    * Generates the table headings for the display of each type
    */
-  private[this] def entitiesTableHeading(entityType: String) = {
+  /*private[this] def entitiesTableHeading(entityType: String) = {
     entityType.toLowerCase match {
       case "customer" => headings(customerHeadings)
       case "user" => headings(userHeadings)
       case _ => headings(Nil)
     }
-  }
+  }*/
 
   /**
-   * Convert a list of strings into a list to `<th>` elements
+   * Convert a list of strings into a list to `<th>` elements.
+   *
+   * This also adds an extra column for the edit button that is put on the end of each row
    */
-  private def headings(titles: Seq[String]) = titles map (title => <th>{ title }</th>)
-
-  //private[this] def displayEntities(entities: List[AnyRef]) = entities map (displayEntity _)
+  /*private def headings(titles: List[String]) = (titles ::: "" :: Nil) map (title => <th>{ title }</th>)
 
   private[this] def displayEntity(entity: AnyRef) = {
-    entity match {
-      case cust: Customer => displayCustomer(cust)
+    val (entityDetails, editLink) = entity match {
+      case cust: Customer => (displayCustomer(cust), editEntityLink("Customer", cust.customerId))
       case (userName: String, userRole: String) => displayUser(userName, userRole)
       case _ => {
         error("Unhandled entity type %s".format(entity.getClass.getSimpleName))
@@ -100,5 +103,9 @@ class DisplayExisting extends DbAccessSnippet with ErrorDisplay with Logger {
         <div>{ entityError }</div>
       }
     }
+    <tr valign="top">{ entityDetails }{ editLink }</tr>
   }
+
+  private val editEntityLink = (entityType: String, entityId: Identifier) => <td>{ link("edit%s?id=%d".format(entityType, entityId.id), () => Unit, Text("Edit")) }</td>
+  */
 }
