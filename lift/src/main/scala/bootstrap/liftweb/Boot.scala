@@ -26,24 +26,26 @@ class Boot extends Loggable {
     LiftRules.authentication = AppAuthentication.simpleAuth
 
     /*
-     * This provides access control to pages. 
-     * In order to allow a page, add an entry here
+     * Create the various menus here.
+     * 
+     * To create a link to the show page use ExtLink to form the link with the '?entityType=...'
+     * as the Link form incorrectly escapes the ? and = characters in the address bar.
      */
-    def sitemap = SiteMap(
-      Menu.i("Home") / "app" / "index",
-      Menu.i("Customers") / "app" / "customers",
-      Menu.i("Parts") / "app" / "parts",
-      Menu.i("Suppliers") / "app" / "suppliers",
-      // hidden entries
-      Menu.i("Add Customer") / "app" / "addCustomer" >> Hidden,
-      Menu.i("Add Part") / "app" / "addPart" >> Hidden,
-      Menu.i("Add Supplier") / "app" / "addSupplier" >> Hidden,
-      // Admin Section
-      Menu.i("Admin") / "admin" / "index" >> Hidden,
-      Menu.i("Admin Add User") / "admin" / "addUser" >> Hidden)
-    // set the sitemap.  Note if you don't want access control for
-    // each page, just comment this line out.
-    LiftRules.setSiteMap(sitemap)
+    // This provides access to all the pages under /app/
+    val mainAppLoc = Menu(Loc("mainApp", new Link("app" :: Nil, true), "Home"))
+
+    // Create links for the show... parts here
+    val showCustomers = Menu(Loc("showCustomers", ExtLink("/app/show?entityType=Customer"), "Customers"))
+    val showParts = Menu(Loc("showParts", ExtLink("/app/show?entityType=Part"), "Parts"))
+    val showSuppliers = Menu(Loc("showSuppliers", ExtLink("/app/show?entityType=Supplier"), "Suppliers"))
+
+    // Provide access to the admin menu. This is hidden.
+    val adminLoc = Menu(Loc("adminSection", new Link("admin" :: Nil, true), "Admin", Hidden))
+
+    // Construct the menu list to use
+    val menus = mainAppLoc :: showCustomers :: showParts :: showSuppliers :: adminLoc :: Nil
+
+    LiftRules.setSiteMap(SiteMap(menus: _*))
 
     // Use jQuery 1.4
     LiftRules.jsArtifacts = net.liftweb.http.js.jquery.JQuery14Artifacts

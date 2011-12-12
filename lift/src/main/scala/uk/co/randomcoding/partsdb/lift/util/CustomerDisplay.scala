@@ -24,6 +24,12 @@ import uk.co.randomcoding.partsdb.core.address.{ Address, NullAddress }
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
 object CustomerDisplay extends Logger with DbAccessSnippet {
+
+  /**
+   * The headings to use for the display of the customer data table
+   */
+  val customerHeadings = List("Customer Name", "Address", "Contact", "Payment Terms")
+
   /**
    * Generates html to display a customer.
    *
