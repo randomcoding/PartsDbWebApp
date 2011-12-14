@@ -46,6 +46,7 @@ class Boot extends Loggable {
       // hidden entries
       Menu.i("Add Customer") / "addCustomer" >> Hidden,
       Menu.i("Add Part") / "addPart" >> Hidden,
+      Menu.i("Edit Part") / "editPart" >> Hidden,
       Menu.i("Add Supplier") / "addSupplier" >> Hidden)
 
     // set the sitemap.  Note if you don't want access control for
