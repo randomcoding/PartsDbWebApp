@@ -30,8 +30,6 @@ class AddCustomer extends StatefulSnippet with DbAccessSnippet with ErrorDisplay
   var name = ""
   var billingAddressText = ""
   var billingAddressCountry = "United Kingdom"
-  var deliveryAddressText = ""
-  var deliveryAddressCountry = "United Kingdom"
   var paymentTermsText = "30"
   var contactName = ""
   var phoneNumber = ""
@@ -47,8 +45,6 @@ class AddCustomer extends StatefulSnippet with DbAccessSnippet with ErrorDisplay
       "#nameEntry" #> styledText(name, name = _) &
       "#billingAddressEntry" #> styledTextArea(billingAddressText, billingAddressText = _) &
       "#billingAddressCountry" #> styledSelect(countryCodes, billingAddressCountry, billingAddressCountry = _) &
-      "#deliveryAddressEntry" #> styledTextArea(deliveryAddressText, deliveryAddressText = _) &
-      "#deliveryAddressCountry" #> styledSelect(countryCodes, deliveryAddressCountry, deliveryAddressCountry = _) &
       "#paymentTermsEntry" #> styledSelect(terms, paymentTermsText, paymentTermsText = _) &
       "#contactNameEntry" #> styledText(contactName, contactName = _) &
       "#phoneNumberEntry" #> styledText(phoneNumber, phoneNumber = _) &
@@ -66,11 +62,6 @@ class AddCustomer extends StatefulSnippet with DbAccessSnippet with ErrorDisplay
    */
   private[this] def processSubmit() = {
     val billingAddress = addressFromInput(billingAddressText, billingAddressCountry)
-    val deliveryAddress = deliveryAddressText.trim match {
-      case "" => billingAddress
-      case text => addressFromInput(text, deliveryAddressCountry)
-    }
-
     val contact = contactDetails(contactName, phoneNumber, mobileNumber, email, billingAddressCountry)
 
     val paymentTerms = asInt(paymentTermsText) match {
@@ -79,14 +70,13 @@ class AddCustomer extends StatefulSnippet with DbAccessSnippet with ErrorDisplay
     }
 
     val validationChecks = Seq(ValidationItem(billingAddress, "billingAddressError", "Billing Address is not valid"),
-      ValidationItem(deliveryAddress, "deliveryAddressError", "Delivery Address is not valid"),
       ValidationItem(paymentTerms, "paymentTermsError", "Payment Terms are not valid"),
       ValidationItem(contact, "contactDetailsError", "Contact Details are not valid"),
       ValidationItem(name, "customerNameError", "Customer Name must be entered"))
 
     validate(validationChecks: _*) match {
       case Nil => {
-        val newId = addNewCustomer(name, billingAddress, deliveryAddress, paymentTerms, contact).customerId
+        val newId = addNewCustomer(name, billingAddress, paymentTerms, contact).customerId
         S redirectTo "/app/customers?highlight=%d".format(newId.id)
       }
       case errors => {

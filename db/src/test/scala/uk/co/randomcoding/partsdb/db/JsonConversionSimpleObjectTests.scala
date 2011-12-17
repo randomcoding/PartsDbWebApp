@@ -87,37 +87,17 @@ class JsonConversionSimpleObjectTests extends JsonConversionTesting {
   }
 
   test("Can convert Customer to JSON") {
-    val customerJson: String = Customer(Identifier(9753), "A Customer", Identifier(4567), Set(Identifier(4567)), PaymentTerms(30), ContactDetails("A Person", phoneNumbers = Some(List(Phone("+44 543 5678 9832")))))
+    val customerJson: String = Customer(Identifier(9753), "A Customer", Identifier(4567), PaymentTerms(30), ContactDetails("A Person", phoneNumbers = Some(List(Phone("+44 543 5678 9832")))))
     val expectedJson = """{"customerId":{"id":9753},"customerName":"A Customer","billingAddress":{"id":4567},""" +
-      """"deliveryAddresses":[{"id":4567}],"terms":{"days":30},""" +
-      """"contactDetails":{"contactName":"A Person","phoneNumbers":[{"phoneNumber":"+44 543 5678 9832","international":false}]}}"""
+      """"terms":{"days":30},"contactDetails":{"contactName":"A Person","phoneNumbers":[{"phoneNumber":"+44 543 5678 9832","international":false}]}}"""
 
     customerJson should be(expectedJson)
   }
 
   test("Can convert JSON to Customer") {
     val json = """{"customerId":{"id":9753},"customerName":"A Customer","billingAddress":{"id":4567},""" +
-      """"deliveryAddresses":[{"id":4567}],"terms":{"days":30},""" +
-      """"contactDetails":{"contactName":"A Person","phoneNumbers":[{"phoneNumber":"+44 543 5678 9832","international":false}]}}"""
-    val customer = Customer(Identifier(9753), "A Customer", Identifier(4567), Set(Identifier(4567)), PaymentTerms(30), ContactDetails("A Person", phoneNumbers = Some(List(Phone("+44 543 5678 9832")))))
-
-    checkJsonConversion[Customer](json, customer)
-  }
-
-  test("Can convert Complex Customer to JSON") {
-    val customerJson: String = Customer(Identifier(9753), "A Customer", Identifier(4567), Set(Identifier(4567), Identifier(9876)), PaymentTerms(30), ContactDetails("A Person", phoneNumbers = Some(List(Phone("+44 543 5678 9832")))))
-    val expectedJson = """{"customerId":{"id":9753},"customerName":"A Customer","billingAddress":{"id":4567},""" +
-      """"deliveryAddresses":[{"id":4567},{"id":9876}],"terms":{"days":30},""" +
-      """"contactDetails":{"contactName":"A Person","phoneNumbers":[{"phoneNumber":"+44 543 5678 9832","international":false}]}}"""
-
-    customerJson should be(expectedJson)
-  }
-
-  test("Can convert JSON to Complex Customer") {
-    val json = """{"customerId":{"id":9753},"customerName":"A Customer","billingAddress":{"id":4567},""" +
-      """"deliveryAddresses":[{"id":4567},{"id",9876}],"terms":{"days":30},""" +
-      """"contactDetails":{"contactName":"A Person","phoneNumbers":[{"phoneNumber":"+44 543 5678 9832","international":false}]}}"""
-    val customer = Customer(Identifier(9753), "A Customer", Identifier(4567), Set(Identifier(4567), Identifier(9876)), PaymentTerms(30), ContactDetails("A Person", phoneNumbers = Some(List(Phone("+44 543 5678 9832")))))
+      ""","terms":{"days":30},"contactDetails":{"contactName":"A Person","phoneNumbers":[{"phoneNumber":"+44 543 5678 9832","international":false}]}}"""
+    val customer = Customer(Identifier(9753), "A Customer", Identifier(4567), PaymentTerms(30), ContactDetails("A Person", phoneNumbers = Some(List(Phone("+44 543 5678 9832")))))
 
     checkJsonConversion[Customer](json, customer)
   }

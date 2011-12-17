@@ -32,25 +32,22 @@ trait DbAccess extends MongoIdentifierAccess with MongoUpdateAccess with MongoAl
 
   override lazy val collection = MongoConfig.getCollection(dbName, collectionName)
 
-  def addNewCustomer(contactName: String, billingAddress: Address, deliveryAddress: Address, terms: PaymentTerms, contact: ContactDetails): Customer = {
+  def addNewCustomer(contactName: String, billingAddress: Address, terms: PaymentTerms, contact: ContactDetails): Customer = {
     // check addresses is are in db or not and assign/get their Ids 
     // for now assume addresses are new and assign them ids
     // FIXME - The cast to Address is nasty and hacky
     val bAddr = assignId(billingAddress).asInstanceOf[Address]
     debug("Billing Address (with id): %s".format(bAddr))
-    val dAddr = assignId(deliveryAddress).asInstanceOf[Address]
-    debug("Delivery Address (with id): %s".format(dAddr))
     add(bAddr)
-    add(dAddr)
-    val customer = assignId(Customer(-1L, contactName, bAddr.addressId, Set(dAddr.addressId), terms, contact)).asInstanceOf[Customer]
-    debug("Updating database with customer %s (billing: %s, delivery: %s)".format(customer, billingAddress, deliveryAddress))
+    val customer = assignId(Customer(-1L, contactName, bAddr.addressId, terms, contact)).asInstanceOf[Customer]
+    debug("Updating database with customer %s at billing address: %s".format(customer, billingAddress))
     add(customer) match {
       case true => {
-        debug("Added new customer %s with billing address %s and delivery address %s".format(customer, bAddr, dAddr))
+        debug("Added new customer %s with billing address %s".format(customer, bAddr))
         customer
       }
       case false => {
-        error("Failed to add customer %s with billing address %s and delivery address %s".format(customer, bAddr, dAddr))
+        error("Failed to add customer %s with billing address %s".format(customer, bAddr))
         DefaultCustomer
       }
     }
