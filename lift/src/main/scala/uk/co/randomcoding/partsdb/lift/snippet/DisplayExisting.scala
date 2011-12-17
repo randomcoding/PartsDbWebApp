@@ -18,7 +18,8 @@ import net.liftweb.util.Helpers._
 import net.liftweb.common.Full
 import uk.co.randomcoding.partsdb.core.id.Identifier
 import uk.co.randomcoding.partsdb.lift.util.EntityDisplay
-
+import uk.co.randomcoding.partsdb.core.part.Part
+import uk.co.randomcoding.partsdb.lift.util.PartDisplay._
 /**
  * Displays the existing entities from the database.
  *
@@ -62,8 +63,12 @@ class DisplayExisting extends DbAccessSnippet with ErrorDisplay with Logger {
   private[this] lazy val matchingTypes: String => List[AnyRef] = (entityType: String) => {
     entityType.toLowerCase match {
       case "customer" => getAll[Customer]("customerId") sortBy (_.customerName)
-      case "address" => getAll[Address]("addressId") sortBy (_.shortName)
-      case "user" => MongoUserAccess().users sortBy (_._1)
+      case "address" =>
+        getAll[Address]("addressId") sortBy (_.shortName)
+      case "user" =>
+        MongoUserAccess().users sortBy (_._1)
+      case "part" =>
+        getAll[Part]("partId") sortBy (_.partName)
       case "unspecified" => {
         error("Entity Type not specified.")
         List.empty
@@ -83,6 +88,8 @@ class DisplayExisting extends DbAccessSnippet with ErrorDisplay with Logger {
       case "customer" => headings(customerHeadings)
       case "user" => headings(userHeadings)
       case _ => headings(Nil)
+      case "customer" => headings("Customer Name", "Address", "Contact", "Payment Terms")
+      case "part" => headings("Part Name", "Cost")
     }
   }*/
 
@@ -97,6 +104,19 @@ class DisplayExisting extends DbAccessSnippet with ErrorDisplay with Logger {
     val (entityDetails, editLink) = entity match {
       case cust: Customer => (displayCustomer(cust), editEntityLink("Customer", cust.customerId))
       case (userName: String, userRole: String) => displayUser(userName, userRole)
+
+  private[this] def displayEntities(entities: List[Identifiable]) = {
+    /*entities match {
+      case Nil => span(Text("Nothing to Display"), Noop)
+      case _ =>*/ entities map (displayEntity _)
+    //}
+  }
+
+  private[this] def displayEntity(entity: Identifiable) = {
+    entity match {
+      case cust: Customer => displayCustomer(cust)
+      case part: Part => displayPart(part)
+
       case _ => {
         error("Unhandled entity type %s".format(entity.getClass.getSimpleName))
         val entityError = "Unable to display %s".format(entity)

@@ -4,6 +4,7 @@
 package uk.co.randomcoding.partsdb.core.part
 
 import uk.co.randomcoding.partsdb.core.id.{ Identifier, Identifiable }
+import uk.co.randomcoding.partsdb.core.id.DefaultIdentifier
 
 /**
  * @constructor Create a new part object
@@ -11,9 +12,11 @@ import uk.co.randomcoding.partsdb.core.id.{ Identifier, Identifiable }
  * @param partName The short (friendly) name of this part
  * @param cost The cost of the part
  *
- * @author JMRowe <>
+ * @author Jane Rowe
  *
  */
 case class Part(val partId: Identifier, val partName: String, val partCost: Double) extends Identifiable {
   override val identifierFieldName = "partId"
 }
+
+object DefaultPart extends Part(DefaultIdentifier, "No Part", "00.00".toDouble)
