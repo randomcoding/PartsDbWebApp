@@ -16,44 +16,78 @@ import uk.co.randomcoding.partsdb.db.mongo.MongoAllOrOneAccess
  *
  * @constructor Create a new search provider
  * @param name The name of the search provider.
+ * @param providesType A String representation of the type of entity this provider returns
  * @param collection The collection that this search provider should use
- * @tparam ResultType The type of results that this provider returns from its searches
  *
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
-sealed abstract class MongoSearchProvider[ResultType](val name: String, val providesType: String, coll: MongoCollection)(implicit mf: Manifest[ResultType]) {
+sealed abstract class MongoSearchProvider(val name: String, val providesType: String, coll: MongoCollection) {
+  /**
+   * @abstract
+   * The type of results that this provider returns from its searches
+   */
+  type ResultType
 
-  val mongoAccess = new MongoAllOrOneAccess {
+  private[this] val mongoAccess = new MongoAllOrOneAccess {
     override val collection = coll
   }
-  /**
-   * A String representation of the type of entity this provider returns.
-   *
-   * e.g. `Customer` or `Quote`
-   */
 
-  def query(searchTerms: Set[MongoSearchTerm]): MongoDBObject = {
+  /**
+   * Generates the Mongo DB query represented by the provided [[uk.co.randomcoding.partsdb.db.search.MongoSearchTerm]]s
+   *
+   * This provides '''and''' style searches.
+   *
+   * @return A `MongoDBObject` that is the concatenation of all the search terms. If the input set is empty then returns `MongoDBObject.empty`
+   */
+  private def query(searchTerms: Set[MongoSearchTerm]): MongoDBObject = {
     (searchTerms.toList match {
       case Nil => MongoDBObject.empty
       case head :: Nil => head.query
       case multiple => multiple.foldLeft(MongoDBObject.empty)((currentQuery: DBObject, term: MongoSearchTerm) => currentQuery ++ term.query)
-    }) ++ ("addressId" $exists true)
+    }) /*++ ("addressId" $exists true)*/
   }
   /**
    * Perform the search and get the results form the datastore
    *
    * @param searchTerms A set of distinct [[uk.co.randomcoding.partsdb.db.search.SearchTerm]]s that will be used to get the results of the search
    */
-  def search(searchTerms: Set[MongoSearchTerm]): List[ResultType] = mongoAccess.getMatching[ResultType](query(searchTerms))
+  protected def search[ResultType](searchTerms: Set[MongoSearchTerm])(implicit mf: Manifest[ResultType]): List[ResultType] = mongoAccess.getMatching[ResultType](query(searchTerms))
+
+  /**
+   * Type fixed method to call to perform the search
+   */
+  def find(searchTerms: Set[MongoSearchTerm]): List[ResultType]
+
+  /**
+   * Delegate method to `find(Set)` that wrape a single term in a Set
+   */
+  def find(searchTerm: MongoSearchTerm): List[ResultType] = find(Set(searchTerm))
 }
 
 // add implementations
-case class AddressSearchProvider(collection: MongoCollection) extends MongoSearchProvider[Address]("Address Search", "Address", collection)
+case class AddressSearchProvider(collection: MongoCollection) extends MongoSearchProvider("Address Search", "Address", collection) {
+  override type ResultType = Address
 
-case class CustomerSearchProvider(collection: MongoCollection) extends MongoSearchProvider[Customer]("Customer Search", "Customer", collection)
+  def find(searchTerms: Set[MongoSearchTerm]): List[Address] = search[Address](searchTerms)
+}
 
-case class PartSearchProvider(collection: MongoCollection) extends MongoSearchProvider[Part]("Part Search", "Part", collection)
+case class CustomerSearchProvider(collection: MongoCollection) extends MongoSearchProvider("Customer Search", "Customer", collection) {
+  override type ResultType = Customer
 
-//case class SupplierSearchProvider(collection: MongoCollection) extends MongoSearchProvider[Supplier]("Supplier Search", "Supplier", collection)
+  def find(searchTerms: Set[MongoSearchTerm]): List[Customer] = search[Customer](searchTerms)
+}
 
-//case class QuoteSearchProvider(collection: MongoCollection) extends MongoSearchProvider[Quote]("Quote Search", "Quote", collection)
+case class PartSearchProvider(collection: MongoCollection) extends MongoSearchProvider("Part Search", "Part", collection) {
+  override type ResultType = Part
+
+  def find(searchTerms: Set[MongoSearchTerm]): List[Part] = search[Part](searchTerms)
+}
+
+// The requires types for these providers are not implemented yet
+/*case class SupplierSearchProvider(collection: MongoCollection) extends MongoSearchProvider("Supplier Search", "Supplier", collection) {
+  override type ResultType = Supplier
+}
+
+case class QuoteSearchProvider(collection: MongoCollection) extends MongoSearchProvider("Quote Search", "Quote", collection){
+  override type ResultType = Quote
+}*/ 

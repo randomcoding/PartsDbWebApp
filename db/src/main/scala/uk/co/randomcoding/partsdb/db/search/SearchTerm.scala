@@ -48,5 +48,5 @@ object SearchTerm {
    */
   val doesNotExist = "not exists"
 
-  // TODO add bridges to other Casbah QUery DSL types as needed (e.g. greater than, range etc.)
+  // TODO add bridges to other Casbah Query DSL types as needed (e.g. greater than, range etc.)
 }
