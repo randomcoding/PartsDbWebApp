@@ -13,7 +13,7 @@ import uk.co.randomcoding.partsdb.core.id.Identifier
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
-class MongoSearchProviderTest extends MongoDbTestBase {
+class MongoAddressSearchProviderTest extends MongoDbTestBase {
   val dbName = "MongoDbSearchProviderTest"
 
   lazy val access = new MongoUpdateAccess() {
@@ -23,10 +23,10 @@ class MongoSearchProviderTest extends MongoDbTestBase {
   test("Search against an empty db returns no results") {
     val provider = AddressSearchProvider(mongo)
 
-    provider.search(Set.empty) should be('empty)
-    provider search (Set(MongoSearchTerm("addressText", exists))) should be('empty)
-    provider search (Set(MongoSearchTerm("addressText", doesNotExist))) should be('empty)
-    provider search (Set(MongoSearchTerm("addressText", "UK"))) should be('empty)
+    provider find (Set.empty[MongoSearchTerm]) should be('empty)
+    provider find (Set(MongoSearchTerm("addressText", exists))) should be('empty)
+    provider find (Set(MongoSearchTerm("addressText", doesNotExist))) should be('empty)
+    provider find (Set(MongoSearchTerm("addressText", "UK"))) should be('empty)
   }
 
   test("Search for Address with single search term returns correct results with single entry in database") {
@@ -38,7 +38,7 @@ class MongoSearchProviderTest extends MongoDbTestBase {
 
     val term = MongoSearchTerm("shortName", "Addr")
 
-    provider search Set(term) should be(List(address1))
+    provider find term should be(List(address1))
   }
 
   test("Search for Address with single search term that does not match returns correct results with single entry in database") {
@@ -50,7 +50,7 @@ class MongoSearchProviderTest extends MongoDbTestBase {
 
     val term = MongoSearchTerm("shortName", "Addr1")
 
-    provider search Set(term) should be('empty)
+    provider find Set(term) should be('empty)
   }
 
   test("Search for Address with single search term that matchs single result returns correct results with multiple entries in database") {
@@ -66,7 +66,7 @@ class MongoSearchProviderTest extends MongoDbTestBase {
 
     val term = MongoSearchTerm("shortName", "Addr1")
 
-    provider search Set(term) should be(List(address1))
+    provider find Set(term) should be(List(address1))
   }
 
   test("Search for Address with single search term that matchs multiple results returns correct results with multiple entries in database") {
@@ -84,7 +84,7 @@ class MongoSearchProviderTest extends MongoDbTestBase {
 
     val term = MongoSearchTerm("country", "UK")
 
-    provider search Set(term) should (have size (3) and
+    provider find Set(term) should (have size (3) and
       contain(address1) and
       contain(address2) and
       contain(address3))
@@ -94,7 +94,8 @@ class MongoSearchProviderTest extends MongoDbTestBase {
     val provider = AddressSearchProvider(mongo)
     val address1 = Address(Identifier(0), "Addr1", "Addr Long", "UK")
     access add address1 should be(true)
-    provider search Set(MongoSearchTerm("shortName", "Addr1"), MongoSearchTerm("country", "UK")) should be(List(address1))
+
+    provider find Set(MongoSearchTerm("shortName", "Addr1"), MongoSearchTerm("country", "UK")) should be(List(address1))
   }
 
   test("Search for specific Address using multiple search terms when there are multiple partial matches in the database") {
@@ -107,8 +108,10 @@ class MongoSearchProviderTest extends MongoDbTestBase {
     access add address2 should be(true)
     access add address3 should be(true)
     access add address4 should be(true)
-    provider search Set(MongoSearchTerm("shortName", "Addr1"), MongoSearchTerm("country", "UK")) should be(List(address1))
-    pending
+
+    provider find Set(MongoSearchTerm("shortName", "Addr1"), MongoSearchTerm("country", "UK")) should (have size (2) and
+      contain(address1) and
+      contain(address3))
   }
 
   test("Search with multiple terms for specific Address that should return no matches when there are multiple partial matches in the database") {
@@ -121,6 +124,8 @@ class MongoSearchProviderTest extends MongoDbTestBase {
     access add address2 should be(true)
     access add address3 should be(true)
     access add address4 should be(true)
+
+    provider find Set(MongoSearchTerm("shortName", "Addr1"), MongoSearchTerm("country", "UR")) should be('empty)
   }
 
 }
