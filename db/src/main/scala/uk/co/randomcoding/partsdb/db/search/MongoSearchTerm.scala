@@ -11,6 +11,8 @@ import com.mongodb.casbah.Imports._
  * @constructor Create a new instance of a MongoDB compatible search term.
  * This should be suitable for composing into a complex search object
  *
+ * To search a nested property
+ *
  * @param searchKey The value key to search for in the queries Mongo Collection
  * @param searchValue The value to limit the returned documents by. If this is '''not'''
  * a value from the predefined types in [[uk.co.randomcoding.partsdb.db.search.SearchTerm]] then
@@ -18,8 +20,8 @@ import com.mongodb.casbah.Imports._
  *
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
-case class MongoSearchTerm(searchKey: String, searchValue: String) extends SearchTerm(searchKey, searchValue) {
-  type QueryType = DBObject
+sealed abstract class MongoSearchTerm(searchKey: String) extends SearchTerm(searchKey) {
+  override type QueryType = DBObject
 
   override val query = searchValue match {
     case SearchTerm.exists => (searchKey $exists true)
@@ -27,3 +29,24 @@ case class MongoSearchTerm(searchKey: String, searchValue: String) extends Searc
     case other => MongoDBObject(searchKey -> searchValue)
   }
 }
+
+case class StringSearchTerm(searchKey: String, override val searchValue: String) extends MongoSearchTerm(searchKey) {
+  override type valueType = String
+}
+
+case class IntegerSearchTerm(searchKey: String, override val searchValue: Int) extends MongoSearchTerm(searchKey) {
+  override type valueType = Int
+}
+
+case class DoubleSearchTerm(searchKey: String, override val searchValue: Double) extends MongoSearchTerm(searchKey) {
+  override type valueType = Double
+}
+
+/**
+ * Implementation of a search term that takes a MongoDBObject as a search value. This allows for arbitrary searched to be done
+ */
+/*case class MongoObjectSearchTerm(searchKey: String, searchValue: MongoDBObject) extends SearchTerm[MongoDBObject](searchKey, searchValue) {
+  override type QueryType = MongoDBObject
+
+  override val query = searchValue
+}*/ 

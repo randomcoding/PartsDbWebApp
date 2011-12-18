@@ -13,15 +13,19 @@ import uk.co.randomcoding.partsdb.db.search.SearchTerm._
  */
 class MongoSearchTermTest extends FunSuite with ShouldMatchers {
   test("Search Term creates correct query for exists") {
-    MongoSearchTerm("key", exists).query should be(("key" $exists true))
+    StringSearchTerm("key", exists).query should be(("key" $exists true))
   }
 
   test("Search Term creates correct query for does not exist") {
-    MongoSearchTerm("key", doesNotExist).query should be(("key" $exists false))
+    StringSearchTerm("key", doesNotExist).query should be(("key" $exists false))
   }
 
   test("Search Term creates correct query for a general string query") {
-    MongoSearchTerm("key", "value").query should be(MongoDBObject("key" -> "value"))
+    StringSearchTerm("key", "value").query should be(MongoDBObject("key" -> "value"))
+
+    IntegerSearchTerm("key", 30).query should be(MongoDBObject("key" -> 30))
+
+    DoubleSearchTerm("key", 3.1415).query should be(MongoDBObject("key" -> 3.1415))
   }
 
 }

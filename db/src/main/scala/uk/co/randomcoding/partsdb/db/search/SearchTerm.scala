@@ -18,9 +18,13 @@ package uk.co.randomcoding.partsdb.db.search
  *  - '''
  *
  * @param searchKey
+ * @param searchValue
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
-abstract class SearchTerm(searchKey: String, searchValue: String) {
+abstract class SearchTerm(searchKey: String) {
+  type valueType
+
+  val searchValue: valueType
   /**
    * The type of object that represents the Query
    *

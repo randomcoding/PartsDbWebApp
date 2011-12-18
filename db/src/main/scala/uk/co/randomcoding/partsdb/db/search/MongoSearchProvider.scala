@@ -22,11 +22,14 @@ import uk.co.randomcoding.partsdb.db.mongo.MongoAllOrOneAccess
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
 sealed abstract class MongoSearchProvider(val name: String, val providesType: String, coll: MongoCollection) {
+  type SearchTermType <: MongoSearchTerm
   /**
    * @abstract
    * The type of results that this provider returns from its searches
    */
   type ResultType
+
+  type QueryType = DBObject
 
   private[this] val mongoAccess = new MongoAllOrOneAccess {
     override val collection = coll
@@ -39,48 +42,74 @@ sealed abstract class MongoSearchProvider(val name: String, val providesType: St
    *
    * @return A `MongoDBObject` that is the concatenation of all the search terms. If the input set is empty then returns `MongoDBObject.empty`
    */
-  private def query(searchTerms: Set[MongoSearchTerm]): MongoDBObject = {
+  private def query[T <: MongoSearchTerm](searchTerms: Set[T]): QueryType = {
     (searchTerms.toList match {
       case Nil => MongoDBObject.empty
       case head :: Nil => head.query
       case multiple => multiple.foldLeft(MongoDBObject.empty)((currentQuery: DBObject, term: MongoSearchTerm) => currentQuery ++ term.query)
-    }) /*++ ("addressId" $exists true)*/
+    }) ++ typeIdQuery
   }
   /**
    * Perform the search and get the results form the datastore
    *
    * @param searchTerms A set of distinct [[uk.co.randomcoding.partsdb.db.search.SearchTerm]]s that will be used to get the results of the search
    */
-  protected def search[ResultType](searchTerms: Set[MongoSearchTerm])(implicit mf: Manifest[ResultType]): List[ResultType] = mongoAccess.getMatching[ResultType](query(searchTerms))
+  protected def search[ResultType, T <: MongoSearchTerm](searchTerms: Set[T])(implicit mf: Manifest[ResultType]): List[ResultType] = mongoAccess.getMatching[ResultType](query(searchTerms))
 
   /**
    * Type fixed method to call to perform the search
    */
-  def find(searchTerms: Set[MongoSearchTerm]): List[ResultType]
+  def find[T <: MongoSearchTerm](searchTerms: Set[T]): List[ResultType]
 
   /**
    * Delegate method to `find(Set)` that wrape a single term in a Set
+   *
+   * This should follow a standard pattern:
+   * {{{
+   * def find(searchTerms: Set[MongoSearchTerms]): List[ResultType] = search[ResultType](searchTerms)
+   * }}}
    */
-  def find(searchTerm: MongoSearchTerm): List[ResultType] = find(Set(searchTerm))
+  def find[T <: MongoSearchTerm](searchTerm: T): List[ResultType] = find(Set(searchTerm))
+
+  /**
+   * This is the query to limit the results by the type's main id field.
+   *
+   * e.g. `addressId` for addresses or `partId` for parts.
+   *
+   * This will generally be of the form
+   * {{{
+   * override val typeIdQuery = ("addressId" $exists true)
+   * }}}
+   *
+   * If the searched entity type does not have an id field as such simply use `MongoDBObject.empty`
+   */
+  val typeIdQuery: QueryType
 }
 
 // add implementations
 case class AddressSearchProvider(collection: MongoCollection) extends MongoSearchProvider("Address Search", "Address", collection) {
+
   override type ResultType = Address
 
-  def find(searchTerms: Set[MongoSearchTerm]): List[Address] = search[Address](searchTerms)
+  override def find[T <: MongoSearchTerm](searchTerms: Set[T]): List[Address] = search[Address, T](searchTerms)
+
+  override val typeIdQuery = ("addressId" $exists true)
 }
 
 case class CustomerSearchProvider(collection: MongoCollection) extends MongoSearchProvider("Customer Search", "Customer", collection) {
   override type ResultType = Customer
 
-  def find(searchTerms: Set[MongoSearchTerm]): List[Customer] = search[Customer](searchTerms)
+  override def find[T <: MongoSearchTerm](searchTerms: Set[T]): List[Customer] = search[Customer, T](searchTerms)
+
+  override val typeIdQuery = ("customerId" $exists true)
 }
 
 case class PartSearchProvider(collection: MongoCollection) extends MongoSearchProvider("Part Search", "Part", collection) {
   override type ResultType = Part
 
-  def find(searchTerms: Set[MongoSearchTerm]): List[Part] = search[Part](searchTerms)
+  override def find[T <: MongoSearchTerm](searchTerms: Set[T]): List[Part] = search[Part, T](searchTerms)
+
+  override val typeIdQuery = ("partId" $exists true)
 }
 
 // The requires types for these providers are not implemented yet
