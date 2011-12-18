@@ -42,11 +42,19 @@ case class DoubleSearchTerm(searchKey: String, override val searchValue: Double)
   override type valueType = Double
 }
 
-/**
- * Implementation of a search term that takes a MongoDBObject as a search value. This allows for arbitrary searched to be done
- */
-/*case class MongoObjectSearchTerm(searchKey: String, searchValue: MongoDBObject) extends SearchTerm[MongoDBObject](searchKey, searchValue) {
-  override type QueryType = MongoDBObject
-
-  override val query = searchValue
-}*/ 
+object MongoSearchTerm {
+  /**
+   * Generates a typed search term from the given key and value.
+   *
+   * If the value is not a String, Int or Double then it is converted into a
+   * `StringSearchTerm` by `searchValue.toString`
+   */
+  def apply(searchKey: String, searchValue: Any): MongoSearchTerm = {
+    searchValue match {
+      case s: String => StringSearchTerm(searchKey, s)
+      case i: Int => IntegerSearchTerm(searchKey, i)
+      case d: Double => DoubleSearchTerm(searchKey, d)
+      case other => StringSearchTerm(searchKey, other.toString)
+    }
+  }
+}
