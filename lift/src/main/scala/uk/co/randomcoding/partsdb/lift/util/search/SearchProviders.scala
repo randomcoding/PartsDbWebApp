@@ -4,7 +4,6 @@
 package uk.co.randomcoding.partsdb.lift.util.search
 
 import scala.collection.mutable.{ Set => MSet }
-
 import uk.co.randomcoding.partsdb.db.search.MongoSearchProvider
 
 /**
@@ -12,17 +11,17 @@ import uk.co.randomcoding.partsdb.db.search.MongoSearchProvider
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
 object SearchProviders {
-  private val searchProviders: MSet[MongoSearchProvider[_]] = MSet.empty
+  private val searchProviders: MSet[SearchPageProvider] = MSet.empty
 
   /**
    * Register a [[uk.co.randomcoding.partsdb.db.search.SearchProvider]] for use with the WebApp
    */
-  def register(provider: MongoSearchProvider[_]): Unit = searchProviders += provider
+  def register(provider: SearchPageProvider): Unit = searchProviders += provider
 
   /**
    * Get the registered search providers, sorted by their name
    */
-  def providers = searchProviders.toList sortBy (_.name)
+  def providers = searchProviders.toList sortBy (_.searchProvider.name)
 
-  def providerFor(providesType: String) = searchProviders.find(_.providesType == providesType)
+  def providerFor(providesType: String) = searchProviders.find(_.searchProvider.providesType == providesType)
 }

@@ -69,4 +69,7 @@ object TransformHelpers {
     select(values, Full(initialValue), func, jqueryUiTextStyled)
   }
 
+  def styledObjectSelect[T](values: Seq[(T, String)], initialValue: T, func: T => Any): NodeSeq = {
+    selectObj(values, Full(initialValue), func, jqueryUiTextStyled)
+  }
 }
