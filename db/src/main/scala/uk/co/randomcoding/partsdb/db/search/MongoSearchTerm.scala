@@ -4,6 +4,7 @@
 package uk.co.randomcoding.partsdb.db.search
 
 import com.mongodb.casbah.Imports._
+import scala.util.matching.Regex
 
 /**
  * MongoDB implementtion of  search term.
@@ -26,12 +27,18 @@ sealed abstract class MongoSearchTerm(searchKey: String) extends SearchTerm(sear
   override val query = searchValue match {
     case SearchTerm.exists => (searchKey $exists true)
     case SearchTerm.doesNotExist => (searchKey $exists false)
-    case other => MongoDBObject(searchKey -> searchValue)
+    case other => genQuery
   }
+
+  def genQuery = MongoDBObject(searchKey -> searchValue)
 }
 
 case class StringSearchTerm(searchKey: String, override val searchValue: String) extends MongoSearchTerm(searchKey) {
   override type valueType = String
+}
+
+case class RegexSearchTerm(searchKey: String, override val searchValue: Regex) extends MongoSearchTerm(searchKey) {
+  override type valueType = Regex
 }
 
 case class IntegerSearchTerm(searchKey: String, override val searchValue: Int) extends MongoSearchTerm(searchKey) {
@@ -54,6 +61,7 @@ object MongoSearchTerm {
       case s: String => StringSearchTerm(searchKey, s)
       case i: Int => IntegerSearchTerm(searchKey, i)
       case d: Double => DoubleSearchTerm(searchKey, d)
+      case r: Regex => RegexSearchTerm(searchKey, r)
       case other => StringSearchTerm(searchKey, other.toString)
     }
   }

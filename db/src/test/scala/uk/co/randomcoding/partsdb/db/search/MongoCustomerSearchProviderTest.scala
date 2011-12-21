@@ -66,4 +66,16 @@ class MongoCustomerSearchProviderTest extends MongoDbTestBase with OneInstancePe
       contain(cust3))
   }
 
+  test("Search Using a regex to do substring matches") {
+    val cust1 = Customer(Identifier(0), "Customer", Identifier(123), PaymentTerms(30), ContactDetails("Dave", Some(List(Phone("456789", false)))))
+    val cust2 = Customer(Identifier(1), "AN Customer", Identifier(125), PaymentTerms(30), ContactDetails("Sue", emailAddresses = Some(List(Email("hi@here.net")))))
+    val cust3 = Customer(Identifier(2), "AN Other Customer", Identifier(123), PaymentTerms(30), ContactDetails("David", Some(List(Phone("456789", false)))))
+    access add cust1 should be(true)
+    access add cust2 should be(true)
+    access add cust3 should be(true)
+
+    provider find MongoSearchTerm("customerName", ".*AN.*".r) should (have size (2) and
+      contain(cust2) and
+      contain(cust3))
+  }
 }
