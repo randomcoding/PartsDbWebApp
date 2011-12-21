@@ -14,30 +14,46 @@ import net.liftweb.common.Box
 import net.liftweb.util.Helpers._
 import net.liftweb.http.SHtml._
 import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
+import net.liftweb.common.Logger
+import scala.xml.NodeSeq
+import net.liftweb.http.js.JsCmds
+import scala.xml.Text
 
 /**
  * Displays the search options and results.
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
-object DisplaySearch extends DbAccessSnippet {
+class DisplaySearch extends DbAccessSnippet with Logger {
 
-  object currentProvider extends RequestVar[Box[SearchPageProvider]](Empty)
+  object currentProvider extends RequestVar[Box[String]](Empty)
 
-  val providers = (None, "Search for Type") :: (SearchProviders.providers map (provider => (Some(provider), provider.searchProvider.providesType)))
+  val providers = ("", "Search for Type") :: (SearchProviders.providers map (provider => (provider.searchProvider.providesType, provider.searchProvider.providesType)))
 
-  def provider(prov: Option[SearchPageProvider]) = {
-    prov match {
-      case Some(p) => currentProvider(Full(p))
-      case None => currentProvider(Empty)
-    }
-
-    S.redirectTo("/app/search")
-  }
-
-  val showAll = () => {}
   def render = {
 
-    "#searchType" #> styledObjectSelect(providers, None, provider _) &
-      "#showAll" #> button("Show All", showAll, "disabled" -> (if (currentProvider.isEmpty) "disabled" else ""))
+    def displaySearchControls = {
+      info("Display Search Controls Called")
+      JsCmds.Noop
+    }
+
+    def redirect = "/app/search?selected=%s".format(if (currentProvider.isDefined) currentProvider.is.get else "None")
+
+    def provider(prov: String) = {
+      prov match {
+        case "" => currentProvider(Empty)
+        case p => currentProvider(Full(p))
+      }
+      debug("Current Provider is now: %s".format(currentProvider.is))
+    }
+
+    debug("Current Provider is: %s".format(currentProvider.is))
+
+    "#searchType" #> styledAjaxSelect(providers, if (currentProvider.isDefined) currentProvider.is.get else "", { prov =>
+      provider(prov)
+      JsCmds.SetHtml("searchControls", SearchProviders.providerFor(prov) match {
+        case Some(p) => p.renderSearchControls
+        case _ => <h3>No Provider</h3>
+      })
+    })
   }
 }

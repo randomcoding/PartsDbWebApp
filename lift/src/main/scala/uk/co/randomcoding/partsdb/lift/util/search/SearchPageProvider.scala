@@ -21,7 +21,5 @@ abstract class SearchPageProvider {
 object CustomerSearchPageProvider extends SearchPageProvider {
   override val searchProvider = CustomerSearchProvider(MongoDefaults.defaultCollection)
 
-  override def renderSearchControls: NodeSeq = {
-    <h3>Search Controls</h3>
-  }
+  override def renderSearchControls: NodeSeq = <lift:embed what="_customer_search"/>
 }

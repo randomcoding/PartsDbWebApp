@@ -7,6 +7,7 @@ import static ch.qos.logback.classic.Level.DEBUG
 import static ch.qos.logback.classic.Level.INFO
 import static ch.qos.logback.classic.Level.WARN
 import static ch.qos.logback.classic.Level.TRACE
+import static ch.qos.logback.classic.Level.ALL
 
 appender("STDOUT", ConsoleAppender) {
   encoder(PatternLayoutEncoder) {
@@ -16,5 +17,15 @@ appender("STDOUT", ConsoleAppender) {
 
 // Sample of setting package logging to DEBUG level
 //logger("uk.co.randomcoding.partsdb.lift", DEBUG)
+
+logger("com", WARN)
+logger("org", WARN)
+logger("scala", WARN)
+logger("java", WARN)
+logger("net", WARN)
+
+logger("uk", WARN)
+logger("uk.co.randomcoding.partsdb.lift", DEBUG)
+logger("uk.co.randomcoding.partsdb.lift.snippet", DEBUG)
 
 root(WARN, ["STDOUT"])

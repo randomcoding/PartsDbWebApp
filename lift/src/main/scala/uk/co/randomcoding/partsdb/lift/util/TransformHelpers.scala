@@ -4,14 +4,13 @@
 package uk.co.randomcoding.partsdb.lift.util
 
 import scala.xml.{ Text, NodeSeq }
-
 import uk.co.randomcoding.partsdb.lift.util.snippet.StyleAttributes._
-
 import net.liftweb.common.Full
 import net.liftweb.http.SHtml.ElemAttr.pairToBasic
 import net.liftweb.http.SHtml._
 import net.liftweb.http.js.JsCmds.Noop
 import net.liftweb.util.Helpers.strToSuperArrowAssoc
+import net.liftweb.http.js.JsCmd
 
 /**
  * Provides common helper functions for generating elements for transformations
@@ -61,12 +60,20 @@ object TransformHelpers {
     text(initialText, func, jqueryUiTextStyled)
   }
 
+  def styledAjaxText(initialText: String, func: String => JsCmd): NodeSeq = {
+    ajaxText(initialText, func, jqueryUiTextStyled)
+  }
+
   def styledPassword(initialText: String, func: String => Any): NodeSeq = {
     password(initialText, func, jqueryUiTextStyled)
   }
 
   def styledSelect(values: Seq[(String, String)], initialValue: String, func: String => Any): NodeSeq = {
     select(values, Full(initialValue), func, jqueryUiTextStyled)
+  }
+
+  def styledAjaxSelect(values: Seq[(String, String)], initialValue: String, func: String => JsCmd): NodeSeq = {
+    ajaxSelect(values, Full(initialValue), func, jqueryUiTextStyled)
   }
 
   def styledObjectSelect[T](values: Seq[(T, String)], initialValue: T, func: T => Any): NodeSeq = {
