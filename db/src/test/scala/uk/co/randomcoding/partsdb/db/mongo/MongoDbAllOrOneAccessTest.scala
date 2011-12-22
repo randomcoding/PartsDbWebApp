@@ -5,12 +5,12 @@ package uk.co.randomcoding.partsdb.db.mongo
 
 import org.scalatest.matchers.ShouldMatchers
 import com.mongodb.casbah.Imports._
-
 import uk.co.randomcoding.partsdb._
 import core.address._
 import core.part._
 import core.id._
 import uk.co.randomcoding.partsdb.db.mongo.MongoConverters._
+import uk.co.randomcoding.partsdb.core.vehicle.Vehicle
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
@@ -61,10 +61,11 @@ class MongoDbAllOrOneAccessTest extends MongoDbTestBase with ShouldMatchers {
 
   // Part Tests
   test("Access to Part By Id") {
-    val part = Part(Identifier(2345), "woggle sprocket", 1.20)
+    val vehicle = Vehicle(Identifier(2346), "TestVehicle")
+    val part = Part(Identifier(2345), "woggle sprocket", 1.20, vehicle)
     mongo += convertToMongoDbObject(part)
 
-    dbAccess.getOne[Part]("partId", Identifier(2345)).get should be(Part(Identifier(2345), "woggle sprocket", 1.20))
+    dbAccess.getOne[Part]("partId", Identifier(2345)).get should be(Part(Identifier(2345), "woggle sprocket", 1.20, vehicle))
   }
 
   test("Access to Part that does not exist") {
@@ -77,15 +78,18 @@ class MongoDbAllOrOneAccessTest extends MongoDbTestBase with ShouldMatchers {
   }
 
   test("Access Multiple Parts with Single Part in DB") {
-    val part1 = Part(Identifier(2345), "woggle sprocket", 1.20)
+    val vehicle1 = Vehicle(Identifier(2347), "TestVehicle")
+    val part1 = Part(Identifier(2348), "woggle sprocket", 1.20, vehicle1)
     mongo += convertToMongoDbObject(part1)
 
     dbAccess.getAll[Part]("partId") should be(List(part1))
   }
 
   test("Access Multiple Parts with Two Parts in DB") {
-    val part1 = Part(Identifier(2345), "woggle sprocket", 1.20)
-    val part2 = Part(Identifier(2346), "big woggle sprocket", 1.60)
+    val vehicle1 = Vehicle(Identifier(2349), "TestVehicle1")
+    val vehicle2 = Vehicle(Identifier(2350), "TestVehicle2")
+    val part1 = Part(Identifier(2351), "woggle sprocket", 1.20, vehicle1)
+    val part2 = Part(Identifier(2352), "big woggle sprocket", 1.60, vehicle2)
 
     mongo += convertToMongoDbObject(part1)
     mongo += convertToMongoDbObject(part2)

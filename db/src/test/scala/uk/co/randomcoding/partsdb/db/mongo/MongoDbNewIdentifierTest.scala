@@ -11,6 +11,7 @@ import uk.co.randomcoding.partsdb.core.id.{ Identifier, DefaultIdentifier }
 import uk.co.randomcoding.partsdb.core.terms.PaymentTerms
 import uk.co.randomcoding.partsdb.core.contact.{ ContactDetails, Phone }
 import uk.co.randomcoding.partsdb.core.part.Part
+import uk.co.randomcoding.partsdb.core.vehicle.Vehicle
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
@@ -72,50 +73,50 @@ class MongoDbNewIdentifierTest extends MongoDbTestBase with ShouldMatchers {
   }
 
   // Part Tests
-  test("Part with default id is corrently assigned new id") {
-    val part = Part(DefaultIdentifier, "No Part", "00.00".toDouble)
+  test("Part with default id is correctly assigned new id") {
+    val part = Part(DefaultIdentifier, "No Part", "00.00".toDouble, Vehicle(DefaultIdentifier, "SomeVehicle"))
     val cost: Double = 00.00
-    access assignId part should be(Part(Identifier(0), "No Part", cost))
+    access assignId part should be(Part(Identifier(0), "No Part", cost, Vehicle(Identifier(1), "SomeVehicle")))
   }
 
   test("Sending multiple different parts with default ids result in different ids being assigned") {
-    val part1 = Part(DefaultIdentifier, "Part1", "0.10".toDouble)
-    val part2 = Part(DefaultIdentifier, "Part2", "0.20".toDouble)
-    val part3 = Part(DefaultIdentifier, "Part3", "0.30".toDouble)
-    val part4 = Part(DefaultIdentifier, "Part4", "0.40".toDouble)
+    val part1 = Part(DefaultIdentifier, "Part1", "0.10".toDouble, Vehicle(Identifier(200), "Vehicle200"))
+    val part2 = Part(DefaultIdentifier, "Part2", "0.20".toDouble, Vehicle(Identifier(200), "Vehicle200"))
+    val part3 = Part(DefaultIdentifier, "Part3", "0.30".toDouble, Vehicle(Identifier(200), "Vehicle200"))
+    val part4 = Part(DefaultIdentifier, "Part4", "0.40".toDouble, Vehicle(Identifier(200), "Vehicle200"))
 
     val cost1: Double = 00.1
     val cost2: Double = 00.2
     val cost3: Double = 00.3
     val cost4: Double = 00.4
 
-    access assignId part1 should be(Part(Identifier(0), "Part1", cost1))
-    access assignId part2 should be(Part(Identifier(1), "Part2", cost2))
-    access assignId part3 should be(Part(Identifier(2), "Part3", cost3))
-    access assignId part4 should be(Part(Identifier(3), "Part4", cost4))
+    access assignId part1 should be(Part(Identifier(0), "Part1", cost1, Vehicle(Identifier(200), "Vehicle200")))
+    access assignId part2 should be(Part(Identifier(1), "Part2", cost2, Vehicle(Identifier(200), "Vehicle200")))
+    access assignId part3 should be(Part(Identifier(2), "Part3", cost3, Vehicle(Identifier(200), "Vehicle200")))
+    access assignId part4 should be(Part(Identifier(3), "Part4", cost4, Vehicle(Identifier(200), "Vehicle200")))
   }
 
   test("Sending the same original part with a default id multiple times results in different ids being assigned") {
     val cost1: Double = 00.1
-    val part1 = Part(DefaultIdentifier, "Part1", "0.10".toDouble)
-    access assignId part1 should be(Part(Identifier(0), "Part1", cost1))
-    access assignId part1 should be(Part(Identifier(1), "Part1", cost1))
-    access assignId part1 should be(Part(Identifier(2), "Part1", cost1))
-    access assignId part1 should be(Part(Identifier(3), "Part1", cost1))
+    val part1 = Part(DefaultIdentifier, "Part1", "0.10".toDouble, Vehicle(Identifier(200), "Vehicle200"))
+    access assignId part1 should be(Part(Identifier(0), "Part1", cost1, Vehicle(Identifier(200), "Vehicle200")))
+    access assignId part1 should be(Part(Identifier(1), "Part1", cost1, Vehicle(Identifier(200), "Vehicle200")))
+    access assignId part1 should be(Part(Identifier(2), "Part1", cost1, Vehicle(Identifier(200), "Vehicle200")))
+    access assignId part1 should be(Part(Identifier(3), "Part1", cost1, Vehicle(Identifier(200), "Vehicle200")))
   }
 
-  test("Sending the same part multiple times results in only one change of id and subsequent cals return the same item reference") {
-    val part1 = Part(DefaultIdentifier, "Part1", "0.10".toDouble)
+  test("Sending the same part multiple times results in only one change of id and subsequent calls return the same item reference") {
+    val part1 = Part(DefaultIdentifier, "Part1", "0.10".toDouble, Vehicle(Identifier(200), "Vehicle200"))
     val part2 = access assignId part1
     val part3 = access assignId part2
     val part4 = access assignId part3
     val part5 = access assignId part4
     val cost1: Double = 00.1
 
-    part2 should be(Part(Identifier(0), "Part1", cost1))
-    part3 should be(Part(Identifier(0), "Part1", cost1))
-    part4 should be(Part(Identifier(0), "Part1", cost1))
-    part5 should be(Part(Identifier(0), "Part1", cost1))
+    part2 should be(Part(Identifier(0), "Part1", cost1, Vehicle(Identifier(200), "Vehicle200")))
+    part3 should be(Part(Identifier(0), "Part1", cost1, Vehicle(Identifier(200), "Vehicle200")))
+    part4 should be(Part(Identifier(0), "Part1", cost1, Vehicle(Identifier(200), "Vehicle200")))
+    part5 should be(Part(Identifier(0), "Part1", cost1, Vehicle(Identifier(200), "Vehicle200")))
 
     part2 should (be theSameInstanceAs part3 and
       be theSameInstanceAs part4 and

@@ -4,13 +4,12 @@
 package uk.co.randomcoding.partsdb.db.mongo
 
 import org.scalatest.matchers.ShouldMatchers
-
 import com.mongodb.casbah.Imports._
-
 import uk.co.randomcoding.partsdb.core.address.Address
 import uk.co.randomcoding.partsdb.core.part.Part
 import uk.co.randomcoding.partsdb.core.id.Identifier
 import uk.co.randomcoding.partsdb.db.mongo.MongoConverters._
+import uk.co.randomcoding.partsdb.core.vehicle.Vehicle
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
@@ -52,7 +51,7 @@ class MongoUpdateAccessAddTest extends MongoDbTestBase with ShouldMatchers {
 
   //----------------
   test("Adding a Part") {
-    val part = Part(Identifier(2468), "sprocket", 1.00)
+    val part = Part(Identifier(2468), "sprocket", 1.00, Vehicle(Identifier(210), "Vehicle210"))
 
     mongoAccess add part should be(true)
 
@@ -62,8 +61,8 @@ class MongoUpdateAccessAddTest extends MongoDbTestBase with ShouldMatchers {
   }
 
   test("Adding a Part with the same id as an existing one but different details does not update the previous one") {
-    val part1 = Part(Identifier(4680), "sprocket", 1.51)
-    val part2 = Part(Identifier(4680), "woggle sprocket", 1.52)
+    val part1 = Part(Identifier(4680), "sprocket", 1.51, Vehicle(Identifier(211), "Vehicle211"))
+    val part2 = Part(Identifier(4680), "woggle sprocket", 1.52, Vehicle(Identifier(212), "Vehicle212"))
 
     mongoAccess add part1 should be(true)
     mongoAccess add part2 should be(false)

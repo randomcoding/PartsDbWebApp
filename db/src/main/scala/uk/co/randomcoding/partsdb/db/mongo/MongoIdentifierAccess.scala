@@ -64,7 +64,7 @@ trait MongoIdentifierAccess {
     item match {
       case cust: Customer if defaultId(cust) => Customer(nextId(), cust.customerName, cust.billingAddress, cust.deliveryAddresses, cust.terms, cust.contactDetails)
       case addr: Address if defaultId(addr) => Address(nextId(), addr.shortName, addr.addressText, addr.country)
-      case part: Part if defaultId(part) => Part(nextId(), part.partName, part.partCost)
+      case part: Part if defaultId(part) => Part(nextId(), part.partName, part.partCost, part.vehicle)
       case _ => item
     }
   }

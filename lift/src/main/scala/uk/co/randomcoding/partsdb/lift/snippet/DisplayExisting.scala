@@ -20,6 +20,7 @@ import uk.co.randomcoding.partsdb.core.id.Identifier
 import uk.co.randomcoding.partsdb.lift.util.EntityDisplay
 import uk.co.randomcoding.partsdb.core.part.Part
 import uk.co.randomcoding.partsdb.lift.util.PartDisplay._
+import uk.co.randomcoding.partsdb.lift.util.PartDisplay
 /**
  * Displays the existing entities from the database.
  *
@@ -53,6 +54,7 @@ class DisplayExisting extends DbAccessSnippet with ErrorDisplay with Logger {
     entityType.toLowerCase match {
       case "customer" => CustomerDisplay.displayTable(entities map (_.asInstanceOf[Customer]))
       case "user" => UserDisplay.displayTable(entities map (_.asInstanceOf[(String, String)]))
+      case "part" => PartDisplay.displayTable(entities map (_.asInstanceOf[Part]))
       case _ => {
         error("Unknown Type: %s".format(entityType))
         EntityDisplay.emptyTable

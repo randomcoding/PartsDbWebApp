@@ -5,7 +5,6 @@ package uk.co.randomcoding.partsdb.lift.snippet
  */
 
 import uk.co.randomcoding.partsdb.core.part.Part
-
 import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
 import uk.co.randomcoding.partsdb.lift.util.snippet.{ ValidationItem, ErrorDisplay, DbAccessSnippet, DataValidation, StyleAttributes }
 import uk.co.randomcoding.partsdb.lift.util.snippet.StyleAttributes._
@@ -18,11 +17,19 @@ import net.liftweb.http.S
 import net.liftweb.util.Helpers._
 import scala.xml.Text
 import net.liftweb.http.StatefulSnippet
+import uk.co.randomcoding.partsdb.core.vehicle.{ Vehicle, DefaultVehicle }
+import uk.co.randomcoding.partsdb.db.mongo.MongoAllOrOneAccess
 
 class AddPart extends StatefulSnippet with DbAccessSnippet with ErrorDisplay with DataValidation with Logger {
-  val cameFrom = S.referer openOr "/parts"
-  var name = ""
-  var cost = ""
+
+  val cameFrom = S.referer openOr "/app/show?entityType=part"
+  var partName = ""
+  var costText = ""
+  val defaultVehicle: Vehicle = DefaultVehicle
+  var vehicle: Vehicle = _
+
+  val vehicles = getAllVehicles()
+  val vehicleList = vehicles.map(v => (v, v.vehicleName))
 
   def dispatch = {
     case "render" => render
@@ -30,8 +37,9 @@ class AddPart extends StatefulSnippet with DbAccessSnippet with ErrorDisplay wit
 
   def render = {
     "#formTitle" #> Text("Add Part") &
-      "#nameEntry" #> styledText(name, name = _) &
-      "#costEntry" #> styledText(cost, cost = _) &
+      "#nameEntry" #> styledText(partName, partName = _) &
+      "#costEntry" #> styledText(costText, costText = _) &
+      "#vehicleEntry" #> styledSelectObject[Vehicle](vehicleList, defaultVehicle, vehicle = _) &
       "#submit" #> button("Submit", processSubmit)
   }
 
@@ -40,22 +48,29 @@ class AddPart extends StatefulSnippet with DbAccessSnippet with ErrorDisplay wit
    *
    * This extracts the details required to make the Part object and if they validate, adds them to the database.
    *
-   * On successful addition, this will (possibly display a dialogue and then) redirect to the main parts page
+   * On successful addition, this will (possibly display a dialogue and then) redirect to the main customers page
    */
   private[this] def processSubmit() = {
-    val validationChecks = Seq(ValidationItem(name, "partNameError", "Part Name must be entered"),
-      ValidationItem(cost, "partCostError", "Part Cost is not valid"))
+
+    val cost: java.lang.Double = asDouble(costText) match {
+      case _ => costText.toDouble
+    }
+
+    val validationChecks = Seq(
+      ValidationItem(partName, "partNameError", "Part Name must be entered"),
+      ValidationItem(cost, "partCostError", "Part Cost is not valid"),
+      ValidationItem(vehicle, "partVehicleError", "Vehicle is not valid"))
 
     validate(validationChecks: _*) match {
       case Nil => {
-        val newId = addNewPart(name, cost.toDouble).partId
-        S redirectTo "/parts?highlight=%d".format(newId.id)
+        val newId = addNewPart(partName, cost, vehicle).partId
+        S redirectTo "/app/show?entityType=part".format(newId.id)
       }
       case errors => {
         errors foreach (error => displayError(error._1, error._2))
-        // TODO: Need to ensure that the entered details are still present
         Noop
       }
     }
   }
+
 }

@@ -4,14 +4,17 @@
 package uk.co.randomcoding.partsdb.lift.util
 
 import scala.xml.{ Text, NodeSeq }
-
 import uk.co.randomcoding.partsdb.lift.util.snippet.StyleAttributes._
-
 import net.liftweb.common.Full
 import net.liftweb.http.SHtml.ElemAttr.pairToBasic
 import net.liftweb.http.SHtml._
 import net.liftweb.http.js.JsCmds.Noop
 import net.liftweb.util.Helpers.strToSuperArrowAssoc
+import uk.co.randomcoding.partsdb.core.vehicle.{ Vehicle, DefaultVehicle }
+import uk.co.randomcoding.partsdb.core.vehicle.Vehicle
+import uk.co.randomcoding.partsdb.core.vehicle.Vehicle
+import uk.co.randomcoding.partsdb.core.vehicle.Vehicle
+import uk.co.randomcoding.partsdb.core.vehicle.Vehicle
 
 /**
  * Provides common helper functions for generating elements for transformations
@@ -67,6 +70,18 @@ object TransformHelpers {
 
   def styledSelect(values: Seq[(String, String)], initialValue: String, func: String => Any): NodeSeq = {
     select(values, Full(initialValue), func, jqueryUiTextStyled)
+  }
+
+  def styledMultiSelect(values: Seq[(String, String)], initialValue: Seq[String], func: List[String] => Any): NodeSeq = {
+    multiSelect(values, initialValue, func, jqueryUiTextStyled)
+  }
+
+  //  def styledSelectVehicle(vehicles: Seq[(Vehicle, String)], initialValue: Vehicle, func: Vehicle => Any): NodeSeq = {
+  //    selectObj(vehicles, Full(initialValue), func, jqueryUiTextStyled)
+  //  }
+
+  def styledSelectObject[T](values: Seq[(T, String)], initialValue: T, func: T => Any)(implicit mf: Manifest[T]): NodeSeq = {
+    selectObj(values, Full(initialValue), func, jqueryUiTextStyled)
   }
 
 }
