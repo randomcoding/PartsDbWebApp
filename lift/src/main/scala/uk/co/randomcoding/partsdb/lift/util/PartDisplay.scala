@@ -40,7 +40,7 @@ object PartDisplay extends EntityDisplay with Logger with DbAccessSnippet {
   override def displayEntity(part: Part): NodeSeq = {
     <td>{ part.partName }</td>
     <td>{ part.partCost }</td>
-    <td>{ part.vehicle.vehicleName }</td>
+    <td>{ displayVehicle(part) }</td>
     ++
     editEntityCell(editEntityLink("Part", part.id))
   }

@@ -57,7 +57,7 @@ class Boot extends Loggable {
     val rootLoc = Menu(Loc("root", new Link("index" :: Nil, false), "Root", Hidden))
 
     // Construct the menu list to use
-    val menus = mainAppLoc :: showCustomers :: showParts :: showSuppliers :: adminLoc :: rootLoc :: Nil
+    val menus = mainAppLoc :: showCustomers :: showParts :: showSuppliers :: showVehicles :: adminLoc :: rootLoc :: Nil
 
     LiftRules.setSiteMap(SiteMap(menus: _*))
 

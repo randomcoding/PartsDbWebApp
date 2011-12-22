@@ -25,11 +25,11 @@ class AddPart extends StatefulSnippet with DbAccessSnippet with ErrorDisplay wit
   val cameFrom = S.referer openOr "/app/show?entityType=part"
   var partName = ""
   var costText = ""
-  val defaultVehicle: Vehicle = DefaultVehicle
+  //val defaultVehicle: Vehicle = DefaultVehicle
 
-  var vehicle: Vehicle = _
   val vehicles = getAllVehicles()
   val vehicleList = vehicles.map(v => (v, v.vehicleName))
+  var vehicle = vehicles.head
 
   def dispatch = {
     case "render" => render
@@ -39,7 +39,7 @@ class AddPart extends StatefulSnippet with DbAccessSnippet with ErrorDisplay wit
     "#formTitle" #> Text("Add Part") &
       "#nameEntry" #> styledText(partName, partName = _) &
       "#costEntry" #> styledText(costText, costText = _) &
-      "#vehicleEntry" #> styledSelectObject[Vehicle](vehicleList, defaultVehicle, vehicle = _) &
+      "#vehicleEntry" #> styledSelectObject[Vehicle](vehicleList, vehicle, vehicle = _) &
       "#submit" #> button("Submit", processSubmit)
   }
 
