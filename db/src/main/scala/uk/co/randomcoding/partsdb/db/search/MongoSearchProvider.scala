@@ -10,6 +10,7 @@ import customer.Customer
 import part.Part
 import document._
 import uk.co.randomcoding.partsdb.db.mongo.MongoAllOrOneAccess
+import uk.co.randomcoding.partsdb.core.id.Identifier
 
 /**
  * Provides access to structured searches (via [[uk.co.randomcoding.partsdb.db.search.SearchTerm]]s) on the underlying datastore.
@@ -35,6 +36,8 @@ sealed abstract class MongoSearchProvider(val name: String, val providesType: St
     override val collection = coll
   }
 
+  def genQuery(term: MongoSearchTerm) = term.query
+
   /**
    * Generates the Mongo DB query represented by the provided [[uk.co.randomcoding.partsdb.db.search.MongoSearchTerm]]s
    *
@@ -45,8 +48,8 @@ sealed abstract class MongoSearchProvider(val name: String, val providesType: St
   private def query[T <: MongoSearchTerm](searchTerms: Set[T]): QueryType = {
     (searchTerms.toList match {
       case Nil => MongoDBObject.empty
-      case head :: Nil => head.query
-      case multiple => multiple.foldLeft(MongoDBObject.empty)((currentQuery: DBObject, term: MongoSearchTerm) => currentQuery ++ term.query)
+      case head :: Nil => genQuery(head)
+      case multiple => multiple.foldLeft(MongoDBObject.empty)((currentQuery: DBObject, term: MongoSearchTerm) => currentQuery ++ genQuery(term))
     }) ++ typeIdQuery
   }
   /**
@@ -94,6 +97,7 @@ case class AddressSearchProvider(collection: MongoCollection) extends MongoSearc
   override def find[T <: MongoSearchTerm](searchTerms: Set[T]): List[Address] = search[Address, T](searchTerms)
 
   override val typeIdQuery = ("addressId" $exists true)
+
 }
 
 case class CustomerSearchProvider(collection: MongoCollection) extends MongoSearchProvider("Customer Search", "Customer", collection) {
@@ -102,6 +106,21 @@ case class CustomerSearchProvider(collection: MongoCollection) extends MongoSear
   override def find[T <: MongoSearchTerm](searchTerms: Set[T]): List[Customer] = search[Customer, T](searchTerms)
 
   override val typeIdQuery = ("customerId" $exists true)
+
+  override def genQuery(term: MongoSearchTerm) = {
+    term.searchKey match {
+      case key: String if (key startsWith "billingAddress.") && !(key contains ".id") => {
+        val newKey = key.drop(key.indexOf(".") + 1)
+        val addressTerm = MongoSearchTerm(newKey, term.searchValue)
+        val addressQuery = ("addressId" $exists true) ++ addressTerm.query
+        val fields = MongoDBObject("addressId" -> 1)
+        val addressIds = collection.find(addressQuery, fields).toList map (dbo => ("billingAddress.id", dbo.as[DBObject]("addressId").as[Long]("id"))) distinct
+
+        $or(addressIds: _*)
+      }
+      case _ => super.genQuery(term)
+    }
+  }
 }
 
 case class PartSearchProvider(collection: MongoCollection) extends MongoSearchProvider("Part Search", "Part", collection) {

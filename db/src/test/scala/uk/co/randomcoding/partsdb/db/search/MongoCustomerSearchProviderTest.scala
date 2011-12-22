@@ -4,13 +4,14 @@
 package uk.co.randomcoding.partsdb.db.search
 
 import org.scalatest.OneInstancePerTest
-
 import uk.co.randomcoding.partsdb.core.contact.{ Phone, ContactDetails, Email }
 import uk.co.randomcoding.partsdb.core.customer.Customer
 import uk.co.randomcoding.partsdb.core.id.Identifier
 import uk.co.randomcoding.partsdb.core.terms.PaymentTerms
 import uk.co.randomcoding.partsdb.db.mongo.{ MongoUpdateAccess, MongoDbTestBase }
 import MongoSearchTerm._
+import uk.co.randomcoding.partsdb.core.address.Address
+import com.mongodb.casbah.Imports._
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
@@ -78,4 +79,34 @@ class MongoCustomerSearchProviderTest extends MongoDbTestBase with OneInstancePe
       contain(cust2) and
       contain(cust3))
   }
+
+  test("Search for match on phone number within contact details") {
+    val cust1 = Customer(Identifier(0), "Customer", Identifier(123), PaymentTerms(30), ContactDetails("Dave", Some(List(Phone("456789", false)))))
+    val cust2 = Customer(Identifier(1), "AN Customer", Identifier(125), PaymentTerms(30), ContactDetails("Sue", emailAddresses = Some(List(Email("hi@here.net")))))
+    val cust3 = Customer(Identifier(2), "AN Other Customer", Identifier(123), PaymentTerms(30), ContactDetails("David", Some(List(Phone("456789", false)))))
+    access add cust1 should be(true)
+    access add cust2 should be(true)
+    access add cust3 should be(true)
+
+    provider find MongoSearchTerm("contactDetails.phoneNumbers.phoneNumber", ".*78.*".r) should (have size (2) and
+      contain(cust1) and
+      contain(cust3))
+  }
+
+  test("Search for match on Address within customer") {
+    val cust1 = Customer(Identifier(0), "Customer", Identifier(123), PaymentTerms(30), ContactDetails("Dave", Some(List(Phone("456789", false)))))
+    val cust2 = Customer(Identifier(1), "AN Customer", Identifier(123), PaymentTerms(30), ContactDetails("Sue", emailAddresses = Some(List(Email("hi@here.net")))))
+    val cust3 = Customer(Identifier(2), "AN Other Customer", Identifier(125), PaymentTerms(30), ContactDetails("David", Some(List(Phone("456789", false)))))
+    access add cust1 should be(true)
+    access add cust2 should be(true)
+    access add cust3 should be(true)
+
+    val addr = Address(Identifier(123), "Addr", "15 The House, GH45 7TH", "UK")
+    access add addr should be(true)
+
+    provider find MongoSearchTerm("billingAddress.addressText", ".*GH45.*".r) should (have size (2) and
+      contain(cust1) and
+      contain(cust2))
+  }
+
 }

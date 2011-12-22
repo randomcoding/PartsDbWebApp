@@ -21,7 +21,7 @@ import scala.util.matching.Regex
  *
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
-sealed abstract class MongoSearchTerm(searchKey: String) extends SearchTerm(searchKey) {
+sealed abstract class MongoSearchTerm(val searchKey: String) extends SearchTerm(searchKey) {
   override type QueryType = DBObject
 
   override val query = searchValue match {
@@ -33,21 +33,39 @@ sealed abstract class MongoSearchTerm(searchKey: String) extends SearchTerm(sear
   def genQuery = MongoDBObject(searchKey -> searchValue)
 }
 
-case class StringSearchTerm(searchKey: String, override val searchValue: String) extends MongoSearchTerm(searchKey) {
+case class StringSearchTerm(key: String, override val searchValue: String) extends MongoSearchTerm(key) {
   override type valueType = String
 }
 
-case class RegexSearchTerm(searchKey: String, override val searchValue: Regex) extends MongoSearchTerm(searchKey) {
+case class RegexSearchTerm(key: String, override val searchValue: Regex) extends MongoSearchTerm(key) {
   override type valueType = Regex
 }
 
-case class IntegerSearchTerm(searchKey: String, override val searchValue: Int) extends MongoSearchTerm(searchKey) {
+case class IntegerSearchTerm(key: String, override val searchValue: Int) extends MongoSearchTerm(key) {
   override type valueType = Int
 }
 
-case class DoubleSearchTerm(searchKey: String, override val searchValue: Double) extends MongoSearchTerm(searchKey) {
+case class DoubleSearchTerm(key: String, override val searchValue: Double) extends MongoSearchTerm(key) {
   override type valueType = Double
 }
+
+/*case class ArrayStringSearchTerm(key: String, override val searchValue: String) extends MongoSearchTerm(key) {
+	override type valueType = String
+	
+	def genQuery = MongoDBObject
+}
+
+case class RegexSearchTerm(key: String, override val searchValue: Regex) extends MongoSearchTerm(key) {
+	override type valueType = Regex
+}
+
+case class IntegerSearchTerm(key: String, override val searchValue: Int) extends MongoSearchTerm(key) {
+	override type valueType = Int
+}
+
+case class DoubleSearchTerm(key: String, override val searchValue: Double) extends MongoSearchTerm(key) {
+	override type valueType = Double
+}*/
 
 object MongoSearchTerm {
   /**
