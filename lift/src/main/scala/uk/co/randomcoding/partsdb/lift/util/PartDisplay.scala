@@ -53,7 +53,7 @@ object PartDisplay extends EntityDisplay with Logger with DbAccessSnippet {
         val vehicleLines = Source.fromString(v.vehicleName).getLines()
         <span>{ vehicleLines map (line => <span>{ line }</span><br/>) }</span>
       }
-      case _ => Text("Unknown Vehicle. Identifier: %d".format(part.vehicle.vehicleId))
+      case _ => Text("Unknown Vehicle. Identifier: %d".format(part.vehicle.vehicleId)
     }
   }
 

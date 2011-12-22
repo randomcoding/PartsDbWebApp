@@ -61,7 +61,7 @@ class MongoDbAllOrOneAccessTest extends MongoDbTestBase with ShouldMatchers {
 
   // Part Tests
   test("Access to Part By Id") {
-    val vehicle = Vehicle(Identifier(2346), "TestVehicle")
+    val vehicle = Option[Vehicle](Identifier(2346), "TestVehicle")
     val part = Part(Identifier(2345), "woggle sprocket", 1.20, vehicle)
     mongo += convertToMongoDbObject(part)
 

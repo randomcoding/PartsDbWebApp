@@ -17,17 +17,17 @@ import net.liftweb.http.S
 import net.liftweb.util.Helpers._
 import scala.xml.Text
 import net.liftweb.http.StatefulSnippet
-import uk.co.randomcoding.partsdb.core.vehicle.{ Vehicle, DefaultVehicle }
 import uk.co.randomcoding.partsdb.db.mongo.MongoAllOrOneAccess
+import uk.co.randomcoding.partsdb.core.vehicle.Vehicle
 
 class AddPart extends StatefulSnippet with DbAccessSnippet with ErrorDisplay with DataValidation with Logger {
 
   val cameFrom = S.referer openOr "/app/show?entityType=part"
   var partName = ""
   var costText = ""
-  val defaultVehicle: Vehicle = DefaultVehicle
 
-  var vehicle: Vehicle = _
+  var vehicle: Option[Vehicle] = None
+  //val vehicles = DefaultVehicle :: getAllVehicles()
   val vehicles = getAllVehicles()
   val vehicleList = vehicles.map(v => (v, v.vehicleName))
 
@@ -39,7 +39,7 @@ class AddPart extends StatefulSnippet with DbAccessSnippet with ErrorDisplay wit
     "#formTitle" #> Text("Add Part") &
       "#nameEntry" #> styledText(partName, partName = _) &
       "#costEntry" #> styledText(costText, costText = _) &
-      "#vehicleEntry" #> styledSelectObject[Vehicle](vehicleList, defaultVehicle, vehicle = _) &
+      "#vehicleEntry" #> styledSelectObject[Option[Vehicle]](vehicleList, vehicle, (v: vehicle) => vehicle = Some(v)) &
       "#submit" #> button("Submit", processSubmit)
   }
 
@@ -52,8 +52,8 @@ class AddPart extends StatefulSnippet with DbAccessSnippet with ErrorDisplay wit
    */
   private[this] def processSubmit() = {
 
-    val cost: java.lang.Double = asDouble(costText) match {
-      case _ => costText.toDouble
+    val cost = asDouble(costText) match {
+      case _ => Full(c)
     }
 
     val validationChecks = Seq(

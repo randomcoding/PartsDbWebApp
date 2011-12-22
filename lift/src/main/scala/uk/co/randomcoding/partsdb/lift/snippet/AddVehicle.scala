@@ -17,14 +17,14 @@ import net.liftweb.http.S
 import net.liftweb.util.Helpers._
 import scala.xml.Text
 import net.liftweb.http.StatefulSnippet
-import uk.co.randomcoding.partsdb.core.vehicle.{ Vehicle, DefaultVehicle }
+import uk.co.randomcoding.partsdb.core.vehicle.Vehicle
 import uk.co.randomcoding.partsdb.db.mongo.MongoAllOrOneAccess
 
 class AddVehicle extends StatefulSnippet with DbAccessSnippet with ErrorDisplay with DataValidation with Logger {
 
   val cameFrom = S.referer openOr "/app/show?entityType=vehicle"
   var vehicleName = ""
-  val defaultVehicle: Vehicle = DefaultVehicle
+  val defaultVehicle: Option[Vehicle] = None
 
   def dispatch = {
     case "render" => render
