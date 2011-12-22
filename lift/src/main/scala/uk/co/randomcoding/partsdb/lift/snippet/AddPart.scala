@@ -38,7 +38,7 @@ class AddPart extends StatefulSnippet with DbAccessSnippet with ErrorDisplay wit
     "#formTitle" #> Text("Add Part") &
       "#nameEntry" #> styledText(partName, partName = _) &
       "#costEntry" #> styledText(costText, costText = _) &
-      "#vehicleEntry" #> styledSelectObject[Option[Vehicle]](vehicleList, vehicle, (v: Option[Vehicle]) => vehicle = v) &
+      "#vehicleEntry" #> styledObjectSelect[Option[Vehicle]](vehicleList, vehicle, (v: Option[Vehicle]) => vehicle = v) &
       "#submit" #> button("Submit", processSubmit)
   }
 

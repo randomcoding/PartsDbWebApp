@@ -63,7 +63,7 @@ trait MongoIdentifierAccess {
     val defaultId = (i: Identifiable) => i.id == DefaultIdentifier.id
 
     item match {
-      case cust: Customer if defaultId(cust) => Customer(nextId(), cust.customerName, cust.billingAddress, cust.deliveryAddresses, cust.terms, cust.contactDetails)
+      case cust: Customer if defaultId(cust) => Customer(nextId(), cust.customerName, cust.billingAddress, cust.terms, cust.contactDetails)
       case addr: Address if defaultId(addr) => Address(nextId(), addr.shortName, addr.addressText, addr.country)
       case vehicle: Vehicle if defaultId(vehicle) => Vehicle(nextId(), vehicle.vehicleName)
       case part: Part if defaultId(part) => Part(nextId(), part.partName, part.partCost, part.vehicle)

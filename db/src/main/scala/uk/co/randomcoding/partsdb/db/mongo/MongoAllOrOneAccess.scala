@@ -63,4 +63,13 @@ trait MongoAllOrOneAccess extends Logger {
       convertFromMongoDbObject(result)
     }
   }
+
+  /**
+   * Returns the results that match the provided query
+   */
+  def getMatching[TYPE](query: MongoDBObject)(implicit mf: Manifest[TYPE]): List[TYPE] = {
+    for (result <- collection.find(query).toList) yield {
+      convertFromMongoDbObject(result)
+    }
+  }
 }

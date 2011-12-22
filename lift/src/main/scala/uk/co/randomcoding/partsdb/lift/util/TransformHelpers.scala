@@ -9,12 +9,9 @@ import net.liftweb.common.Full
 import net.liftweb.http.SHtml.ElemAttr.pairToBasic
 import net.liftweb.http.SHtml._
 import net.liftweb.http.js.JsCmds.Noop
-import net.liftweb.util.Helpers.strToSuperArrowAssoc
+import net.liftweb.util.Helpers._
 import uk.co.randomcoding.partsdb.core.vehicle.{ Vehicle, DefaultVehicle }
-import uk.co.randomcoding.partsdb.core.vehicle.Vehicle
-import uk.co.randomcoding.partsdb.core.vehicle.Vehicle
-import uk.co.randomcoding.partsdb.core.vehicle.Vehicle
-import uk.co.randomcoding.partsdb.core.vehicle.Vehicle
+import net.liftweb.http.js.JsCmd
 
 /**
  * Provides common helper functions for generating elements for transformations
@@ -64,6 +61,10 @@ object TransformHelpers {
     text(initialText, func, jqueryUiTextStyled)
   }
 
+  def styledAjaxText(initialText: String, func: String => JsCmd): NodeSeq = {
+    ajaxText(initialText, func, jqueryUiTextStyled)
+  }
+
   def styledPassword(initialText: String, func: String => Any): NodeSeq = {
     password(initialText, func, jqueryUiTextStyled)
   }
@@ -72,6 +73,7 @@ object TransformHelpers {
     select(values, Full(initialValue), func, jqueryUiTextStyled)
   }
 
+  /*<<<<<<< HEAD
   def styledMultiSelect(values: Seq[(String, String)], initialValue: Seq[String], func: List[String] => Any): NodeSeq = {
     multiSelect(values, initialValue, func, jqueryUiTextStyled)
   }
@@ -80,4 +82,16 @@ object TransformHelpers {
     selectObj(values, Full(initialValue), func, jqueryUiTextStyled)
   }
 
+  =======*/
+  def styledAjaxSelect(values: Seq[(String, String)], initialValue: String, func: String => JsCmd): NodeSeq = {
+    ajaxSelect(values, Full(initialValue), func, jqueryUiTextStyled)
+  }
+
+  def styledObjectSelect[T](values: Seq[(T, String)], initialValue: T, func: T => Any)(implicit mf: Manifest[T]): NodeSeq = {
+    selectObj(values, Full(initialValue), func, jqueryUiTextStyled)
+  }
+
+  def styledAjaxButton(buttonText: String, func: () => JsCmd): NodeSeq = {
+    ajaxButton(Text(buttonText), func, jqueryUiTextStyled)
+  }
 }

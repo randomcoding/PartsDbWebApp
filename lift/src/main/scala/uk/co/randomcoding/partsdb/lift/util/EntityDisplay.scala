@@ -15,8 +15,10 @@ trait EntityDisplay {
 
   type EntityType
 
+  final val emptyRow = <tr/>
+
   def displayTable(entities: List[EntityType]): NodeSeq = {
-    <table>
+    <table class="btn">
       <thead>
         <tr>{ headings(rowHeadings) }</tr>
       </thead>
@@ -39,7 +41,7 @@ trait EntityDisplay {
   /**
    * Create the link to display the edit button for the entity
    */
-  val editEntityLink = (entityType: String, entityId: Identifier) => link("edit%s?id=%d".format(entityType, entityId.id), () => Unit, Text("Edit"))
+  val editEntityLink = (entityType: String, entityId: Identifier) => link("edit%s?id=%d".format(entityType, entityId.id), () => Unit, Text("Edit"), "class" -> "btn")
 
   /**
    * This is the list of heading to be displayed for the entity table

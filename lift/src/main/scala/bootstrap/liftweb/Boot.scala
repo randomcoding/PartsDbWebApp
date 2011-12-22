@@ -1,12 +1,14 @@
 package bootstrap.liftweb
 
 import uk.co.randomcoding.partsdb.lift.util.auth.AppAuthentication
-
 import net.liftweb.common.{ Loggable, Full }
 import net.liftweb.http._
 import net.liftweb.http.auth.AuthRole
 import net.liftweb.sitemap._
 import net.liftweb.sitemap.Loc._
+import uk.co.randomcoding.partsdb.lift.util.search.SearchProviders
+import uk.co.randomcoding.partsdb.lift.util.search.CustomerSearchPageProvider
+import uk.co.randomcoding.partsdb.lift.util.search.QuoteSearchPageProvider
 
 /**
  * A class that's instantiated early and run.  It allows the application
@@ -33,18 +35,6 @@ class Boot extends Loggable {
      */
     // This provides access to all the pages under /app/
     val mainAppLoc = Menu(Loc("mainApp", new Link("app" :: Nil, true), "Home"))
-    //=======
-    //    def sitemap = SiteMap(
-    //      Menu.i("Home") / "index",
-    //      Menu.i("Customers") / "customers",
-    //      Menu.i("Parts") / "parts",
-    //      Menu.i("Suppliers") / "suppliers",
-    //      // hidden entries
-    //      Menu.i("Add Customer") / "addCustomer" >> Hidden,
-    //      Menu.i("Add Part") / "addPart" >> Hidden,
-    //      Menu.i("Edit Part") / "editPart" >> Hidden,
-    //      Menu.i("Add Supplier") / "addSupplier" >> Hidden)
-    //>>>>>>> refs/heads/Issue6-CreatePartsBridgeForDatabase
 
     // Create links for the show... parts here
     val showCustomers = Menu(Loc("showCustomers", ExtLink("/app/show?entityType=Customer"), "Customers"))
@@ -52,12 +42,16 @@ class Boot extends Loggable {
     val showSuppliers = Menu(Loc("showSuppliers", ExtLink("/app/show?entityType=Supplier"), "Suppliers"))
     val showVehicles = Menu(Loc("showVehicles", ExtLink("/app/show?entityType=Vehicle"), "Vehicles"))
 
+    val searchLoc = Menu(Loc("search", new Link("app" :: "search" :: Nil, false), "Search"))
+
+    val addQuoteLoc = Menu(Loc("addQuote", new Link("app" :: "addQuote" :: Nil, false), "New Quote"))
+
     // Provide access to the admin menu. This is hidden.
     val adminLoc = Menu(Loc("adminSection", new Link("admin" :: Nil, true), "Admin", Hidden))
     val rootLoc = Menu(Loc("root", new Link("index" :: Nil, false), "Root", Hidden))
 
     // Construct the menu list to use
-    val menus = mainAppLoc :: showCustomers :: showParts :: showVehicles :: showSuppliers :: adminLoc :: rootLoc :: Nil
+    val menus = mainAppLoc :: showCustomers :: showParts :: showVehicles :: showSuppliers :: searchLoc :: addQuoteLoc :: adminLoc :: rootLoc :: Nil
 
     LiftRules.setSiteMap(SiteMap(menus: _*))
 
@@ -84,5 +78,8 @@ class Boot extends Loggable {
       case "js" :: _ => true
     }
 
+    // register search providers
+    SearchProviders.register(CustomerSearchPageProvider)
+    SearchProviders.register(QuoteSearchPageProvider)
   }
 }

@@ -31,8 +31,8 @@ class MongoDbNewIdentifierTest extends MongoDbTestBase with ShouldMatchers {
   }
 
   test("Customer with default id is corrently assigned new id") {
-    val cust = Customer(DefaultIdentifier, "Customer", Identifier(10), Set(Identifier(20)), PaymentTerms(30), ContactDetails("Person", Some(List(Phone("+44123")))))
-    access assignId cust should be(Customer(Identifier(0), "Customer", Identifier(10), Set(Identifier(20)), PaymentTerms(30), ContactDetails("Person", Some(List(Phone("+44123"))))))
+    val cust = Customer(DefaultIdentifier, "Customer", Identifier(10), PaymentTerms(30), ContactDetails("Person", Some(List(Phone("+44123")))))
+    access assignId cust should be(Customer(Identifier(0), "Customer", Identifier(10), PaymentTerms(30), ContactDetails("Person", Some(List(Phone("+44123"))))))
   }
 
   test("Sending multiple different items with default ids result in different ids being assigned") {

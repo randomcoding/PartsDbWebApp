@@ -5,19 +5,16 @@ package uk.co.randomcoding.partsdb.db
 
 import uk.co.randomcoding.partsdb.core.address.Address
 import uk.co.randomcoding.partsdb.core.contact.ContactDetails
-import uk.co.randomcoding.partsdb.core.customer.Customer
-import uk.co.randomcoding.partsdb.core.id.Identifier.longToIdentifier
-import uk.co.randomcoding.partsdb.core.id.DefaultIdentifier
-import uk.co.randomcoding.partsdb.core.terms.PaymentTerms
-import uk.co.randomcoding.partsdb.db.mongo.{ MongoUpdateAccess, MongoIdentifierAccess, MongoConfig, MongoAllOrOneAccess }
-import net.liftweb.common.Logger
-import uk.co.randomcoding.partsdb.core.customer.DefaultCustomer
+import uk.co.randomcoding.partsdb.core.customer.{ DefaultCustomer, Customer }
+import uk.co.randomcoding.partsdb.core.document.{ LineItem, DocumentType, Document }
+import uk.co.randomcoding.partsdb.core.id.Identifier._
+import uk.co.randomcoding.partsdb.core.id.{ Identifier, DefaultIdentifier }
 import uk.co.randomcoding.partsdb.core.part.{ Part, DefaultPart }
-import uk.co.randomcoding.partsdb.core.id.Identifier
-import uk.co.randomcoding.partsdb.core.vehicle.Vehicle
-import uk.co.randomcoding.partsdb.core.vehicle.Vehicle
-import uk.co.randomcoding.partsdb.core.vehicle.Vehicle
-import uk.co.randomcoding.partsdb.core.vehicle.DefaultVehicle
+import uk.co.randomcoding.partsdb.core.terms.PaymentTerms
+import uk.co.randomcoding.partsdb.core.vehicle.{ Vehicle, DefaultVehicle }
+import uk.co.randomcoding.partsdb.db.mongo.{ MongoUpdateAccess, MongoIdentifierAccess, MongoConfig, MongoAllOrOneAccess }
+
+import net.liftweb.common.Logger
 
 /**
  * Encapsulates all the Database access functionality in a single class
@@ -39,25 +36,22 @@ trait DbAccess extends MongoIdentifierAccess with MongoUpdateAccess with MongoAl
 
   override lazy val collection = MongoConfig.getCollection(dbName, collectionName)
 
-  def addNewCustomer(contactName: String, billingAddress: Address, deliveryAddress: Address, terms: PaymentTerms, contact: ContactDetails): Customer = {
+  def addNewCustomer(contactName: String, billingAddress: Address, terms: PaymentTerms, contact: ContactDetails): Customer = {
     // check addresses is are in db or not and assign/get their Ids 
     // for now assume addresses are new and assign them ids
     // FIXME - The cast to Address is nasty and hacky
     val bAddr = assignId(billingAddress).asInstanceOf[Address]
     debug("Billing Address (with id): %s".format(bAddr))
-    val dAddr = assignId(deliveryAddress).asInstanceOf[Address]
-    debug("Delivery Address (with id): %s".format(dAddr))
     add(bAddr)
-    add(dAddr)
-    val customer = assignId(Customer(-1L, contactName, bAddr.addressId, Set(dAddr.addressId), terms, contact)).asInstanceOf[Customer]
-    debug("Updating database with customer %s (billing: %s, delivery: %s)".format(customer, billingAddress, deliveryAddress))
+    val customer = assignId(Customer(-1L, contactName, bAddr.addressId, terms, contact)).asInstanceOf[Customer]
+    debug("Updating database with customer %s at billing address: %s".format(customer, billingAddress))
     add(customer) match {
       case true => {
-        debug("Added new customer %s with billing address %s and delivery address %s".format(customer, bAddr, dAddr))
+        debug("Added new customer %s with billing address %s".format(customer, bAddr))
         customer
       }
       case false => {
-        error("Failed to add customer %s with billing address %s and delivery address %s".format(customer, bAddr, dAddr))
+        error("Failed to add customer %s with billing address %s".format(customer, bAddr))
         DefaultCustomer
       }
     }
@@ -114,4 +108,12 @@ trait DbAccess extends MongoIdentifierAccess with MongoUpdateAccess with MongoAl
 
   def getAllVehicles(): List[Vehicle] = getAll[Vehicle]("vehicleId")
 
+  def addQuote(lineItems: List[LineItem]): Document = {
+    val quote = assignId(Document(DefaultIdentifier, DocumentType.Quote, lineItems)).asInstanceOf[Document]
+    add(quote) match {
+      case true => info("Added Quote: %s".format(quote))
+      case false => error("Failed to add Quote: %s".format(quote))
+    }
+    quote
+  }
 }
