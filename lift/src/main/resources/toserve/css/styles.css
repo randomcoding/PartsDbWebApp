@@ -47,6 +47,10 @@ textarea {
 	font-variant: small-caps;
 }
 
+.search-label {
+	text-align: left;
+}
+
 .form-content {
 	/* Empty for now */
 }

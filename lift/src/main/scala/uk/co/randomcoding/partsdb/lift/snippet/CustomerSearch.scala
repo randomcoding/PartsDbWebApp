@@ -7,12 +7,15 @@ import net.liftweb.util.Helpers._
 import net.liftweb.http.js.JsCmds._
 import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
 import uk.co.randomcoding.partsdb.db.search.MongoSearchTerm
+import uk.co.randomcoding.partsdb.db.search.SearchKeys._
+import uk.co.randomcoding.partsdb.db.search.SearchKeys
 import uk.co.randomcoding.partsdb.lift.util.CustomerDisplay
 import uk.co.randomcoding.partsdb.lift.util.snippet.DbAccessSnippet
 import uk.co.randomcoding.partsdb.core.customer.Customer
 import uk.co.randomcoding.partsdb.db.search.CustomerSearchProvider
 import net.liftweb.http.js.JsCmds
 import scala.util.matching.Regex
+import net.liftweb.http.js.JsCmd
 
 /**
  * Snippet to perform search for customers
@@ -20,7 +23,7 @@ import scala.util.matching.Regex
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
 object CustomerSearch extends DbAccessSnippet {
-  private val searchKeys = List("customerName", "billingAddress", "contactDetails.contactName", "contactDetails.phoneNumbers", "contactDetails.mobileNumbers", "contactDetails.emailAddresses")
+  private val searchKeys = List(customerName, billingAddressText, contactsName, contactsPhoneNumber, contactsMobileNumber, contactsEmailAddress)
 
   def render = {
     var customerName = ""
@@ -30,23 +33,30 @@ object CustomerSearch extends DbAccessSnippet {
     var mobileNumber = ""
     var email = ""
 
+    /**
+     * Helper function to generate a regex search term
+     */
     def regexTerm(key: String, subString: String) = MongoSearchTerm(key, ".*%s.*".format(subString.trim).r)
-    // should generate search terms or leave up to factory method?
+
+    /**
+     * Generates a list of unique, non empty, [[uk.co.randomcoding.partsdb.db.search.MongoSearchTerm]]s
+     * used to find the matching enreies in the database,
+     */
     def searchTerms = searchKeys map { key =>
       key match {
-        case "customerName" => regexTerm(key, customerName)
-        case "billingAddress" => regexTerm(key, businessAddress)
-        case s if s endsWith "contactName" => regexTerm(key, contactName)
-        case s if s endsWith "phoneNumbers" => regexTerm(key, phoneNumber)
-        case s if s endsWith "mobileNumbers" => regexTerm(key, mobileNumber)
-        case s if s endsWith "emailAddresses" => regexTerm(key, email)
+        case SearchKeys.customerName => regexTerm(key, customerName)
+        case SearchKeys.billingAddressText => regexTerm(key, businessAddress)
+        case SearchKeys.contactsName => regexTerm(key, contactName)
+        case SearchKeys.contactsPhoneNumber => regexTerm(key, phoneNumber)
+        case SearchKeys.contactsMobileNumber => regexTerm(key, mobileNumber)
+        case SearchKeys.contactsEmailAddress => regexTerm(key, email)
       }
-    } filter (_.searchValue != ".*.*")
+    } filterNot (_.searchValue.toString == ".*.*")
 
     /**
      * Generate the new live search results and display then in the relevant section of the page
      *
-     * This gets the search terms
+     * This gets the search terms, performs the search and displays the results in the `results` div of the main page
      */
     def updateResults(s: String = "") = {
       val results = searchTerms match {
@@ -54,15 +64,23 @@ object CustomerSearch extends DbAccessSnippet {
         case terms => CustomerSearchProvider(collection).find(searchTerms.toSet)
       }
 
-      val resultsHtml = CustomerDisplay.displayTable(results)
-      JsCmds.SetHtml("results", resultsHtml)
+      JsCmds.SetHtml("results", CustomerDisplay.displayTable(results.sortBy(_.customerName)))
     }
 
-    "#customerNameEntry" #> styledAjaxText(customerName, updateResults) &
-      "#businessAddressEntry" #> styledAjaxText(businessAddress, updateResults) &
-      "#contactNameEntry" #> styledAjaxText(contactName, updateResults) &
-      "#phoneNumberEntry" #> styledAjaxText(phoneNumber, updateResults) &
-      "#mobileNumberEntry" #> styledAjaxText(mobileNumber, updateResults) &
-      "#emailEntry" #> styledAjaxText(email, updateResults)
+    /**
+     * Convenience function to update the value of a variable and then return a partial function of `updateResults(String)`
+     */
+    def updateValue(func: () => Any): (String) => JsCmd = {
+      func()
+      updateResults(_: String)
+    }
+
+    "#customerNameEntry" #> styledAjaxText(customerName, (s: String) => updateValue(() => customerName = s)(s)) &
+      "#businessAddressEntry" #> styledAjaxText(businessAddress, (s: String) => updateValue(() => businessAddress = s)(s)) &
+      "#contactNameEntry" #> styledAjaxText(contactName, (s: String) => updateValue(() => contactName = s)(s)) &
+      "#phoneNumberEntry" #> styledAjaxText(phoneNumber, (s: String) => updateValue(() => phoneNumber = s)(s)) &
+      "#mobileNumberEntry" #> styledAjaxText(mobileNumber, (s: String) => updateValue(() => mobileNumber = s)(s)) &
+      "#emailEntry" #> styledAjaxText(email, (s: String) => updateValue(() => email = s)(s)) &
+      "#results" #> CustomerDisplay.displayTable(getAll[Customer]("customerId"))
   }
 }
