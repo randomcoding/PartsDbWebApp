@@ -10,6 +10,7 @@ import part.Part
 import contact._
 import customer.Customer
 import terms._
+import document.LineItem
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
@@ -100,6 +101,18 @@ class JsonConversionSimpleObjectTests extends JsonConversionTesting {
     val customer = Customer(Identifier(9753), "A Customer", Identifier(4567), PaymentTerms(30), ContactDetails("A Person", phoneNumbers = Some(List(Phone("+44 543 5678 9832")))))
 
     checkJsonConversion[Customer](json, customer)
+  }
+
+  test("Can convert Line Item to JSON") {
+    val itemJson: String = LineItem(1, Identifier(234), 3, 4.50)
+
+    itemJson should be("""{"lineNumber":1,"partId":{"id":234},"quantity":3,"unitPrice":4.5}""")
+  }
+
+  test("Can convert JSON to Line Item") {
+    val itemJson = """{"lineNumber":4,"partId":{"id":654},"quantity":1,"unitPrice":105.23}"""
+    val lineItem = LineItem(4, Identifier(654), 1, 105.23)
+    checkJsonConversion[LineItem](itemJson, lineItem)
   }
 
   test("Can convert Supplier to JSON") {

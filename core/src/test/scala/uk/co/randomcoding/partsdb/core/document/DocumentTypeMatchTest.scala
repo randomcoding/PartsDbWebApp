@@ -12,9 +12,10 @@ import uk.co.randomcoding.partsdb.core.document._
  *
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  *
+ * @deprecated("Document Type is now a simple string")
  */
 class DocumentTypeMatchTest extends FunSuite with ShouldMatchers {
-
+  /*
   test("Match Invoice Document Type") {
     val d1 = "INV" match {
       case DocumentType(f) => f
@@ -69,6 +70,6 @@ class DocumentTypeMatchTest extends FunSuite with ShouldMatchers {
       case _ => None
     }
     d1 should be(None)
-  }
+  }*/
 
 }
