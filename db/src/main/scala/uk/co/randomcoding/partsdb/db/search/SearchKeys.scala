@@ -15,4 +15,6 @@ object SearchKeys {
   val contactsPhoneNumber = "contactDetails.phoneNumbers.phoneNumber"
   val contactsMobileNumber = "contactDetails.mobileNumbers.mobileNumber"
   val contactsEmailAddress = "contactDetails.emailAddresses.emailAddress"
+
+  val quotePartName = "partId.partName"
 }

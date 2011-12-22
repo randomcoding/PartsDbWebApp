@@ -10,7 +10,7 @@ import uk.co.randomcoding.partsdb.lift.util.TransformHelpers.styledAjaxText
 import uk.co.randomcoding.partsdb.lift.util.snippet.DbAccessSnippet
 import uk.co.randomcoding.partsdb.lift.util.CustomerDisplay
 
-import net.liftweb.common.StringOrNodeSeq.strTo
+import net.liftweb.util.Helpers._
 import net.liftweb.http.SHtml._
 import net.liftweb.http.js.{ JsCmds, JsCmd }
 import net.liftweb.util.Helpers._

@@ -8,6 +8,7 @@ import net.liftweb.sitemap._
 import net.liftweb.sitemap.Loc._
 import uk.co.randomcoding.partsdb.lift.util.search.SearchProviders
 import uk.co.randomcoding.partsdb.lift.util.search.CustomerSearchPageProvider
+import uk.co.randomcoding.partsdb.lift.util.search.QuoteSearchPageProvider
 
 /**
  * A class that's instantiated early and run.  It allows the application
@@ -78,5 +79,6 @@ class Boot extends Loggable {
 
     // register search providers
     SearchProviders.register(CustomerSearchPageProvider)
+    SearchProviders.register(QuoteSearchPageProvider)
   }
 }

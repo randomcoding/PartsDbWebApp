@@ -32,7 +32,7 @@ sealed abstract class MongoSearchProvider(val name: String, val providesType: St
 
   type QueryType = DBObject
 
-  private[this] val mongoAccess = new MongoAllOrOneAccess {
+  val mongoAccess = new MongoAllOrOneAccess {
     override val collection = coll
   }
 
@@ -129,6 +129,26 @@ case class PartSearchProvider(collection: MongoCollection) extends MongoSearchPr
   override def find[T <: MongoSearchTerm](searchTerms: Set[T]): List[Part] = search[Part, T](searchTerms)
 
   override val typeIdQuery = ("partId" $exists true)
+}
+
+case class QuoteSearchProvider(collection: MongoCollection) extends MongoSearchProvider("Quote Search", "Quote", collection) {
+  override type ResultType = Document
+
+  override def find[T <: MongoSearchTerm](searchTerms: Set[T]): List[Document] = search[Document, T](searchTerms)
+
+  override val typeIdQuery = MongoDBObject("documentType" -> "QUO") ++ ("documentId" $exists true)
+
+  override def genQuery(term: MongoSearchTerm) = {
+    term.searchKey match {
+      case SearchKeys.quotePartName => {
+        val parts = mongoAccess.getMatching[Part](("partId" $exists true) ++ MongoDBObject("partName" -> term.searchValue))
+        val ids = parts.toList map (doc => ("partId.id", doc.partId.id)) distinct
+
+        $or(ids: _*)
+      }
+      case _ => super.genQuery(term)
+    }
+  }
 }
 
 // The requires types for these providers are not implemented yet
