@@ -34,11 +34,13 @@ object PartDisplay extends EntityDisplay with Logger with DbAccessSnippet {
    *
    * @param part The [[uk.co.randomcoding.partsdb.core.part.Part]] to display
    * @return A [[scala.xml.NodeSeq]] of `<td>` elements to display the part details
+   *
+   *     // <td>{ displayVehicle(part) }</td>
    */
   override def displayEntity(part: Part): NodeSeq = {
     <td>{ part.partName }</td>
     <td>{ part.partCost }</td>
-    <td>{ displayVehicle(part) }</td>
+    <td>{ part.vehicle.vehicleName }</td>
     ++
     editEntityCell(editEntityLink("Part", part.id))
   }

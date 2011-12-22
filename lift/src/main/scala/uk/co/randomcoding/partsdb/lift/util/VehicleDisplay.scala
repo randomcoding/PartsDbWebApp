@@ -37,7 +37,7 @@ object VehicleDisplay extends EntityDisplay with Logger with DbAccessSnippet {
    */
   override def displayEntity(vehicle: Vehicle): NodeSeq = {
     <td>{ vehicle.vehicleName }</td>
-    <td></td>
+    <td>{ "boo" } </td>
     ++
     editEntityCell(editEntityLink("Vehicle", vehicle.id))
   }

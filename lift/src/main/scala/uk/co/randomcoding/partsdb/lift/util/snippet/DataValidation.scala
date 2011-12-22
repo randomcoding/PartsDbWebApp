@@ -9,6 +9,8 @@ import net.liftweb.common.Logger
 import uk.co.randomcoding.partsdb.core.address.Address
 import uk.co.randomcoding.partsdb.core.util.CountryCodes._
 import uk.co.randomcoding.partsdb.core.contact.ContactDetails
+import uk.co.randomcoding.partsdb.core.vehicle.Vehicle
+import uk.co.randomcoding.partsdb.core.part.Part
 
 /**
  * Validates form input items.
@@ -33,6 +35,8 @@ trait DataValidation extends Logger {
       case addr: Address => validateAddress(addr)
       case terms: PaymentTerms => terms != PaymentTerms(-1)
       case contacts: ContactDetails => validateContactDetails(contacts)
+      case part: Part => true
+      case vehicle: Vehicle => true
       case string: String => string.trim nonEmpty
       case validationItem => {
         debug("Unhandled validation type %s. Assuming it is valid".format(validationItem))
