@@ -18,4 +18,4 @@ case class Vehicle(val vehicleId: Identifier, val vehicleName: String) extends I
   override val identifierFieldName = "vehicleId"
 }
 
-object DefaultVehicle extends Vehicle(DefaultIdentifier, "SomeVehicle")
+object DefaultVehicle extends Vehicle(DefaultIdentifier, "Default Vehicle")

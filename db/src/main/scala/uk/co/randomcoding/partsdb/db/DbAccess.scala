@@ -17,6 +17,7 @@ import uk.co.randomcoding.partsdb.core.id.Identifier
 import uk.co.randomcoding.partsdb.core.vehicle.Vehicle
 import uk.co.randomcoding.partsdb.core.vehicle.Vehicle
 import uk.co.randomcoding.partsdb.core.vehicle.Vehicle
+import uk.co.randomcoding.partsdb.core.vehicle.DefaultVehicle
 
 /**
  * Encapsulates all the Database access functionality in a single class
@@ -90,6 +91,23 @@ trait DbAccess extends MongoIdentifierAccess with MongoUpdateAccess with MongoAl
       case false => {
         error("Failed to modify part %s".format(part))
         DefaultPart
+      }
+    }
+  }
+
+  def addNewVehicle(vehicleName: String): Vehicle = {
+    // check vehicles are in db or not and assign/get their Ids 
+    // for now assume vehicles are new and assign them ids
+    val vehicle = assignId(Vehicle(-1L, vehicleName)).asInstanceOf[Vehicle]
+    debug("Updating database with vehicle %s".format(vehicle))
+    add(vehicle) match {
+      case true => {
+        debug("Added new vehicle %s".format(vehicle))
+        vehicle
+      }
+      case false => {
+        error("Failed to add vehicle %s".format(vehicle))
+        DefaultVehicle
       }
     }
   }

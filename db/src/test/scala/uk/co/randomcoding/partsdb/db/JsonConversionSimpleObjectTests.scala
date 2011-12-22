@@ -10,7 +10,7 @@ import part.Part
 import contact._
 import customer.Customer
 import terms._
-import uk.co.randomcoding.partsdb.core.vehicle.Vehicle
+import vehicle.Vehicle
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
@@ -147,5 +147,20 @@ class JsonConversionSimpleObjectTests extends JsonConversionTesting {
       }"""
 
     checkJsonConversion[Part](json, Part(Identifier(4568), "MyPart", 1.51, Vehicle(Identifier(4569), "TestVehicle")))
+  }
+
+  test("Can convert Vehicle to JSON") {
+    val vehicle = Vehicle(Identifier(4570), "TestVehicle")
+    val json: String = vehicle
+
+    json should be("""{"vehicleId" : {{"id":4570},"vehicleName" : "TestVehicle"}""")
+    checkJsonConversion[Vehicle](json, Vehicle(Identifier(4570), "TestVehicle"))
+  }
+
+  test("Can convert JSON to Vehicle") {
+    val json = """{"vehicleId" : {{"id":4571},"vehicleName" : "TestVehicle"
+      }"""
+
+    checkJsonConversion[Vehicle](json, Vehicle(Identifier(4571), "TestVehicle"))
   }
 }

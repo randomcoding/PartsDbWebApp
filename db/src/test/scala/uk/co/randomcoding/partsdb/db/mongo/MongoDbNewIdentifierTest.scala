@@ -74,9 +74,9 @@ class MongoDbNewIdentifierTest extends MongoDbTestBase with ShouldMatchers {
 
   // Part Tests
   test("Part with default id is correctly assigned new id") {
-    val part = Part(DefaultIdentifier, "No Part", "00.00".toDouble, Vehicle(DefaultIdentifier, "SomeVehicle"))
+    val part = Part(DefaultIdentifier, "No Part", "00.00".toDouble, Vehicle(Identifier(199), "SomeVehicle"))
     val cost: Double = 00.00
-    access assignId part should be(Part(Identifier(0), "No Part", cost, Vehicle(Identifier(1), "SomeVehicle")))
+    access assignId part should be(Part(Identifier(0), "No Part", cost, Vehicle(Identifier(199), "SomeVehicle")))
   }
 
   test("Sending multiple different parts with default ids result in different ids being assigned") {
@@ -121,6 +121,49 @@ class MongoDbNewIdentifierTest extends MongoDbTestBase with ShouldMatchers {
     part2 should (be theSameInstanceAs part3 and
       be theSameInstanceAs part4 and
       be theSameInstanceAs part5)
+  }
+
+  // Vehicle Tests
+  test("Vehicle with default id is correctly assigned new id") {
+    val vehicle = Vehicle(DefaultIdentifier, "SomeVehicle")
+    access assignId vehicle should be(Vehicle(Identifier(0), "SomeVehicle"))
+  }
+
+  test("Sending multiple different vehicles with default ids result in different ids being assigned") {
+    val vehicle1 = Vehicle(DefaultIdentifier, "Vehicle1")
+    val vehicle2 = Vehicle(DefaultIdentifier, "Vehicle2")
+    val vehicle3 = Vehicle(DefaultIdentifier, "Vehicle3")
+    val vehicle4 = Vehicle(DefaultIdentifier, "Vehicle4")
+
+    access assignId vehicle1 should be(Vehicle(Identifier(0), "Vehicle1"))
+    access assignId vehicle2 should be(Vehicle(Identifier(1), "Vehicle2"))
+    access assignId vehicle3 should be(Vehicle(Identifier(2), "Vehicle3"))
+    access assignId vehicle4 should be(Vehicle(Identifier(3), "Vehicle4"))
+  }
+
+  test("Sending the same original vehicle with a default id multiple times results in different ids being assigned") {
+    val vehicle1 = Vehicle(DefaultIdentifier, "Vehicle1")
+    access assignId vehicle1 should be(Vehicle(Identifier(0), "Vehicle1"))
+    access assignId vehicle1 should be(Vehicle(Identifier(1), "Vehicle1"))
+    access assignId vehicle1 should be(Vehicle(Identifier(2), "Vehicle1"))
+    access assignId vehicle1 should be(Vehicle(Identifier(3), "Vehicle1"))
+  }
+
+  test("Sending the same vehicle multiple times results in only one change of id and subsequent calls return the same item reference") {
+    val vehicle1 = Vehicle(DefaultIdentifier, "Vehicle200")
+    val vehicle2 = access assignId vehicle1
+    val vehicle3 = access assignId vehicle2
+    val vehicle4 = access assignId vehicle3
+    val vehicle5 = access assignId vehicle4
+
+    vehicle2 should be(Vehicle(Identifier(0), "Vehicle200"))
+    vehicle3 should be(Vehicle(Identifier(0), "Vehicle200"))
+    vehicle4 should be(Vehicle(Identifier(0), "Vehicle200"))
+    vehicle5 should be(Vehicle(Identifier(0), "Vehicle200"))
+
+    vehicle2 should (be theSameInstanceAs vehicle3 and
+      be theSameInstanceAs vehicle4 and
+      be theSameInstanceAs vehicle5)
   }
 
 }

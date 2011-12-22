@@ -194,4 +194,90 @@ class MongoUpdateAccessRemoveTest extends MongoDbTestBase {
       contain(part4) and
       have size (3))
   }
+
+  // Vehicle Tests
+  val findVehicle = (id: Long) => {
+    mongo.findOne(MongoDBObject("vehicleId" -> MongoDBObject("id" -> id))) match {
+      case None => None
+      case Some(dbo) => Some(convertFromMongoDbObject[Vehicle](dbo))
+    }
+  }
+
+  test("Remove a vehicle from the database does remove it") {
+    val vehicle = Vehicle(Identifier(3580), "Vehicle Test 1")
+
+    mongo += vehicle
+    findVehicle(3580) should be(Some(vehicle))
+
+    mongoAccess.remove(vehicle) should be(true)
+
+    findVehicle(3580) should be(None)
+  }
+
+  test("Remove a vehicle from an empty database returns false") {
+    val vehicle1 = Vehicle(Identifier(3581), "Vehicle Test 1")
+    val vehicle2 = Vehicle(Identifier(3582), "Vehicle Test 2")
+    val vehicle3 = Vehicle(Identifier(3583), "Vehicle Test 3")
+    val vehicle4 = Vehicle(Identifier(3584), "Vehicle Test 4")
+    findVehicle(3581) should be(None)
+    findVehicle(3582) should be(None)
+    findVehicle(3583) should be(None)
+    findVehicle(3584) should be(None)
+
+    mongoAccess remove vehicle1 should be(false)
+    mongoAccess remove vehicle2 should be(false)
+    mongoAccess remove vehicle3 should be(false)
+    mongoAccess remove vehicle4 should be(false)
+  }
+
+  test("Remove a vehicle from a database with multiple vehicle in removes only the correct vehicle") {
+    val vehicle1 = Vehicle(Identifier(3585), "Vehicle Test 1")
+    val vehicle2 = Vehicle(Identifier(3586), "Vehicle Test 2")
+    val vehicle3 = Vehicle(Identifier(3587), "Vehicle Test 3")
+    val vehicle4 = Vehicle(Identifier(3588), "Vehicle Test 4")
+
+    mongo += vehicle1
+    mongo += vehicle2
+    mongo += vehicle3
+    mongo += vehicle4
+
+    findVehicle(3585) should be(Some(vehicle1))
+    findVehicle(3586) should be(Some(vehicle2))
+    findVehicle(3587) should be(Some(vehicle3))
+    findVehicle(3588) should be(Some(vehicle4))
+
+    mongoAccess remove vehicle1 should be(true)
+
+    findVehicle(3585) should be(None)
+
+    mongo.find("vehicleId" $exists true).toList map (convertFromMongoDbObject[Vehicle](_)) should (
+      contain(vehicle2) and
+      contain(vehicle3) and
+      contain(vehicle4) and
+      have size (3))
+  }
+
+  test("Remove a vehicle multiple times only removes it once and does not remove any other entries from the database") {
+    val vehicle1 = Vehicle(Identifier(3585), "Vehicle Test 1")
+    val vehicle2 = Vehicle(Identifier(3586), "Vehicle Test 2")
+    val vehicle3 = Vehicle(Identifier(3587), "Vehicle Test 3")
+    val vehicle4 = Vehicle(Identifier(3588), "Vehicle Test 4")
+
+    mongo += vehicle1
+    mongo += vehicle2
+    mongo += vehicle3
+    mongo += vehicle4
+
+    mongoAccess remove vehicle1 should be(true)
+    mongoAccess remove vehicle1 should be(false)
+    mongoAccess remove vehicle1 should be(false)
+    mongoAccess remove vehicle1 should be(false)
+
+    mongo.find("vehicleId" $exists true).toList map (convertFromMongoDbObject[Vehicle](_)) should (
+      contain(vehicle2) and
+      contain(vehicle3) and
+      contain(vehicle4) and
+      have size (3))
+  }
+
 }

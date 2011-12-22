@@ -21,6 +21,8 @@ import uk.co.randomcoding.partsdb.lift.util.EntityDisplay
 import uk.co.randomcoding.partsdb.core.part.Part
 import uk.co.randomcoding.partsdb.lift.util.PartDisplay._
 import uk.co.randomcoding.partsdb.lift.util.PartDisplay
+import uk.co.randomcoding.partsdb.core.vehicle.Vehicle
+import uk.co.randomcoding.partsdb.lift.util.VehicleDisplay
 /**
  * Displays the existing entities from the database.
  *
@@ -55,6 +57,7 @@ class DisplayExisting extends DbAccessSnippet with ErrorDisplay with Logger {
       case "customer" => CustomerDisplay.displayTable(entities map (_.asInstanceOf[Customer]))
       case "user" => UserDisplay.displayTable(entities map (_.asInstanceOf[(String, String)]))
       case "part" => PartDisplay.displayTable(entities map (_.asInstanceOf[Part]))
+      case "vehicle" => VehicleDisplay.displayTable(entities map (_.asInstanceOf[Vehicle]))
       case _ => {
         error("Unknown Type: %s".format(entityType))
         EntityDisplay.emptyTable
@@ -71,6 +74,8 @@ class DisplayExisting extends DbAccessSnippet with ErrorDisplay with Logger {
         MongoUserAccess().users sortBy (_._1)
       case "part" =>
         getAll[Part]("partId") sortBy (_.partName)
+      case "vehicle" =>
+        getAll[Vehicle]("vehicleId") sortBy (_.vehicleName)
       case "unspecified" => {
         error("Entity Type not specified.")
         List.empty

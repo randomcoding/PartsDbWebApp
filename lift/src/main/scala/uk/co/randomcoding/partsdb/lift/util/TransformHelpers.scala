@@ -76,10 +76,6 @@ object TransformHelpers {
     multiSelect(values, initialValue, func, jqueryUiTextStyled)
   }
 
-  //  def styledSelectVehicle(vehicles: Seq[(Vehicle, String)], initialValue: Vehicle, func: Vehicle => Any): NodeSeq = {
-  //    selectObj(vehicles, Full(initialValue), func, jqueryUiTextStyled)
-  //  }
-
   def styledSelectObject[T](values: Seq[(T, String)], initialValue: T, func: T => Any)(implicit mf: Manifest[T]): NodeSeq = {
     selectObj(values, Full(initialValue), func, jqueryUiTextStyled)
   }

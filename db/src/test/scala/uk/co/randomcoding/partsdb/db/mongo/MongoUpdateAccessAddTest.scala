@@ -72,5 +72,27 @@ class MongoUpdateAccessAddTest extends MongoDbTestBase with ShouldMatchers {
     result.toList should be(List(part1))
   }
 
+  //----------------
+  test("Adding a Vehicle") {
+    val vehicle = Vehicle(Identifier(2469), "Vehicle2469")
+
+    mongoAccess add vehicle should be(true)
+
+    val result = findInDatabase[Vehicle]("vehicleId", 2469)
+
+    result.toList should be(List(vehicle))
+  }
+
+  test("Adding a Vehicle with the same id as an existing one but different details does not update the previous one") {
+    val vehicle1 = Vehicle(Identifier(2470), "MyVehicle")
+    val vehicle2 = Vehicle(Identifier(2470), "MyVehicleAltered")
+
+    mongoAccess add vehicle1 should be(true)
+    mongoAccess add vehicle2 should be(false)
+
+    val result = findInDatabase[Vehicle]("vehicleId", 2470)
+
+    result.toList should be(List(vehicle1))
+  }
   // TODO: Add tests for all other major types
 }
