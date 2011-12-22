@@ -33,18 +33,6 @@ class Boot extends Loggable {
      */
     // This provides access to all the pages under /app/
     val mainAppLoc = Menu(Loc("mainApp", new Link("app" :: Nil, true), "Home"))
-    //=======
-    //    def sitemap = SiteMap(
-    //      Menu.i("Home") / "index",
-    //      Menu.i("Customers") / "customers",
-    //      Menu.i("Parts") / "parts",
-    //      Menu.i("Suppliers") / "suppliers",
-    //      // hidden entries
-    //      Menu.i("Add Customer") / "addCustomer" >> Hidden,
-    //      Menu.i("Add Part") / "addPart" >> Hidden,
-    //      Menu.i("Edit Part") / "editPart" >> Hidden,
-    //      Menu.i("Add Supplier") / "addSupplier" >> Hidden)
-    //>>>>>>> refs/heads/Issue6-CreatePartsBridgeForDatabase
 
     // Create links for the show... parts here
     val showCustomers = Menu(Loc("showCustomers", ExtLink("/app/show?entityType=Customer"), "Customers"))

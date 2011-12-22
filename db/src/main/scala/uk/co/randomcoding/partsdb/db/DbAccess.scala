@@ -117,4 +117,9 @@ trait DbAccess extends MongoIdentifierAccess with MongoUpdateAccess with MongoAl
     getAll(vehicleId)
   }
 
+  def getAllParts(): List[Part] = {
+    val partId = "partId"
+    getAll(partId)
+  }
+
 }
