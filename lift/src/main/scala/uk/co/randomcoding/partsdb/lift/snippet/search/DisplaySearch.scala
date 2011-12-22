@@ -1,7 +1,7 @@
 /**
  *
  */
-package uk.co.randomcoding.partsdb.lift.snippet
+package uk.co.randomcoding.partsdb.lift.snippet.search
 
 import uk.co.randomcoding.partsdb.lift.util.snippet.DbAccessSnippet
 import uk.co.randomcoding.partsdb.lift.util.search.SearchProviders

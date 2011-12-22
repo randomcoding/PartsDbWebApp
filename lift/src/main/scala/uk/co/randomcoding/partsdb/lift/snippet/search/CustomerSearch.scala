@@ -1,21 +1,19 @@
 /**
  *
  */
-package uk.co.randomcoding.partsdb.lift.snippet
+package uk.co.randomcoding.partsdb.lift.snippet.search
 
-import net.liftweb.util.Helpers._
-import net.liftweb.http.js.JsCmds._
-import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
-import uk.co.randomcoding.partsdb.db.search.MongoSearchTerm
-import uk.co.randomcoding.partsdb.db.search.SearchKeys._
-import uk.co.randomcoding.partsdb.db.search.SearchKeys
-import uk.co.randomcoding.partsdb.lift.util.CustomerDisplay
-import uk.co.randomcoding.partsdb.lift.util.snippet.DbAccessSnippet
 import uk.co.randomcoding.partsdb.core.customer.Customer
-import uk.co.randomcoding.partsdb.db.search.CustomerSearchProvider
-import net.liftweb.http.js.JsCmds
-import scala.util.matching.Regex
-import net.liftweb.http.js.JsCmd
+import uk.co.randomcoding.partsdb.db.search.SearchKeys._
+import uk.co.randomcoding.partsdb.db.search.{ SearchKeys, MongoSearchTerm, CustomerSearchProvider }
+import uk.co.randomcoding.partsdb.lift.util.TransformHelpers.styledAjaxText
+import uk.co.randomcoding.partsdb.lift.util.snippet.DbAccessSnippet
+import uk.co.randomcoding.partsdb.lift.util.CustomerDisplay
+
+import net.liftweb.common.StringOrNodeSeq.strTo
+import net.liftweb.http.SHtml._
+import net.liftweb.http.js.{ JsCmds, JsCmd }
+import net.liftweb.util.Helpers._
 
 /**
  * Snippet to perform search for customers
@@ -81,6 +79,7 @@ object CustomerSearch extends DbAccessSnippet {
       "#phoneNumberEntry" #> styledAjaxText(phoneNumber, (s: String) => updateValue(() => phoneNumber = s)(s)) &
       "#mobileNumberEntry" #> styledAjaxText(mobileNumber, (s: String) => updateValue(() => mobileNumber = s)(s)) &
       "#emailEntry" #> styledAjaxText(email, (s: String) => updateValue(() => email = s)(s)) &
-      "#results" #> CustomerDisplay.displayTable(getAll[Customer]("customerId"))
+      "#results" #> CustomerDisplay.displayTable(getAll[Customer]("customerId")) &
+      "#searchButton" #> button("Find", () => Unit)
   }
 }
