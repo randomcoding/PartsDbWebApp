@@ -79,7 +79,6 @@ object CustomerSearch extends DbAccessSnippet {
       "#phoneNumberEntry" #> styledAjaxText(phoneNumber, (s: String) => updateValue(() => phoneNumber = s)(s)) &
       "#mobileNumberEntry" #> styledAjaxText(mobileNumber, (s: String) => updateValue(() => mobileNumber = s)(s)) &
       "#emailEntry" #> styledAjaxText(email, (s: String) => updateValue(() => email = s)(s)) &
-      "#results" #> CustomerDisplay.displayTable(getAll[Customer]("customerId")) &
-      "#searchButton" #> button("Find", () => Unit)
+      "#results" #> CustomerDisplay.displayTable(getAll[Customer]("customerId"))
   }
 }
