@@ -11,6 +11,8 @@ import uk.co.randomcoding.partsdb.core.util.CountryCodes._
 import uk.co.randomcoding.partsdb.core.contact.ContactDetails
 import uk.co.randomcoding.partsdb.core.vehicle.Vehicle
 import uk.co.randomcoding.partsdb.core.part.Part
+import uk.co.randomcoding.partsdb.core.part.DefaultPart
+import uk.co.randomcoding.partsdb.core.vehicle.DefaultVehicle
 
 /**
  * Validates form input items.
@@ -35,9 +37,10 @@ trait DataValidation extends Logger {
       case addr: Address => validateAddress(addr)
       case terms: PaymentTerms => terms != PaymentTerms(-1)
       case contacts: ContactDetails => validateContactDetails(contacts)
-      case part: Part => true
-      case vehicle: Vehicle => true
+      case part: Part => part != DefaultPart
+      case vehicle: Vehicle => vehicle != DefaultVehicle
       case string: String => string.trim nonEmpty
+      case double: Double => double >= 0.0
       case validationItem => {
         debug("Unhandled validation type %s. Assuming it is valid".format(validationItem))
         true

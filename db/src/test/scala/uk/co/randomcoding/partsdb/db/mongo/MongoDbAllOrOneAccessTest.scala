@@ -61,7 +61,7 @@ class MongoDbAllOrOneAccessTest extends MongoDbTestBase with ShouldMatchers {
 
   // Part Tests
   test("Access to Part By Id") {
-    val vehicle = Option[Vehicle](Identifier(2346), "TestVehicle")
+    val vehicle = Some(Vehicle(Identifier(2346), "TestVehicle"))
     val part = Part(Identifier(2345), "woggle sprocket", 1.20, vehicle)
     mongo += convertToMongoDbObject(part)
 
@@ -79,7 +79,7 @@ class MongoDbAllOrOneAccessTest extends MongoDbTestBase with ShouldMatchers {
 
   test("Access Multiple Parts with Single Part in DB") {
     val vehicle1 = Vehicle(Identifier(2347), "TestVehicle")
-    val part1 = Part(Identifier(2348), "woggle sprocket", 1.20, vehicle1)
+    val part1 = Part(Identifier(2348), "woggle sprocket", 1.20, Some(vehicle1))
     mongo += convertToMongoDbObject(part1)
 
     dbAccess.getAll[Part]("partId") should be(List(part1))
@@ -88,8 +88,8 @@ class MongoDbAllOrOneAccessTest extends MongoDbTestBase with ShouldMatchers {
   test("Access Multiple Parts with Two Parts in DB") {
     val vehicle1 = Vehicle(Identifier(2349), "TestVehicle1")
     val vehicle2 = Vehicle(Identifier(2350), "TestVehicle2")
-    val part1 = Part(Identifier(2351), "woggle sprocket", 1.20, vehicle1)
-    val part2 = Part(Identifier(2352), "big woggle sprocket", 1.60, vehicle2)
+    val part1 = Part(Identifier(2351), "woggle sprocket", 1.20, Some(vehicle1))
+    val part2 = Part(Identifier(2352), "big woggle sprocket", 1.60, Some(vehicle2))
 
     mongo += convertToMongoDbObject(part1)
     mongo += convertToMongoDbObject(part2)

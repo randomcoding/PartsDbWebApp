@@ -27,9 +27,8 @@ class AddPart extends StatefulSnippet with DbAccessSnippet with ErrorDisplay wit
   var costText = ""
 
   var vehicle: Option[Vehicle] = None
-  //val vehicles = DefaultVehicle :: getAllVehicles()
   val vehicles = getAllVehicles()
-  val vehicleList = vehicles.map(v => (v, v.vehicleName))
+  val vehicleList = vehicles.map(v => (Some(v), v.vehicleName))
 
   def dispatch = {
     case "render" => render
@@ -39,7 +38,7 @@ class AddPart extends StatefulSnippet with DbAccessSnippet with ErrorDisplay wit
     "#formTitle" #> Text("Add Part") &
       "#nameEntry" #> styledText(partName, partName = _) &
       "#costEntry" #> styledText(costText, costText = _) &
-      "#vehicleEntry" #> styledSelectObject[Option[Vehicle]](vehicleList, vehicle, (v: vehicle) => vehicle = Some(v)) &
+      "#vehicleEntry" #> styledSelectObject[Option[Vehicle]](vehicleList, vehicle, (v: Option[Vehicle]) => vehicle = v) &
       "#submit" #> button("Submit", processSubmit)
   }
 
@@ -52,8 +51,9 @@ class AddPart extends StatefulSnippet with DbAccessSnippet with ErrorDisplay wit
    */
   private[this] def processSubmit() = {
 
-    val cost = asDouble(costText) match {
-      case _ => Full(c)
+    val cost: Double = asDouble(costText) match {
+      case Full(c) => c
+      case _ => -1.0d
     }
 
     val validationChecks = Seq(
@@ -63,8 +63,8 @@ class AddPart extends StatefulSnippet with DbAccessSnippet with ErrorDisplay wit
 
     validate(validationChecks: _*) match {
       case Nil => {
-        val newId = addNewPart(partName, cost, vehicle).partId
-        S redirectTo "/app/show?entityType=part".format(newId.id)
+        addNewPart(partName, cost, vehicle.get)
+        S redirectTo "/app/show?entityType=part"
       }
       case errors => {
         errors foreach (error => displayError(error._1, error._2))

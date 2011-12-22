@@ -118,7 +118,7 @@ class MongoUpdateAccessRemoveTest extends MongoDbTestBase {
   }
 
   test("Remove a part from the database does remove it") {
-    val part = Part(Identifier(3579), "Part Test 1", 1.11, Vehicle(Identifier(213), "Vehicle213"))
+    val part = Part(Identifier(3579), "Part Test 1", 1.11, Some(Vehicle(Identifier(213), "Vehicle213")))
 
     mongo += part
     findPart(3579) should be(Some(part))
@@ -129,10 +129,10 @@ class MongoUpdateAccessRemoveTest extends MongoDbTestBase {
   }
 
   test("Remove a part from an empty database returns false") {
-    val part1 = Part(Identifier(3575), "Part Test 1", 1.11, Vehicle(Identifier(213), "Vehicle213"))
-    val part2 = Part(Identifier(3576), "Part Test 2", 2.22, Vehicle(Identifier(213), "Vehicle213"))
-    val part3 = Part(Identifier(3577), "Part Test 3", 3.33, Vehicle(Identifier(213), "Vehicle213"))
-    val part4 = Part(Identifier(3578), "Part Test 4", 4.44, Vehicle(Identifier(213), "Vehicle213"))
+    val part1 = Part(Identifier(3575), "Part Test 1", 1.11, Some(Vehicle(Identifier(213), "Vehicle213")))
+    val part2 = Part(Identifier(3576), "Part Test 2", 2.22, Some(Vehicle(Identifier(213), "Vehicle213")))
+    val part3 = Part(Identifier(3577), "Part Test 3", 3.33, Some(Vehicle(Identifier(213), "Vehicle213")))
+    val part4 = Part(Identifier(3578), "Part Test 4", 4.44, Some(Vehicle(Identifier(213), "Vehicle213")))
 
     findPart(3575) should be(None)
     findPart(3576) should be(None)
@@ -146,10 +146,10 @@ class MongoUpdateAccessRemoveTest extends MongoDbTestBase {
   }
 
   test("Remove a part from a database with multiple part in removes only the correct part") {
-    val part1 = Part(Identifier(3575), "Part Test 1", 1.11, Vehicle(Identifier(213), "Vehicle213"))
-    val part2 = Part(Identifier(3576), "Part Test 2", 2.22, Vehicle(Identifier(213), "Vehicle213"))
-    val part3 = Part(Identifier(3577), "Part Test 3", 3.33, Vehicle(Identifier(213), "Vehicle213"))
-    val part4 = Part(Identifier(3578), "Part Test 4", 4.44, Vehicle(Identifier(213), "Vehicle213"))
+    val part1 = Part(Identifier(3575), "Part Test 1", 1.11, Some(Vehicle(Identifier(213), "Vehicle213")))
+    val part2 = Part(Identifier(3576), "Part Test 2", 2.22, Some(Vehicle(Identifier(213), "Vehicle213")))
+    val part3 = Part(Identifier(3577), "Part Test 3", 3.33, Some(Vehicle(Identifier(213), "Vehicle213")))
+    val part4 = Part(Identifier(3578), "Part Test 4", 4.44, Some(Vehicle(Identifier(213), "Vehicle213")))
 
     mongo += part1
     mongo += part2
@@ -173,10 +173,10 @@ class MongoUpdateAccessRemoveTest extends MongoDbTestBase {
   }
 
   test("Remove a part multiple times only removes it once and does not remove any other entries from the database") {
-    val part1 = Part(Identifier(3575), "Part Test 1", 1.11, Vehicle(Identifier(213), "Vehicle213"))
-    val part2 = Part(Identifier(3576), "Part Test 2", 2.22, Vehicle(Identifier(213), "Vehicle213"))
-    val part3 = Part(Identifier(3577), "Part Test 3", 3.33, Vehicle(Identifier(213), "Vehicle213"))
-    val part4 = Part(Identifier(3578), "Part Test 4", 4.44, Vehicle(Identifier(213), "Vehicle213"))
+    val part1 = Part(Identifier(3575), "Part Test 1", 1.11, Some(Vehicle(Identifier(213), "Vehicle213")))
+    val part2 = Part(Identifier(3576), "Part Test 2", 2.22, Some(Vehicle(Identifier(213), "Vehicle213")))
+    val part3 = Part(Identifier(3577), "Part Test 3", 3.33, Some(Vehicle(Identifier(213), "Vehicle213")))
+    val part4 = Part(Identifier(3578), "Part Test 4", 4.44, Some(Vehicle(Identifier(213), "Vehicle213")))
 
     mongo += part1
     mongo += part2

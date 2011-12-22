@@ -72,36 +72,36 @@ class MongoUpdateAccessModifyTest extends MongoDbTestBase with ShouldMatchers {
 
   // Part Tests
   test("Modify of Part already added to database correctly modifies object") {
-    val part1 = Part(Identifier(9877), "Exhaust", 98.76, Vehicle(Identifier(212), "Vehicle212"))
+    val part1 = Part(Identifier(9877), "Exhaust", 98.76, Some(Vehicle(Identifier(212), "Vehicle212")))
     mongoAccess add part1 should be(true)
 
-    val part2 = Part(Identifier(9877), "Big Exhaust", 98.76, Vehicle(Identifier(212), "Vehicle212"))
+    val part2 = Part(Identifier(9877), "Big Exhaust", 98.76, Some(Vehicle(Identifier(212), "Vehicle212")))
     mongoAccess modify part2 should be(true)
 
     findInDatabase[Part]("partId", 9877) should be(List(part2))
   }
 
   test("Multiple modifications to the same Part result in the correct Part in the database") {
-    val part1 = Part(Identifier(9878), "Exhaust", 98.76, Vehicle(Identifier(212), "Vehicle212"))
+    val part1 = Part(Identifier(9878), "Exhaust", 98.76, Some(Vehicle(Identifier(212), "Vehicle212")))
     mongoAccess add part1 should be(true)
 
-    val part2 = Part(Identifier(9878), "Big Exhaust", 98.76, Vehicle(Identifier(212), "Vehicle212"))
+    val part2 = Part(Identifier(9878), "Big Exhaust", 98.76, Some(Vehicle(Identifier(212), "Vehicle212")))
     mongoAccess modify part2 should be(true)
 
-    val part3 = Part(Identifier(9878), "Really Big Exhaust", 98.76, Vehicle(Identifier(212), "Vehicle212"))
+    val part3 = Part(Identifier(9878), "Really Big Exhaust", 98.76, Some(Vehicle(Identifier(212), "Vehicle212")))
     mongoAccess modify part3 should be(true)
 
-    val part4 = Part(Identifier(9878), "Enormous Exhaust", 198.76, Vehicle(Identifier(213), "Vehicle213"))
+    val part4 = Part(Identifier(9878), "Enormous Exhaust", 198.76, Some(Vehicle(Identifier(213), "Vehicle213")))
     mongoAccess modify part4 should be(true)
 
     findInDatabase[Part]("partId", 9878) should be(List(part4))
   }
 
   test("Modify called on Part that is not is database does not add it to database") {
-    val part1 = Part(Identifier(9879), "Exhaust", 98.76, Vehicle(Identifier(213), "Vehicle213"))
+    val part1 = Part(Identifier(9879), "Exhaust", 98.76, Some(Vehicle(Identifier(213), "Vehicle213")))
     mongoAccess add part1 should be(true)
 
-    val part2 = Part(Identifier(98765), "Enormous Exhaust", 198.76, Vehicle(Identifier(213), "Vehicle213"))
+    val part2 = Part(Identifier(98765), "Enormous Exhaust", 198.76, Some(Vehicle(Identifier(213), "Vehicle213")))
     mongoAccess modify part2 should be(false)
 
     findInDatabase[Part]("partId", 9879) should be(List(part1))

@@ -66,7 +66,7 @@ trait DbAccess extends MongoIdentifierAccess with MongoUpdateAccess with MongoAl
   def addNewPart(partName: String, cost: Double, vehicle: Vehicle): Part = {
     // check parts are in db or not and assign/get their Ids 
     // for now assume parts are new and assign them ids
-    val part = assignId(Part(-1L, partName, cost, vehicle)).asInstanceOf[Part]
+    val part = assignId(Part(-1L, partName, cost, Some(vehicle))).asInstanceOf[Part]
     debug("Updating database with part %s".format(part))
     add(part) match {
       case true => {
@@ -81,7 +81,7 @@ trait DbAccess extends MongoIdentifierAccess with MongoUpdateAccess with MongoAl
   }
 
   def editPart(partId: Identifier, partName: String, cost: Double, vehicle: Vehicle): Part = {
-    val part = Part(partId, partName, cost, vehicle)
+    val part = Part(partId, partName, cost, Some(vehicle))
     debug("Updating database with part %s".format(part))
     modify(part) match {
       case true => {
@@ -112,9 +112,6 @@ trait DbAccess extends MongoIdentifierAccess with MongoUpdateAccess with MongoAl
     }
   }
 
-  def getAllVehicles(): List[Vehicle] = {
-    val vehicleId = "vehicleId"
-    getAll(vehicleId)
-  }
+  def getAllVehicles(): List[Vehicle] = getAll[Vehicle]("vehicleId")
 
 }

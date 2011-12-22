@@ -25,7 +25,7 @@ object PartDisplay extends EntityDisplay with Logger with DbAccessSnippet {
   /**
    * The headings to use for the display of the part data table
    */
-  override val rowHeadings = List("Part Name", "Cost")
+  override val rowHeadings = List("Part Name", "Cost", "Vehicle Name")
 
   /**
    * Generates html to display a part.
@@ -40,20 +40,24 @@ object PartDisplay extends EntityDisplay with Logger with DbAccessSnippet {
   override def displayEntity(part: Part): NodeSeq = {
     <td>{ part.partName }</td>
     <td>{ part.partCost }</td>
-    <td>{ part.vehicle.vehicleName }</td>
+    <td>{
+      part.vehicle match {
+        case Some(v) => v.vehicleName
+        case _ => "No Veicle"
+      }
+    }</td>
     ++
     editEntityCell(editEntityLink("Part", part.id))
   }
 
   private[this] def displayVehicle(part: Part) = {
     debug("Displaying Vehicle for Part: %s".format(part))
-    val vehicle = getOne[Vehicle]("vehicleId", part.vehicle.vehicleId.id)
-    vehicle match {
-      case v: Vehicle => {
+    part.vehicle match {
+      case Some(v) => {
         val vehicleLines = Source.fromString(v.vehicleName).getLines()
         <span>{ vehicleLines map (line => <span>{ line }</span><br/>) }</span>
       }
-      case _ => Text("Unknown Vehicle. Identifier: %d".format(part.vehicle.vehicleId)
+      case _ => Text("Unspecified Vehicle.")
     }
   }
 
