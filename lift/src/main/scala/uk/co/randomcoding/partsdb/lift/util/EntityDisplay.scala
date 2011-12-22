@@ -15,6 +15,8 @@ trait EntityDisplay {
 
   type EntityType
 
+  final val emptyRow = <tr/>
+
   def displayTable(entities: List[EntityType]): NodeSeq = {
     <table class="btn">
       <thead>

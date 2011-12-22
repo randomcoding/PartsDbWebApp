@@ -5,13 +5,14 @@ package uk.co.randomcoding.partsdb.db
 
 import uk.co.randomcoding.partsdb.core.address.Address
 import uk.co.randomcoding.partsdb.core.contact.ContactDetails
-import uk.co.randomcoding.partsdb.core.customer.Customer
-import uk.co.randomcoding.partsdb.core.id.Identifier.longToIdentifier
-import uk.co.randomcoding.partsdb.core.id.DefaultIdentifier
+import uk.co.randomcoding.partsdb.core.customer.{ DefaultCustomer, Customer }
+import uk.co.randomcoding.partsdb.core.document.{ LineItem, Document }
+import uk.co.randomcoding.partsdb.core.id.{ Identifier, DefaultIdentifier }
+import uk.co.randomcoding.partsdb.core.id.Identifier._
 import uk.co.randomcoding.partsdb.core.terms.PaymentTerms
 import uk.co.randomcoding.partsdb.db.mongo.{ MongoUpdateAccess, MongoIdentifierAccess, MongoConfig, MongoAllOrOneAccess }
 import net.liftweb.common.Logger
-import uk.co.randomcoding.partsdb.core.customer.DefaultCustomer
+import uk.co.randomcoding.partsdb.core.document.DocumentType
 
 /**
  * Encapsulates all the Database access functionality in a single class
@@ -51,5 +52,14 @@ trait DbAccess extends MongoIdentifierAccess with MongoUpdateAccess with MongoAl
         DefaultCustomer
       }
     }
+  }
+
+  def addQuote(lineItems: List[LineItem]): Document = {
+    val quote = assignId(Document(DefaultIdentifier, DocumentType.Quote, lineItems)).asInstanceOf[Document]
+    add(quote) match {
+      case true => info("Added Quote: %s".format(quote))
+      case false => error("Failed to add Quote: %s".format(quote))
+    }
+    quote
   }
 }

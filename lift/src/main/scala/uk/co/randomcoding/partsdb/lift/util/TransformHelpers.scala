@@ -79,4 +79,8 @@ object TransformHelpers {
   def styledObjectSelect[T](values: Seq[(T, String)], initialValue: T, func: T => Any)(implicit mf: Manifest[T]): NodeSeq = {
     selectObj(values, Full(initialValue), func, jqueryUiTextStyled)
   }
+
+  def styledAjaxButton(buttonText: String, func: () => JsCmd): NodeSeq = {
+    ajaxButton(Text(buttonText), func, jqueryUiTextStyled)
+  }
 }
