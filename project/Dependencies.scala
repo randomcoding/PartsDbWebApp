@@ -6,7 +6,8 @@ import sbt._
 object Dependencies {
 	// Common Versions for libraries
 	val mongoVersion = "2.1.5-1"
-	val liftVersion = "2.4-M4"
+	//val liftVersion = "2.4-M4"
+	val liftVersion = "2.4"
 
 	// Functions to create dependencies
 	val liftDep = (componentId: String, scope: String ) => "net.liftweb" %% componentId % liftVersion % scope
