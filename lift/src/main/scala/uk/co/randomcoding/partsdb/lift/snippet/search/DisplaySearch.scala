@@ -3,21 +3,16 @@
  */
 package uk.co.randomcoding.partsdb.lift.snippet.search
 
-import uk.co.randomcoding.partsdb.lift.util.snippet.DbAccessSnippet
+import uk.co.randomcoding.partsdb.lift.util.TransformHelpers.styledAjaxSelect
 import uk.co.randomcoding.partsdb.lift.util.search.SearchProviders
-import uk.co.randomcoding.partsdb.lift.util.search.SearchPageProvider
-import net.liftweb.http.RequestVar
-import net.liftweb.http.S
-import net.liftweb.common.Full
-import net.liftweb.common.Empty
-import net.liftweb.common.Box
-import net.liftweb.util.Helpers._
-import net.liftweb.http.SHtml._
-import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
-import net.liftweb.common.Logger
-import scala.xml.NodeSeq
+import uk.co.randomcoding.partsdb.lift.util.snippet.DbAccessSnippet
+
+import net.liftweb.common.Box.box2Option
+import net.liftweb.common.{Logger, Full, Empty, Box}
 import net.liftweb.http.js.JsCmds
-import scala.xml.Text
+import net.liftweb.http.RequestVar
+import net.liftweb.util.AnyVar.whatVarIs
+import net.liftweb.util.Helpers._
 
 /**
  * Displays the search options and results.

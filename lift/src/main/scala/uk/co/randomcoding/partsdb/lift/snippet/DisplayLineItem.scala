@@ -25,8 +25,8 @@ object DisplayLineItem extends EntityDisplay with DbAccess {
           <td>{ lineItem.lineNumber }</td>
           <td>{ p.partName }</td>
           <td>{ lineItem.quantity }</td>
-          <td>{ "%.2f".format(p.partCost) }</td>
-          <td>{ totalCost(lineItem, p) }</td>
+          <td>{ "£%.2f".format(p.partCost) }</td>
+          <td>{ "£" + totalCost(lineItem, p) }</td>
         </tr>
       }
       case _ => emptyRow

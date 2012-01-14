@@ -21,6 +21,10 @@ import net.liftweb.common.Full
 import uk.co.randomcoding.partsdb.core.customer.Customer
 import uk.co.randomcoding.partsdb.core.document.Document
 import net.liftweb.http.S
+import uk.co.randomcoding.partsdb.lift.model.document.QuoteHolder
+import net.liftweb.common.Empty
+import net.liftweb.http.WiringUI
+import net.liftweb.http.js.jquery.JqWiringSupport
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
@@ -28,15 +32,13 @@ import net.liftweb.http.S
 class AddQuote extends StatefulSnippet with DbAccessSnippet with ErrorDisplay with DataValidation with Logger {
 
   var customerName = ""
-  var currentPart: Option[Part] = None
-  var partId: Identifier = DefaultIdentifier
-  var lineItems: List[LineItem] = Nil
-  var newPartIdentifier: Identifier = DefaultIdentifier
+  val quoteHolder = new QuoteHolder()
+
   var newQuantity = ""
 
   val parts = getAll[Part]("partId") sortBy (_.partName)
-
   val partsSelect = (None, "Select Part") :: (parts map ((p: Part) => (Some(p), p.partName)))
+  var currentPart: Option[Part] = None
 
   val customers = getAll[Customer]("customerId")
   val customersSelect = customers map ((c: Customer) => (Some(c), c.customerName))
@@ -46,25 +48,6 @@ class AddQuote extends StatefulSnippet with DbAccessSnippet with ErrorDisplay wi
     case "render" => render
   }
 
-  def addLine(): JsCmd = {
-
-    val quantity = asInt(newQuantity) match {
-      case Full(q) => q
-      case _ => -1
-    }
-    debug("CurrentPart %s".format(currentPart))
-    // TODO: validation
-    currentPart match {
-      case Some(p) => {
-        val line = LineItem(lineItems.size, p.partId, quantity, p.partCost)
-        lineItems = line :: lineItems
-        debug("There are now %d line Items.\n%s".format(lineItems.size, lineItems.mkString(", ")))
-      }
-      case None => // do nothing
-    }
-    JsCmds.SetHtml("currentLineItems", DisplayLineItem.displayTable(lineItems.reverse))
-  }
-
   def render = {
     "#formTitle" #> Text("Add Quote") &
       "#customerSelect" #> styledObjectSelect[Option[Customer]](customersSelect, None, currentCustomer = _) &
@@ -72,11 +55,33 @@ class AddQuote extends StatefulSnippet with DbAccessSnippet with ErrorDisplay wi
       "#partName" #> styledAjaxObjectSelect[Option[Part]](partsSelect, currentPart, currentPart = _) &
       "#partQuantity" #> styledAjaxText(newQuantity, newQuantity = _) &
       "#submit" #> button("Save", processSubmit) &
-      "#currentLineItems" #> DisplayLineItem.displayTable(lineItems)
+      "#currentLineItems" #> DisplayLineItem.displayTable(quoteHolder.quoteItems) &
+      "#subTotal" #> WiringUI.asText(quoteHolder.subTotal) &
+      "#vatAmount" #> WiringUI.asText(quoteHolder.vatAmount) &
+      "#totalCost" #> WiringUI.asText(quoteHolder.totalCost, JqWiringSupport.fade)
+  }
+
+  private def addLine(): JsCmd = {
+    clearErrors
+    (asInt(newQuantity), currentPart) match {
+      case (Full(q), Some(part)) => quoteHolder.setPartQuantity(part, q)
+      case (Full(q), None) => displayError("partErrorId", "Please select a Part")
+      case (_, Some(part)) => displayError("quantityErrorId", "Please specify a valid quantity")
+      case (_, None) => {
+        displayError("quantityErrorId", "Please specify a valid quantity")
+        displayError("partErrorId", "Please select a Part")
+      }
+    }
+
+    refreshLineItemDisplay()
+  }
+
+  private def refreshLineItemDisplay(): JsCmd = {
+    SetHtml("currentLineItems", DisplayLineItem.displayTable(quoteHolder.quoteItems))
   }
 
   private[this] def processSubmit() = {
-    addQuote(lineItems)
+    addQuote(quoteHolder.buildQuote)
     S.redirectTo("/app/")
   }
 }

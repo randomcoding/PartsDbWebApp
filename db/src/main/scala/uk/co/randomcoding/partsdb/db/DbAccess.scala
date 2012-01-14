@@ -108,8 +108,8 @@ trait DbAccess extends MongoIdentifierAccess with MongoUpdateAccess with MongoAl
 
   def getAllVehicles(): List[Vehicle] = getAll[Vehicle]("vehicleId")
 
-  def addQuote(lineItems: List[LineItem]): Document = {
-    val quote = assignId(Document(DefaultIdentifier, DocumentType.Quote, lineItems)).asInstanceOf[Document]
+  def addQuote(newQuote: Document): Document = {
+    val quote = assignId(newQuote).asInstanceOf[Document]
     add(quote) match {
       case true => info("Added Quote: %s".format(quote))
       case false => error("Failed to add Quote: %s".format(quote))
