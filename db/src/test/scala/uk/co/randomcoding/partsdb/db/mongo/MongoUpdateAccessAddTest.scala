@@ -50,8 +50,9 @@ class MongoUpdateAccessAddTest extends MongoDbTestBase with ShouldMatchers {
   }
 
   //----------------
+  // Part Tests with no options
   test("Adding a Part") {
-    val part = Part(Identifier(2468), "sprocket", 1.00, Some(Vehicle(Identifier(210), "Vehicle210")))
+    val part = Part(Identifier(2468), "sprocket")
 
     mongoAccess add part should be(true)
 
@@ -61,8 +62,8 @@ class MongoUpdateAccessAddTest extends MongoDbTestBase with ShouldMatchers {
   }
 
   test("Adding a Part with the same id as an existing one but different details does not update the previous one") {
-    val part1 = Part(Identifier(4680), "sprocket", 1.51, Some(Vehicle(Identifier(211), "Vehicle211")))
-    val part2 = Part(Identifier(4680), "woggle sprocket", 1.52, Some(Vehicle(Identifier(212), "Vehicle212")))
+    val part1 = Part(Identifier(4680), "sprocket")
+    val part2 = Part(Identifier(4680), "woggle sprocket")
 
     mongoAccess add part1 should be(true)
     mongoAccess add part2 should be(false)
@@ -71,6 +72,30 @@ class MongoUpdateAccessAddTest extends MongoDbTestBase with ShouldMatchers {
 
     result.toList should be(List(part1))
   }
+
+  //----------------
+  // Part Tests with options
+  //    test("Adding a Part") {
+  //    val part = Part(Identifier(2468), "ModPartId", "SupplierPartId", "sprocket", 1.00, Some(Vehicle(Identifier(210), "Vehicle210")))
+  //
+  //    mongoAccess add part should be(true)
+  //
+  //    val result = findInDatabase[Part]("partId", 2468)
+  //
+  //    result.toList should be(List(part))
+  //  }
+  //
+  //  test("Adding a Part with the same id as an existing one but different details does not update the previous one") {
+  //    val part1 = Part(Identifier(4680), "ModPartId1", "SupplierPartId1", "sprocket", 1.51, Some(Vehicle(Identifier(211), "Vehicle211")))
+  //    val part2 = Part(Identifier(4680), "ModPartId2", "SupplierPartId2", "woggle sprocket", 1.52, Some(Vehicle(Identifier(212), "Vehicle212")))
+  //
+  //    mongoAccess add part1 should be(true)
+  //    mongoAccess add part2 should be(false)
+  //
+  //    val result = findInDatabase[Part]("partId", 4680)
+  //
+  //    result.toList should be(List(part1))
+  //  }
 
   //----------------
   test("Adding a Vehicle") {

@@ -10,7 +10,6 @@ import net.liftweb.http.SHtml.ElemAttr.pairToBasic
 import net.liftweb.http.SHtml._
 import net.liftweb.http.js.JsCmds.Noop
 import net.liftweb.util.Helpers._
-import uk.co.randomcoding.partsdb.core.vehicle.{ Vehicle, DefaultVehicle }
 import net.liftweb.http.js.JsCmd
 
 /**

@@ -55,8 +55,9 @@ class AddQuote extends StatefulSnippet with DbAccessSnippet with ErrorDisplay wi
     // TODO: validation
     currentPart match {
       case Some(p) => {
-        val line = LineItem(lineItems.size, newPartIdentifier, quantity, p.partCost)
-        lineItems = line :: lineItems
+        // TODO: Find a way of getting the part cost out of this 
+        //val line = LineItem(lineItems.size, newPartIdentifier, quantity, p.partCost)
+        //lineItems = line :: lineItems
       }
       case None => // do nothing
     }

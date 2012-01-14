@@ -13,8 +13,8 @@ import uk.co.randomcoding.partsdb.core.part.{ Part, DefaultPart }
 import uk.co.randomcoding.partsdb.core.terms.PaymentTerms
 import uk.co.randomcoding.partsdb.core.vehicle.{ Vehicle, DefaultVehicle }
 import uk.co.randomcoding.partsdb.db.mongo.{ MongoUpdateAccess, MongoIdentifierAccess, MongoConfig, MongoAllOrOneAccess }
-
 import net.liftweb.common.Logger
+import uk.co.randomcoding.partsdb.core.part.PartCost
 
 /**
  * Encapsulates all the Database access functionality in a single class
@@ -57,10 +57,10 @@ trait DbAccess extends MongoIdentifierAccess with MongoUpdateAccess with MongoAl
     }
   }
 
-  def addNewPart(partName: String, cost: Double, vehicle: Vehicle): Part = {
+  def addNewPart(partName: String, partCost: List[PartCost], vehicle: Vehicle, modId: String): Part = {
     // check parts are in db or not and assign/get their Ids 
     // for now assume parts are new and assign them ids
-    val part = assignId(Part(-1L, partName, cost, Some(vehicle))).asInstanceOf[Part]
+    val part = assignId(Part(-1L, partName, Some(partCost), Some(vehicle), Some(modId))).asInstanceOf[Part]
     debug("Updating database with part %s".format(part))
     add(part) match {
       case true => {
@@ -74,8 +74,8 @@ trait DbAccess extends MongoIdentifierAccess with MongoUpdateAccess with MongoAl
     }
   }
 
-  def editPart(partId: Identifier, partName: String, cost: Double, vehicle: Vehicle): Part = {
-    val part = Part(partId, partName, cost, Some(vehicle))
+  def editPart(partId: Identifier, partName: String, partCost: List[PartCost], vehicle: Vehicle, modId: String): Part = {
+    val part = Part(partId, partName, Some(partCost), Some(vehicle), Some(modId))
     debug("Updating database with part %s".format(part))
     modify(part) match {
       case true => {
