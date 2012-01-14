@@ -73,18 +73,12 @@ object TransformHelpers {
     select(values, Full(initialValue), func, jqueryUiTextStyled)
   }
 
-  /*<<<<<<< HEAD
-  def styledMultiSelect(values: Seq[(String, String)], initialValue: Seq[String], func: List[String] => Any): NodeSeq = {
-    multiSelect(values, initialValue, func, jqueryUiTextStyled)
-  }
-
-  def styledSelectObject[T](values: Seq[(T, String)], initialValue: T, func: T => Any)(implicit mf: Manifest[T]): NodeSeq = {
-    selectObj(values, Full(initialValue), func, jqueryUiTextStyled)
-  }
-
-  =======*/
   def styledAjaxSelect(values: Seq[(String, String)], initialValue: String, func: String => JsCmd): NodeSeq = {
     ajaxSelect(values, Full(initialValue), func, jqueryUiTextStyled)
+  }
+
+  def styledAjaxObjectSelect[T](values: Seq[(T, String)], initialValue: T, func: T => JsCmd)(implicit mf: Manifest[T]): NodeSeq = {
+    ajaxSelectObj(values, Full(initialValue), func, jqueryUiTextStyled)
   }
 
   def styledObjectSelect[T](values: Seq[(T, String)], initialValue: T, func: T => Any)(implicit mf: Manifest[T]): NodeSeq = {

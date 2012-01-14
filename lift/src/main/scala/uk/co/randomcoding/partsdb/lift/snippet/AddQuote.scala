@@ -56,21 +56,23 @@ class AddQuote extends StatefulSnippet with DbAccessSnippet with ErrorDisplay wi
     // TODO: validation
     currentPart match {
       case Some(p) => {
-        val line = LineItem(lineItems.size, newPartIdentifier, quantity, p.partCost)
+        val line = LineItem(lineItems.size, p.partId, quantity, p.partCost)
         lineItems = line :: lineItems
+        debug("There are now %d line Items.\n%s".format(lineItems.size, lineItems.mkString(", ")))
       }
       case None => // do nothing
     }
-    JsCmds.SetHtml("currentLineItems", DisplayLineItem.displayTable(lineItems))
+    JsCmds.SetHtml("currentLineItems", DisplayLineItem.displayTable(lineItems.reverse))
   }
 
   def render = {
     "#formTitle" #> Text("Add Quote") &
       "#customerSelect" #> styledObjectSelect[Option[Customer]](customersSelect, None, currentCustomer = _) &
       "#addLineButton" #> styledAjaxButton("Add Line", addLine) &
-      "#partName" #> styledObjectSelect[Option[Part]](partsSelect, currentPart, currentPart = _) &
-      "#partQuantity" #> styledText(newQuantity, newQuantity = _) &
-      "#submit" #> button("Save", processSubmit)
+      "#partName" #> styledAjaxObjectSelect[Option[Part]](partsSelect, currentPart, currentPart = _) &
+      "#partQuantity" #> styledAjaxText(newQuantity, newQuantity = _) &
+      "#submit" #> button("Save", processSubmit) &
+      "#currentLineItems" #> DisplayLineItem.displayTable(lineItems)
   }
 
   private[this] def processSubmit() = {
