@@ -36,7 +36,7 @@ class AddQuote extends StatefulSnippet with DbAccessSnippet with ErrorDisplay wi
 
   val parts = getAll[Part]("partId") sortBy (_.partName)
 
-  val partsSelect = parts map ((p: Part) => (Some(p), p.partName))
+  val partsSelect = (None, "Select Part") :: (parts map ((p: Part) => (Some(p), p.partName)))
 
   val customers = getAll[Customer]("customerId")
   val customersSelect = customers map ((c: Customer) => (Some(c), c.customerName))
@@ -52,6 +52,7 @@ class AddQuote extends StatefulSnippet with DbAccessSnippet with ErrorDisplay wi
       case Full(q) => q
       case _ => -1
     }
+    debug("CurrentPart %s".format(currentPart))
     // TODO: validation
     currentPart match {
       case Some(p) => {
