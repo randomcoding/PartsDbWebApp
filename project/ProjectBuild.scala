@@ -27,7 +27,7 @@ object ProjectBuild extends Build {
 		settings = buildSettings ++ Seq(libraryDependencies ++= liftProjectDeps,
 			name := "parts-db-app-lift"
 		) ++ webSettings
-	) dependsOn(coreProject, dbProject %"test->test;compile->compile")
+	) dependsOn(dbProject % "test->test;compile->compile")
 
 	lazy val dbProject: Project = Project("db",
 		file("db"),
