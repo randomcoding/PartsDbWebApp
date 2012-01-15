@@ -13,8 +13,8 @@ import uk.co.randomcoding.partsdb.core.part.{ Part, DefaultPart }
 import uk.co.randomcoding.partsdb.core.terms.PaymentTerms
 import uk.co.randomcoding.partsdb.core.vehicle.{ Vehicle, DefaultVehicle }
 import uk.co.randomcoding.partsdb.db.mongo.{ MongoUpdateAccess, MongoIdentifierAccess, MongoConfig, MongoAllOrOneAccess }
-
 import net.liftweb.common.Logger
+import uk.co.randomcoding.partsdb.core.transaction.Transaction
 
 /**
  * Encapsulates all the Database access functionality in a single class
@@ -36,23 +36,33 @@ trait DbAccess extends MongoIdentifierAccess with MongoUpdateAccess with MongoAl
 
   override lazy val collection = MongoConfig.getCollection(dbName, collectionName)
 
-  def addNewCustomer(contactName: String, billingAddress: Address, terms: PaymentTerms, contact: ContactDetails): Customer = {
+  /**
+   * Adds a new [[uk.co.randomcoding.partsdb.core.customer.Customer]] to the database.
+   *
+   * @param contactName The name of the contact with the Customer
+   * @param billingAddress The main address for the customer
+   * @param terms The payment terms for this customer
+   * @param contact The contact details for this customer
+   * @return An optional [[uk.co.randomcoding.partsdb.core.customer.Customer]] if the addition was successful, or `None` if it failed.
+   */
+  def addNewCustomer(contactName: String, billingAddress: Address, terms: PaymentTerms, contact: ContactDetails): Option[Customer] = {
     // check addresses is are in db or not and assign/get their Ids 
     // for now assume addresses are new and assign them ids
     // FIXME - The cast to Address is nasty and hacky
     val bAddr = assignId(billingAddress).asInstanceOf[Address]
     debug("Billing Address (with id): %s".format(bAddr))
     add(bAddr)
-    val customer = assignId(Customer(-1L, contactName, bAddr.addressId, terms, contact)).asInstanceOf[Customer]
+    val customer = assignId(Customer(DefaultIdentifier, contactName, bAddr.addressId, terms, contact)).asInstanceOf[Customer]
     debug("Updating database with customer %s at billing address: %s".format(customer, billingAddress))
     add(customer) match {
       case true => {
         debug("Added new customer %s with billing address %s".format(customer, bAddr))
-        customer
+        Some(customer)
       }
       case false => {
         error("Failed to add customer %s with billing address %s".format(customer, bAddr))
-        DefaultCustomer
+        //DefaultCustomer
+        None
       }
     }
   }
@@ -108,12 +118,39 @@ trait DbAccess extends MongoIdentifierAccess with MongoUpdateAccess with MongoAl
 
   def getAllVehicles(): List[Vehicle] = getAll[Vehicle]("vehicleId")
 
-  def addQuote(newQuote: Document): Document = {
-    val quote = assignId(newQuote).asInstanceOf[Document]
-    add(quote) match {
-      case true => info("Added Quote: %s".format(quote))
-      case false => error("Failed to add Quote: %s".format(quote))
+  /**
+   * Add a Quote to the database.
+   *
+   * This will also create the [[uk.co.randomcoding.partsdb.core.transaction.Transaction]] that 'contains' the Quote.
+   *
+   * The [[uk.co.randomcoding.partsdb.core.transaction.Transaction]] is added first and if successful, then the
+   * [[uk.co.randomcoding.partsdb.core.document.Document]] is added.
+   *
+   * @param newQuote The new quote [[uk.co.randomcoding.partsdb.core.document.Document]] to add.
+   * If this has a [[uk.co.randomcoding.partsdb.core.identifier.DefaultIdentifier]] as its `transactionId` it will be assigned a new, valid one.
+   * @param customerId The [[uk.co.randomcoding.partsdb.core.identifier.Identifier]] of the [[uk.co.randomcoding.partsdb.core.customer.Customer]] that this transaction is with.
+   * @return a `Tuple2[Option[Document], Option[Transaction]]` that contains the successfully added document & transaction. If either fails to be added then `None` is returned
+   */
+  def addQuote(lineItems: List[LineItem], customerId: Identifier): (Option[Document], Option[Transaction]) = {
+    val preQuote = assignId(Document(DefaultIdentifier, DocumentType.Quote, lineItems, DefaultIdentifier)).asInstanceOf[Document]
+    val transaction: Transaction = assignId(Transaction(DefaultIdentifier, customerId, Some(Set(preQuote.documentId)))).asInstanceOf[Transaction]
+    val quote = preQuote.copy(transactionId = transaction.transactionId)
+
+    add(transaction) match {
+      case true => add(quote) match {
+        case true => {
+          info("Added Quote: %s".format(quote))
+          (Some(quote), Some(transaction))
+        }
+        case false => {
+          error("Failed to add Quote: %s".format(quote))
+          (None, Some(transaction))
+        }
+      }
+      case false => {
+        error("Failed to add Transaction: %s".format(transaction))
+        (None, None)
+      }
     }
-    quote
   }
 }

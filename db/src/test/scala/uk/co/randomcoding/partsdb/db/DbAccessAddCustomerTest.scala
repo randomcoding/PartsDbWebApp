@@ -29,11 +29,11 @@ class DbAccessAddCustomerTest extends MongoDbTestBase {
 
     val newCust = access.addNewCustomer("Customer", bAddr, PaymentTerms(30), ContactDetails("Customer", Some(List(Phone("+44321456789")))))
 
-    newCust should be(Customer(Identifier(1), "Customer", Identifier(0), PaymentTerms(30), ContactDetails("Customer", Some(List(Phone("+44321456789"))))))
+    newCust should be(Some(Customer(Identifier(1), "Customer", Identifier(0), PaymentTerms(30), ContactDetails("Customer", Some(List(Phone("+44321456789")))))))
 
     access.getAll[Address]("addressId") should be(List(Address(Identifier(0), "Billing", "Billing Address", "UK")))
 
-    access.getAll[Customer]("customerId") should be(List(newCust))
+    access.getAll[Customer]("customerId") should be(List(newCust.get))
   }
 
   test("Add a customer with billing address already in database (using same addressId) does not add a duplicate address") {
@@ -41,11 +41,11 @@ class DbAccessAddCustomerTest extends MongoDbTestBase {
 
     val newCust = access.addNewCustomer("Customer", bAddr, PaymentTerms(30), ContactDetails("Customer", Some(List(Phone("+44321456789")))))
 
-    newCust should be(Customer(Identifier(0), "Customer", Identifier(2345), PaymentTerms(30), ContactDetails("Customer", Some(List(Phone("+44321456789"))))))
+    newCust should be(Some(Customer(Identifier(0), "Customer", Identifier(2345), PaymentTerms(30), ContactDetails("Customer", Some(List(Phone("+44321456789")))))))
 
     access.getAll[Address]("addressId") should be(List(bAddr))
 
-    access.getAll[Customer]("customerId") should be(List(newCust))
+    access.getAll[Customer]("customerId") should be(List(newCust.get))
   }
 
   // This will fail until issue 13 is fixed
@@ -55,11 +55,11 @@ class DbAccessAddCustomerTest extends MongoDbTestBase {
     val bAddr2 = Address(DefaultIdentifier, "Billing", "Billing Address", "UK")
 
     val newCust = access.addNewCustomer("Customer", bAddr2, PaymentTerms(30), ContactDetails("Customer", Some(List(Phone("+44321456789")))))
-    newCust should be(Customer(Identifier(1), "Customer", Identifier(15), PaymentTerms(30), ContactDetails("Customer", Some(List(Phone("+44321456789"))))))
+    newCust should be(Some(Customer(Identifier(1), "Customer", Identifier(15), PaymentTerms(30), ContactDetails("Customer", Some(List(Phone("+44321456789")))))))
 
     access.getAll[Address]("addressId") should be(List(bAddr1))
 
-    access.getAll[Customer]("customerId") should be(List(newCust))
+    access.getAll[Customer]("customerId") should be(List(newCust.get))
   }
 
 }
