@@ -63,7 +63,7 @@ class QuoteHolder {
   /**
    * Build the Quote document represented by the
    */
-  def buildQuote = Document(DefaultIdentifier, DocumentType.Quote, lineItems.get)
+  def buildQuote = Document(DefaultIdentifier, DocumentType.Quote, lineItems.get, DefaultIdentifier)
 
   /**
    * Gets the current line items, sorted by line number

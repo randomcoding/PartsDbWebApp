@@ -76,8 +76,12 @@ class AddCustomer extends StatefulSnippet with DbAccessSnippet with ErrorDisplay
 
     validate(validationChecks: _*) match {
       case Nil => {
-        val newId = addNewCustomer(name, billingAddress, paymentTerms, contact).customerId
-        S redirectTo "/app/customers?highlight=%d".format(newId.id)
+        // Not sure if this is the best way to do this, should we do something to inform the user better if there is an error.
+        if (addNewCustomer(name, billingAddress, paymentTerms, contact).isEmpty) {
+          error("Failed to add new customer, [name: %s, address: %s, terms: %s, contact: %s".format(name, billingAddress, paymentTerms, contact))
+        }
+
+        S redirectTo "/app/customers"
       }
       case errors => {
         errors foreach (error => displayError(error._1, error._2))

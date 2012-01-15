@@ -81,7 +81,12 @@ class AddQuote extends StatefulSnippet with DbAccessSnippet with ErrorDisplay wi
   }
 
   private[this] def processSubmit() = {
-    addQuote(quoteHolder.buildQuote)
-    S.redirectTo("/app/")
+    currentCustomer match {
+      case Some(cust) => {
+        addQuote(quoteHolder.lineItems, cust.customerId)
+        S.redirectTo("/app/")
+      }
+      case None => displayError("customerErrorId", "Please select a Customer")
+    }
   }
 }
