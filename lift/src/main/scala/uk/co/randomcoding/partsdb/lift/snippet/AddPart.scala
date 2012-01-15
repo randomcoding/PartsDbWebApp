@@ -22,7 +22,7 @@ import uk.co.randomcoding.partsdb.core.vehicle.Vehicle
 
 class AddPart extends StatefulSnippet with DbAccessSnippet with ErrorDisplay with DataValidation with Logger {
 
-  val cameFrom = S.referer openOr "/app/show?entityType=part"
+  val cameFrom = S.referer openOr "/app/show?entityType=Part"
   var partName = ""
   var costText = ""
 
@@ -64,7 +64,7 @@ class AddPart extends StatefulSnippet with DbAccessSnippet with ErrorDisplay wit
     validate(validationChecks: _*) match {
       case Nil => {
         addNewPart(partName, cost, vehicle.get)
-        S redirectTo "/app/show?entityType=part"
+        S redirectTo "/app/show?entityType=Part"
       }
       case errors => {
         errors foreach (error => displayError(error._1, error._2))
