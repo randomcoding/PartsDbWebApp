@@ -3,8 +3,7 @@
  */
 package uk.co.randomcoding.partsdb.core.transaction
 
-import uk.co.randomcoding.partsdb.core.id.Identifiable
-import uk.co.randomcoding.partsdb.core.id.Identifier
+import uk.co.randomcoding.partsdb.core.id.{Identifier, Identifiable}
 
 /**
  * Encapsulates all the data for a transaction between the company and a customer.

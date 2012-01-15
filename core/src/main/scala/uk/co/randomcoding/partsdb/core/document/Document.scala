@@ -3,8 +3,7 @@
  */
 package uk.co.randomcoding.partsdb.core.document
 
-import uk.co.randomcoding.partsdb.core.id.Identifier
-import uk.co.randomcoding.partsdb.core.id.Identifiable
+import uk.co.randomcoding.partsdb.core.id.{ Identifier, Identifiable }
 
 /**
  * A document is a entity that is stored in the database, and has a document id.
