@@ -54,7 +54,7 @@ class AddQuote extends StatefulSnippet with DbAccessSnippet with ErrorDisplay wi
       "#addLineButton" #> styledAjaxButton("Add Line", addLine) &
       "#partName" #> styledAjaxObjectSelect[Option[Part]](partsSelect, currentPart, currentPart = _) &
       "#partQuantity" #> styledAjaxText(newQuantity, newQuantity = _) &
-      "#submit" #> button("Save", processSubmit) &
+      "#submit" #> button("Save Quote", processSubmit) &
       "#currentLineItems" #> DisplayLineItem.displayTable(quoteHolder.quoteItems) &
       "#subTotal" #> WiringUI.asText(quoteHolder.subTotal) &
       "#vatAmount" #> WiringUI.asText(quoteHolder.vatAmount) &
