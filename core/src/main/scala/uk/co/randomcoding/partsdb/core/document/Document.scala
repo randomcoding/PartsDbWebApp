@@ -16,10 +16,11 @@ import uk.co.randomcoding.partsdb.core.id.Identifiable
  * @param documentId The [[uk.co.randomcoding.partsdb.core.id.Identifier]] of this document.
  * @param documentType The type of the document. This should be one of the values from [[uk.co.randomcoding.partsdb.core.document.DocumentId]]
  * @param lineItems The [[uk.co.randomcoding.partsdb.core.document.LineItem]]s that are in this document
+ * @param transactionId The identifier of the [[uk.co.randomcoding.partsdb.core.transaction.Transaction]] that contains this document
  *
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
-case class Document(val documentId: Identifier, val documentType: String, val lineItems: List[LineItem]) extends Identifiable {
+case class Document(val documentId: Identifier, val documentType: String, val lineItems: List[LineItem], transactionId: Identifier) extends Identifiable {
   override val identifierFieldName = "documentId"
 
   /**
