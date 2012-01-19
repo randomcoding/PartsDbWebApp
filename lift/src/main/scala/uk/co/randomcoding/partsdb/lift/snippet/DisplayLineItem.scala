@@ -25,7 +25,7 @@ object DisplayLineItem extends EntityDisplay with DbAccess {
           <td>{ lineItem.lineNumber }</td>
           <td>{ p.partName }</td>
           <td>{ lineItem.quantity }</td>
-          <td>{ "£%.2f".format(p.partCost) }</td>
+          <td>{ "£%.2f".format(lineItem.unitPrice) }</td>
           <td>{ "£" + totalCost(lineItem, p) }</td>
         </tr>
       }
@@ -33,7 +33,7 @@ object DisplayLineItem extends EntityDisplay with DbAccess {
     }
   }
 
-  private def totalCost(lineItem: LineItem, part: Part) = "%.2f".format(lineItem.quantity * part.partCost)
+  private def totalCost(lineItem: LineItem, part: Part) = "%.2f".format(lineItem.quantity * lineItem.unitPrice)
 
   private def part(partId: Identifier) = getOne[Part]("partId", partId)
 }

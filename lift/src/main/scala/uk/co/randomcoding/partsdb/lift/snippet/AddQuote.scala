@@ -4,27 +4,23 @@
 package uk.co.randomcoding.partsdb.lift.snippet
 
 import scala.xml.Text
-import uk.co.randomcoding.partsdb.core.document.LineItem
-import uk.co.randomcoding.partsdb.core.id.{ DefaultIdentifier, Identifier }
-import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
-import uk.co.randomcoding.partsdb.lift.util.snippet.{ ErrorDisplay, DbAccessSnippet, DataValidation }
-import net.liftweb.common.StringOrNodeSeq.strTo
-import net.liftweb.common.Logger
-import net.liftweb.http.SHtml._
-import net.liftweb.http.js.JsCmds.{ Noop, SetHtml }
-import net.liftweb.http.js.JsCmd
-import net.liftweb.http.StatefulSnippet
-import net.liftweb.util.Helpers._
-import uk.co.randomcoding.partsdb.core.part.Part
-import net.liftweb.http.js.JsCmds
-import net.liftweb.common.Full
+
 import uk.co.randomcoding.partsdb.core.customer.Customer
-import uk.co.randomcoding.partsdb.core.document.Document
-import net.liftweb.http.S
+import uk.co.randomcoding.partsdb.core.part.Part
 import uk.co.randomcoding.partsdb.lift.model.document.QuoteHolder
-import net.liftweb.common.Empty
-import net.liftweb.http.WiringUI
+import uk.co.randomcoding.partsdb.lift.util.TransformHelpers.{ styledObjectSelect, styledAjaxText, styledAjaxObjectSelect, styledAjaxButton }
+import uk.co.randomcoding.partsdb.lift.util.snippet.{ ErrorDisplay, DbAccessSnippet, DataValidation }
+
+import net.liftweb.common.StringOrNodeSeq.strTo
+import net.liftweb.common.{ Logger, Full }
+import net.liftweb.http.SHtml._
+import net.liftweb.http.js.JsCmds.{ SetHtml, Noop }
+import net.liftweb.http.js.JsCmd.unitToJsCmd
 import net.liftweb.http.js.jquery.JqWiringSupport
+import net.liftweb.http.js.JsCmd
+import net.liftweb.http.{ WiringUI, StatefulSnippet, S }
+import net.liftweb.util.Helpers._
+import net.liftweb.util.ValueCell.vcToT
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
@@ -38,7 +34,6 @@ class AddQuote extends StatefulSnippet with DbAccessSnippet with ErrorDisplay wi
 
   val parts = getAll[Part]("partId") sortBy (_.partName)
   val partsSelect = (None, "Select Part") :: (parts map ((p: Part) => (Some(p), p.partName)))
-  var currentPart: Option[Part] = None
 
   val customers = getAll[Customer]("customerId")
   val customersSelect = customers map ((c: Customer) => (Some(c), c.customerName))
@@ -52,8 +47,10 @@ class AddQuote extends StatefulSnippet with DbAccessSnippet with ErrorDisplay wi
     "#formTitle" #> Text("Add Quote") &
       "#customerSelect" #> styledObjectSelect[Option[Customer]](customersSelect, None, currentCustomer = _) &
       "#addLineButton" #> styledAjaxButton("Add Line", addLine) &
-      "#partName" #> styledAjaxObjectSelect[Option[Part]](partsSelect, currentPart, currentPart = _) &
+      "#partName" #> styledAjaxObjectSelect[Option[Part]](partsSelect, quoteHolder.currentPart, updateHolderValue(quoteHolder.currentPart(_))) &
       "#partQuantity" #> styledAjaxText(newQuantity, newQuantity = _) &
+      "#basePartCost" #> WiringUI.asText(quoteHolder.currentPartBaseCostDisplay) &
+      "#manualPartCost" #> styledAjaxText(quoteHolder.manualCost, updateHolderValue(quoteHolder.manualCost(_))) &
       "#submit" #> button("Save Quote", processSubmit) &
       "#currentLineItems" #> DisplayLineItem.displayTable(quoteHolder.quoteItems) &
       "#subTotal" #> WiringUI.asText(quoteHolder.subTotal) &
@@ -61,9 +58,25 @@ class AddQuote extends StatefulSnippet with DbAccessSnippet with ErrorDisplay wi
       "#totalCost" #> WiringUI.asText(quoteHolder.totalCost, JqWiringSupport.fade)
   }
 
+  /**
+   * Function to provide ajax updates to the quote holder
+   */
+  private def updateHolderValue[T](updateFunc: (T) => Any, jscmd: JsCmd = Noop): T => JsCmd = {
+    (t: T) =>
+      {
+        updateFunc(t)
+        jscmd
+      }
+  }
+
+  /**
+   * Add a new line item to the quote holder and refresh the line items display.
+   *
+   *  If the line item part is already present, simply update the value and refresh.
+   */
   private def addLine(): JsCmd = {
     clearErrors
-    (asInt(newQuantity), currentPart) match {
+    (asInt(newQuantity), quoteHolder.currentPart) match {
       case (Full(q), Some(part)) => quoteHolder.setPartQuantity(part, q)
       case (Full(q), None) => displayError("partErrorId", "Please select a Part")
       case (_, Some(part)) => displayError("quantityErrorId", "Please specify a valid quantity")
