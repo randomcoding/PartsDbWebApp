@@ -16,7 +16,7 @@ import uk.co.randomcoding.partsdb.core.id.Identifier
 object DisplayLineItem extends EntityDisplay with DbAccess {
   override type EntityType = LineItem
 
-  override val rowHeadings = List("Line No.", "Part", "Quantity", "Unit Price", "Total")
+  override val rowHeadings = List("Line No.", "Part", "Quantity", "Base Price", "Markup", "Total")
 
   override def displayEntity(lineItem: LineItem): NodeSeq = {
     part(lineItem.partId) match {
@@ -25,7 +25,8 @@ object DisplayLineItem extends EntityDisplay with DbAccess {
           <td>{ lineItem.lineNumber }</td>
           <td>{ p.partName }</td>
           <td>{ lineItem.quantity }</td>
-          <td>{ "£%.2f".format(lineItem.unitPrice) }</td>
+          <td>{ "£%.2f".format(lineItem.basePrice) }</td>
+          <td>{ "%.1f".format(lineItem.markup * 100) + "%" }</td>
           <td>{ "£" + totalCost(lineItem, p) }</td>
         </tr>
       }
@@ -33,7 +34,7 @@ object DisplayLineItem extends EntityDisplay with DbAccess {
     }
   }
 
-  private def totalCost(lineItem: LineItem, part: Part) = "%.2f".format(lineItem.quantity * lineItem.unitPrice)
+  private def totalCost(lineItem: LineItem, part: Part) = "%.2f".format(lineItem.lineCost)
 
   private def part(partId: Identifier) = getOne[Part]("partId", partId)
 }

@@ -19,7 +19,7 @@
 			<div class="column span-3 form-label">Part:</div>
 			<div class="column span-3 form-label">Quantity:</div>
 			<div class="column span-5 form-label">Base Part Cost:</div>
-			<div class="column span-5  form-label">Manual Part Cost:</div>
+			<div class="column span-5  form-label">Markup (%):</div>
 			<div class="column span-3 last form-label">&nbsp;</div>
 			<div class="column span-3">
 				<span id="partName">Part Name</span>
@@ -30,10 +30,14 @@
 				</div>
 			</div>
 			<div class="column span-5">
-			 <span id="basePartCost">Base Part Cost</span>
+				<div style="margin-top: 0.5em">
+					<span id="basePartCost">Base Part Cost</span>
+				</div>
 			</div>
 			<div class="column span-5">
-			 £<span id="manualPartCost">Manual Part Cost</span>
+				<div style="width: 3em;" align="left">
+					<span id="markup">Markup Percentage</span>
+				</div>
 			</div>
 			<div class="column span-3 last" align="right">
 				<span id="addLineButton">Add Line</span>
@@ -55,7 +59,7 @@
 					<div class="column span-4 last">
 						<span id="vatAmount">VAT Amount Here</span>
 					</div>
-					<hr/>
+					<hr />
 					<div class="column span-5 form-label">Total Cost</div>
 					<div class="column span-4 last">
 						<span id="totalCost">Total Cost Here</span>

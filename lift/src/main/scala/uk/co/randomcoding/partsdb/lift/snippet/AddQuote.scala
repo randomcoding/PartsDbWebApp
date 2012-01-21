@@ -50,7 +50,7 @@ class AddQuote extends StatefulSnippet with DbAccessSnippet with ErrorDisplay wi
       "#partName" #> styledAjaxObjectSelect[Option[Part]](partsSelect, quoteHolder.currentPart, updateHolderValue(quoteHolder.currentPart(_))) &
       "#partQuantity" #> styledAjaxText(newQuantity, newQuantity = _) &
       "#basePartCost" #> WiringUI.asText(quoteHolder.currentPartBaseCostDisplay) &
-      "#manualPartCost" #> styledAjaxText(quoteHolder.manualCost, updateHolderValue(quoteHolder.manualCost(_))) &
+      "#markup" #> styledAjaxText(quoteHolder.markup, updateHolderValue(quoteHolder.markup(_))) &
       "#submit" #> button("Save Quote", processSubmit) &
       "#currentLineItems" #> DisplayLineItem.displayTable(quoteHolder.quoteItems) &
       "#subTotal" #> WiringUI.asText(quoteHolder.subTotal) &

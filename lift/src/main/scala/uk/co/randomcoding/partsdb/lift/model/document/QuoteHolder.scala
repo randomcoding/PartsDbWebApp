@@ -20,6 +20,11 @@ import net.liftweb.common.Logger
  */
 class QuoteHolder extends Logger {
   /**
+   * The default markup rate for new lines
+   */
+  val DEFAULT_MARKUP = 25;
+
+  /**
    * Holder for the current line items
    */
   val lineItems = ValueCell[List[LineItem]](Nil)
@@ -40,26 +45,16 @@ class QuoteHolder extends Logger {
   })
 
   /**
-   * Holder for the current manually entered part cost
+   * Holder for the current line's markup
    */
-  private val manualPartCost = ValueCell[BigDecimal](zero)
+  private val markupCell = ValueCell[Int](DEFAULT_MARKUP)
 
   /**
    * Calculated value for the part cost of the current line.
    *
-   * If the manual part cost > 0.0 then the manual cost i sused, otherwise the base part cost is used.
+   * This applies the markup to the base cost
    */
-  private val currentLinePartCost = currentPartCell.lift(manualPartCost)((part, enteredCost) => {
-    part match {
-      case Some(part) => {
-        debug("Calculating current cost for part: %s".format(part.partName))
-        val cost = if (enteredCost == zero) part.partCost else enteredCost.toDouble
-        debug("Cost is: %.2f".format(cost))
-        cost
-      }
-      case _ => 0.0d
-    }
-  })
+  private val currentLinePartCost = currentPartBaseCostCell.lift(markupCell)((partBaseCost, markupPercentage) => partBaseCost + (partBaseCost * (markupPercentage / 100.0)))
 
   /**
    * The total computed base cost of the line items, before tax
@@ -131,12 +126,16 @@ class QuoteHolder extends Logger {
    */
   def setPartQuantity(part: Part, quant: Int): Unit = {
     if (quant <= 0) removeItem(part) else {
-      val partCost = currentLinePartCost.get
+      val partCost = currentPartBaseCostCell.get
+      val markupValue = markupCell.get.toDouble / 100.0
       debug("Using cost: %.2f".format(partCost))
       lineItems.atomicUpdate(items => items.find(_.partId == part.partId) match {
-        case Some(lineItem) => items.map(li => li.copy(quantity = if (li.partId == part.partId) quant else li.quantity, unitPrice = if (li.partId == part.partId) partCost else li.unitPrice))
+        case Some(lineItem) => items.map(li => li.copy(
+          quantity = if (li.partId == part.partId) quant else li.quantity,
+          basePrice = if (li.partId == part.partId) partCost else li.basePrice,
+          markup = if (li.partId == part.partId) markupValue else li.markup))
         case _ => items :+ {
-          val item = LineItem(items.size, part.partId, quant, partCost)
+          val item = LineItem(items.size, part.partId, quant, partCost, markupValue)
           debug("Created: %s".format(item))
           item
         }
@@ -201,20 +200,20 @@ class QuoteHolder extends Logger {
    *
    * @return A String in 0.00 format
    */
-  def manualCost: String = "%.2f".format(manualPartCost.get.toDouble)
+  def markup: String = "%d".format(markupCell.get.toInt)
 
   /**
-   * Set the value of the manual cost in the holder from a String.
+   * Set the value of the markup percentage the holder from a String.
    *
-   * If the string can be converted into a double then that value is used, otherwise sets the value to 0.0
+   * If the string can be converted into an integer, that value is used, otherwise sets the value to `DEFAULT_MARKUP`
    */
-  def manualCost(priceString: String) = {
-    debug("Setting manual part cost to: %s".format(priceString))
-    manualPartCost.set(BigDecimal(asDouble(priceString) match {
+  def markup(markupString: String) = {
+    debug("Setting markup to: %s".format(markupString))
+    markupCell.set(asInt(markupString) match {
       case Full(d) => d
-      case _ => 0.0d
-    }))
+      case _ => DEFAULT_MARKUP
+    })
 
-    debug("Manual cost is now: %.2f".format(manualPartCost.get.toDouble))
+    debug("Manual cost is now: %d".format(markupCell.get.toInt))
   }
 }

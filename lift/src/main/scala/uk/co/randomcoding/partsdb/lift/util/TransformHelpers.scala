@@ -12,6 +12,8 @@ import net.liftweb.http.js.JsCmds.Noop
 import net.liftweb.util.Helpers._
 import uk.co.randomcoding.partsdb.core.vehicle.{ Vehicle, DefaultVehicle }
 import net.liftweb.http.js.JsCmd
+import net.liftweb.util.ValueCell
+import net.liftweb.http.WiringUI
 
 /**
  * Provides common helper functions for generating elements for transformations
