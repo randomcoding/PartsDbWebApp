@@ -23,6 +23,18 @@ import net.liftweb.http.WiringUI
 object TransformHelpers {
 
   /**
+   * Convenience definition of a typed Ajax callback function. This is used in the Ajax styled widget functions
+   */
+  type ajaxWidgetCallback[T] = (T) => JsCmd
+
+  type emptyAjaxWidgetCallback = () => JsCmd
+
+  /**
+   * Convenience definition of a typed standard callback function. This is used in the standard styled widget functions
+   */
+  type standardWidgetCallback[T] = (T) => Any
+
+  /**
    * Creates a link that has the additional class of button and an inner `<span>` element. This will cause it to be rendered as a button by the default css.
    *
    * @param linkText The text that it to be inside the button
@@ -55,39 +67,119 @@ object TransformHelpers {
     link(linkTarget, () => Unit, span(Text(linkText), Noop), linkAttrs: _*)
   }
 
-  def styledTextArea(initialText: String, func: String => Any): NodeSeq = {
-    textarea(initialText, func, jqueryUiTextStyled)
+  /**
+   * Creates a Text Area with JQueryUI Styling
+   *
+   * @param initialText The initial value to display in the text area
+   * @param func The function to call on form Submit. Commonly sets the value of a variable in the snippet
+   * @param attrs Any additional attributes to apply to this text area
+   */
+  def styledTextArea(initialText: String, func: standardWidgetCallback[String], attrs: List[ElemAttr] = Nil): NodeSeq = {
+    textarea(initialText, func, styledAttributes(attrs): _*)
   }
 
-  def styledText(initialText: String, func: String => Any): NodeSeq = {
-    text(initialText, func, jqueryUiTextStyled)
+  /**
+   * Creates a Text Box with JQueryUI Styling
+   *
+   * @param initialText The initial value to display in the text box
+   * @param func The function to call on form Submit. Commonly sets the value of a variable in the snippet
+   * @param attrs Any additional attributes to apply to this text box
+   */
+  def styledText(initialText: String, func: standardWidgetCallback[String], attrs: List[ElemAttr] = Nil): NodeSeq = {
+    text(initialText, func, styledAttributes(attrs): _*)
   }
 
-  def styledAjaxText(initialText: String, func: String => JsCmd): NodeSeq = {
-    ajaxText(initialText, func, jqueryUiTextStyled)
+  /**
+   * Creates a Text Box with JQueryUI Styling and an Ajax callback
+   *
+   * @param initialText The initial value to display in the text box
+   * @param func The function to call on update (usually `onBlur`). Commonly sets the value of a variable in the snippet
+   * @param attrs Any additional attributes to apply to this text box
+   */
+  def styledAjaxText(initialText: String, func: ajaxWidgetCallback[String], linkAttrs: List[ElemAttr] = Nil): NodeSeq = {
+    ajaxText(initialText, func, styledAttributes(linkAttrs): _*)
   }
 
-  def styledPassword(initialText: String, func: String => Any): NodeSeq = {
-    password(initialText, func, jqueryUiTextStyled)
+  /**
+   * Creates a Password Entry with JQueryUI Styling
+   *
+   * @param initialText The initial value to display in the text box
+   * @param func The function to call on form submit. Commonly sets the value of a variable in the snippet
+   * @param attrs Any additional attributes to apply to this password entry
+   */
+  def styledPassword(initialText: String, func: standardWidgetCallback[String], linkAttrs: List[ElemAttr] = Nil): NodeSeq = {
+    password(initialText, func, styledAttributes(linkAttrs): _*)
   }
 
-  def styledSelect(values: Seq[(String, String)], initialValue: String, func: String => Any): NodeSeq = {
-    select(values, Full(initialValue), func, jqueryUiTextStyled)
+  /**
+   * Creates a Combo Box with JQueryUI Styling
+   *
+   * This maps a display string to a value string.
+   *
+   * @param values The ordered sequence of (display -> value) tuples to populate the combo box with
+   * @param initialText The initial value to display in the combo box. This should be on of the display values from `values`
+   * @param func The function to call on form submit. Commonly sets the value of a variable in the snippet
+   * @param attrs Any additional attributes to apply to this combo box
+   */
+  def styledSelect(values: Seq[(String, String)], initialValue: String, func: standardWidgetCallback[String], linkAttrs: List[ElemAttr] = Nil): NodeSeq = {
+    select(values, Full(initialValue), func, styledAttributes(linkAttrs): _*)
   }
 
-  def styledAjaxSelect(values: Seq[(String, String)], initialValue: String, func: String => JsCmd): NodeSeq = {
-    ajaxSelect(values, Full(initialValue), func, jqueryUiTextStyled)
+  /**
+   * Creates a Combo Box with JQueryUI Styling and an Ajax callback.
+   *
+   * This maps a display string to a value string.
+   *
+   * @param values The ordered sequence of (display -> value) tuples to populate the combo box with
+   * @param initialText The initial value to display in the combo box. This should be on of the display values from `values`
+   * @param func The function to call on update (usually `onBlur`. Commonly sets the value of a variable in the snippet.
+   * The input parameter to this function is the ''value'' part of the selected entry from `values`
+   * @param attrs Any additional attributes to apply to this combo box
+   */
+  def styledAjaxSelect(values: Seq[(String, String)], initialValue: String, func: ajaxWidgetCallback[String], linkAttrs: List[ElemAttr] = Nil): NodeSeq = {
+    ajaxSelect(values, Full(initialValue), func, styledAttributes(linkAttrs): _*)
   }
 
-  def styledAjaxObjectSelect[T](values: Seq[(T, String)], initialValue: T, func: T => JsCmd)(implicit mf: Manifest[T]): NodeSeq = {
-    ajaxSelectObj(values, Full(initialValue), func, jqueryUiTextStyled)
+  /**
+   * Creates a Combo Box with JQueryUI Styling and an Ajax callback
+   *
+   * Maps display strings to object values.
+   *
+   * @param values The ordered sequence of (display -> value) tuples to populate the combo box with
+   * @param initialText The initial value to display in the combo box. This should be on of the display values from `values`
+   * @param func The function to call on update (usually `onBlur`. Commonly sets the value of a variable in the snippet.
+   * The input parameter to this function is the ''value'' part of the selected entry from `values`
+   * @param attrs Any additional attributes to apply to this combo box
+   */
+  def styledAjaxObjectSelect[T](values: Seq[(T, String)], initialValue: T, func: ajaxWidgetCallback[T], linkAttrs: List[ElemAttr] = Nil)(implicit mf: Manifest[T]): NodeSeq = {
+    ajaxSelectObj(values, Full(initialValue), func, styledAttributes(linkAttrs): _*)
   }
 
-  def styledObjectSelect[T](values: Seq[(T, String)], initialValue: T, func: T => Any)(implicit mf: Manifest[T]): NodeSeq = {
-    selectObj(values, Full(initialValue), func, jqueryUiTextStyled)
+  /**
+   * Creates a Combo Box with JQueryUI Styling and an Ajax callback
+   *
+   * Maps display strings to object values.
+   *
+   * @param values The ordered sequence of (display -> value) tuples to populate the combo box with
+   * @param initialText The initial value to display in the combo box. This should be on of the display values from `values`
+   * @param func The function to call on update (usually `onBlur`. Commonly sets the value of a variable in the snippet.
+   * The input parameter to this function is the ''value'' part of the selected entry from `values`
+   * @param attrs Any additional attributes to apply to this combo box
+   */
+  def styledObjectSelect[T](values: Seq[(T, String)], initialValue: T, func: standardWidgetCallback[T], linkAttrs: List[ElemAttr] = Nil)(implicit mf: Manifest[T]): NodeSeq = {
+    selectObj(values, Full(initialValue), func, styledAttributes(linkAttrs): _*)
   }
 
-  def styledAjaxButton(buttonText: String, func: () => JsCmd): NodeSeq = {
-    ajaxButton(Text(buttonText), func, jqueryUiTextStyled)
+  /**
+   * Creates a button with an Ajax callback
+   *
+   * @param buttonText The text to display on the button
+   * @param func The function to call when the button is pressed
+   * @param attrs Any additional attributes to apply to this button
+   */
+  def styledAjaxButton(buttonText: String, func: emptyAjaxWidgetCallback, linkAttrs: List[ElemAttr] = Nil): NodeSeq = {
+    ajaxButton(Text(buttonText), func, styledAttributes(linkAttrs): _*)
   }
+
+  private def styledAttributes(attrs: List[ElemAttr]) = jqueryUiTextStyled :: attrs
 }
