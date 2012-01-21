@@ -105,14 +105,14 @@ class JsonConversionSimpleObjectTests extends JsonConversionTesting {
   }
 
   test("Can convert Line Item to JSON") {
-    val itemJson: String = LineItem(1, Identifier(234), 3, 4.50)
+    val itemJson: String = LineItem(1, Identifier(234), 3, 4.50, 0.25)
 
-    itemJson should be("""{"lineNumber":1,"partId":{"id":234},"quantity":3,"unitPrice":4.5}""")
+    itemJson should be("""{"lineNumber":1,"partId":{"id":234},"quantity":3,"basePrice":4.5,"markup":0.25}""")
   }
 
   test("Can convert JSON to Line Item") {
-    val itemJson = """{"lineNumber":4,"partId":{"id":654},"quantity":1,"unitPrice":105.23}"""
-    val lineItem = LineItem(4, Identifier(654), 1, 105.23)
+    val itemJson = """{"lineNumber":4,"partId":{"id":654},"quantity":1,"basePrice":105.23,"markup":0.25}"""
+    val lineItem = LineItem(4, Identifier(654), 1, 105.23, 0.25)
     checkJsonConversion[LineItem](itemJson, lineItem)
   }
 

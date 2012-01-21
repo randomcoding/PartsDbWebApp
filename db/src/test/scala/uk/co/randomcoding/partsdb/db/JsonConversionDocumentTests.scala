@@ -23,18 +23,18 @@ import uk.co.randomcoding.partsdb.core.transaction.Transaction
 class JsonConversionDocumentTests extends JsonConversionTesting {
 
   test("Can convert Quote to JSON") {
-    val quoteJson: String = Document(Identifier(321), Quote, List(LineItem(1, Identifier(456), 1, 25.00)), Identifier(909))
-    quoteJson should be("""{"documentId":{"id":321},"documentType":"QUO","lineItems":[{"lineNumber":1,"partId":{"id":456},"quantity":1,"unitPrice":25.0}],"transactionId":{"id":909}}""")
+    val quoteJson: String = Document(Identifier(321), Quote, List(LineItem(1, Identifier(456), 1, 25.00, 0.25)), Identifier(909))
+    quoteJson should be("""{"documentId":{"id":321},"documentType":"QUO","lineItems":[{"lineNumber":1,"partId":{"id":456},"quantity":1,"basePrice":25.0,"markup":0.25}],"transactionId":{"id":909}}""")
 
-    val quote2Json: String = Document(Identifier(321), Quote, List(LineItem(1, Identifier(456), 1, 25.00), LineItem(2, Identifier(789), 4, 45.01)), Identifier(101))
+    val quote2Json: String = Document(Identifier(321), Quote, List(LineItem(1, Identifier(456), 1, 25.00, 0.25), LineItem(2, Identifier(789), 4, 45.01, 0.1)), Identifier(101))
     quote2Json should be("""{"documentId":{"id":321},"documentType":"QUO",""" +
-      """"lineItems":[{"lineNumber":1,"partId":{"id":456},"quantity":1,"unitPrice":25.0},{"lineNumber":2,"partId":{"id":789},"quantity":4,"unitPrice":45.01}],"transactionId":{"id":101}}""")
+      """"lineItems":[{"lineNumber":1,"partId":{"id":456},"quantity":1,"basePrice":25.0,"markup":0.25},{"lineNumber":2,"partId":{"id":789},"quantity":4,"basePrice":45.01,"markup":0.1}],"transactionId":{"id":101}}""")
   }
 
   test("Can convert JSON to Quote") {
     val quoteJson: String = """{"documentId":{"id":321},"documentType":"QUO",""" +
-      """"lineItems":[{"lineNumber":1,"partId":{"id":456},"quantity":1,"unitPrice":25.0},{"lineNumber":2,"partId":{"id":789},"quantity":4,"unitPrice":45.01}],"transactionId":{"id":202}}"""
-    val quote = Document(Identifier(321), Quote, List(LineItem(1, Identifier(456), 1, 25.00), LineItem(2, Identifier(789), 4, 45.01)), Identifier(202))
+      """"lineItems":[{"lineNumber":1,"partId":{"id":456},"quantity":1,"basePrice":25.0,"markup":0.25},{"lineNumber":2,"partId":{"id":789},"quantity":4,"basePrice":45.01,"markup":0.1}],"transactionId":{"id":202}}"""
+    val quote = Document(Identifier(321), Quote, List(LineItem(1, Identifier(456), 1, 25.00, 0.25), LineItem(2, Identifier(789), 4, 45.01, 0.1)), Identifier(202))
     checkJsonConversion[Document](quoteJson, quote)
   }
 
