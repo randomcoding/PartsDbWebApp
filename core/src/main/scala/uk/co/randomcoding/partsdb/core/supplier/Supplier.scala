@@ -5,6 +5,7 @@ package uk.co.randomcoding.partsdb.core.supplier
 
 import uk.co.randomcoding.partsdb.core.contact.ContactDetails
 import uk.co.randomcoding.partsdb.core.id.{ Identifier, Identifiable, DefaultIdentifier }
+import uk.co.randomcoding.partsdb.core.part.PartCost
 
 /**
  * Supplier information including contact details and a free form notes
@@ -18,8 +19,8 @@ import uk.co.randomcoding.partsdb.core.id.{ Identifier, Identifiable, DefaultIde
  * @author Jane Rowe
  *
  */
-case class Supplier(val supplierId: Identifier, val supplierName: String, val contactDetails: ContactDetails, val notes: String) extends Identifiable {
+case class Supplier(val supplierId: Identifier, val supplierName: String, val contactDetails: ContactDetails, suppliedParts: Option[List[PartCost]] = None, val notes: Option[String] = None) extends Identifiable {
   override val identifierFieldName = "supplierId"
 }
 
-object DefaultSupplier extends Supplier(DefaultIdentifier, "No Supplier", ContactDetails("No Details"), "No Notes")
+object DefaultSupplier extends Supplier(DefaultIdentifier, "No Supplier", ContactDetails("No Details"))

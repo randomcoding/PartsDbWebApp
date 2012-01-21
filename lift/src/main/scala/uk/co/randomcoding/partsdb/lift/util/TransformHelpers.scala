@@ -93,4 +93,12 @@ object TransformHelpers {
   def styledAjaxButton(buttonText: String, func: () => JsCmd): NodeSeq = {
     ajaxButton(Text(buttonText), func, jqueryUiTextStyled)
   }
+
+  def styledMultiSelectObj[T](values: Seq[(T, String)], initialValue: Seq[T], func: List[T] => Any): NodeSeq = {
+    multiSelectObj(values, initialValue, func, jqueryUiTextStyled)
+  }
+
+  /*  def multiSelectObj [T] (options: Seq[(T, String)], default: Seq[T], onSubmit: (List[T]) ⇒ Any, attrs: ElemAttr*) : Elem
+  
+  def ajaxSelect (opts: Seq[(String, String)], deflt: Box[String], jsFunc: Call, func: (String) ⇒ JsCmd, attrs: ElemAttr*) : Elem*/
 }

@@ -30,19 +30,29 @@ class AddPart extends StatefulSnippet with DbAccessSnippet with ErrorDisplay wit
   var partCosts: Option[List[PartCost]] = None
 
   var vehicle: Option[Vehicle] = None
-  val vehicles = getAllVehicles()
-  val vehicleList = vehicles.map(v => (Some(v), v.vehicleName))
+  val allVehicles = getAllVehicles().map(v => (Some(v), v.vehicleName))
+  //       "#vehicleEntry" #> styledObjectSelect[Option[Vehicle]](allVehicles, vehicle, (v: Option[Vehicle]) => vehicle = v) &  
 
-  // (val partId: Identifier, val partName: String, val partCost: Option[List[PartCost]] = None, val vehicle: Option[Vehicle] = None, val modId: Option[String] = None)
+  //    var vehicles: Option[List[Vehicle]] = None
+  //    val allVehicles = getAllVehicles.map(v => (Some(v), v.vehicleName))
 
   def dispatch = {
     case "render" => render
   }
 
+  //   def styledMultiSelectObj[T](values: Seq[(T, String)], initialValue: Seq[T], func: List[T] => Any): NodeSeq = {
+  //    multiSelectObj(values, initialValue, func, jqueryUiTextStyled)
+  //    
+  //    def styledObjectSelect[T](values: Seq[(T, String)], initialValue: T, func: T => Any)(implicit mf: Manifest[T]): NodeSeq = {
+  //    selectObj(values, Full(initialValue), func, jqueryUiTextStyled)
+  // 
+  //      def styledText(initialText: String, func: String => Any): NodeSeq = {
+  //    text(initialText, func, jqueryUiTextStyled)
+
   def render = {
     "#formTitle" #> Text("Add Part") &
       "#nameEntry" #> styledText(partName, partName = _) &
-      "#vehicleEntry" #> styledObjectSelect[Option[Vehicle]](vehicleList, vehicle, (v: Option[Vehicle]) => vehicle = v) &
+      "#vehicleEntry" #> styledObjectSelect[Option[Vehicle]](allVehicles, vehicle, (v: Option[Vehicle]) => vehicle = v) &
       "#modIdEntry" #> styledText(modId, modId = _) &
       "#submit" #> button("Submit", processSubmit)
   }
@@ -61,16 +71,22 @@ class AddPart extends StatefulSnippet with DbAccessSnippet with ErrorDisplay wit
     //      case _ => -1.0d
     //    }
 
+    //    var b = List[Int]();
+    //    b = b ::: List(1)
+    //
+    //    var vehicles = List[Vehicle]()
+    //    vehicles = vehicle ::: List(vehicle)
+
     val validationChecks = Seq(
       ValidationItem(partName, "partNameError", "Part Name must be entered"),
       //      ValidationItem(partCosts, "partCostError", "Part Cost is not valid"),
-      ValidationItem(vehicle, "partVehicleError", "Vehicle is not valid"),
-      ValidationItem(modId, "modIdError", "MoD ID must be entered"))
+      ValidationItem(vehicle, "partVehicleError", "Vehicle is not valid"))
+    // ValidationItem(modId, "modIdError", "MoD ID must be entered"))
 
     validate(validationChecks: _*) match {
       case Nil => {
         //        addNewPart(partName, cost, vehicle.get)
-        addNewPart(partName, partCosts.get, vehicle.get, modId)
+        addNewPart(partName, vehicle.get, modId)
         S redirectTo "/app/show?entityType=part"
       }
       case errors => {
