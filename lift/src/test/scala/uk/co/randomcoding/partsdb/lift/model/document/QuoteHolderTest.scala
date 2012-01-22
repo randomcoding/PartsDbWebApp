@@ -114,4 +114,24 @@ class QuoteHolderTest extends FunSuite with ShouldMatchers {
     holder.lineItems should be(List(LineItem(0, Identifier(234), 2, 20.0, 0.25), LineItem(1, Identifier(123), 4, 10.0, 0.25)))
   }
 
+  test("Setting current part means the correct base cost display value is generated") {
+    val holder = quoteHolder
+    holder.currentPart(Some(part1))
+    holder.currentPartBaseCostDisplay.get should be("£%.2f".format(part1.partCost))
+  }
+
+  test("Adding a line item sets the correct total values") {
+    val holder = quoteHolder
+    holder.currentPart(Some(part1))
+    holder.addLineItem(1)
+
+    val expectedSubTotal = part1.partCost + (part1.partCost * (holder.DEFAULT_MARKUP / 100.0))
+    holder.subTotal.get should be("£%.2f".format(expectedSubTotal))
+
+    val expectedTax = expectedSubTotal * holder.taxRate.get
+    holder.vatAmount.get should be("£%.2f".format(expectedTax))
+
+    holder.totalCost.get should be("£%.2f".format(expectedSubTotal + expectedTax))
+  }
+
 }

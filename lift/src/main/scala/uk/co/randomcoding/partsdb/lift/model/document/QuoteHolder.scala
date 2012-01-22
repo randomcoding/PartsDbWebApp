@@ -70,7 +70,7 @@ class QuoteHolder extends Logger {
   /**
    * The tax rate. Set to 0.2 (20%)
    */
-  private val taxRate = ValueCell(BigDecimal(0.2))
+  val taxRate = ValueCell(0.2d)
 
   /**
    * The computed value of the amount of tax for the quote
@@ -148,41 +148,19 @@ class QuoteHolder extends Logger {
         val markupValue = markupCell.get.toDouble / 100.0
 
         lineItemsCell.atomicUpdate(items => items.find(_.partId == part.partId) match {
-          case Some(lineItem) => items.map(li => li.copy(
-            quantity = if (li.partId == part.partId) quant else li.quantity,
-            basePrice = if (li.partId == part.partId) partCost else li.basePrice,
-            markup = if (li.partId == part.partId) markupValue else li.markup))
-          case _ => items :+ {
-            val item = LineItem(items.size, part.partId, quant, partCost, markupValue)
-            debug("Created: %s".format(item))
-            item
-          }
+          case Some(lineItem) => items.map(li => {
+            li.partId == part.partId match {
+              case true => updateLineItem(li, quant, partCost, markupValue)
+              case faslse => li.copy()
+            }
+          })
+          case _ => items :+ LineItem(items.size, part.partId, quant, partCost, markupValue)
         })
       }
     }
-    /*currentPart match {
-      case Some(part) => {
-        if (quant <= 0) removeItem(part) else {
-          val partCost = currentPartBaseCostCell.get
-          val markupValue = markupCell.get.toDouble / 100.0
-
-          lineItemsCell.atomicUpdate(items => items.find(_.partId == part.partId) match {
-            case Some(lineItem) => items.map(li => li.copy(
-              quantity = if (li.partId == part.partId) quant else li.quantity,
-              basePrice = if (li.partId == part.partId) partCost else li.basePrice,
-              markup = if (li.partId == part.partId) markupValue else li.markup))
-            case _ => items :+ {
-              val item = LineItem(items.size, part.partId, quant, partCost, markupValue)
-              debug("Created: %s".format(item))
-              item
-            }
-          })
-        }
-      }
-      case _ => // no part so do nothing
-    }*/
-
   }
+
+  private val updateLineItem = (li: LineItem, quant: Int, cost: Double, markupValue: Double) => li.copy(quantity = quant, basePrice = cost, markup = markupValue)
 
   private def zero = BigDecimal(0)
 
