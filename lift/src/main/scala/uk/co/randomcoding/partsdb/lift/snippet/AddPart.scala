@@ -23,7 +23,7 @@ import uk.co.randomcoding.partsdb.core.part.PartCost
 
 class AddPart extends StatefulSnippet with DbAccessSnippet with ErrorDisplay with DataValidation with Logger {
 
-  val cameFrom = S.referer openOr "/app/show?entityType=part"
+  val cameFrom = S.referer openOr "/app/show?entityType=Part"
   var partName = ""
   var modId = ""
 
@@ -31,23 +31,14 @@ class AddPart extends StatefulSnippet with DbAccessSnippet with ErrorDisplay wit
 
   var vehicle: Option[Vehicle] = None
   val allVehicles = getAllVehicles().map(v => (Some(v), v.vehicleName))
-  //       "#vehicleEntry" #> styledObjectSelect[Option[Vehicle]](allVehicles, vehicle, (v: Option[Vehicle]) => vehicle = v) &  
 
+  //       "#vehicleEntry" #> styledObjectSelect[Option[Vehicle]](allVehicles, vehicle, (v: Option[Vehicle]) => vehicle = v) & 
   //    var vehicles: Option[List[Vehicle]] = None
   //    val allVehicles = getAllVehicles.map(v => (Some(v), v.vehicleName))
 
   def dispatch = {
     case "render" => render
   }
-
-  //   def styledMultiSelectObj[T](values: Seq[(T, String)], initialValue: Seq[T], func: List[T] => Any): NodeSeq = {
-  //    multiSelectObj(values, initialValue, func, jqueryUiTextStyled)
-  //    
-  //    def styledObjectSelect[T](values: Seq[(T, String)], initialValue: T, func: T => Any)(implicit mf: Manifest[T]): NodeSeq = {
-  //    selectObj(values, Full(initialValue), func, jqueryUiTextStyled)
-  // 
-  //      def styledText(initialText: String, func: String => Any): NodeSeq = {
-  //    text(initialText, func, jqueryUiTextStyled)
 
   def render = {
     "#formTitle" #> Text("Add Part") &
@@ -66,14 +57,6 @@ class AddPart extends StatefulSnippet with DbAccessSnippet with ErrorDisplay wit
    */
   private[this] def processSubmit() = {
 
-    //    val cost: Double = asDouble(costText) match {
-    //      case Full(c) => c
-    //      case _ => -1.0d
-    //    }
-
-    //    var b = List[Int]();
-    //    b = b ::: List(1)
-    //
     //    var vehicles = List[Vehicle]()
     //    vehicles = vehicle ::: List(vehicle)
 
@@ -87,7 +70,7 @@ class AddPart extends StatefulSnippet with DbAccessSnippet with ErrorDisplay wit
       case Nil => {
         //        addNewPart(partName, cost, vehicle.get)
         addNewPart(partName, vehicle.get, modId)
-        S redirectTo "/app/show?entityType=part"
+        S redirectTo "/app/show?entityType=" + "Part"
       }
       case errors => {
         errors foreach (error => displayError(error._1, error._2))

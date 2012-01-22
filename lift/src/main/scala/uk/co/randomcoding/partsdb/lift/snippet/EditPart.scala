@@ -5,7 +5,6 @@ package uk.co.randomcoding.partsdb.lift.snippet
  */
 
 import uk.co.randomcoding.partsdb.core.part.Part
-
 import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
 import uk.co.randomcoding.partsdb.lift.util.snippet.{ ValidationItem, ErrorDisplay, DbAccessSnippet, DataValidation, StyleAttributes }
 import uk.co.randomcoding.partsdb.lift.util.snippet.StyleAttributes._
@@ -18,11 +17,15 @@ import net.liftweb.http.S
 import net.liftweb.util.Helpers._
 import scala.xml.Text
 import net.liftweb.http.StatefulSnippet
+import uk.co.randomcoding.partsdb.core.vehicle.Vehicle
 
 class EditPart extends StatefulSnippet with DbAccessSnippet with ErrorDisplay with DataValidation with Logger {
-  val cameFrom = S.referer openOr "/parts"
-  var name = ""
-  var cost = ""
+  val cameFrom = S.referer openOr "/app/show?entityType=Part"
+  var partName = ""
+  var modId = ""
+
+  var vehicle: Option[Vehicle] = None
+  val allVehicles = getAllVehicles().map(v => (Some(v), v.vehicleName))
 
   def dispatch = {
     case "render" => render
@@ -30,9 +33,11 @@ class EditPart extends StatefulSnippet with DbAccessSnippet with ErrorDisplay wi
 
   def render = {
     "#formTitle" #> Text("Edit Part") &
-      "#nameEntry" #> styledText(name, name = _) &
-      "#costEntry" #> styledText(cost, cost = _) &
+      "#nameEntry" #> styledText(partName, partName = _) &
+      "#vehicleEntry" #> styledObjectSelect[Option[Vehicle]](allVehicles, vehicle, (v: Option[Vehicle]) => vehicle = v) &
+      "#modIdEntry" #> styledText(modId, modId = _) &
       "#submit" #> button("Submit", processSubmit)
+
   }
 
   /**
@@ -57,5 +62,20 @@ class EditPart extends StatefulSnippet with DbAccessSnippet with ErrorDisplay wi
     //              Noop
     //            }
     //          }
+    val validationChecks = Seq(
+      ValidationItem(partName, "partNameError", "Part Name must be entered"),
+      ValidationItem(vehicle, "partVehicleError", "Vehicle is not valid"))
+    //ValidationItem(modId, "modIdError", "MoD ID must be entered"))
+
+    validate(validationChecks: _*) match {
+      case Nil => {
+        addNewPart(partName, vehicle.get, modId)
+        S redirectTo "/app/show?entityType=" + "Part"
+      }
+      case errors => {
+        errors foreach (error => displayError(error._1, error._2))
+        Noop
+      }
+    }
   }
 }
