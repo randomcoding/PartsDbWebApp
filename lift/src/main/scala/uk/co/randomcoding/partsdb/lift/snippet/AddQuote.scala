@@ -30,8 +30,6 @@ class AddQuote extends StatefulSnippet with DbAccessSnippet with ErrorDisplay wi
   var customerName = ""
   val quoteHolder = new QuoteHolder()
 
-  var newQuantity = ""
-
   val parts = getAll[Part]("partId") sortBy (_.partName)
   val partsSelect = (None, "Select Part") :: (parts map ((p: Part) => (Some(p), p.partName)))
 
@@ -48,7 +46,10 @@ class AddQuote extends StatefulSnippet with DbAccessSnippet with ErrorDisplay wi
       "#customerSelect" #> styledObjectSelect[Option[Customer]](customersSelect, None, currentCustomer = _) &
       "#addLineButton" #> styledAjaxButton("Add Line", addLine) &
       "#partName" #> styledAjaxObjectSelect[Option[Part]](partsSelect, quoteHolder.currentPart, updateHolderValue(quoteHolder.currentPart(_))) &
-      "#partQuantity" #> styledAjaxText(newQuantity, newQuantity = _) &
+      "#partQuantity" #> styledAjaxText(quoteHolder.quantity, updateHolderValue(quantity => quoteHolder.quantity(asInt(quantity) match {
+        case Full(q) => q
+        case _ => 0
+      }))) &
       "#basePartCost" #> WiringUI.asText(quoteHolder.currentPartBaseCostDisplay) &
       "#markup" #> styledAjaxText(quoteHolder.markup, updateHolderValue(quoteHolder.markup(_))) &
       "#submit" #> button("Save Quote", processSubmit) &
@@ -76,8 +77,8 @@ class AddQuote extends StatefulSnippet with DbAccessSnippet with ErrorDisplay wi
    */
   private def addLine(): JsCmd = {
     clearErrors
-    (asInt(newQuantity), quoteHolder.currentPart) match {
-      case (Full(q), Some(part)) => quoteHolder.addLineItem(q)
+    (asInt(quoteHolder.quantity), quoteHolder.currentPart) match {
+      case (Full(q), Some(part)) => quoteHolder.addLineItem()
       case (Full(q), None) => displayError("partErrorId", "Please select a Part")
       case (_, Some(part)) => displayError("quantityErrorId", "Please specify a valid quantity")
       case (_, None) => {

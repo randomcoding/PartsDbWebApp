@@ -50,6 +50,8 @@ class QuoteHolder extends Logger {
     case _ => 0.0d
   })
 
+  private val quantityCell = ValueCell[Int](0)
+
   /**
    * Holder for the current line's markup
    */
@@ -139,8 +141,8 @@ class QuoteHolder extends Logger {
    *
    * @param quant The quantity of the current part to use for the line item.
    */
-  def addLineItem(quant: Int): Unit = {
-    (currentPart, quant) match {
+  def addLineItem(): Unit = {
+    (currentPart, quantityCell.get) match {
       case (None, _) => // do nothing
       case (Some(part), q) if q <= 0 => removeItem(part)
       case (Some(part), q) => {
@@ -150,11 +152,11 @@ class QuoteHolder extends Logger {
         lineItemsCell.atomicUpdate(items => items.find(_.partId == part.partId) match {
           case Some(lineItem) => items.map(li => {
             li.partId == part.partId match {
-              case true => updateLineItem(li, quant, partCost, markupValue)
+              case true => updateLineItem(li, q, partCost, markupValue)
               case faslse => li.copy()
             }
           })
-          case _ => items :+ LineItem(items.size, part.partId, quant, partCost, markupValue)
+          case _ => items :+ LineItem(items.size, part.partId, q, partCost, markupValue)
         })
       }
     }
@@ -225,6 +227,10 @@ class QuoteHolder extends Logger {
 
     debug("Manual cost is now: %d".format(markupCell.get.toInt))
   }
+
+  def quantity = "%d".format(quantityCell.get)
+
+  def quantity(q: Int) = quantityCell.set(q)
 
   /**
    * Gets the current line items, sorted by line number

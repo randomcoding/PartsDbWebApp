@@ -28,7 +28,8 @@ class QuoteHolderTest extends FunSuite with ShouldMatchers {
   test("Adding a line item with zero quantity to an empty quote holder generates an empty line items list") {
     val holder = quoteHolder
     holder.currentPart(Some(part1))
-    holder.addLineItem(0)
+    holder.quantity(0)
+    holder.addLineItem()
 
     holder.lineItems should be(Nil)
   }
@@ -36,7 +37,8 @@ class QuoteHolderTest extends FunSuite with ShouldMatchers {
   test("Adding a line item with negative quantity to an empty quote holder generates an empty line items list") {
     val holder = quoteHolder
     holder.currentPart(Some(part1))
-    holder.addLineItem(-100)
+    holder quantity -100
+    holder.addLineItem()
 
     holder.lineItems should be(Nil)
   }
@@ -44,7 +46,8 @@ class QuoteHolderTest extends FunSuite with ShouldMatchers {
   test("Adding single part to holder generates correct line item") {
     val holder = quoteHolder
     holder.currentPart(Some(part1))
-    holder.addLineItem(3)
+    holder quantity 3
+    holder.addLineItem()
 
     holder.lineItems should be(List(LineItem(0, Identifier(123), 3, 10.0, 0.25)))
   }
@@ -52,8 +55,9 @@ class QuoteHolderTest extends FunSuite with ShouldMatchers {
   test("Adding single part to holder and modifying the markup value generates correct line item") {
     val holder = quoteHolder
     holder.currentPart(Some(part1))
-    holder.markup("15")
-    holder.addLineItem(3)
+    holder markup "15"
+    holder quantity 3
+    holder.addLineItem()
 
     holder.lineItems should be(List(LineItem(0, Identifier(123), 3, 10.0, 0.15)))
   }
@@ -61,8 +65,10 @@ class QuoteHolderTest extends FunSuite with ShouldMatchers {
   test("Adding single part to holder and then re-adding the same part with a different quantity and markup values correctly updates the generated line items.") {
     val holder = quoteHolder
     holder.currentPart(Some(part1))
-    holder.addLineItem(3)
-    holder.addLineItem(2)
+    holder quantity 3
+    holder.addLineItem()
+    holder quantity 2
+    holder.addLineItem()
 
     holder.lineItems should be(List(LineItem(0, Identifier(123), 2, 10.0, 0.25)))
   }
@@ -70,9 +76,11 @@ class QuoteHolderTest extends FunSuite with ShouldMatchers {
   test("Adding multiple parts to the holder generates the correct line items") {
     val holder = quoteHolder
     holder.currentPart(Some(part1))
-    holder.addLineItem(3)
+    holder quantity 3
+    holder.addLineItem()
     holder.currentPart(Some(part2))
-    holder.addLineItem(2)
+    holder quantity 2
+    holder.addLineItem()
 
     holder.lineItems should be(List(LineItem(0, Identifier(123), 3, 10.0, 0.25), LineItem(1, Identifier(234), 2, 20.0, 0.25)))
   }
@@ -80,11 +88,14 @@ class QuoteHolderTest extends FunSuite with ShouldMatchers {
   test("Adding multiple parts and then modifying the quantity & markup of one correctly updates the generated lien items") {
     val holder = quoteHolder
     holder.currentPart(Some(part1))
-    holder.addLineItem(3)
+    holder quantity 3
+    holder.addLineItem()
     holder.currentPart(Some(part2))
-    holder.addLineItem(2)
+    holder quantity 2
+    holder.addLineItem()
     holder.currentPart(Some(part1))
-    holder.addLineItem(5)
+    holder quantity 5
+    holder.addLineItem()
 
     holder.lineItems should be(List(LineItem(0, Identifier(123), 5, 10.0, 0.25), LineItem(1, Identifier(234), 2, 20.0, 0.25)))
   }
@@ -92,11 +103,14 @@ class QuoteHolderTest extends FunSuite with ShouldMatchers {
   test("Adding multiple line items, then removing the first generates the correct line item") {
     val holder = quoteHolder
     holder.currentPart(Some(part1))
-    holder.addLineItem(3)
+    holder quantity 3
+    holder.addLineItem()
     holder.currentPart(Some(part2))
-    holder.addLineItem(2)
+    holder quantity 2
+    holder.addLineItem()
     holder.currentPart(Some(part1))
-    holder.addLineItem(0)
+    holder quantity 0
+    holder.addLineItem()
 
     holder.lineItems should be(List(LineItem(0, Identifier(234), 2, 20.0, 0.25)))
   }
@@ -104,12 +118,16 @@ class QuoteHolderTest extends FunSuite with ShouldMatchers {
   test("Adding multiple line items, then removing the first and re-adding it with a different quantity results in the line items being in the correct order") {
     val holder = quoteHolder
     holder.currentPart(Some(part1))
-    holder.addLineItem(3)
+    holder quantity 3
+    holder.addLineItem()
     holder.currentPart(Some(part2))
-    holder.addLineItem(2)
+    holder quantity 2
+    holder.addLineItem()
     holder.currentPart(Some(part1))
-    holder.addLineItem(0)
-    holder.addLineItem(4)
+    holder quantity 0
+    holder.addLineItem()
+    holder quantity 4
+    holder.addLineItem()
 
     holder.lineItems should be(List(LineItem(0, Identifier(234), 2, 20.0, 0.25), LineItem(1, Identifier(123), 4, 10.0, 0.25)))
   }
@@ -123,7 +141,8 @@ class QuoteHolderTest extends FunSuite with ShouldMatchers {
   test("Adding a line item sets the correct total values") {
     val holder = quoteHolder
     holder.currentPart(Some(part1))
-    holder.addLineItem(1)
+    holder quantity 1
+    holder.addLineItem()
 
     val expectedSubTotal = part1.partCost + (part1.partCost * (holder.DEFAULT_MARKUP / 100.0))
     holder.subTotal.get should be("£%.2f".format(expectedSubTotal))
