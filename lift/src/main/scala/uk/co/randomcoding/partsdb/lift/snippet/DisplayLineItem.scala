@@ -26,7 +26,7 @@ object DisplayLineItem extends EntityDisplay with DbAccess {
           <td>{ p.partName }</td>
           <td>{ lineItem.quantity }</td>
           <td>{ "£%.2f".format(lineItem.basePrice) }</td>
-          <td>{ "%.1f".format(lineItem.markup * 100) + "%" }</td>
+          <td>{ "%.0f".format(lineItem.markup * 100) + "%" }</td>
           <td>{ "£" + totalCost(lineItem, p) }</td>
         </tr>
       }

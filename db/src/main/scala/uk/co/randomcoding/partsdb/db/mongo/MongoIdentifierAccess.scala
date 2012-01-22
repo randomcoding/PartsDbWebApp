@@ -11,6 +11,7 @@ import uk.co.randomcoding.partsdb.core.id.{ Identifiable, DefaultIdentifier }
 import uk.co.randomcoding.partsdb.core.part.Part
 import uk.co.randomcoding.partsdb.core.vehicle.Vehicle
 import uk.co.randomcoding.partsdb.core.document.Document
+import uk.co.randomcoding.partsdb.core.transaction.Transaction
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
@@ -69,6 +70,7 @@ trait MongoIdentifierAccess {
       case vehicle: Vehicle if defaultId(vehicle) => vehicle.copy(vehicleId = nextId())
       case part: Part if defaultId(part) => part.copy(partId = nextId())
       case doc: Document if defaultId(doc) => doc.copy(documentId = nextId())
+      case trns: Transaction if defaultId(trns) => trns.copy(transactionId = nextId())
       case _ => item
     }
   }
