@@ -125,21 +125,17 @@ class JsonConversionSimpleObjectTests extends JsonConversionTesting {
   }
 
   test("Can convert Part to JSON") {
-    val part = Part(Identifier(4568), "MyPart", 1.51, None) //(Identifier(4569), "TestVehicle"))
+    val part = Part(Identifier(4568), "TestPart")
     val json: String = part
 
-    json should be("""{"partId":{"id":4568},"partName":"MyPart","partCost":1.51}""")
-    checkJsonConversion[Part](json, Part(Identifier(4568), "MyPart", 1.51, None)) //Vehicle(Identifier(4569), "TestVehicle")))
+    json should be("""{"partId":{"id":4568},"partName":"TestPart"}""")
+    checkJsonConversion[Part](json, Part(Identifier(4568), "TestPart"))
   }
 
   test("Can convert JSON to Part") {
-    val json = """{ "partId" : {"id":4568},
-      "partName" : "MyPart",
-      "partCost" : 1.51, 
-      "vehicle" : {"vehicleId": {"id":4569},"vehicleName" : "TestVehicle"}
-      }"""
+    val json = """{"partId":{"id":4569},"partName":"TestPart"}"""
 
-    checkJsonConversion[Part](json, Part(Identifier(4568), "MyPart", 1.51, Some(Vehicle(Identifier(4569), "TestVehicle"))))
+    checkJsonConversion[Part](json, Part(Identifier(4569), "TestPart"))
   }
 
   test("Can convert Vehicle to JSON") {

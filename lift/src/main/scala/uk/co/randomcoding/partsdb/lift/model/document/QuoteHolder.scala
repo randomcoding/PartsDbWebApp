@@ -11,6 +11,10 @@ import net.liftweb.util.ValueCell
 import net.liftweb.util.Helpers._
 import net.liftweb.common.Full
 import net.liftweb.common.Logger
+import uk.co.randomcoding.partsdb.core.supplier.Supplier
+import uk.co.randomcoding.partsdb.core.id.Identifier
+import uk.co.randomcoding.partsdb.db.DbAccess
+import com.mongodb.casbah.Imports._
 
 /**
  * Encapsulates the data required to generate a `Quote` document.
@@ -24,7 +28,7 @@ import net.liftweb.common.Logger
  * This is used by the [[uk.co.randomcoding.partsdb.lift.snippet.AddQuote]] class as a cell.
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
-class QuoteHolder extends Logger {
+class QuoteHolder(dbAccess: DbAccess) extends Logger {
   /**
    * The default markup rate for new lines
    */
@@ -43,11 +47,37 @@ class QuoteHolder extends Logger {
   private val currentPartCell = ValueCell[Option[Part]](None)
 
   /**
+   * Calculated value of the suppliers of a part
+   */
+  private val suppliersForPart = currentPartCell.lift(_ match {
+    case Some(part) => (None, "--Select Supplier--") :: (suppliedBy(part.partId) map (supplier => (Some(supplier), supplier.supplierName)))
+    case None => List((None, "--Select Part--"))
+  })
+
+  private def suppliedBy(partId: Identifier): List[Supplier] = {
+    dbAccess.getMatching[Supplier](MongoDBObject("suppliedParts.part.partId.id" -> partId.id))
+  }
+
+  /**
+   * The current supplier of the part
+   */
+  private val currentSupplierCell = ValueCell[Option[Supplier]](None)
+
+  /**
    * Calculated value of the base cost of the currently selected part
    */
-  private val currentPartBaseCostCell = currentPartCell.lift(_ match {
-    case Some(part) => part.partCost
-    case _ => 0.0d
+  private val currentPartBaseCostCell = currentPartCell.lift(currentSupplierCell)((_, _) match {
+    case (Some(part), Some(supplier)) => supplier.suppliedParts.get find (_.part.partId == part.partId) match {
+      case Some(suppliedPart) => suppliedPart.suppliedCost
+      case None => {
+        error("No Suppliers found for part: %s".format(part))
+        0.0d
+      }
+    }
+    case (p, s) => {
+      error("Expected a pair(Some(part), Some(Supplier)), but got (%s, %s)".format(p, s))
+      0.0d
+    }
   })
 
   private val quantityCell = ValueCell[Int](0)
@@ -85,19 +115,6 @@ class QuoteHolder extends Logger {
   private val total = preTaxTotal.lift(tax)(_ + _)
 
   // Values for display in the GUI
-
-  /**
-   * Displays the base part cost in £0.00 format.
-   *
-   * Suitable for using as:
-   * {{{
-   * WiringUI.asText(holder.displayedBasePartCost
-   * }}}
-   */
-  val displayedBasePartCost = currentPartCell.lift(_ match {
-    case Some(part) => part.partCost
-    case _ => 0.0d
-  })
 
   /**
    * Display the pre-tax total in £0.00 format.
@@ -231,6 +248,12 @@ class QuoteHolder extends Logger {
   def quantity = "%d".format(quantityCell.get)
 
   def quantity(q: Int) = quantityCell.set(q)
+
+  def suppliers = suppliersForPart.get
+
+  def supplier(supplier: Option[Supplier]) = currentSupplierCell.set(supplier)
+
+  def supplier = currentSupplierCell.get
 
   /**
    * Gets the current line items, sorted by line number

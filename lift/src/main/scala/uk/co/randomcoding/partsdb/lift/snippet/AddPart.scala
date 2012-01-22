@@ -19,16 +19,18 @@ import scala.xml.Text
 import net.liftweb.http.StatefulSnippet
 import uk.co.randomcoding.partsdb.db.mongo.MongoAllOrOneAccess
 import uk.co.randomcoding.partsdb.core.vehicle.Vehicle
+import uk.co.randomcoding.partsdb.core.part.PartCost
 
 class AddPart extends StatefulSnippet with DbAccessSnippet with ErrorDisplay with DataValidation with Logger {
 
   val cameFrom = S.referer openOr "/app/show?entityType=Part"
   var partName = ""
-  var costText = ""
+  var modId = ""
+
+  var partCosts: Option[List[PartCost]] = None
 
   var vehicle: Option[Vehicle] = None
-  val vehicles = getAllVehicles()
-  val vehicleList = vehicles.map(v => (Some(v), v.vehicleName))
+  val allVehicles = getAllVehicles().map(v => (Some(v), v.vehicleName))
 
   def dispatch = {
     case "render" => render
@@ -37,8 +39,8 @@ class AddPart extends StatefulSnippet with DbAccessSnippet with ErrorDisplay wit
   def render = {
     "#formTitle" #> Text("Add Part") &
       "#nameEntry" #> styledText(partName, partName = _) &
-      "#costEntry" #> styledText(costText, costText = _) &
-      "#vehicleEntry" #> styledObjectSelect[Option[Vehicle]](vehicleList, vehicle, (v: Option[Vehicle]) => vehicle = v) &
+      "#vehicleEntry" #> styledObjectSelect[Option[Vehicle]](allVehicles, vehicle, (v: Option[Vehicle]) => vehicle = v) &
+      "#modIdEntry" #> styledText(modId, modId = _) &
       "#submit" #> button("Submit", processSubmit)
   }
 
@@ -50,20 +52,13 @@ class AddPart extends StatefulSnippet with DbAccessSnippet with ErrorDisplay wit
    * On successful addition, this will (possibly display a dialogue and then) redirect to the main customers page
    */
   private[this] def processSubmit() = {
-
-    val cost: Double = asDouble(costText) match {
-      case Full(c) => c
-      case _ => -1.0d
-    }
-
     val validationChecks = Seq(
       ValidationItem(partName, "partNameError", "Part Name must be entered"),
-      ValidationItem(cost, "partCostError", "Part Cost is not valid"),
       ValidationItem(vehicle, "partVehicleError", "Vehicle is not valid"))
 
     validate(validationChecks: _*) match {
       case Nil => {
-        addNewPart(partName, cost, vehicle.get)
+        addNewPart(partName, vehicle.get, modId)
         S redirectTo "/app/show?entityType=Part"
       }
       case errors => {

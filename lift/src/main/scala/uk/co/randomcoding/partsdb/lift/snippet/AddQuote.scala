@@ -4,13 +4,11 @@
 package uk.co.randomcoding.partsdb.lift.snippet
 
 import scala.xml.Text
-
 import uk.co.randomcoding.partsdb.core.customer.Customer
 import uk.co.randomcoding.partsdb.core.part.Part
 import uk.co.randomcoding.partsdb.lift.model.document.QuoteHolder
-import uk.co.randomcoding.partsdb.lift.util.TransformHelpers.{ styledObjectSelect, styledAjaxText, styledAjaxObjectSelect, styledAjaxButton }
+import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
 import uk.co.randomcoding.partsdb.lift.util.snippet.{ ErrorDisplay, DbAccessSnippet, DataValidation }
-
 import net.liftweb.common.StringOrNodeSeq.strTo
 import net.liftweb.common.{ Logger, Full }
 import net.liftweb.http.SHtml._
@@ -20,7 +18,8 @@ import net.liftweb.http.js.jquery.JqWiringSupport
 import net.liftweb.http.js.JsCmd
 import net.liftweb.http.{ WiringUI, StatefulSnippet, S }
 import net.liftweb.util.Helpers._
-import net.liftweb.util.ValueCell.vcToT
+import net.liftweb.util.ValueCell._
+import uk.co.randomcoding.partsdb.core.supplier.Supplier
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
@@ -28,7 +27,7 @@ import net.liftweb.util.ValueCell.vcToT
 class AddQuote extends StatefulSnippet with DbAccessSnippet with ErrorDisplay with DataValidation with Logger {
 
   var customerName = ""
-  val quoteHolder = new QuoteHolder()
+  val quoteHolder = new QuoteHolder(this)
 
   val parts = getAll[Part]("partId") sortBy (_.partName)
   val partsSelect = (None, "Select Part") :: (parts map ((p: Part) => (Some(p), p.partName)))
@@ -45,7 +44,11 @@ class AddQuote extends StatefulSnippet with DbAccessSnippet with ErrorDisplay wi
     "#formTitle" #> Text("Add Quote") &
       "#customerSelect" #> styledObjectSelect[Option[Customer]](customersSelect, None, currentCustomer = _) &
       "#addLineButton" #> styledAjaxButton("Add Line", addLine) &
-      "#partName" #> styledAjaxObjectSelect[Option[Part]](partsSelect, quoteHolder.currentPart, updateHolderValue(quoteHolder.currentPart(_))) &
+      "#partName" #> styledAjaxObjectSelect[Option[Part]](partsSelect, quoteHolder.currentPart, updateHolderValue(part => {
+        quoteHolder currentPart part
+        // update the suppliers
+      })) &
+      "#supplierName" #> styledAjaxObjectSelect[Option[Supplier]](quoteHolder.suppliers, quoteHolder.supplier, updateHolderValue(quoteHolder.supplier(_))) &
       "#partQuantity" #> styledAjaxText(quoteHolder.quantity, updateHolderValue(quantity => quoteHolder.quantity(asInt(quantity) match {
         case Full(q) => q
         case _ => 0

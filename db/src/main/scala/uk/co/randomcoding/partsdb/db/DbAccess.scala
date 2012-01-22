@@ -67,10 +67,9 @@ trait DbAccess extends MongoIdentifierAccess with MongoUpdateAccess with MongoAl
     }
   }
 
-  def addNewPart(partName: String, cost: Double, vehicle: Vehicle): Part = {
-    // check parts are in db or not and assign/get their Ids 
-    // for now assume parts are new and assign them ids
-    val part = assignId(Part(-1L, partName, cost, Some(vehicle))).asInstanceOf[Part]
+  def addNewPart(partName: String, vehicles: Vehicle, modId: String): Part = {
+    // TODO check part is in db or not, and assign/get the id. For now assume part is new and assign the id
+    val part = assignId(Part(-1L, partName, Some(vehicles), Some(modId))).asInstanceOf[Part]
     debug("Updating database with part %s".format(part))
     add(part) match {
       case true => {
@@ -84,8 +83,9 @@ trait DbAccess extends MongoIdentifierAccess with MongoUpdateAccess with MongoAl
     }
   }
 
-  def editPart(partId: Identifier, partName: String, cost: Double, vehicle: Vehicle): Part = {
-    val part = Part(partId, partName, cost, Some(vehicle))
+  def editPart(partId: Identifier, partName: String, vehicles: Vehicle, modId: String): Part = {
+    // TODO get part from db for editing, add error checking if part is not in the db
+    val part = Part(partId, partName, Some(vehicles), Some(modId))
     debug("Updating database with part %s".format(part))
     modify(part) match {
       case true => {
@@ -100,8 +100,7 @@ trait DbAccess extends MongoIdentifierAccess with MongoUpdateAccess with MongoAl
   }
 
   def addNewVehicle(vehicleName: String): Vehicle = {
-    // check vehicles are in db or not and assign/get their Ids 
-    // for now assume vehicles are new and assign them ids
+    // TODO check vehicle is in db or not, and assign/get the id. For now assume vehicle is new and assign the id
     val vehicle = assignId(Vehicle(-1L, vehicleName)).asInstanceOf[Vehicle]
     debug("Updating database with vehicle %s".format(vehicle))
     add(vehicle) match {
@@ -111,6 +110,22 @@ trait DbAccess extends MongoIdentifierAccess with MongoUpdateAccess with MongoAl
       }
       case false => {
         error("Failed to add vehicle %s".format(vehicle))
+        DefaultVehicle
+      }
+    }
+  }
+
+  def editVehicle(vehicleId: Identifier, vehicleName: String): Vehicle = {
+    // TODO get vehicle from db for editing, add error checking if vehicle is not in the db
+    val vehicle = assignId(Vehicle(vehicleId, vehicleName)).asInstanceOf[Vehicle]
+    debug("Updating database with vehicle %s".format(vehicle))
+    add(vehicle) match {
+      case true => {
+        debug("Edited vehicle %s".format(vehicle))
+        vehicle
+      }
+      case false => {
+        error("Failed to edit vehicle %s".format(vehicle))
         DefaultVehicle
       }
     }

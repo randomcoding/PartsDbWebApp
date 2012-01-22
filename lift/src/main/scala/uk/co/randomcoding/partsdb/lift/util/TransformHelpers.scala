@@ -181,5 +181,9 @@ object TransformHelpers {
     ajaxButton(Text(buttonText), func, styledAttributes(linkAttrs): _*)
   }
 
+  def styledMultiSelectObj[T](values: Seq[(T, String)], initialValue: Seq[T], func: List[T] => Any, linkAttrs: List[ElemAttr] = Nil): NodeSeq = {
+    multiSelectObj(values, initialValue, func, styledAttributes(linkAttrs): _*)
+  }
+
   private def styledAttributes(attrs: List[ElemAttr]) = jqueryUiTextStyled :: attrs
 }
