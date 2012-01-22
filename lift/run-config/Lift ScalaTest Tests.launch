@@ -2,12 +2,12 @@
 <launchConfiguration type="scala.application">
 <stringAttribute key="bad_container_name" value="/parts-db-app-li/run-config"/>
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
-<listEntry value="/parts-db-app-db"/>
+<listEntry value="/parts-db-app-lift"/>
 </listAttribute>
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
 <listEntry value="4"/>
 </listAttribute>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="org.scalatest.tools.Runner"/>
-<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-p &quot;./.target/scala-2.9.1/test-classes&quot; -g -o"/>
-<stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="parts-db-app-db"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-p &quot;./target/scala-2.9.1/test-classes&quot; -g -o"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="parts-db-app-lift"/>
 </launchConfiguration>
