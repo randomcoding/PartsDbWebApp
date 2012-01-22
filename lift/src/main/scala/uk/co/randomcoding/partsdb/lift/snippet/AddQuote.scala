@@ -52,7 +52,7 @@ class AddQuote extends StatefulSnippet with DbAccessSnippet with ErrorDisplay wi
       "#basePartCost" #> WiringUI.asText(quoteHolder.currentPartBaseCostDisplay) &
       "#markup" #> styledAjaxText(quoteHolder.markup, updateHolderValue(quoteHolder.markup(_))) &
       "#submit" #> button("Save Quote", processSubmit) &
-      "#currentLineItems" #> DisplayLineItem.displayTable(quoteHolder.quoteItems) &
+      "#currentLineItems" #> DisplayLineItem.displayTable(quoteHolder.lineItems) &
       "#subTotal" #> WiringUI.asText(quoteHolder.subTotal) &
       "#vatAmount" #> WiringUI.asText(quoteHolder.vatAmount) &
       "#totalCost" #> WiringUI.asText(quoteHolder.totalCost, JqWiringSupport.fade)
@@ -77,7 +77,7 @@ class AddQuote extends StatefulSnippet with DbAccessSnippet with ErrorDisplay wi
   private def addLine(): JsCmd = {
     clearErrors
     (asInt(newQuantity), quoteHolder.currentPart) match {
-      case (Full(q), Some(part)) => quoteHolder.setPartQuantity(part, q)
+      case (Full(q), Some(part)) => quoteHolder.addLineItem(q)
       case (Full(q), None) => displayError("partErrorId", "Please select a Part")
       case (_, Some(part)) => displayError("quantityErrorId", "Please specify a valid quantity")
       case (_, None) => {
@@ -90,7 +90,7 @@ class AddQuote extends StatefulSnippet with DbAccessSnippet with ErrorDisplay wi
   }
 
   private def refreshLineItemDisplay(): JsCmd = {
-    SetHtml("currentLineItems", DisplayLineItem.displayTable(quoteHolder.quoteItems))
+    SetHtml("currentLineItems", DisplayLineItem.displayTable(quoteHolder.lineItems))
   }
 
   private[this] def processSubmit() = {

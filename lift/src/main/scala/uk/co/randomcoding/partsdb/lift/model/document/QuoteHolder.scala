@@ -15,6 +15,12 @@ import net.liftweb.common.Logger
 /**
  * Encapsulates the data required to generate a `Quote` document.
  *
+ * To add/update line items set the current part (with [[uk.co.randomcoding.partsdb.lift.model.document.QuoteHolder#currentPart(Option[Part])]]
+ * and then call [[uk.co.randomcoding.partsdb.lift.model.document.QuoteHolder#setPartQuantity(Int)]].
+ *
+ * To modify the markup used for the line item, call [[uk.co.randomcoding.partsdb.lift.model.document.QuoteHolder#markup(String)]] before
+ * [[uk.co.randomcoding.partsdb.lift.model.document.QuoteHolder#updateCurrent(Int)]]
+ *
  * This is used by the [[uk.co.randomcoding.partsdb.lift.snippet.AddQuote]] class as a cell.
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
@@ -27,7 +33,7 @@ class QuoteHolder extends Logger {
   /**
    * Holder for the current line items
    */
-  val lineItems = ValueCell[List[LineItem]](Nil)
+  private val lineItemsCell = ValueCell[List[LineItem]](Nil)
 
   // Cells to maintain values for current new line values
 
@@ -59,7 +65,7 @@ class QuoteHolder extends Logger {
   /**
    * The total computed base cost of the line items, before tax
    */
-  private val preTaxTotal = lineItems.lift(_.foldLeft(0.0d)(_ + _.lineCost))
+  private val preTaxTotal = lineItemsCell.lift(_.foldLeft(0.0d)(_ + _.lineCost))
 
   /**
    * The tax rate. Set to 0.2 (20%)
@@ -92,7 +98,7 @@ class QuoteHolder extends Logger {
   })
 
   /**
-   * Display the pre tax total in £0.00 format.
+   * Display the pre-tax total in £0.00 format.
    *
    * Suitable for use as:
    * {{{
@@ -122,45 +128,70 @@ class QuoteHolder extends Logger {
   val totalCost = total.lift("£%.2f".format(_))
 
   /**
-   * Add a new [[uk.co.randomcoding.partsdb.core.document.LineItem]] to the quote
+   * Add a new [[uk.co.randomcoding.partsdb.core.document.LineItem]] to the quote.
+   *
+   * This gets the part from [[uk.co.randomcoding.partsdb.lift.model.document.QuoteHolder#currentPart()]], the markup from [[uk.co.randomcoding.partsdb.lift.model.document.QuoteHolder#markupCell]]
+   * and the part cost from [[uk.co.randomcoding.partsdb.lift.model.document.QuoteHolder#currentPartCostCell]]
+   *
+   * If `0` is used for the quantity then the line item with the same part id as the current part will be removed.
+   *
+   * If a line item has already been added for the current part, then the quantity and markup values are updated to the currently set values.
+   *
+   * @param quant The quantity of the current part to use for the line item.
    */
-  def setPartQuantity(part: Part, quant: Int): Unit = {
-    if (quant <= 0) removeItem(part) else {
-      val partCost = currentPartBaseCostCell.get
-      val markupValue = markupCell.get.toDouble / 100.0
-      debug("Using cost: %.2f".format(partCost))
-      lineItems.atomicUpdate(items => items.find(_.partId == part.partId) match {
-        case Some(lineItem) => items.map(li => li.copy(
-          quantity = if (li.partId == part.partId) quant else li.quantity,
-          basePrice = if (li.partId == part.partId) partCost else li.basePrice,
-          markup = if (li.partId == part.partId) markupValue else li.markup))
-        case _ => items :+ {
-          val item = LineItem(items.size, part.partId, quant, partCost, markupValue)
-          debug("Created: %s".format(item))
-          item
-        }
-      })
+  def addLineItem(quant: Int): Unit = {
+    (currentPart, quant) match {
+      case (None, _) => // do nothing
+      case (Some(part), q) if q <= 0 => removeItem(part)
+      case (Some(part), q) => {
+        val partCost = currentPartBaseCostCell.get
+        val markupValue = markupCell.get.toDouble / 100.0
+
+        lineItemsCell.atomicUpdate(items => items.find(_.partId == part.partId) match {
+          case Some(lineItem) => items.map(li => li.copy(
+            quantity = if (li.partId == part.partId) quant else li.quantity,
+            basePrice = if (li.partId == part.partId) partCost else li.basePrice,
+            markup = if (li.partId == part.partId) markupValue else li.markup))
+          case _ => items :+ {
+            val item = LineItem(items.size, part.partId, quant, partCost, markupValue)
+            debug("Created: %s".format(item))
+            item
+          }
+        })
+      }
     }
+    /*currentPart match {
+      case Some(part) => {
+        if (quant <= 0) removeItem(part) else {
+          val partCost = currentPartBaseCostCell.get
+          val markupValue = markupCell.get.toDouble / 100.0
+
+          lineItemsCell.atomicUpdate(items => items.find(_.partId == part.partId) match {
+            case Some(lineItem) => items.map(li => li.copy(
+              quantity = if (li.partId == part.partId) quant else li.quantity,
+              basePrice = if (li.partId == part.partId) partCost else li.basePrice,
+              markup = if (li.partId == part.partId) markupValue else li.markup))
+            case _ => items :+ {
+              val item = LineItem(items.size, part.partId, quant, partCost, markupValue)
+              debug("Created: %s".format(item))
+              item
+            }
+          })
+        }
+      }
+      case _ => // no part so do nothing
+    }*/
+
   }
 
-  /**
-   * Build the Quote document represented by the
-   */
-  def buildQuote = Document(DefaultIdentifier, DocumentType.Quote, lineItems.get, DefaultIdentifier)
-
-  /**
-   * Gets the current line items, sorted by line number
-   */
-  def quoteItems = lineItems.get.sortBy(_.lineNumber)
-
-  def zero = BigDecimal(0)
+  private def zero = BigDecimal(0)
 
   private def removeItem(part: Part) = {
-    lineItems.atomicUpdate(_.filterNot(_.partId == part.partId))
+    lineItemsCell.atomicUpdate(_.filterNot(_.partId == part.partId))
     renumberLines
   }
 
-  private def renumberLines = lineItems.atomicUpdate(items => {
+  private def renumberLines = lineItemsCell.atomicUpdate(items => {
     var index = 0
     items sortBy (_.lineNumber) map (item => {
       val newItem = item.copy(lineNumber = index)
@@ -198,7 +229,7 @@ class QuoteHolder extends Logger {
   /**
    * Get the value of the manual cost from the holder as a double with 2 decimal places precision
    *
-   * @return A String in 0.00 format
+   * @return The current markup value as a string.
    */
   def markup: String = "%d".format(markupCell.get.toInt)
 
@@ -210,10 +241,15 @@ class QuoteHolder extends Logger {
   def markup(markupString: String) = {
     debug("Setting markup to: %s".format(markupString))
     markupCell.set(asInt(markupString) match {
-      case Full(d) => d
+      case Full(value) => value
       case _ => DEFAULT_MARKUP
     })
 
     debug("Manual cost is now: %d".format(markupCell.get.toInt))
   }
+
+  /**
+   * Gets the current line items, sorted by line number
+   */
+  def lineItems = lineItemsCell.get.sortBy(_.lineNumber)
 }
