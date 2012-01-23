@@ -32,10 +32,6 @@ class AddPart extends StatefulSnippet with DbAccessSnippet with ErrorDisplay wit
   var vehicle: Option[Vehicle] = None
   val allVehicles = getAllVehicles().map(v => (Some(v), v.vehicleName))
 
-  //       "#vehicleEntry" #> styledObjectSelect[Option[Vehicle]](allVehicles, vehicle, (v: Option[Vehicle]) => vehicle = v) & 
-  //    var vehicles: Option[List[Vehicle]] = None
-  //    val allVehicles = getAllVehicles.map(v => (Some(v), v.vehicleName))
-
   def dispatch = {
     case "render" => render
   }
@@ -56,21 +52,14 @@ class AddPart extends StatefulSnippet with DbAccessSnippet with ErrorDisplay wit
    * On successful addition, this will (possibly display a dialogue and then) redirect to the main customers page
    */
   private[this] def processSubmit() = {
-
-    //    var vehicles = List[Vehicle]()
-    //    vehicles = vehicle ::: List(vehicle)
-
     val validationChecks = Seq(
       ValidationItem(partName, "partNameError", "Part Name must be entered"),
-      //      ValidationItem(partCosts, "partCostError", "Part Cost is not valid"),
       ValidationItem(vehicle, "partVehicleError", "Vehicle is not valid"))
-    // ValidationItem(modId, "modIdError", "MoD ID must be entered"))
 
     validate(validationChecks: _*) match {
       case Nil => {
-        //        addNewPart(partName, cost, vehicle.get)
         addNewPart(partName, vehicle.get, modId)
-        S redirectTo "/app/show?entityType=" + "Part"
+        S redirectTo "/app/show?entityType=Part"
       }
       case errors => {
         errors foreach (error => displayError(error._1, error._2))

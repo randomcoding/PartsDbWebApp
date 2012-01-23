@@ -25,7 +25,8 @@ logger("java", WARN)
 logger("net", WARN)
 
 logger("uk", WARN)
-logger("uk.co.randomcoding.partsdb.lift", DEBUG)
-logger("uk.co.randomcoding.partsdb.lift.snippet", DEBUG)
+logger("uk.co.randomcoding.partsdb", INFO)
+//logger("uk.co.randomcoding.partsdb.lift", DEBUG)
+//logger("uk.co.randomcoding.partsdb.lift.snippet", DEBUG)
 
 root(WARN, ["STDOUT"])

@@ -56,7 +56,7 @@ class AddUser extends StatefulSnippet with ErrorDisplay with DataValidation with
     validate match {
       case Nil => addUser
       case errors => {
-        errors foreach (displayError _)
+        displayError(errors: _*)
         Noop
       }
     }

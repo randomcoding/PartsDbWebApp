@@ -19,7 +19,7 @@ import java.util.Date
  * @author Jane Rowe
  *
  */
-case class PartCost(val partCostId: Identifier, part: Part, val suppliedCost: Double, val lastSuppliedDate: Date) extends Identifiable {
+case class PartCost(val partCostId: Identifier, val part: Part, val suppliedCost: Double, val lastSuppliedDate: Date) extends Identifiable {
   override val identifierFieldName = "partCostId"
 }
 
