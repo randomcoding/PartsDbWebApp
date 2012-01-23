@@ -46,9 +46,9 @@ object ProjectBuild extends Build {
 	//val commonDeps = loggingDeps ++ testDeps
 	val commonDeps = testDeps
 
-	val coreProjectDeps = commonDeps
+	val coreProjectDeps = commonDeps ++ Seq(liftMongoRecord)
 
-	val dbProjectDeps = Seq(liftJson, liftCommon) ++ commonDeps ++ mongoDeps
+	val dbProjectDeps = Seq(liftJson, liftCommon, liftMongoRecord) ++ commonDeps ++ mongoDeps
 
 	val liftProjectDeps = commonDeps ++ liftDeps ++ jettyDeps
 }
