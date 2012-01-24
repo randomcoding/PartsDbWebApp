@@ -1,7 +1,6 @@
 import sbt._
 import Keys._
-//import de.johoop.jacoco4sbt._
-//import JacocoPlugin._
+import com.typesafe.sbteclipse.core.EclipsePlugin._
 
 /**
  * Common build settings for projects.
@@ -18,6 +17,7 @@ object BuildSettings {
     version      := buildVersion,
     scalaVersion := buildScalaVersion,
     shellPrompt  := ShellPrompt.buildShellPrompt,
-    scalacOptions := Seq("-deprecation", "-unchecked")
+    scalacOptions := Seq("-deprecation", "-unchecked"),
+    EclipseKeys.createSrc := EclipseCreateSrc.Default + EclipseCreateSrc.Resource
   )
 }
