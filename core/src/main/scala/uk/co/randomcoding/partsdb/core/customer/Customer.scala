@@ -15,20 +15,12 @@ import net.liftweb.mongodb.record.field.ObjectIdRefField
 import net.liftweb.record.field.StringField
 
 /**
- * Customer information, including billing and delivery addresses and payment terms
- *
- * @constructor
- * @param customerId The unique id of this customer
- * @param customerName The short (friendly) name of the customer
- * @param billingAddress The [[uk.co.randomcoding.partsdb.core.address.AddressId]] of the address to send billing notices to
- * @param deliveryAddresses The [[uk.co.randomcoding.partsdb.core.address.AddressId]]s of the addresses to which goods can be delivered for this customer
- * @param terms The usual [[uk.co.randomcoding.partsdb.core.terms.PaymentTerms]] for this customer
- * @param contactDetails The contact name(s) and number(s) for this customer
+ * Customer information, including the main business addresses, payment terms and contact details
  *
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  *
  */
-class Customer extends MongoRecord[Customer] with ObjectIdPk[Customer] {
+class Customer private () extends MongoRecord[Customer] with ObjectIdPk[Customer] {
   def meta = Customer
 
   object customerName extends StringField(this, 50)

@@ -3,23 +3,20 @@
  */
 package uk.co.randomcoding.partsdb.core.vehicle
 
-import uk.co.randomcoding.partsdb.core.id.{ Identifier, Identifiable }
-import uk.co.randomcoding.partsdb.core.id.DefaultIdentifier
-import net.liftweb.mongodb.record.MongoRecord
-import net.liftweb.mongodb.record.MongoMetaRecord
+import net.liftweb.mongodb.record.{ MongoRecord, MongoMetaRecord }
 import net.liftweb.mongodb.record.field.ObjectIdPk
 import net.liftweb.record.field.StringField
 
 /**
- * @constructor Create a new vehicle object
- * @param vehicleId The [[uk.co.randomcoding.partsdb.core.id.Identifier]] of this vehicle. This is used for internal referencing of vehicle objects from other entities.
- * @param vehicleName The short (friendly) name of this vehicle
+ * A Vehicle.
+ *
+ * Currently very simple, with just a name. Required for the [[uk.co.randomcoding.partsdb.core.part.Part]] class
  *
  * @author Jane Rowe
  * @author RandomCoder - Changed to MongoRecord class
  *
  */
-class Vehicle extends MongoRecord[Vehicle] with ObjectIdPk[Vehicle] {
+class Vehicle private () extends MongoRecord[Vehicle] with ObjectIdPk[Vehicle] {
   def meta = Vehicle
 
   object vehicleName extends StringField(this, 50)
@@ -27,8 +24,3 @@ class Vehicle extends MongoRecord[Vehicle] with ObjectIdPk[Vehicle] {
 
 object Vehicle extends Vehicle with MongoMetaRecord[Vehicle]
 
-/*case class Vehicle(val vehicleId: Identifier, val vehicleName: String) extends Identifiable {
-  override val identifierFieldName = "vehicleId"
-}
-
-object DefaultVehicle extends Vehicle(DefaultIdentifier, "Default Vehicle")*/

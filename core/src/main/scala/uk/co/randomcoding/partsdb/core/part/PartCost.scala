@@ -8,16 +8,14 @@ import net.liftweb.mongodb.record.{ MongoRecord, MongoMetaRecord }
 import net.liftweb.record.field.DoubleField
 
 /**
- * @constructor Create a new PartCost object
- * @param partCostid The [[uk.co.randomcoding.partsdb.core.id.Identifier]] of this part cost. This is used for internal referencing of part collection objects from other entities.
- * @param part The [[uk.co.randomcoding.partsdb.core.part.Part]] of this part cost.
- * @param supplier The [[uk.co.randomcoding.partsdb.core.supplier.Supplier]] of this part cost.
- * @param quoteDate The date the quote for this part was made.
+ * Provides a mapping for [[uk.co.randomcoding.partsdb.core.supplier.Supplier]]s to the
+ * [[uk.co.randomcoding.partsdb.core.part.Part]]s they supply, the cost of the [[uk.co.randomcoding.partsdb.core.part.Part]]
+ * and the last time it was purchased from them.
  *
  * @author Jane Rowe
  * @author RandomCoder - Changed to MongoRecord class
  */
-class PartCost extends MongoRecord[PartCost] with ObjectIdPk[PartCost] {
+class PartCost private () extends MongoRecord[PartCost] with ObjectIdPk[PartCost] {
   def meta = PartCost
 
   object part extends ObjectIdRefField(this, Part)
@@ -26,8 +24,3 @@ class PartCost extends MongoRecord[PartCost] with ObjectIdPk[PartCost] {
 }
 
 object PartCost extends PartCost with MongoMetaRecord[PartCost]
-/*case class PartCost(val partCostId: Identifier, val part: Part, val suppliedCost: Double, val lastSuppliedDate: Date) extends Identifiable {
-  override val identifierFieldName = "partCostId"
-}
-
-object DefaultPartCost extends PartCost(DefaultIdentifier, DefaultPart, 0.00, java.util.Calendar.getInstance().getTime())*/

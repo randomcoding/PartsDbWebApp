@@ -8,11 +8,7 @@ import net.liftweb.mongodb.record.{ MongoRecord, MongoMetaRecord }
 import net.liftweb.record.field.StringField
 
 /**
- * @constructor Create a new address object
- * @param id The [[uk.co.randomcoding.partsdb.core.address.AddressId]] of this address. This is used for internal referencing of address objects from other entities.
- * @param shortName The short (friendly) name of this Address
- * @param addressText The plain text version of the address
- * @param country The country this address is in
+ * A simple representation of an address.
  *
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  *
@@ -26,8 +22,3 @@ class Address private () extends MongoRecord[Address] with ObjectIdPk[Address] {
 }
 
 object Address extends Address with MongoMetaRecord[Address]
-/*case class Address(val addressId: Identifier, val shortName: String, val addressText: String, val country: String) extends Identifiable {
-  override val identifierFieldName = "addressId"
-}
-
-object NullAddress extends Address(Identifier(-1), "", "", "")*/ 

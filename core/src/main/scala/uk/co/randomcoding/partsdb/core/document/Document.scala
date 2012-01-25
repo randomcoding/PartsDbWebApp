@@ -3,33 +3,46 @@
  */
 package uk.co.randomcoding.partsdb.core.document
 
-import uk.co.randomcoding.partsdb.core.id.{ Identifier, Identifiable }
-import uk.co.randomcoding.partsdb.core.transaction.Transaction
-import net.liftweb.mongodb.record.MongoRecord
-import net.liftweb.mongodb.record.MongoMetaRecord
+import net.liftweb.mongodb.record.{ MongoRecord, MongoMetaRecord }
 import net.liftweb.mongodb.record.field._
-import net.liftweb.record.field.EnumField
+import net.liftweb.record.field._
 
 /**
- * A document is a entity that is stored in the database, and has a document id.
- * It is likely that a document will also be [[uk.co.randomcoding.partsdb.core.document.Printable]] in the future
+ * `Document`s are the basic objects that make up a [[uk.co.randomcoding.partsdb.core.transaction.Transaction]].
  *
- * Documents contain line items and address details.
+ * Documents basically contain a number of [[uk.co.randomcoding.partsdb.core.document.LineItem]]s and a
+ * [[uk.co.randomcoding.partsdb.core.document.DocumentType]].
  *
- * @constructor Create a new document instance
- * @param documentId The [[uk.co.randomcoding.partsdb.core.id.Identifier]] of this document.
- * @param documentType The type of the document. This should be one of the values from [[uk.co.randomcoding.partsdb.core.document.DocumentId]]
- * @param lineItems The [[uk.co.randomcoding.partsdb.core.document.LineItem]]s that are in this document
- * @param transactionId The identifier of the [[uk.co.randomcoding.partsdb.core.transaction.Transaction]] that contains this document
+ * `Document`s can additionally be editable. This indicates that the `Document` has not yet been completed,
+ * which in turn indicates the current stage of the [[uk.co.randomcoding.partsdb.core.transaction.Transaction]].
  *
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
-class Document extends MongoRecord[Document] with ObjectIdPk[Document] {
+class Document private () extends MongoRecord[Document] with ObjectIdPk[Document] {
   def meta = Document
 
+  /**
+   * The type of document
+   */
   object documentType extends EnumField(this, DocumentType)
+
+  /**
+   * The line items that are in this document
+   */
   object lineItems extends MongoCaseClassListField[Document, LineItem](this)
-  object transactionId extends ObjectIdRefField(this, Transaction)
+
+  //object transaction extends ObjectIdRefField(this, Transaction)
+
+  /**
+   * Is this `Document` editable?
+   */
+  object editable extends BooleanField(this)
+
+  /**
+   * The printable identifier for this document.
+   * Comprises the document type string plus the ObjectId as a string
+   */
+  lazy val documentNumber = "%s-%s".format(documentType.get, id.asString)
 }
 
 object Document extends Document with MongoMetaRecord[Document]
