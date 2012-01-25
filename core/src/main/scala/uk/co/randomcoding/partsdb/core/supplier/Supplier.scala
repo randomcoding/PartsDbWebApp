@@ -6,6 +6,9 @@ package uk.co.randomcoding.partsdb.core.supplier
 import uk.co.randomcoding.partsdb.core.contact.ContactDetails
 import uk.co.randomcoding.partsdb.core.id.{ Identifier, Identifiable, DefaultIdentifier }
 import uk.co.randomcoding.partsdb.core.part.PartCost
+import net.liftweb.mongodb.record.{ MongoRecord, MongoMetaRecord }
+import net.liftweb.mongodb.record.field._
+import net.liftweb.record.field._
 
 /**
  * Supplier information including contact details and a free form notes
@@ -17,10 +20,21 @@ import uk.co.randomcoding.partsdb.core.part.PartCost
  * @param notes Notes for this supplier
  *
  * @author Jane Rowe
+ * @author RandomCoder - Changed to MongoRecord class
  *
  */
-case class Supplier(val supplierId: Identifier, val supplierName: String, val contactDetails: ContactDetails, suppliedParts: Option[List[PartCost]] = None, val notes: Option[String] = None) extends Identifiable {
+class Supplier extends MongoRecord[Supplier] with ObjectIdPk[Supplier] {
+  def meta = Supplier
+
+  object supplierName extends StringField(this, 50)
+  object contactDetails extends MongoCaseClassField[Supplier, ContactDetails](this)
+  object suppliedParts extends ObjectIdRefListField(this, PartCost)
+  object notes extends OptionalStringField(this, 500)
+}
+
+object Supplier extends Supplier with MongoMetaRecord[Supplier]
+/*case class Supplier(val supplierId: Identifier, val supplierName: String, val contactDetails: ContactDetails, suppliedParts: Option[List[PartCost]] = None, val notes: Option[String] = None) extends Identifiable {
   override val identifierFieldName = "supplierId"
 }
 
-object DefaultSupplier extends Supplier(DefaultIdentifier, "No Supplier", ContactDetails("No Details"))
+object DefaultSupplier extends Supplier(DefaultIdentifier, "No Supplier", ContactDetails("No Details"))*/ 

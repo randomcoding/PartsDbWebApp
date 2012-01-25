@@ -9,6 +9,8 @@ package uk.co.randomcoding.partsdb.core.id
  * This is used to get the object's identifier to ensure that it is unique in the database and that the correct item is accessed each time.
  *
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
+ *
+ * @deprecated("Use of the Lift Mongo Record API renders this unnecessary")
  */
 trait Identifiable {
   /**

@@ -3,7 +3,15 @@
  */
 package uk.co.randomcoding.partsdb.core.transaction
 
-import uk.co.randomcoding.partsdb.core.id.{Identifier, Identifiable}
+import uk.co.randomcoding.partsdb.core._
+import id.{ Identifier, Identifiable }
+import customer.Customer
+import document.Document
+import net.liftweb.mongodb.record.field.ObjectIdPk
+import net.liftweb.mongodb.record.MongoRecord
+import net.liftweb.mongodb.record.field.ObjectIdRefListField
+import net.liftweb.mongodb.record.field.ObjectIdRefField
+import net.liftweb.mongodb.record.MongoMetaRecord
 
 /**
  * Encapsulates all the data for a transaction between the company and a customer.
@@ -15,6 +23,15 @@ import uk.co.randomcoding.partsdb.core.id.{Identifier, Identifiable}
  *
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
-case class Transaction(transactionId: Identifier, customerId: Identifier, documents: Option[Set[Identifier]] = None) extends Identifiable {
-  val identifierFieldName = "transactionId"
+class Transaction extends MongoRecord[Transaction] with ObjectIdPk[Transaction] {
+  def meta = Transaction
+
+  object customer extends ObjectIdRefField(this, Customer)
+  object documents extends ObjectIdRefListField(this, Document)
 }
+
+object Transaction extends Transaction with MongoMetaRecord[Transaction]
+
+/*case class Transaction(transactionId: Identifier, customerId: Identifier, documents: Option[Set[Identifier]] = None) extends Identifiable {
+  val identifierFieldName = "transactionId"
+}*/

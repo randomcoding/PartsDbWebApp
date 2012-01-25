@@ -17,6 +17,8 @@ import uk.co.randomcoding.partsdb.core.document._
  * @param identifierType A string denoting the type of identifier this is. Can be used by case classes to indicate sub types of identifiers. This defaults to an empty string for non document type objects.
  *
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
+ *
+ * @deprecated("Use of the Lift Mongo Record API renders this unnecessary")
  */
 case class Identifier(id: Long)
 

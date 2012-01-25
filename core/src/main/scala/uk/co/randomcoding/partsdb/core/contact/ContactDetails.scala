@@ -3,7 +3,9 @@
  */
 package uk.co.randomcoding.partsdb.core.contact
 
-import uk.co.randomcoding.partsdb.core.id.Identifier
+import net.liftweb.mongodb.record.field._
+import net.liftweb.mongodb.record.{ MongoRecord, MongoMetaRecord }
+import net.liftweb.record.field._
 
 /**
  * Some contact details for a customer or supplier.

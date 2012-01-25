@@ -37,11 +37,16 @@ object AddressParser {
    *
    * @return An Option[[[uk.co.randomcoding.partsdb.core.address.Address]]] if the input string matches
    */
-  def unapply(addressString: String): Option[Address] = {
+  def unapply(nameAndAddress: (String, String)): Option[Address] = {
+    val addressString = nameAndAddress._2
     val lines = addressString.split("""[,\.]+""") map (_ trim)
+    val shortName = nameAndAddress._1.trim match {
+      case "" => lines(0)
+      case s => s
+    }
 
     identifyCountry(lines) match {
-      case Some(code) if (lines.size > 1) => Some(Address(DefaultIdentifier, lines(0), lines.mkString("\n").trim, code.countryName))
+      case Some(code) if (lines.size > 1) => Some(Address.createRecord.shortName(shortName).addressText(lines.mkString("\n")).country(code.countryName))
       case _ => None
     }
   }

@@ -8,6 +8,12 @@ import uk.co.randomcoding.partsdb.core.id.DefaultIdentifier
 import uk.co.randomcoding.partsdb.core.vehicle.Vehicle
 import uk.co.randomcoding.partsdb.core.supplier.{ Supplier, DefaultSupplier }
 import java.util.Date
+import net.liftweb.mongodb.record.MongoRecord
+import net.liftweb.mongodb.record.MongoMetaRecord
+import net.liftweb.mongodb.record.field.ObjectIdPk
+import net.liftweb.mongodb.record.field.ObjectIdRefField
+import net.liftweb.record.field.OptionalStringField
+import net.liftweb.record.field.StringField
 
 /**
  * @constructor Create a new part object
@@ -21,24 +27,22 @@ import java.util.Date
  * val vehicles: Option[List[Vehicle]] = None
  *
  * @author Jane Rowe
+ * @author RandomCoder - Changed to MongoRecord class
  *
  */
-case class Part(val partId: Identifier, val partName: String, val vehicles: Option[Vehicle] = None, val modId: Option[String] = None) extends Identifiable {
+class Part extends MongoRecord[Part] with ObjectIdPk[Part] {
+  def meta = Part
+
+  object partName extends StringField(this, 50)
+  object vehicle extends ObjectIdRefField(this, Vehicle)
+  object modIf extends OptionalStringField(this, 50)
+}
+
+object Part extends Part with MongoMetaRecord[Part]
+
+/*case class Part(val partId: Identifier, val partName: String, val vehicles: Option[Vehicle] = None, val modId: Option[String] = None) extends Identifiable {
   override val identifierFieldName = "partId"
 }
 
-object DefaultPart extends Part(DefaultIdentifier, "No Part")
-
-/**
- * @constructor Create a new PartKit object which is a collection of parts
- * @param partsId The [[uk.co.randomcoding.partsdb.core.id.Identifier]] of this part collection. This is used for internal referencing of part collection objects from other entities.
- * @param partsName The short (friendly) name of this part collection
- * @param cost The aggregated cost of this part collection
- *
- * @author Jane Rowe
- *
- */
-case class PartKit(val kitId: Identifier, val kitName: String, val parts: List[Part]) extends Identifiable {
-  override val identifierFieldName = "kitId"
-}
+object DefaultPart extends Part(DefaultIdentifier, "No Part")*/
 

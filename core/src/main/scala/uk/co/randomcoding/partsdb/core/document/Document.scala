@@ -4,6 +4,11 @@
 package uk.co.randomcoding.partsdb.core.document
 
 import uk.co.randomcoding.partsdb.core.id.{ Identifier, Identifiable }
+import uk.co.randomcoding.partsdb.core.transaction.Transaction
+import net.liftweb.mongodb.record.MongoRecord
+import net.liftweb.mongodb.record.MongoMetaRecord
+import net.liftweb.mongodb.record.field._
+import net.liftweb.record.field.EnumField
 
 /**
  * A document is a entity that is stored in the database, and has a document id.
@@ -19,11 +24,22 @@ import uk.co.randomcoding.partsdb.core.id.{ Identifier, Identifiable }
  *
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
-case class Document(val documentId: Identifier, val documentType: String, val lineItems: List[LineItem], transactionId: Identifier) extends Identifiable {
+class Document extends MongoRecord[Document] with ObjectIdPk[Document] {
+  def meta = Document
+
+  object documentType extends EnumField(this, DocumentType)
+  object lineItems extends MongoCaseClassListField[Document, LineItem](this)
+  object transactionId extends ObjectIdRefField(this, Transaction)
+}
+
+object Document extends Document with MongoMetaRecord[Document]
+
+/*case class Document(val documentId: Identifier, val documentType: String, val lineItems: List[LineItem], transactionId: Identifier) extends Identifiable {
   override val identifierFieldName = "documentId"
 
-  /**
-   * The printable version of the document id
-   */
+  */
+/**
+ * The printable version of the document id
+ */ /*
   lazy val documentNumber = "%s%d".format(documentType, documentId.id)
-}
+}*/

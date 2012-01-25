@@ -3,7 +3,9 @@
  */
 package uk.co.randomcoding.partsdb.core.address
 
-import uk.co.randomcoding.partsdb.core.id.{ Identifier, Identifiable }
+import net.liftweb.mongodb.record.field._
+import net.liftweb.mongodb.record.{ MongoRecord, MongoMetaRecord }
+import net.liftweb.record.field.StringField
 
 /**
  * @constructor Create a new address object
@@ -15,8 +17,17 @@ import uk.co.randomcoding.partsdb.core.id.{ Identifier, Identifiable }
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  *
  */
-case class Address(val addressId: Identifier, val shortName: String, val addressText: String, val country: String) extends Identifiable {
+class Address private () extends MongoRecord[Address] with ObjectIdPk[Address] {
+  def meta = Address
+
+  object shortName extends StringField(this, 50)
+  object addressText extends StringField(this, 300)
+  object country extends StringField(this, 50)
+}
+
+object Address extends Address with MongoMetaRecord[Address]
+/*case class Address(val addressId: Identifier, val shortName: String, val addressText: String, val country: String) extends Identifiable {
   override val identifierFieldName = "addressId"
 }
 
-object NullAddress extends Address(Identifier(-1), "", "", "")
+object NullAddress extends Address(Identifier(-1), "", "", "")*/ 

@@ -14,11 +14,7 @@ package uk.co.randomcoding.partsdb.core.document
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  *
  */
-object DocumentType {
-  val Invoice = "INV"
-  val Quote = "QUO"
-  val Order = "ORD"
-  val DeliveryNote = "DEL"
-  val Statement = "STM"
-  val Transaction = "TRN"
+object DocumentType extends Enumeration("INV", "QUO", "ORD", "DEL", "STM", "TRN") {
+  type DocType = Value
+  val Invoice, Quote, Order, DeliveryNote, Transaction = Value
 }
