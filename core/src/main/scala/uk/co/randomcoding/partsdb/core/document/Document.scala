@@ -27,11 +27,18 @@ class Document private () extends MongoRecord[Document] with ObjectIdPk[Document
   object documentType extends EnumField(this, DocumentType)
 
   /**
+   * The numeric identifier of this document.
+   *
+   * This is maintained separately from the `ObjectId` as it is used to generate the printable document number.
+   *
+   * This is required to be added and should be unique across all documents, or at least those of the same type.
+   */
+  object docNumber extends LongField(this)
+
+  /**
    * The line items that are in this document
    */
   object lineItems extends MongoCaseClassListField[Document, LineItem](this)
-
-  //object transaction extends ObjectIdRefField(this, Transaction)
 
   /**
    * Is this `Document` editable?
@@ -40,9 +47,11 @@ class Document private () extends MongoRecord[Document] with ObjectIdPk[Document
 
   /**
    * The printable identifier for this document.
-   * Comprises the document type string plus the ObjectId as a string
+   * Comprises the document type string plus the `docNUmber` zero padded to 6 digits.
+   *
+   * E.g. INV002401
    */
-  lazy val documentNumber = "%s-%s".format(documentType.get, id.asString)
+  lazy val documentNumber = "%s%06d".format(documentType.get, docNumber.get)
 }
 
 object Document extends Document with MongoMetaRecord[Document]
