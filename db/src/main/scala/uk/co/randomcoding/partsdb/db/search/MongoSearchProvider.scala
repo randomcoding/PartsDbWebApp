@@ -3,7 +3,6 @@
  */
 package uk.co.randomcoding.partsdb.db.search
 
-import com.mongodb.casbah.Imports._
 import uk.co.randomcoding.partsdb.core._
 import address.Address
 import customer.Customer
@@ -22,7 +21,7 @@ import uk.co.randomcoding.partsdb.core.id.Identifier
  *
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
-sealed abstract class MongoSearchProvider(val name: String, val providesType: String, coll: MongoCollection) {
+sealed abstract class MongoSearchProvider(val name: String, val providesType: String /*, coll: MongoCollection*/ ) {
   type SearchTermType <: MongoSearchTerm
   /**
    * @abstract
@@ -30,13 +29,13 @@ sealed abstract class MongoSearchProvider(val name: String, val providesType: St
    */
   type ResultType
 
-  type QueryType = DBObject
+  type QueryType
 
-  val mongoAccess = new MongoAllOrOneAccess {
+  /*val mongoAccess = new MongoAllOrOneAccess {
     override val collection = coll
-  }
+  }*/
 
-  def genQuery(term: MongoSearchTerm) = term.query
+  //def genQuery(term: MongoSearchTerm) = term.query
 
   /**
    * Generates the Mongo DB query represented by the provided [[uk.co.randomcoding.partsdb.db.search.MongoSearchTerm]]s
@@ -45,19 +44,20 @@ sealed abstract class MongoSearchProvider(val name: String, val providesType: St
    *
    * @return A `MongoDBObject` that is the concatenation of all the search terms. If the input set is empty then returns `MongoDBObject.empty`
    */
-  private def query[T <: MongoSearchTerm](searchTerms: Set[T]): QueryType = {
+  def query[T <: MongoSearchTerm](searchTerms: Set[T]): Option[QueryType] /*= {
     (searchTerms.toList match {
       case Nil => MongoDBObject.empty
       case head :: Nil => genQuery(head)
       case multiple => multiple.foldLeft(MongoDBObject.empty)((currentQuery: DBObject, term: MongoSearchTerm) => currentQuery ++ genQuery(term))
     }) ++ typeIdQuery
-  }
+  }*/
   /**
    * Perform the search and get the results form the datastore
    *
    * @param searchTerms A set of distinct [[uk.co.randomcoding.partsdb.db.search.SearchTerm]]s that will be used to get the results of the search
    */
-  protected def search[ResultType, T <: MongoSearchTerm](searchTerms: Set[T])(implicit mf: Manifest[ResultType]): List[ResultType] = mongoAccess.getMatching[ResultType](query(searchTerms))
+  protected def search[ResultType, T <: MongoSearchTerm](searchTerms: Set[T])(implicit mf: Manifest[ResultType]): List[ResultType] /*
+  = mongoAccess.getMatching[ResultType](query(searchTerms))*/
 
   /**
    * Type fixed method to call to perform the search
@@ -90,7 +90,7 @@ sealed abstract class MongoSearchProvider(val name: String, val providesType: St
 }
 
 // add implementations
-case class AddressSearchProvider(collection: MongoCollection) extends MongoSearchProvider("Address Search", "Address", collection) {
+/*case class AddressSearchProvider(collection: MongoCollection) extends MongoSearchProvider("Address Search", "Address", collection) {
 
   override type ResultType = Address
 
@@ -142,14 +142,15 @@ case class QuoteSearchProvider(collection: MongoCollection) extends MongoSearchP
     term.searchKey match {
       case SearchKeys.quotePartName => {
         val parts = mongoAccess.getMatching[Part](("partId" $exists true) ++ MongoDBObject("partName" -> term.searchValue))
-        val ids = parts.toList map (doc => ("partId.id", doc.partId.id)) distinct
+        // XXX: This is wrong as it searched for ids that are no longer in use. 
+        val ids = parts.toList map (doc => ("partId.id", doc.id.get)) distinct
 
         $or(ids: _*)
       }
       case _ => super.genQuery(term)
     }
   }
-}
+}*/
 
 // The requires types for these providers are not implemented yet
 /*case class SupplierSearchProvider(collection: MongoCollection) extends MongoSearchProvider("Supplier Search", "Supplier", collection) {

@@ -13,19 +13,22 @@ import uk.co.randomcoding.partsdb.core.contact.{ ContactDetails, Phone }
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
+ *
+ * @deprecated("Changing Access API")
  */
 class DbAccessAddCustomerTest extends MongoDbTestBase {
-  override val dbName = "DbAccessAddCustomerTest"
+  /*override val dbName = "DbAccessAddCustomerTest"
   lazy val databaseName = dbName
   lazy val collName = collectionName
 
   private lazy val access = new DbAccess {
     override val dbName = databaseName
     override val collectionName = collName
-  }
+  }*/
 
   test("Add a customer with new addresses adds all elements to the database") {
-    val bAddr = Address(DefaultIdentifier, "Billing", "Billing Address", "UK")
+    fail("DB Access has changed")
+    /*val bAddr = Address(DefaultIdentifier, "Billing", "Billing Address", "UK")
 
     val newCust = access.addNewCustomer("Customer", bAddr, PaymentTerms(30), ContactDetails("Customer", Some(List(Phone("+44321456789")))))
 
@@ -33,11 +36,12 @@ class DbAccessAddCustomerTest extends MongoDbTestBase {
 
     access.getAll[Address]("addressId") should be(List(Address(Identifier(0), "Billing", "Billing Address", "UK")))
 
-    access.getAll[Customer]("customerId") should be(List(newCust.get))
+    access.getAll[Customer]("customerId") should be(List(newCust.get))*/
   }
 
   test("Add a customer with billing address already in database (using same addressId) does not add a duplicate address") {
-    val bAddr = Address(Identifier(2345), "Billing", "Billing Address", "UK")
+    fail("DB Access has changed")
+    /*val bAddr = Address(Identifier(2345), "Billing", "Billing Address", "UK")
 
     val newCust = access.addNewCustomer("Customer", bAddr, PaymentTerms(30), ContactDetails("Customer", Some(List(Phone("+44321456789")))))
 
@@ -45,12 +49,12 @@ class DbAccessAddCustomerTest extends MongoDbTestBase {
 
     access.getAll[Address]("addressId") should be(List(bAddr))
 
-    access.getAll[Customer]("customerId") should be(List(newCust.get))
+    access.getAll[Customer]("customerId") should be(List(newCust.get))*/
   }
 
   // This will fail until issue 13 is fixed
   ignore("Simulate add customer which duplicates a billing address already in database but uses default addressId does not add a duplicate address") {
-    val bAddr1 = Address(Identifier(15), "Billing", "Billing Address", "UK")
+    /*val bAddr1 = Address(Identifier(15), "Billing", "Billing Address", "UK")
     (access.add(bAddr1)) should be(true)
     val bAddr2 = Address(DefaultIdentifier, "Billing", "Billing Address", "UK")
 
@@ -59,7 +63,7 @@ class DbAccessAddCustomerTest extends MongoDbTestBase {
 
     access.getAll[Address]("addressId") should be(List(bAddr1))
 
-    access.getAll[Customer]("customerId") should be(List(newCust.get))
+    access.getAll[Customer]("customerId") should be(List(newCust.get))*/
   }
 
 }

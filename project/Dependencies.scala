@@ -21,13 +21,13 @@ object Dependencies {
   val liftMongoRecord = liftDep("lift-mongodb-record", "compile")
 
   // mongodb - casbah (being deprecated)
-  val mongoQuery = mongoDep("casbah-query", "compile")
-  val mongoCore = mongoDep("casbah-core", "compile")
-  val mongoCommons = mongoDep("casbah-commons", "compile")
+  //val mongoQuery = mongoDep("casbah-query", "compile")
+  //val mongoCore = mongoDep("casbah-core", "compile")
+  //val mongoCommons = mongoDep("casbah-commons", "compile")
 
   // jetty
-  val jettyWebappVersion8 = "8.0.3.v20111011"
-  val jetty = "org.eclipse.jetty" % "jetty-webapp" % jettyWebappVersion8 % "container"
+  val jettyVersion = "8.0.3.v20111011"
+  val jetty = "org.eclipse.jetty" % "jetty-webapp" % jettyVersion % "container"
   val logback = "ch.qos.logback" % "logback-classic" % "1.0.0"
 	
   // logging is provided by liftweb common that falls back on slf4j-simple
@@ -40,7 +40,7 @@ object Dependencies {
   // Dependency groups
   val testDeps = Seq(scalatest)
   val liftDeps = Seq(liftUtil, liftCommon, liftWebkit, liftJson, liftMongoRecord)
-  val mongoDeps = Seq(mongoQuery, mongoCore, mongoCommons)
+  //val mongoDeps = Seq(mongoQuery, mongoCore, mongoCommons)
   val loggingDeps = Seq(logback, groovy, liftCommon)
   val jettyDeps = Seq(jetty)
 }

@@ -4,13 +4,14 @@
 package uk.co.randomcoding.partsdb.db.mongo
 
 import org.scalatest.matchers.ShouldMatchers
-import com.mongodb.casbah.Imports._
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
+ *
+ * @deprecated("Changing Access API")
  */
 class MongoDbUniqueIdAccessTest extends MongoDbTestBase with ShouldMatchers {
-  override val dbName = "accessIdTest"
+  /*override val dbName = "accessIdTest"
 
   val uniqueIdField = "uniqueId"
 
@@ -44,5 +45,5 @@ class MongoDbUniqueIdAccessTest extends MongoDbTestBase with ShouldMatchers {
     val testCount = 1000
 
     (0 to testCount) foreach { index => access.nextId() should be(index) }
-  }
+  }*/
 }

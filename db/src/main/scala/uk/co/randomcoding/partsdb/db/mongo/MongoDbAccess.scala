@@ -4,7 +4,6 @@
 package uk.co.randomcoding.partsdb.db.mongo
 
 import scala.collection.mutable.{ Map => MMap }
-import com.mongodb.casbah.Imports._
 import uk.co.randomcoding.partsdb.db.DbAccess
 import uk.co.randomcoding.partsdb.db.mongo.MongoConverters._
 import net.liftweb.common.Logger
@@ -15,8 +14,9 @@ import net.liftweb.common.Logger
  * @constructor Creates a new instance of this access object. Should be called from the companion object
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  *
+ * @deprecated("Now using different DB AccessAPI")
  */
-class MongoDbAccess(override val collection: MongoCollection) extends MongoAllOrOneAccess with MongoIdentifierAccess with MongoUpdateAccess with Logger {
+class MongoDbAccess { //}(override val collection: MongoCollection) extends MongoAllOrOneAccess with MongoIdentifierAccess with MongoUpdateAccess with Logger {
   //override val collection = mongoCollection
 
   /*override def add[T <: AnyRef](t: T): Unit = {
@@ -96,21 +96,24 @@ class MongoDbAccess(override val collection: MongoCollection) extends MongoAllOr
  * Will create an instance of the access class using the collection '''test-collection''' from the database '''test-db'''.
  *
  * If the database and/or collection do not exist, then I believe MongoDB will create them for you.
+ *
+ * @deprecated("Now using different DB AccessAPI")
  */
 object MongoDbAccess {
-  import scala.collection.mutable.{ Map => MMap }
+  /*import scala.collection.mutable.{ Map => MMap }
 
   private val accessObjects = MMap.empty[String, MongoDbAccess].withDefault(key => {
     val parts = key.split(":")
     new MongoDbAccess(MongoConfig.getCollection(parts(0), parts(1)))
   })
 
+  */
   /**
    * Get the instance of an [[uk.co.randomcoding.partsdb.db.mongo.MongoDBAccess]] object for the given collection within the database
    *
    * @param dbName The name of the database to connect to
    * @param collectionName The name of the collection to connect to
    * @return The instance of the MongoDbAccess object for the given collection and database
-   */
-  def apply(dbName: String, collectionName: String): MongoDbAccess = accessObjects("%s:%s".format(dbName, collectionName))
+   */ /*
+  def apply(dbName: String, collectionName: String): MongoDbAccess = accessObjects("%s:%s".format(dbName, collectionName))*/
 }

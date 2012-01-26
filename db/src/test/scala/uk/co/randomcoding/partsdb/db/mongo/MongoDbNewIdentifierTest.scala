@@ -16,9 +16,11 @@ import uk.co.randomcoding.partsdb.core.vehicle.Vehicle
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  * @author Jane Rowe
+ *
+ * @deprecated("Class under test is deprecated"
  */
-class MongoDbNewIdentifierTest extends MongoDbTestBase with ShouldMatchers {
-  override val dbName = "updateIdTest"
+class MongoDbNewIdentifierTest /*extends MongoDbTestBase with ShouldMatchers*/ {
+  /*  override val dbName = "updateIdTest"
 
   private lazy val access = new MongoIdentifierAccess() {
     override val collection = mongo
@@ -208,6 +210,6 @@ class MongoDbNewIdentifierTest extends MongoDbTestBase with ShouldMatchers {
     vehicle2 should (be theSameInstanceAs vehicle3 and
       be theSameInstanceAs vehicle4 and
       be theSameInstanceAs vehicle5)
-  }
+  }*/
 
 }

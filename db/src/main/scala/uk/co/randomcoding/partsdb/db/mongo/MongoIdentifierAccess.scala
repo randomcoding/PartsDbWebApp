@@ -3,7 +3,6 @@
  */
 package uk.co.randomcoding.partsdb.db.mongo
 
-import com.mongodb.casbah.Imports._
 import uk.co.randomcoding.partsdb.core.address.Address
 import uk.co.randomcoding.partsdb.core.customer.Customer
 import uk.co.randomcoding.partsdb.core.id.Identifier._
@@ -16,9 +15,10 @@ import uk.co.randomcoding.partsdb.core.transaction.Transaction
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  *
+ * @deprecated("Identifiers are no longer required to be managed by us directly")
  */
 trait MongoIdentifierAccess {
-  val collection: MongoCollection
+  /*val collection: MongoCollection
 
   private val incrementUniqueId = (currentId: Long) => {
     val newIdObject = MongoDBObject("uniqueId" -> (currentId + 1))
@@ -31,11 +31,12 @@ trait MongoIdentifierAccess {
 
   private val idQuery = "uniqueId" $exists true
 
+  */
   /**
    * Gets the next value for the unique id.
    *
    * This also increments the current value that is stored in the database
-   */
+   */ /*
   def nextId(): Long = {
     val findOneQuery = collection.findOne(idQuery)
     val idValue = findOneQuery match {
@@ -50,6 +51,7 @@ trait MongoIdentifierAccess {
     idValue
   }
 
+  */
   /**
    * Assigns a valid id to an [[uk.co.randomcoding.partsdb.id.Identifiable]] if its' id value is a [[uk.co.randomcoding.partsdb.id.DefaultIdentifier]]
    *
@@ -60,7 +62,7 @@ trait MongoIdentifierAccess {
    * @param item The [[uk.co.randomcoding.partsdb.id.Identifiable]] to assign a valid id to
    * @return A new instance of the [uk.co.randomcoding.partsdb.id.Identifiable]] with a valid id or the same instance if its current id is not
    * the [[uk.co.randomcoding.partsdb.id.DefaultIdentifier]]
-   */
+   */ /*
   def assignId(item: Identifiable): Identifiable = {
     val defaultId = (i: Identifiable) => i.id == DefaultIdentifier.id
 
@@ -73,5 +75,5 @@ trait MongoIdentifierAccess {
       case trns: Transaction if defaultId(trns) => trns.copy(transactionId = nextId())
       case _ => item
     }
-  }
+  }*/
 }

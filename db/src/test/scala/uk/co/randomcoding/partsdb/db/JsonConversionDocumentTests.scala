@@ -19,64 +19,69 @@ import uk.co.randomcoding.partsdb.core.transaction.Transaction
  *
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  *
+ * @deprecated(There is no longer any need to do JSON conversions)
  */
 class JsonConversionDocumentTests extends JsonConversionTesting {
 
-  test("Can convert Quote to JSON") {
-    val quoteJson: String = Document(Identifier(321), Quote, List(LineItem(1, Identifier(456), 1, 25.00, 0.25)), Identifier(909))
+  ignore("Can convert Quote to JSON") {
+    fail("DB Access has changed")
+    /*val quoteJson: String = Document(Identifier(321), Quote, List(LineItem(1, Identifier(456), 1, 25.00, 0.25)), Identifier(909))
     quoteJson should be("""{"documentId":{"id":321},"documentType":"QUO","lineItems":[{"lineNumber":1,"partId":{"id":456},"quantity":1,"basePrice":25.0,"markup":0.25}],"transactionId":{"id":909}}""")
 
     val quote2Json: String = Document(Identifier(321), Quote, List(LineItem(1, Identifier(456), 1, 25.00, 0.25), LineItem(2, Identifier(789), 4, 45.01, 0.1)), Identifier(101))
     quote2Json should be("""{"documentId":{"id":321},"documentType":"QUO",""" +
-      """"lineItems":[{"lineNumber":1,"partId":{"id":456},"quantity":1,"basePrice":25.0,"markup":0.25},{"lineNumber":2,"partId":{"id":789},"quantity":4,"basePrice":45.01,"markup":0.1}],"transactionId":{"id":101}}""")
+      """"lineItems":[{"lineNumber":1,"partId":{"id":456},"quantity":1,"basePrice":25.0,"markup":0.25},{"lineNumber":2,"partId":{"id":789},"quantity":4,"basePrice":45.01,"markup":0.1}],"transactionId":{"id":101}}""")*/
   }
 
-  test("Can convert JSON to Quote") {
-    val quoteJson: String = """{"documentId":{"id":321},"documentType":"QUO",""" +
+  ignore("Can convert JSON to Quote") {
+    fail("DB Access has changed")
+    /*val quoteJson: String = """{"documentId":{"id":321},"documentType":"QUO",""" +
       """"lineItems":[{"lineNumber":1,"partId":{"id":456},"quantity":1,"basePrice":25.0,"markup":0.25},{"lineNumber":2,"partId":{"id":789},"quantity":4,"basePrice":45.01,"markup":0.1}],"transactionId":{"id":202}}"""
     val quote = Document(Identifier(321), Quote, List(LineItem(1, Identifier(456), 1, 25.00, 0.25), LineItem(2, Identifier(789), 4, 45.01, 0.1)), Identifier(202))
-    checkJsonConversion[Document](quoteJson, quote)
+    checkJsonConversion[Document](quoteJson, quote)*/
   }
 
-  test("Can convert Order to JSON") {
+  ignore("Can convert Order to JSON") {
     pending
   }
 
-  test("Can convert JSON to Order") {
+  ignore("Can convert JSON to Order") {
     pending
   }
 
-  test("Can convert Invoice to JSON") {
+  ignore("Can convert Invoice to JSON") {
     pending
   }
 
-  test("Can convert JSON to Invoice") {
+  ignore("Can convert JSON to Invoice") {
     pending
   }
 
-  test("Can convert Delivery Note to JSON") {
+  ignore("Can convert Delivery Note to JSON") {
     pending
   }
 
-  test("Can convert JSON to Delivery Note") {
+  ignore("Can convert JSON to Delivery Note") {
     pending
   }
 
-  test("Can convert Transaction to JSON") {
-    val emptyTrans: String = Transaction(Identifier(345), Identifier(3))
+  ignore("Can convert Transaction to JSON") {
+    fail("DB Access has changed")
+    /*val emptyTrans: String = Transaction(Identifier(345), Identifier(3))
     emptyTrans should be("""{"transactionId":{"id":345},"customerId":{"id":3}}""")
 
     val fullTrans: String = Transaction(Identifier(456), Identifier(5), Some(Set(Identifier(234), Identifier(345))))
-    fullTrans should be("""{"transactionId":{"id":456},"customerId":{"id":5},"documents":[{"id":234},{"id":345}]}""")
+    fullTrans should be("""{"transactionId":{"id":456},"customerId":{"id":5},"documents":[{"id":234},{"id":345}]}""")*/
   }
 
-  test("Can convert JSON to Transaction") {
-    val fullTransJson = """{"transactionId":{"id":456},"customerId":{"id":5},"documents":[{"id":234},{"id":345}]}"""
+  ignore("Can convert JSON to Transaction") {
+    fail("DB Access has changed")
+    /*val fullTransJson = """{"transactionId":{"id":456},"customerId":{"id":5},"documents":[{"id":234},{"id":345}]}"""
     val fullTrans = Transaction(Identifier(456), Identifier(5), Some(Set(Identifier(234), Identifier(345))))
     checkJsonConversion[Transaction](fullTransJson, fullTrans)
 
     val emptyTransJson = """{"transactionId":{"id":345},"customerId":{"id":3}}"""
     val emptyTrans = Transaction(Identifier(345), Identifier(3))
-    checkJsonConversion[Transaction](emptyTransJson, emptyTrans)
+    checkJsonConversion[Transaction](emptyTransJson, emptyTrans)*/
   }
 }

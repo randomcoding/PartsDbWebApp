@@ -3,7 +3,6 @@
  */
 package uk.co.randomcoding.partsdb.db.search
 
-import com.mongodb.casbah.Imports._
 import scala.util.matching.Regex
 
 /**
@@ -22,15 +21,15 @@ import scala.util.matching.Regex
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
 sealed abstract class MongoSearchTerm(val searchKey: String) extends SearchTerm(searchKey) {
-  override type QueryType = DBObject
+  override type QueryType = (String, valueType)
 
   override val query = searchValue match {
-    case SearchTerm.exists => (searchKey $exists true)
-    case SearchTerm.doesNotExist => (searchKey $exists false)
+    //case SearchTerm.exists => (searchKey $exists true)
+    //case SearchTerm.doesNotExist => (searchKey $exists false)
     case other => genQuery
   }
 
-  def genQuery = MongoDBObject(searchKey -> searchValue)
+  def genQuery = (searchKey -> searchValue)
 }
 
 case class StringSearchTerm(key: String, override val searchValue: String) extends MongoSearchTerm(key) {

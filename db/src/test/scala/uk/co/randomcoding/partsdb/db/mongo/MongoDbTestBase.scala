@@ -3,7 +3,6 @@
  */
 package uk.co.randomcoding.partsdb.db.mongo
 
-import com.mongodb.casbah.Imports._
 import org.scalatest.{ FunSuite, BeforeAndAfterEach }
 import org.scalatest.matchers.ShouldMatchers
 
@@ -19,27 +18,27 @@ abstract class MongoDbTestBase extends FunSuite with BeforeAndAfterEach with Sho
   /**
    * Define the database name to use for testing
    */
-  val dbName: String
+  val dbName: String = "TestDb"
 
   /**
    * Define the collection name to use for testing
    */
-  lazy val collectionName: String = dbName + "Collection"
+  //lazy val collectionName: String = dbName + "Collection"
 
   /**
    * The MongoDB Collection instance that is to be used for all tests
    */
-  var mongo: MongoCollection = _
+  //var mongo: MongoCollection = _
 
   override def beforeEach(): Unit = {
-    dbName should not equal collectionName
-    mongo = MongoConfig.getCollection(dbName, collectionName)
+    /*dbName should not equal collectionName
+    mongo = MongoConfig.getCollection(dbName, collectionName)*/
   }
 
   override def afterEach(): Unit = {
-    val mdb = MongoConnection()
+    /*val mdb = MongoConnection()
     mdb.dropDatabase(dbName)
 
-    mdb.dbNames.toList should not contain (dbName)
+    mdb.dbNames.toList should not contain (dbName)*/
   }
 }

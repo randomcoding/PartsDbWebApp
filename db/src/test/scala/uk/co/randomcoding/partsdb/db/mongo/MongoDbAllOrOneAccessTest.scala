@@ -4,7 +4,6 @@
 package uk.co.randomcoding.partsdb.db.mongo
 
 import org.scalatest.matchers.ShouldMatchers
-import com.mongodb.casbah.Imports._
 import uk.co.randomcoding.partsdb._
 import core.address._
 import core.part._
@@ -16,9 +15,10 @@ import uk.co.randomcoding.partsdb.core.vehicle.Vehicle
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  * @author Jane Rowe
  *
+ * @deprecated("AllOrOneAccess is deprecated")
  */
 class MongoDbAllOrOneAccessTest extends MongoDbTestBase with ShouldMatchers {
-  override val dbName = "allOrOneTest"
+  /*override val dbName = "allOrOneTest"
 
   lazy val dbAccess = new MongoAllOrOneAccess() {
     override val collection = mongo
@@ -93,44 +93,5 @@ class MongoDbAllOrOneAccessTest extends MongoDbTestBase with ShouldMatchers {
     dbAccess.getAll[Part]("partId") should (contain(part1) and
       contain(part2) and
       have size (2))
-  }
-
-  // Part Tests with options
-  //  test("Access to Part By Id") {
-  //    val vehicle = Some(Vehicle(Identifier(2346), "TestVehicle"))
-  //    val part = Part(Identifier(2345), "ModPartId", "SupplierPartId", "woggle sprocket", 1.20, vehicle)
-  //    mongo += convertToMongoDbObject(part)
-  //
-  //    dbAccess.getOne[Part]("partId", Identifier(2345)).get should be(Part(Identifier(2345), "ModPartId", "SupplierPartId", "woggle sprocket", 1.20, vehicle))
-  //  }
-  //
-  //  test("Access to Part that does not exist") {
-  //    val id = Identifier(5432)
-  //    val access = dbAccess
-  //
-  //    access.getOne("partId", id) should be(None)
-  //
-  //    access.getAll[Part]("partId") should be('empty)
-  //  }
-  //
-  //  test("Access Multiple Parts with Single Part in DB") {
-  //    val vehicle1 = Vehicle(Identifier(2347), "TestVehicle")
-  //    val part1 = Part(Identifier(2348), "ModPartId", "SupplierPartId", "woggle sprocket", 1.20, Some(vehicle1))
-  //    mongo += convertToMongoDbObject(part1)
-  //
-  //    dbAccess.getAll[Part]("partId") should be(List(part1))
-  //  }
-  //
-  //  test("Access Multiple Parts with Two Parts in DB") {
-  //    val vehicle1 = Vehicle(Identifier(2349), "TestVehicle1")
-  //    val vehicle2 = Vehicle(Identifier(2350), "TestVehicle2")
-  //    val part1 = Part(Identifier(2351), "ModPartId", "SupplierPartId", "woggle sprocket", 1.20, Some(vehicle1))
-  //    val part2 = Part(Identifier(2352), "ModPartId", "SupplierPartId", "big woggle sprocket", 1.60, Some(vehicle2))
-  //
-  //    mongo += convertToMongoDbObject(part1)
-  //    mongo += convertToMongoDbObject(part2)
-  //    dbAccess.getAll[Part]("partId") should (contain(part1) and
-  //      contain(part2) and
-  //      have size (2))
-  //  }
+  }*/
 }

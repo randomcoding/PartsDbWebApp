@@ -13,7 +13,6 @@ import part.Part
 import terms.PaymentTerms
 import transaction.Transaction
 import vehicle.Vehicle
-import uk.co.randomcoding.partsdb.db.mongo.{ MongoUpdateAccess, MongoIdentifierAccess, MongoAllOrOneAccess }
 
 import net.liftweb.common.Logger
 
@@ -23,7 +22,7 @@ import net.liftweb.common.Logger
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  * @author Jane Rowe
  */
-trait DbAccess extends MongoIdentifierAccess with MongoUpdateAccess with MongoAllOrOneAccess with Logger {
+trait DbAccess extends Logger {
 
   /**
    * @param dbName The name of the database to connect to. Defaults to ''MainDb''

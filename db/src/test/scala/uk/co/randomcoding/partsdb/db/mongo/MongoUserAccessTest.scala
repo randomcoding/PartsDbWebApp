@@ -10,11 +10,12 @@ import uk.co.randomcoding.partsdb.db.util.Helpers._
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
+ *
  */
 class MongoUserAccessTest extends MongoDbTestBase {
   override val dbName = "UserAccessTest"
 
-  lazy val access = MongoUserAccess(dbName, collectionName)
+  lazy val access = MongoUserAccess(dbName, "") //collectionName)
 
   def users = access.users
 

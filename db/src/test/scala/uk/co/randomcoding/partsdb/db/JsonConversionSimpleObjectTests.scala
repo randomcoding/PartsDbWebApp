@@ -16,44 +16,50 @@ import document.LineItem
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  *
+ * @deprecated(There is no longer any need to do JSON conversions)
  */
 class JsonConversionSimpleObjectTests extends JsonConversionTesting {
 
-  test("Can convert JSON to Identifier") {
-    val json = """{ "id" : 1234 }"""
+  ignore("Can convert JSON to Identifier") {
+    fail("DB Access has changed")
+    /*val json = """{ "id" : 1234 }"""
 
-    checkJsonConversion[Identifier](json, Identifier(1234))
+    checkJsonConversion[Identifier](json, Identifier(1234))*/
   }
 
-  test("Can convert Identifier to JSON") {
-    val id = Identifier(5432)
+  ignore("Can convert Identifier to JSON") {
+    fail("DB Access has changed")
+    /*val id = Identifier(5432)
 
     val json: String = id
 
     json should be("""{"id":5432}""")
 
-    checkJsonConversion[Identifier](json, Identifier(5432))
+    checkJsonConversion[Identifier](json, Identifier(5432))*/
   }
 
-  test("Can convert Address to JSON") {
-    val address = Address(Identifier(4567), "Addr", "Addr Long", "UK")
+  ignore("Can convert Address to JSON") {
+    fail("DB Access has changed")
+    /*val address = Address(Identifier(4567), "Addr", "Addr Long", "UK")
     val json: String = address
 
     json should be("""{"addressId":{"id":4567},"shortName":"Addr","addressText":"Addr Long","country":"UK"}""")
-    checkJsonConversion[Address](json, Address(Identifier(4567), "Addr", "Addr Long", "UK"))
+    checkJsonConversion[Address](json, Address(Identifier(4567), "Addr", "Addr Long", "UK"))*/
   }
 
-  test("Can convert JSON to Address") {
-    val json = """{ "addressId" : {"id":4567},
+  ignore("Can convert JSON to Address") {
+    fail("DB Access has changed")
+    /*val json = """{ "addressId" : {"id":4567},
       "shortName" : "Addr",
       "addressText" : "Addr Long",
       "country" : "UK" }"""
 
-    checkJsonConversion[Address](json, Address(Identifier(4567), "Addr", "Addr Long", "UK"))
+    checkJsonConversion[Address](json, Address(Identifier(4567), "Addr", "Addr Long", "UK"))*/
   }
 
-  test("Can convert Contact Type to JSON") {
-    val emailContact = Email("email@example.com")
+  ignore("Can convert Contact Type to JSON") {
+    fail("DB Access has changed")
+    /*val emailContact = Email("email@example.com")
     val emailJson: String = emailContact
     emailJson should be("""{"emailAddress":"email@example.com"}""")
 
@@ -63,92 +69,103 @@ class JsonConversionSimpleObjectTests extends JsonConversionTesting {
 
     val mobileContact = Mobile("+447653890123", true)
     val mobileJson: String = mobileContact
-    mobileJson should be("""{"mobileNumber":"+447653890123","international":true}""")
+    mobileJson should be("""{"mobileNumber":"+447653890123","international":true}""")*/
   }
 
-  test("Can convert JSON to Contact Type ") {
-    val emailJson = """{"emailAddress":"email2@example.com"}"""
+  ignore("Can convert JSON to Contact Type ") {
+    fail("DB Access has changed")
+    /*val emailJson = """{"emailAddress":"email2@example.com"}"""
     checkJsonConversion[Email](emailJson, Email("email2@example.com"))
 
     val mobileJson = """{"mobileNumber":"+447557345890","international":false}"""
     checkJsonConversion[Mobile](mobileJson, Mobile("+447557345890", false))
 
     val phoneJson = """{"phoneNumber":"+1115558934","international":true}"""
-    checkJsonConversion[Phone](phoneJson, Phone("+1115558934", true))
+    checkJsonConversion[Phone](phoneJson, Phone("+1115558934", true))*/
   }
 
-  test("Can convert Contact Details to JSON") {
-    val contactDetails = ContactDetails("Person 1", phoneNumbers = Some(List(Phone("+44121345678"))), emailAddresses = Some(List(Email("person@somewhere.com"))))
+  ignore("Can convert Contact Details to JSON") {
+    fail("DB Access has changed")
+    /*val contactDetails = ContactDetails("Person 1", phoneNumbers = Some(List(Phone("+44121345678"))), emailAddresses = Some(List(Email("person@somewhere.com"))))
     val json: String = contactDetails
-    json should be("""{"contactName":"Person 1","phoneNumbers":[{"phoneNumber":"+44121345678","international":false}],"emailAddresses":[{"emailAddress":"person@somewhere.com"}]}""")
+    json should be("""{"contactName":"Person 1","phoneNumbers":[{"phoneNumber":"+44121345678","international":false}],"emailAddresses":[{"emailAddress":"person@somewhere.com"}]}""")*/
   }
 
-  test("Can convert JSON to Contact Details") {
-    val json = """{"contactName":"Person 1","phoneNumbers":[{"phoneNumber":"+44121345678","international":false}],"emailAddresses":[{"emailAddress":"person@somewhere.com"}]}"""
-    checkJsonConversion[ContactDetails](json, ContactDetails("Person 1", phoneNumbers = Some(List(Phone("+44121345678"))), emailAddresses = Some(List(Email("person@somewhere.com")))))
+  ignore("Can convert JSON to Contact Details") {
+    fail("DB Access has changed")
+    /*val json = """{"contactName":"Person 1","phoneNumbers":[{"phoneNumber":"+44121345678","international":false}],"emailAddresses":[{"emailAddress":"person@somewhere.com"}]}"""
+    checkJsonConversion[ContactDetails](json, ContactDetails("Person 1", phoneNumbers = Some(List(Phone("+44121345678"))), emailAddresses = Some(List(Email("person@somewhere.com")))))*/
   }
 
-  test("Can convert Customer to JSON") {
-    val customerJson: String = Customer(Identifier(9753), "A Customer", Identifier(4567), PaymentTerms(30), ContactDetails("A Person", phoneNumbers = Some(List(Phone("+44 543 5678 9832")))))
+  ignore("Can convert Customer to JSON") {
+    fail("DB Access has changed")
+    /*val customerJson: String = Customer(Identifier(9753), "A Customer", Identifier(4567), PaymentTerms(30), ContactDetails("A Person", phoneNumbers = Some(List(Phone("+44 543 5678 9832")))))
     val expectedJson = """{"customerId":{"id":9753},"customerName":"A Customer","billingAddress":{"id":4567},""" +
       """"terms":{"days":30},"contactDetails":{"contactName":"A Person","phoneNumbers":[{"phoneNumber":"+44 543 5678 9832","international":false}]}}"""
 
-    customerJson should be(expectedJson)
+    customerJson should be(expectedJson)*/
   }
 
-  test("Can convert JSON to Customer") {
-    val json = """{"customerId":{"id":9753},"customerName":"A Customer","billingAddress":{"id":4567},""" +
+  ignore("Can convert JSON to Customer") {
+    fail("DB Access has changed")
+    /*val json = """{"customerId":{"id":9753},"customerName":"A Customer","billingAddress":{"id":4567},""" +
       ""","terms":{"days":30},"contactDetails":{"contactName":"A Person","phoneNumbers":[{"phoneNumber":"+44 543 5678 9832","international":false}]}}"""
     val customer = Customer(Identifier(9753), "A Customer", Identifier(4567), PaymentTerms(30), ContactDetails("A Person", phoneNumbers = Some(List(Phone("+44 543 5678 9832")))))
 
-    checkJsonConversion[Customer](json, customer)
+    checkJsonConversion[Customer](json, customer)*/
   }
 
-  test("Can convert Line Item to JSON") {
-    val itemJson: String = LineItem(1, Identifier(234), 3, 4.50, 0.25)
+  ignore("Can convert Line Item to JSON") {
+    fail("DB Access has changed")
+    /*val itemJson: String = LineItem(1, Identifier(234), 3, 4.50, 0.25)
 
-    itemJson should be("""{"lineNumber":1,"partId":{"id":234},"quantity":3,"basePrice":4.5,"markup":0.25}""")
+    itemJson should be("""{"lineNumber":1,"partId":{"id":234},"quantity":3,"basePrice":4.5,"markup":0.25}""")*/
   }
 
-  test("Can convert JSON to Line Item") {
-    val itemJson = """{"lineNumber":4,"partId":{"id":654},"quantity":1,"basePrice":105.23,"markup":0.25}"""
+  ignore("Can convert JSON to Line Item") {
+    fail("DB Access has changed")
+    /*val itemJson = """{"lineNumber":4,"partId":{"id":654},"quantity":1,"basePrice":105.23,"markup":0.25}"""
     val lineItem = LineItem(4, Identifier(654), 1, 105.23, 0.25)
-    checkJsonConversion[LineItem](itemJson, lineItem)
+    checkJsonConversion[LineItem](itemJson, lineItem)*/
   }
 
-  test("Can convert Supplier to JSON") {
-    pending
+  ignore("Can convert Supplier to JSON") {
+    fail("DB Access has changed")
   }
 
-  test("Can convert JSON to Supplier") {
-    pending
+  ignore("Can convert JSON to Supplier") {
+    fail("DB Access has changed")
   }
 
-  test("Can convert Part to JSON") {
-    val part = Part(Identifier(4568), "TestPart")
+  ignore("Can convert Part to JSON") {
+    fail("DB Access has changed")
+    /*val part = Part(Identifier(4568), "TestPart")
     val json: String = part
 
     json should be("""{"partId":{"id":4568},"partName":"TestPart"}""")
-    checkJsonConversion[Part](json, Part(Identifier(4568), "TestPart"))
+    checkJsonConversion[Part](json, Part(Identifier(4568), "TestPart"))*/
   }
 
-  test("Can convert JSON to Part") {
-    val json = """{"partId":{"id":4569},"partName":"TestPart"}"""
+  ignore("Can convert JSON to Part") {
+    fail("DB Access has changed")
+    /*val json = """{"partId":{"id":4569},"partName":"TestPart"}"""
 
-    checkJsonConversion[Part](json, Part(Identifier(4569), "TestPart"))
+    checkJsonConversion[Part](json, Part(Identifier(4569), "TestPart"))*/
   }
 
-  test("Can convert Vehicle to JSON") {
-    val vehicle = Vehicle(Identifier(4570), "TestVehicle")
+  ignore("Can convert Vehicle to JSON") {
+    fail("DB Access has changed")
+    /*val vehicle = Vehicle(Identifier(4570), "TestVehicle")
     val json: String = vehicle
 
     json should be("""{"vehicleId":{"id":4570},"vehicleName":"TestVehicle"}""")
-    checkJsonConversion[Vehicle](json, Vehicle(Identifier(4570), "TestVehicle"))
+    checkJsonConversion[Vehicle](json, Vehicle(Identifier(4570), "TestVehicle"))*/
   }
 
-  test("Can convert JSON to Vehicle") {
-    val json = """{"vehicleId" : {"id":4571},"vehicleName" : "TestVehicle"}"""
+  ignore("Can convert JSON to Vehicle") {
+    fail("DB Access has changed")
+    /*val json = """{"vehicleId" : {"id":4571},"vehicleName" : "TestVehicle"}"""
 
-    checkJsonConversion[Vehicle](json, Vehicle(Identifier(4571), "TestVehicle"))
+    checkJsonConversion[Vehicle](json, Vehicle(Identifier(4571), "TestVehicle"))*/
   }
 }

@@ -1,6 +1,6 @@
 import sbt._
 import Keys._
-import com.typesafe.sbteclipse.core.EclipsePlugin._
+//import com.typesafe.sbteclipse.core.EclipsePlugin._
 
 /**
  * Common build settings for projects.
@@ -17,7 +17,7 @@ object BuildSettings {
     version      := buildVersion,
     scalaVersion := buildScalaVersion,
     shellPrompt  := ShellPrompt.buildShellPrompt,
-    scalacOptions := Seq("-deprecation", "-unchecked"),
-    EclipseKeys.createSrc := EclipseCreateSrc.Default + EclipseCreateSrc.Resource
+    scalacOptions := Seq("-deprecation", "-unchecked")
+//    EclipseKeys.createSrc := EclipseCreateSrc.Default + EclipseCreateSrc.Resource
   )
 }

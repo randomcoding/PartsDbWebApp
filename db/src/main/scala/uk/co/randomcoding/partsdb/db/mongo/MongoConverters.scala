@@ -3,7 +3,6 @@
  */
 package uk.co.randomcoding.partsdb.db.mongo
 
-import com.mongodb.casbah.Imports._
 import net.liftweb.json._
 import net.liftweb.json.Serialization._
 import uk.co.randomcoding.partsdb.core.address.Address
@@ -13,6 +12,7 @@ import uk.co.randomcoding.partsdb.core.address.Address
  *
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  *
+ * @deprecated("No longer require converters")
  */
 object MongoConverters extends MongoConversionFormats {
   /**
@@ -24,10 +24,10 @@ object MongoConverters extends MongoConversionFormats {
    * @tparam T The type to convert the object into
    * @return The converted object. This will be of type '''`T`'''
    */
-  implicit def convertFromMongoDbObject[T](mongoObject: DBObject)(implicit mf: Manifest[T]): T = {
+  /*implicit def convertFromMongoDbObject[T](mongoObject: DBObject)(implicit mf: Manifest[T]): T = {
     val jsonString: String = mongoObject.toString
     read(jsonString)
-  }
+  }*/
 
   /**
    * Converts a library object to a [[com.mongodb.casbah.Imports.DBObject]].
@@ -37,11 +37,11 @@ object MongoConverters extends MongoConversionFormats {
    * @param t The object to convert to a [[com.mongodb.casbah.Imports.DBObject]]. I think this '''must''' be a '''`case class`''' for this conversion to work
    * @return The [[com.mongodb.casbah.Imports.DBObject]]
    */
-  implicit def convertToMongoDbObject[T <: AnyRef](t: T): DBObject = {
+  /*implicit def convertToMongoDbObject[T <: AnyRef](t: T): DBObject = {
     com.mongodb.util.JSON.parse(t).asInstanceOf[DBObject]
   }
 
   private implicit def toJsonString[T <: AnyRef](o: T): String = {
     write(o)
-  }
+  }*/
 }
