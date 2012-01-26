@@ -18,7 +18,7 @@ import mongodb._
 import common._
 
 /**
- * Configuration for Mongo DB and access to mongo connections
+ * Initialisation for Mongo DB
  *
  * @author RandomCoder
  *
@@ -37,28 +37,26 @@ object MongoConfig extends Loggable {
   case class CloudFoundryMongoCredentials(hostname: String, port: String, username: String, password: String, name: String, db: String)
 
   /**
-   * Initialise the MongoDB system to create connections etc.
+   * Initialise a named MongoDB database
    *
    * This checks to see if the connection is to a [[http://cloudfoundry.org|CloudFoundry]] instance or not.
    * If the connection is local such as in an offline installation or for testing then will connect to the database called '''dbName''' otherwise
-   * it will connect to the CF database specified in the connection settings that are provided.
+   * it will connect to the CF database specified in the connection settings that are provided by CloudFoundry
    *
    * Furthermore, a local connection assumes that MongoDB is running on port 27017 and is accessible via `127.0.0.1`
    *
-   * @param dbName The name of the local database to connect to. This is also used to cache the generated `MongoDB` instance, so must be specified.
-   * @return The [[com.mongobd.casbah.MongoDB]] object that represents the database instance.
+   * @param dbName The name of the local database to connect to. If connecting to a CloudFoundry database then this parameters is ignored and can be empty.
    *
-   * @throws IllegalArgumentException if the `dbName` parameter is empty
    */
   def init(dbName: String): Unit = {
-    require(dbName.trim nonEmpty, "DB Name Cannot be empty")
-
     mongoConnectionDetails(dbName) match {
-      case Some(MongoConnectionConfig(host, port, user, pass, db, true)) => {
-        MongoDB.defineDbAuth(DefaultMongoIdentifier, (host, port), db, user, pass)
-      }
-      case Some(MongoConnectionConfig(_, _, _, _, db, false)) => {
-        MongoDB.defineDb(DefaultMongoIdentifier, new Mongo, db)
+      case Some(x) => x match {
+        case config: MongoConnectionConfig => config match {
+          case MongoConnectionConfig(host, port, user, pass, db, true) => MongoDB.defineDbAuth(DefaultMongoIdentifier, (host, port), db, user, pass)
+          case MongoConnectionConfig(_, _, _, _, db, false) => MongoDB.defineDb(config.dbId, new Mongo, db)
+          case _ => error("Failed To initialise mongo DB Connection!")
+        }
+        case _ => error("Failed To initialise mongo DB Connection!")
       }
       case _ => error("Failed To initialise mongo DB Connection!")
     }
@@ -104,4 +102,22 @@ object MongoConfig extends Loggable {
   }
 }
 
-case class MongoConnectionConfig(host: String, port: Int, user: String, password: String, dbName: String, onCloudFoundry: Boolean)
+/**
+ * Container for the connection details
+ *
+ * @constructor Creates a new instance of the connection config
+ * @param host The host name or ip to connect to
+ * @param port The port to connect to on the host
+ * @param user The username to use for authentication
+ * @param password The password to use for authentication
+ * @param onCloudFoundry A flag to indicate whether or not this is a connection to a CloudFoundry instance.
+ *
+ * @throws IllegalArgumentException if the `dbName` parameter is empty
+ */
+case class MongoConnectionConfig(host: String, port: Int, user: String, password: String, dbName: String, onCloudFoundry: Boolean) {
+  require(dbName.trim nonEmpty, "DB Name Cannot be empty")
+
+  object dbId extends MongoIdentifier {
+    val jndiName = dbName
+  }
+}
