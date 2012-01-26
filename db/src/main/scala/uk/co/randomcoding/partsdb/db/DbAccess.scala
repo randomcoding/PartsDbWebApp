@@ -3,18 +3,19 @@
  */
 package uk.co.randomcoding.partsdb.db
 
-import uk.co.randomcoding.partsdb.core.address.Address
-import uk.co.randomcoding.partsdb.core.contact.ContactDetails
-import uk.co.randomcoding.partsdb.core.customer.{ DefaultCustomer, Customer }
-import uk.co.randomcoding.partsdb.core.document.{ LineItem, DocumentType, Document }
-import uk.co.randomcoding.partsdb.core.id.Identifier._
-import uk.co.randomcoding.partsdb.core.id.{ Identifier, DefaultIdentifier }
-import uk.co.randomcoding.partsdb.core.part.{ Part, DefaultPart }
-import uk.co.randomcoding.partsdb.core.terms.PaymentTerms
-import uk.co.randomcoding.partsdb.core.vehicle.{ Vehicle, DefaultVehicle }
-import uk.co.randomcoding.partsdb.db.mongo.{ MongoUpdateAccess, MongoIdentifierAccess, MongoConfig, MongoAllOrOneAccess }
+import uk.co.randomcoding.partsdb.core._
+import address.Address
+import contact.ContactDetails
+import customer.Customer
+import document.{ LineItem, Document }
+import id.Identifier
+import part.Part
+import terms.PaymentTerms
+import transaction.Transaction
+import vehicle.Vehicle
+import uk.co.randomcoding.partsdb.db.mongo.{ MongoUpdateAccess, MongoIdentifierAccess, MongoAllOrOneAccess }
+
 import net.liftweb.common.Logger
-import uk.co.randomcoding.partsdb.core.transaction.Transaction
 
 /**
  * Encapsulates all the Database access functionality in a single class
@@ -32,9 +33,9 @@ trait DbAccess extends MongoIdentifierAccess with MongoUpdateAccess with MongoAl
   /**
    * @param collectionName The name of the Collection to get from the database. Defaults to ''MainCollection''
    */
-  val collectionName: String = "MainCollection"
+  /*  val collectionName: String = "MainCollection"
 
-  override lazy val collection = MongoConfig.getCollection(dbName, collectionName)
+  override lazy val collection = MongoConfig.getCollection(dbName, collectionName)*/
 
   /**
    * Adds a new [[uk.co.randomcoding.partsdb.core.customer.Customer]] to the database.
@@ -45,7 +46,7 @@ trait DbAccess extends MongoIdentifierAccess with MongoUpdateAccess with MongoAl
    * @param contact The contact details for this customer
    * @return An optional [[uk.co.randomcoding.partsdb.core.customer.Customer]] if the addition was successful, or `None` if it failed.
    */
-  def addNewCustomer(contactName: String, billingAddress: Address, terms: PaymentTerms, contact: ContactDetails): Option[Customer] = {
+  def addNewCustomer(contactName: String, billingAddress: Address, terms: PaymentTerms, contact: ContactDetails): Option[Customer] /*= {
     // check addresses is are in db or not and assign/get their Ids 
     // for now assume addresses are new and assign them ids
     // FIXME - The cast to Address is nasty and hacky
@@ -65,9 +66,9 @@ trait DbAccess extends MongoIdentifierAccess with MongoUpdateAccess with MongoAl
         None
       }
     }
-  }
+  }*/
 
-  def addNewPart(partName: String, vehicles: Vehicle, modId: String): Part = {
+  def addNewPart(partName: String, vehicles: Vehicle, modId: String): Option[Part] /*= {
     // TODO check part is in db or not, and assign/get the id. For now assume part is new and assign the id
     val part = assignId(Part(-1L, partName, Some(vehicles), Some(modId))).asInstanceOf[Part]
     debug("Updating database with part %s".format(part))
@@ -81,9 +82,9 @@ trait DbAccess extends MongoIdentifierAccess with MongoUpdateAccess with MongoAl
         DefaultPart
       }
     }
-  }
+  }*/
 
-  def editPart(partId: Identifier, partName: String, vehicles: Vehicle, modId: String): Part = {
+  def editPart(partId: Identifier, partName: String, vehicles: Vehicle, modId: String): Option[Part] /*= {
     // TODO get part from db for editing, add error checking if part is not in the db
     val part = Part(partId, partName, Some(vehicles), Some(modId))
     debug("Updating database with part %s".format(part))
@@ -97,9 +98,9 @@ trait DbAccess extends MongoIdentifierAccess with MongoUpdateAccess with MongoAl
         DefaultPart
       }
     }
-  }
+  }*/
 
-  def addNewVehicle(vehicleName: String): Vehicle = {
+  def addNewVehicle(vehicleName: String): Option[Vehicle] /*= {
     // TODO check vehicle is in db or not, and assign/get the id. For now assume vehicle is new and assign the id
     val vehicle = assignId(Vehicle(-1L, vehicleName)).asInstanceOf[Vehicle]
     debug("Updating database with vehicle %s".format(vehicle))
@@ -113,9 +114,9 @@ trait DbAccess extends MongoIdentifierAccess with MongoUpdateAccess with MongoAl
         DefaultVehicle
       }
     }
-  }
+  }*/
 
-  def editVehicle(vehicleId: Identifier, vehicleName: String): Vehicle = {
+  def editVehicle(vehicleId: Identifier, vehicleName: String): Option[Vehicle] /*= {
     // TODO get vehicle from db for editing, add error checking if vehicle is not in the db
     val vehicle = assignId(Vehicle(vehicleId, vehicleName)).asInstanceOf[Vehicle]
     debug("Updating database with vehicle %s".format(vehicle))
@@ -129,9 +130,9 @@ trait DbAccess extends MongoIdentifierAccess with MongoUpdateAccess with MongoAl
         DefaultVehicle
       }
     }
-  }
+  }*/
 
-  def getAllVehicles(): List[Vehicle] = getAll[Vehicle]("vehicleId")
+  //def getAllVehicles(): List[Vehicle] = getAll[Vehicle]("vehicleId")
 
   /**
    * Add a Quote to the database.
@@ -146,7 +147,7 @@ trait DbAccess extends MongoIdentifierAccess with MongoUpdateAccess with MongoAl
    * @param customerId The [[uk.co.randomcoding.partsdb.core.identifier.Identifier]] of the [[uk.co.randomcoding.partsdb.core.customer.Customer]] that this transaction is with.
    * @return a `Tuple2[Option[Document], Option[Transaction]]` that contains the successfully added document & transaction. If either fails to be added then `None` is returned
    */
-  def addQuote(lineItems: List[LineItem], customerId: Identifier): (Option[Document], Option[Transaction]) = {
+  def addQuote(lineItems: List[LineItem], customerId: Identifier): (Option[Document], Option[Transaction]) /*= {
     val preQuote = assignId(Document(DefaultIdentifier, DocumentType.Quote, lineItems, DefaultIdentifier)).asInstanceOf[Document]
     val transaction: Transaction = assignId(Transaction(DefaultIdentifier, customerId, Some(Set(preQuote.documentId)))).asInstanceOf[Transaction]
     val quote = preQuote.copy(transactionId = transaction.transactionId)
@@ -167,5 +168,5 @@ trait DbAccess extends MongoIdentifierAccess with MongoUpdateAccess with MongoAl
         (None, None)
       }
     }
-  }
+  }*/
 }
