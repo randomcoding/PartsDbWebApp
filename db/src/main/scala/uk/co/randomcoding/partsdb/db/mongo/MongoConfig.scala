@@ -10,11 +10,12 @@ package uk.co.randomcoding.partsdb.db.mongo
  *
  */
 
-import com.mongodb.casbah.Imports._
+import com.mongodb.Mongo
 
 import net.liftweb._
 import json._
-import common.Loggable
+import mongodb._
+import common._
 
 /**
  * Configuration for Mongo DB and access to mongo connections
@@ -36,13 +37,6 @@ object MongoConfig extends Loggable {
   case class CloudFoundryMongoCredentials(hostname: String, port: String, username: String, password: String, name: String, db: String)
 
   /**
-   * Private holder for the MongoDB objects.
-   *
-   * This will call [[uk.co.randomcoding.partsdb.db.mongo.MongoConfig#init(dbName)]] if there is no database connection for the provided dbName
-   */
-  private var dbs = Map.empty[String, MongoDB].withDefault(dbName => init(dbName))
-
-  /**
    * Initialise the MongoDB system to create connections etc.
    *
    * This checks to see if the connection is to a [[http://cloudfoundry.org|CloudFoundry]] instance or not.
@@ -56,73 +50,58 @@ object MongoConfig extends Loggable {
    *
    * @throws IllegalArgumentException if the `dbName` parameter is empty
    */
-  private def init(dbName: String): MongoDB = {
-    require(dbName.nonEmpty, "Parameter dbName cannot be an empty string.\nPlease call init(String) with a dbName.")
+  def init(dbName: String): Unit = {
+    require(dbName.trim nonEmpty, "DB Name Cannot be empty")
 
+    mongoConnectionDetails(dbName) match {
+      case Some(MongoConnectionConfig(host, port, user, pass, db, true)) => {
+        MongoDB.defineDbAuth(DefaultMongoIdentifier, (host, port), db, user, pass)
+      }
+      case Some(MongoConnectionConfig(_, _, _, _, db, false)) => {
+        MongoDB.defineDb(DefaultMongoIdentifier, new Mongo, db)
+      }
+      case _ => error("Failed To initialise mongo DB Connection!")
+    }
+  }
+
+  private implicit def hostToMongo(host: (String, Int)): Mongo = new Mongo(host._1, host._2)
+
+  private def mongoConnectionDetails(dbName: String) = {
     logger.debug("Env: VCAP_SERVICES: %s".format(Option(System.getenv("VCAP_SERVICES"))))
-    var user = ""
-    var port = 27017
-    var host = ""
-    var pass = ""
-    var db = dbName
 
     try {
       Option(System.getenv("VCAP_SERVICES")) match {
         case Some(s) => {
           try {
+            logger.debug("We seems to be running on Cloud Foundry. Attempting to extract connection details")
             parse(s) \\ "mongodb-1.8" match {
               case JArray(ary) => ary foreach { mongoJson =>
                 val mongo = mongoJson.extract[CloudFoundryMongo]
                 val credentials = mongo.credentials
-                user = credentials.username
-                port = credentials.port.toInt
-                host = credentials.hostname
-                pass = credentials.password
-                db = credentials.db
-                cloudfoundryDbName = db
-                usingCloudfoundry = true
+                logger.debug("Extracted CloudFoundry MongoDB: %s\nWith Credentials: %s".format(mongo, credentials))
+                Some(MongoConnectionConfig(credentials.hostname, credentials.port.toInt, credentials.username, credentials.password, credentials.db, true))
               }
               case x => logger.warn("Json parse error: %s".format(x))
             }
           }
         }
-        case _ => logger.debug("Not running on Cloud Foundry, assuming localhost connection on port 27017")
+        case _ => {
+          logger.debug("Not running on Cloud Foundry, assuming localhost connection on port 27017")
+          Some(MongoConnectionConfig("127.0.0.1", 27017, "", "", dbName, false))
+        }
       }
     }
     catch {
-      case e: MatchError => logger.error("Match Error: %s\n%s\n%s.\n\nAssuming a service is running locally on port 27017".format(e.getMessage(), e.getCause(), e.getStackTrace().mkString("", "\n", "")))
+      case e: MatchError => {
+        logger.error("Match Error: %s\n%s\n%s.\n\nAssuming a service is running locally on port 27017".format(e.getMessage(), e.getCause(), e.getStackTrace().mkString("", "\n", "")))
+        None
+      }
+      case e: Exception => {
+        logger.error("Encountered an exception when attempting to initialise connection to MongoDB: %s. Cannot connect!".format(e.getMessage))
+        None
+      }
     }
-
-    val connection = host match {
-      case "" => MongoConnection()
-      case hostName => MongoConnection(hostName, port)
-    }
-
-    val mongoDb = connection(db)
-
-    if (user.nonEmpty) {
-      mongoDb.authenticate(user, pass)
-    }
-
-    dbs = dbs + (db -> mongoDb)
-    mongoDb
-  }
-
-  /**
-   * Get or create a named collection in the specified database.
-   *
-   * This gets the specified `MongoDB` instance from the private cache, which in turn will create the connection if is is not present.
-   *
-   * @param dbName The name of the database to get the collections from.
-   * @param collectionId The name of the collection to get from the database. If this does not exist, then `MongoDB` will create it.
-   */
-  def getCollection(dbName: String, collectionId: String): MongoCollection = {
-    val conn = usingCloudfoundry match {
-      case true => dbs(cloudfoundryDbName)
-      case false => dbs(dbName)
-    }
-    logger.debug("Getting collection %s from %s".format(collectionId, conn))
-
-    conn(collectionId)
   }
 }
+
+case class MongoConnectionConfig(host: String, port: Int, user: String, password: String, dbName: String, onCloudFoundry: Boolean)
