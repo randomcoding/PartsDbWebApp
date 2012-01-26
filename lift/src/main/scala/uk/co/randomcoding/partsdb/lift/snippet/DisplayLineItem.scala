@@ -24,11 +24,11 @@ object DisplayLineItem extends EntityDisplay with DbAccess {
       case Some(p) => {
         <tr>
           <td>{ lineItem.lineNumber }</td>
-          <td>{ p.partName }</td>
+          <td>{ /*p.partName*/ }</td>
           <td>{ lineItem.quantity }</td>
           <td>{ "£%.2f".format(lineItem.basePrice) }</td>
           <td>{ "%.0f".format(lineItem.markup * 100) + "%" }</td>
-          <td>{ "£" + totalCost(lineItem, p) }</td>
+          <td>{ /*"£" + totalCost(lineItem, p)*/ }</td>
         </tr>
       }
       case _ => emptyRow
@@ -37,5 +37,5 @@ object DisplayLineItem extends EntityDisplay with DbAccess {
 
   private def totalCost(lineItem: LineItem, part: Part) = "%.2f".format(lineItem.lineCost)
 
-  private def part(partId: Identifier) = getOne[Part]("partId", partId)
+  private def part(partId: Identifier): Option[Part] = None // getOne[Part]("partId", partId)
 }

@@ -10,5 +10,5 @@ import uk.co.randomcoding.partsdb.db.mongo.MongoConfig
 object MongoDefaults {
   val defaultDbName = "MainDb"
   val defaultCollectionName = "MainCollection"
-  val defaultCollection = MongoConfig.getCollection(defaultDbName, defaultCollectionName)
+  val defaultCollection = "Collection" //MongoConfig.getCollection(defaultDbName, defaultCollectionName)
 }

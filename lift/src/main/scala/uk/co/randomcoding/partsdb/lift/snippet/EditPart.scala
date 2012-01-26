@@ -25,7 +25,7 @@ class EditPart extends StatefulSnippet with DbAccessSnippet with ErrorDisplay wi
   var modId = ""
 
   var vehicle: Option[Vehicle] = None
-  val allVehicles = getAllVehicles().map(v => (Some(v), v.vehicleName))
+  val allVehicles = List.empty[(Option[Vehicle], String)] //getAllVehicles().map(v => (Some(v), v.vehicleName))
 
   def dispatch = {
     case "render" => render

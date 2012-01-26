@@ -29,11 +29,11 @@ class AddQuote extends StatefulSnippet with DbAccessSnippet with ErrorDisplay wi
   var customerName = ""
   val quoteHolder = new QuoteHolder(this)
 
-  val parts = getAll[Part]("partId") sortBy (_.partName)
-  val partsSelect = (None, "Select Part") :: (parts map ((p: Part) => (Some(p), p.partName)))
+  val parts = List.empty[Part] //getAll[Part]("partId") sortBy (_.partName)
+  val partsSelect = (None, "Select Part") :: (parts map ((p: Part) => (Some(p), p.partName.get)))
 
-  val customers = getAll[Customer]("customerId")
-  val customersSelect = customers map ((c: Customer) => (Some(c), c.customerName))
+  val customers = List.empty[Customer] //getAll[Customer]("customerId")
+  val customersSelect = (None, "Select Customer") :: (customers map ((c: Customer) => (Some(c), c.customerName.get)))
   var currentCustomer: Option[Customer] = None
 
   def dispatch = {
@@ -100,7 +100,7 @@ class AddQuote extends StatefulSnippet with DbAccessSnippet with ErrorDisplay wi
   private[this] def processSubmit() = {
     currentCustomer match {
       case Some(cust) => {
-        addQuote(quoteHolder.lineItems, cust.customerId)
+        //addQuote(quoteHolder.lineItems, cust.customerId)
         S.redirectTo("/app/")
       }
       case None => displayError("customerErrorId", "Please select a Customer")

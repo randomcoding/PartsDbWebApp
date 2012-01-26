@@ -69,7 +69,7 @@ class DisplayExisting extends DbAccessSnippet with ErrorDisplay with Logger {
 
   private[this] lazy val matchingTypes: String => List[AnyRef] = (entityType: String) => {
     entityType.toLowerCase match {
-      case "customer" => getAll[Customer]("customerId") sortBy (_.customerName)
+      /*case "customer" => getAll[Customer]("customerId") sortBy (_.customerName)
       case "address" =>
         getAll[Address]("addressId") sortBy (_.shortName)
       case "user" =>
@@ -81,7 +81,7 @@ class DisplayExisting extends DbAccessSnippet with ErrorDisplay with Logger {
       case "unspecified" => {
         error("Entity Type not specified.")
         List.empty
-      }
+      }*/
       case _ => {
         error("Unhandled Entity Type: %s".format(entityType))
         List.empty

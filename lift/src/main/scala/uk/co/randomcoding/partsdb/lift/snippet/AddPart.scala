@@ -30,7 +30,7 @@ class AddPart extends StatefulSnippet with DbAccessSnippet with ErrorDisplay wit
   var partCosts: Option[List[PartCost]] = None
 
   var vehicle: Option[Vehicle] = None
-  val allVehicles = getAllVehicles().map(v => (Some(v), v.vehicleName))
+  val allVehicles = List.empty[(Option[Vehicle], String)] //getAllVehicles().map(v => (Some(v), v.vehicleName))
 
   def dispatch = {
     case "render" => render

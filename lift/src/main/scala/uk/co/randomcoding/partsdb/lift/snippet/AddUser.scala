@@ -3,7 +3,7 @@
  */
 package uk.co.randomcoding.partsdb.lift.snippet
 
-import uk.co.randomcoding.partsdb.core.address.{ NullAddress, AddressParser, Address }
+import uk.co.randomcoding.partsdb.core.address.{ AddressParser, Address }
 import uk.co.randomcoding.partsdb.core.contact.{ Phone, Mobile, Email, ContactDetails }
 import uk.co.randomcoding.partsdb.core.terms.PaymentTerms
 import uk.co.randomcoding.partsdb.core.util.CountryCodes.countryCodes

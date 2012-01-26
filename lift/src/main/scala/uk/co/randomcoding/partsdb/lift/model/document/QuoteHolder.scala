@@ -14,7 +14,6 @@ import net.liftweb.common.Logger
 import uk.co.randomcoding.partsdb.core.supplier.Supplier
 import uk.co.randomcoding.partsdb.core.id.Identifier
 import uk.co.randomcoding.partsdb.db.DbAccess
-import com.mongodb.casbah.Imports._
 
 /**
  * Encapsulates the data required to generate a `Quote` document.
@@ -50,12 +49,13 @@ class QuoteHolder(dbAccess: DbAccess) extends Logger {
    * Calculated value of the suppliers of a part
    */
   private val suppliersForPart = currentPartCell.lift(_ match {
-    case Some(part) => (None, "--Select Supplier--") :: (suppliedBy(part.partId) map (supplier => (Some(supplier), supplier.supplierName)))
+    //case Some(part) => (None, "--Select Supplier--") :: (suppliedBy(part.partId) map (supplier => (Some(supplier), supplier.supplierName)))
     case None => List((None, "--Select Part--"))
   })
 
   private def suppliedBy(partId: Identifier): List[Supplier] = {
-    dbAccess.getMatching[Supplier](MongoDBObject("suppliedParts.part.partId.id" -> partId.id))
+    //dbAccess.getMatching[Supplier](MongoDBObject("suppliedParts.part.partId.id" -> partId.id))
+    Nil
   }
 
   /**
@@ -67,13 +67,13 @@ class QuoteHolder(dbAccess: DbAccess) extends Logger {
    * Calculated value of the base cost of the currently selected part
    */
   private val currentPartBaseCostCell = currentPartCell.lift(currentSupplierCell)((_, _) match {
-    case (Some(part), Some(supplier)) => supplier.suppliedParts.get find (_.part.partId == part.partId) match {
+    /*case (Some(part), Some(supplier)) => supplier.suppliedParts.get find (_.part.partId == part.partId) match {
       case Some(suppliedPart) => suppliedPart.suppliedCost
       case None => {
         error("No Suppliers found for part: %s".format(part))
         0.0d
       }
-    }
+    }*/
     case (p, s) => {
       error("Expected a pair(Some(part), Some(Supplier)), but got (%s, %s)".format(p, s))
       0.0d
@@ -166,7 +166,7 @@ class QuoteHolder(dbAccess: DbAccess) extends Logger {
         val partCost = currentPartBaseCostCell.get
         val markupValue = markupCell.get.toDouble / 100.0
 
-        lineItemsCell.atomicUpdate(items => items.find(_.partId == part.partId) match {
+        /*lineItemsCell.atomicUpdate(items => items.find(_.partId == part.partId) match {
           case Some(lineItem) => items.map(li => {
             li.partId == part.partId match {
               case true => updateLineItem(li, q, partCost, markupValue)
@@ -174,7 +174,7 @@ class QuoteHolder(dbAccess: DbAccess) extends Logger {
             }
           })
           case _ => items :+ LineItem(items.size, part.partId, q, partCost, markupValue)
-        })
+        })*/
       }
     }
   }
@@ -184,7 +184,7 @@ class QuoteHolder(dbAccess: DbAccess) extends Logger {
   private def zero = BigDecimal(0)
 
   private def removeItem(part: Part) = {
-    lineItemsCell.atomicUpdate(_.filterNot(_.partId == part.partId))
+    //lineItemsCell.atomicUpdate(_.filterNot(_.partId == part.partId))
     renumberLines
   }
 

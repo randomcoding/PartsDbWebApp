@@ -4,15 +4,12 @@
 package uk.co.randomcoding.partsdb.lift.util.snippet
 
 import uk.co.randomcoding.partsdb.core.terms.PaymentTerms
-import uk.co.randomcoding.partsdb.core.address.NullAddress
 import net.liftweb.common.Logger
 import uk.co.randomcoding.partsdb.core.address.Address
 import uk.co.randomcoding.partsdb.core.util.CountryCodes._
 import uk.co.randomcoding.partsdb.core.contact.ContactDetails
 import uk.co.randomcoding.partsdb.core.vehicle.Vehicle
 import uk.co.randomcoding.partsdb.core.part.Part
-import uk.co.randomcoding.partsdb.core.part.DefaultPart
-import uk.co.randomcoding.partsdb.core.vehicle.DefaultVehicle
 
 /**
  * Validates form input items.
@@ -34,11 +31,12 @@ trait DataValidation extends Logger {
   private def validateItem(item: ValidationItem): Boolean = {
     debug("Validating: %s".format(item))
     item.toValidate match {
-      case addr: Address => validateAddress(addr)
+      // check all required items are defined
+      /*case addr: Address => validateAddress(addr)
       case terms: PaymentTerms => terms != PaymentTerms(-1)
       case contacts: ContactDetails => validateContactDetails(contacts)
       case part: Part => part != DefaultPart
-      case vehicle: Vehicle => vehicle != DefaultVehicle
+      case vehicle: Vehicle => vehicle != DefaultVehicle*/
       case string: String => string.trim nonEmpty
       case double: Double => double >= 0.0
       case validationItem => {
@@ -58,12 +56,12 @@ trait DataValidation extends Logger {
    * @param address The [[uk.co.randomcoding.partsdb.core.address.Address]] to validate
    * @return `true` if the address is not a [[uk.co.randomcoding.partsdb.core.address.NullAddress]] and has a valid entry for country
    */
-  private def validateAddress(address: Address) = {
+  /*private def validateAddress(address: Address) = {
     address match {
       case NullAddress => false
       case Address(_, _, _, country) => matchToCountryCode(country).isDefined
     }
-  }
+  }*/
 
   /**
    * Validates [[uk.co.randomcoding.partsdb.core.contact.ContactDetails]]

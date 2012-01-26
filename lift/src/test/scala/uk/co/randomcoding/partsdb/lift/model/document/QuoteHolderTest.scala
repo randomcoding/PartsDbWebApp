@@ -13,7 +13,6 @@ import uk.co.randomcoding.partsdb.core.document.LineItem
 import uk.co.randomcoding.partsdb.db.DbAccess
 import uk.co.randomcoding.partsdb.db.mongo.MongoDbTestBase
 import uk.co.randomcoding.partsdb.core.supplier.Supplier
-import com.mongodb.casbah.commons.conversions.scala._
 import org.joda.time.DateTime
 
 /**
@@ -21,7 +20,10 @@ import org.joda.time.DateTime
  */
 class QuoteHolderTest extends MongoDbTestBase with ShouldMatchers {
 
-  RegisterJodaTimeConversionHelpers()
+  test("Dummy Test") {
+    fail("No Quote Holder Tests as changing API")
+  }
+  /*RegisterJodaTimeConversionHelpers()
 
   override val dbName = "QuoteHolderTest"
 
@@ -246,5 +248,5 @@ class QuoteHolderTest extends MongoDbTestBase with ShouldMatchers {
     access add vehicle should be(true)
     access add supplier1 should be(true)
     access add supplier2 should be(true)
-  }
+  }*/
 }

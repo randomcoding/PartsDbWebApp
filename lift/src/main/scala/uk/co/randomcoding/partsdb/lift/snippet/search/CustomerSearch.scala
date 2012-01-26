@@ -5,7 +5,7 @@ package uk.co.randomcoding.partsdb.lift.snippet.search
 
 import uk.co.randomcoding.partsdb.core.customer.Customer
 import uk.co.randomcoding.partsdb.db.search.SearchKeys._
-import uk.co.randomcoding.partsdb.db.search.{ SearchKeys, MongoSearchTerm, CustomerSearchProvider }
+import uk.co.randomcoding.partsdb.db.search.{ SearchKeys, MongoSearchTerm }
 import uk.co.randomcoding.partsdb.lift.util.TransformHelpers.styledAjaxText
 import uk.co.randomcoding.partsdb.lift.util.snippet.DbAccessSnippet
 import uk.co.randomcoding.partsdb.lift.util.CustomerDisplay
@@ -58,11 +58,12 @@ object CustomerSearch extends DbAccessSnippet {
      */
     def updateResults(s: String = "") = {
       val results = searchTerms match {
-        case Nil => getAll[Customer]("customerId")
-        case terms => CustomerSearchProvider(collection).find(searchTerms.toSet)
+        /*case Nil => getAll[Customer]("customerId")
+        case terms => CustomerSearchProvider(collection).find(searchTerms.toSet)*/
+        case _ => List.empty[Customer]
       }
 
-      JsCmds.SetHtml("results", CustomerDisplay.displayTable(results.sortBy(_.customerName)))
+      JsCmds.SetHtml("results", CustomerDisplay.displayTable(results.sortBy(_.customerName.get)))
     }
 
     /**
@@ -78,7 +79,7 @@ object CustomerSearch extends DbAccessSnippet {
       "#contactNameEntry" #> styledAjaxText(contactName, (s: String) => updateValue(() => contactName = s)(s)) &
       "#phoneNumberEntry" #> styledAjaxText(phoneNumber, (s: String) => updateValue(() => phoneNumber = s)(s)) &
       "#mobileNumberEntry" #> styledAjaxText(mobileNumber, (s: String) => updateValue(() => mobileNumber = s)(s)) &
-      "#emailEntry" #> styledAjaxText(email, (s: String) => updateValue(() => email = s)(s)) &
-      "#results" #> CustomerDisplay.displayTable(getAll[Customer]("customerId"))
+      "#emailEntry" #> styledAjaxText(email, (s: String) => updateValue(() => email = s)(s)) /*&
+      "#results" #> CustomerDisplay.displayTable(getAll[Customer]("customerId"))*/
   }
 }

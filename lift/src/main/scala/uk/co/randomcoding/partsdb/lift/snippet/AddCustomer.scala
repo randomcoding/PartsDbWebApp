@@ -3,7 +3,7 @@
  */
 package uk.co.randomcoding.partsdb.lift.snippet
 
-import uk.co.randomcoding.partsdb.core.address.{ NullAddress, AddressParser, Address }
+import uk.co.randomcoding.partsdb.core.address.{ AddressParser, Address }
 import uk.co.randomcoding.partsdb.core.contact.{ Phone, Mobile, Email, ContactDetails }
 import uk.co.randomcoding.partsdb.core.terms.PaymentTerms
 import uk.co.randomcoding.partsdb.core.util.CountryCodes.countryCodes
@@ -77,9 +77,9 @@ class AddCustomer extends StatefulSnippet with DbAccessSnippet with ErrorDisplay
     validate(validationChecks: _*) match {
       case Nil => {
         // Not sure if this is the best way to do this, should we do something to inform the user better if there is an error.
-        if (addNewCustomer(name, billingAddress, paymentTerms, contact).isEmpty) {
+        /*if (addNewCustomer(name, billingAddress, paymentTerms, contact).isEmpty) {
           error("Failed to add new customer, [name: %s, address: %s, terms: %s, contact: %s".format(name, billingAddress, paymentTerms, contact))
-        }
+        }*/
 
         S redirectTo "/app/customers"
       }
@@ -90,21 +90,23 @@ class AddCustomer extends StatefulSnippet with DbAccessSnippet with ErrorDisplay
     }
   }
 
-  private def addressFromInput(addressText: String, country: String): Address = {
+  private def addressFromInput(addressText: String, country: String): Option[Address] = {
     trace("Input address: %s, country: %s".format(addressText, country))
     val lines = scala.io.Source.fromString(addressText).getLines.toList
     val addressLines = lines.map(_.replaceAll(",", "").trim) ::: List(country)
     trace("Generated Address Lines: %s".format(addressLines))
+    val shortName = "Short Name" // TODO: This should be setup correctly
     val address = addressLines mkString ","
     debug("Generating Address from: %s".format(address))
-    address match {
+
+    (shortName, address) match {
       case AddressParser(addr) => {
         debug("Created Address: %s".format(addr))
-        addr
+        Some(addr)
       }
       case _ => {
         error("Null Adress Created from %s".format(address))
-        NullAddress
+        None
       }
     }
   }

@@ -16,7 +16,7 @@ import net.liftweb.common.Logger
 import scala.io.Source
 import uk.co.randomcoding.partsdb.db.DbAccess
 import uk.co.randomcoding.partsdb.lift.util.snippet.DbAccessSnippet
-import uk.co.randomcoding.partsdb.core.address.{ Address, NullAddress }
+import uk.co.randomcoding.partsdb.core.address.Address
 
 /**
  * Helper functions for displaying customers in lift pages
@@ -42,21 +42,21 @@ object CustomerDisplay extends EntityDisplay with Logger with DbAccessSnippet {
     <td>{ customer.customerName }</td>
     <td>{ displayAddress(customer) }</td>
     <td>{ displayContacts(customer) }</td>
-    <td>{ "%d days".format(customer.terms.days) }</td> ++
-      editEntityCell(editEntityLink("Customer", customer.id))
+    <td>{ "%d days".format(customer.terms.get.days) }</td> ++ <td></td>
+    //editEntityCell(editEntityLink("Customer", customer.id.get))
   }
 
   private[this] def displayAddress(customer: Customer) = {
     debug("Displaying Details for Customer: %s".format(customer))
-    debug("Customer Billing Address Id: %s".format(customer.billingAddress))
-    val addr = getOne[Address]("addressId", customer.billingAddress).getOrElse(NullAddress)
+    //debug("Customer Billing Address Id: %s".format(customer.billingAddress))
+    /*val addr = getOne[Address]("addressId", customer.billingAddress).getOrElse(NullAddress)
     addr match {
-      case NullAddress => Text("Unknown Address. Identifier: %d".format(customer.billingAddress.id))
       case adr: Address => {
         val addressLines = Source.fromString(addr.addressText).getLines()
         <span>{ addressLines map (line => <span>{ line }</span><br/>) }</span>
       }
-    }
+      case NullAddress _ => Text("Unknown Address. Identifier: %d".format(customer.businessAddress.get))
+    }*/
   }
 
   private[this] def displayContacts(customer: Customer): NodeSeq = {
@@ -65,11 +65,11 @@ object CustomerDisplay extends EntityDisplay with Logger with DbAccessSnippet {
     val detailsNodes = (details: Seq[AnyRef]) => details map (detail => contactDetail(detail)) flatten
     implicit def optionListToList[T](opt: Option[List[T]]): List[T] = opt getOrElse List.empty[T]
 
-    val phoneNodes = detailsNodes(contacts.phoneNumbers)
-    val mobileNodes = detailsNodes(contacts.mobileNumbers)
-    val emailNodes = detailsNodes(contacts.emailAddresses)
+    val phoneNodes = detailsNodes(contacts.get.phoneNumbers)
+    val mobileNodes = detailsNodes(contacts.get.mobileNumbers)
+    val emailNodes = detailsNodes(contacts.get.emailAddresses)
 
-    nameNode(contacts.contactName) ++ emailNodes ++ mobileNodes ++ phoneNodes
+    nameNode(contacts.get.contactName) ++ emailNodes ++ mobileNodes ++ phoneNodes
   }
 
   private[this] val nameNode = (name: String) => { <span>{ name }</span><br/> }

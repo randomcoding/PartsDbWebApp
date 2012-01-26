@@ -45,7 +45,7 @@ trait DbAccess extends Logger {
    * @param contact The contact details for this customer
    * @return An optional [[uk.co.randomcoding.partsdb.core.customer.Customer]] if the addition was successful, or `None` if it failed.
    */
-  def addNewCustomer(contactName: String, billingAddress: Address, terms: PaymentTerms, contact: ContactDetails): Option[Customer] /*= {
+  def addNewCustomer(contactName: String, billingAddress: Address, terms: PaymentTerms, contact: ContactDetails): Option[Customer] = None /*= {
     // check addresses is are in db or not and assign/get their Ids 
     // for now assume addresses are new and assign them ids
     // FIXME - The cast to Address is nasty and hacky
@@ -67,7 +67,7 @@ trait DbAccess extends Logger {
     }
   }*/
 
-  def addNewPart(partName: String, vehicles: Vehicle, modId: String): Option[Part] /*= {
+  def addNewPart(partName: String, vehicles: Vehicle, modId: String): Option[Part] = None /*= {
     // TODO check part is in db or not, and assign/get the id. For now assume part is new and assign the id
     val part = assignId(Part(-1L, partName, Some(vehicles), Some(modId))).asInstanceOf[Part]
     debug("Updating database with part %s".format(part))
@@ -83,7 +83,7 @@ trait DbAccess extends Logger {
     }
   }*/
 
-  def editPart(partId: Identifier, partName: String, vehicles: Vehicle, modId: String): Option[Part] /*= {
+  def editPart(partId: Identifier, partName: String, vehicles: Vehicle, modId: String): Option[Part] = None /*= {
     // TODO get part from db for editing, add error checking if part is not in the db
     val part = Part(partId, partName, Some(vehicles), Some(modId))
     debug("Updating database with part %s".format(part))
@@ -99,7 +99,7 @@ trait DbAccess extends Logger {
     }
   }*/
 
-  def addNewVehicle(vehicleName: String): Option[Vehicle] /*= {
+  def addNewVehicle(vehicleName: String): Option[Vehicle] = None /*= {
     // TODO check vehicle is in db or not, and assign/get the id. For now assume vehicle is new and assign the id
     val vehicle = assignId(Vehicle(-1L, vehicleName)).asInstanceOf[Vehicle]
     debug("Updating database with vehicle %s".format(vehicle))
@@ -115,7 +115,7 @@ trait DbAccess extends Logger {
     }
   }*/
 
-  def editVehicle(vehicleId: Identifier, vehicleName: String): Option[Vehicle] /*= {
+  def editVehicle(vehicleId: Identifier, vehicleName: String): Option[Vehicle] = None /*= {
     // TODO get vehicle from db for editing, add error checking if vehicle is not in the db
     val vehicle = assignId(Vehicle(vehicleId, vehicleName)).asInstanceOf[Vehicle]
     debug("Updating database with vehicle %s".format(vehicle))
@@ -146,7 +146,7 @@ trait DbAccess extends Logger {
    * @param customerId The [[uk.co.randomcoding.partsdb.core.identifier.Identifier]] of the [[uk.co.randomcoding.partsdb.core.customer.Customer]] that this transaction is with.
    * @return a `Tuple2[Option[Document], Option[Transaction]]` that contains the successfully added document & transaction. If either fails to be added then `None` is returned
    */
-  def addQuote(lineItems: List[LineItem], customerId: Identifier): (Option[Document], Option[Transaction]) /*= {
+  def addQuote(lineItems: List[LineItem], customerId: Identifier): (Option[Document], Option[Transaction]) = (None, None) /*= {
     val preQuote = assignId(Document(DefaultIdentifier, DocumentType.Quote, lineItems, DefaultIdentifier)).asInstanceOf[Document]
     val transaction: Transaction = assignId(Transaction(DefaultIdentifier, customerId, Some(Set(preQuote.documentId)))).asInstanceOf[Transaction]
     val quote = preQuote.copy(transactionId = transaction.transactionId)

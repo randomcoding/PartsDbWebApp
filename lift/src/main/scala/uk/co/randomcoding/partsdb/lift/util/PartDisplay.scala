@@ -40,24 +40,24 @@ object PartDisplay extends EntityDisplay with Logger with DbAccessSnippet {
   override def displayEntity(part: Part): NodeSeq = {
     <td>{ part.partName }</td>
     <td>{
-      part.vehicles match {
+      /*part.vehicles match {
         case Some(v) => v.vehicleName
-        case _ => "No Vehicle"
-      }
+        case _ =>*/ "No Vehicle"
+      //}
     }</td>
-    <td>{ part.modId }</td>
-    ++
-    editEntityCell(editEntityLink("Part", part.id))
+    <td>{ /*part.modId*/ }</td>
+    ++ <td></td>
+    //editEntityCell(editEntityLink("Part", part.id))
   }
 
   private[this] def displayVehicle(part: Part) = {
     debug("Displaying Vehicle for Part: %s".format(part))
-    part.vehicles match {
+    /*part.vehicles match {
       case Some(v) => {
         val vehicleLines = Source.fromString(v.vehicleName).getLines()
         <span>{ vehicleLines map (line => <span>{ line }</span><br/>) }</span>
       }
-      case _ => Text("Unspecified Vehicle.")
-    }
+      case _ =>*/ Text("Unspecified Vehicle.")
+    //}
   }
 }

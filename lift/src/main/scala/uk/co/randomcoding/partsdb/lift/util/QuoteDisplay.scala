@@ -16,7 +16,7 @@ import net.liftweb.common.Logger
 import scala.io.Source
 import uk.co.randomcoding.partsdb.db.DbAccess
 import uk.co.randomcoding.partsdb.lift.util.snippet.DbAccessSnippet
-import uk.co.randomcoding.partsdb.core.address.{ Address, NullAddress }
+import uk.co.randomcoding.partsdb.core.address.Address
 import uk.co.randomcoding.partsdb.core.document.Document
 
 /**
@@ -40,7 +40,7 @@ object QuoteDisplay extends EntityDisplay with Logger with DbAccessSnippet {
    * @return A [[scala.xml.NodeSeq]] of `<td>` elements to display the customer details
    */
   override def displayEntity(doc: Document): NodeSeq = {
-    <td>{ doc.documentNumber }</td> ++
-      editEntityCell(editEntityLink("Quote", doc.id))
+    <td>{ doc.documentNumber }</td> ++ <td></td>
+    //editEntityCell(editEntityLink("Quote", doc.id))
   }
 }

@@ -50,8 +50,8 @@ class AddVehicle extends StatefulSnippet with DbAccessSnippet with ErrorDisplay 
 
     validate(validationChecks: _*) match {
       case Nil => {
-        val newId = addNewVehicle(vehicleName).vehicleId
-        S redirectTo "/app/show?entityType=Vehicle".format(newId.id)
+        /*val newId = */ addNewVehicle(vehicleName) //.get.vehicleId
+        S redirectTo "/app/show?entityType=Vehicle"
       }
       case errors => {
         errors foreach (error => displayError(error._1, error._2))

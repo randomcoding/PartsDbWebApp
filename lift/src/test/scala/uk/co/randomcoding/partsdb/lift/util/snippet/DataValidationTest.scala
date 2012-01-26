@@ -8,7 +8,6 @@ import org.scalatest.matchers.ShouldMatchers
 import uk.co.randomcoding.partsdb.core.address.Address
 import uk.co.randomcoding.partsdb.core.id.DefaultIdentifier
 import uk.co.randomcoding.partsdb.core.terms.PaymentTerms
-import uk.co.randomcoding.partsdb.core.address.NullAddress
 import uk.co.randomcoding.partsdb.core.contact._
 
 /**
@@ -19,7 +18,7 @@ class DataValidationTest extends FunSuite with ShouldMatchers {
 
   import validation.validate
 
-  test("Valid address validates ok") {
+  /*test("Valid address validates ok") {
     val addrItem = ValidationItem(Address(DefaultIdentifier, "Short", "Address Text", "UK"), "", "")
     validate(addrItem) should be('empty)
   }
@@ -32,7 +31,7 @@ class DataValidationTest extends FunSuite with ShouldMatchers {
   test("Address with invalid country code fails to validate") {
     val addrItem = ValidationItem(Address(DefaultIdentifier, "Short", "Address Text", "ZZZ"), "addressErrorId", "Address failed validation")
     validate(addrItem) should be(List(("addressErrorId", "Address failed validation")))
-  }
+  }*/
 
   test("Valid Payment Terms validate") {
     val termsItem = ValidationItem(PaymentTerms(30), "", "")
