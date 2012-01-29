@@ -63,7 +63,7 @@ class AddUser extends StatefulSnippet with ErrorDisplay with DataValidation with
   }
 
   private[this] def addUser: JsCmd = {
-    MongoUserAccess().addUser(userName, password, userRole) match {
+    MongoUserAccess().addNewUser(userName, password, userRole) match {
       case None => S.redirectTo("/admin/")
       case Some(message) => {
         displayError("addUserErrorId", message)
