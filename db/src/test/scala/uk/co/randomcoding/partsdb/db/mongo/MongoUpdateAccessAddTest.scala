@@ -16,7 +16,7 @@ import uk.co.randomcoding.partsdb.core.vehicle.Vehicle
  *
  * @deprecated("Changing Access API")
  */
-class MongoUpdateAccessAddTest extends MongoDbTestBase with ShouldMatchers {
+class MongoUpdateAccessAddTest { //} extends MongoDbTestBase with ShouldMatchers {
   /*val dbName = "UpdateTest"
 
   lazy val mongoAccess = new MongoUpdateAccess() {

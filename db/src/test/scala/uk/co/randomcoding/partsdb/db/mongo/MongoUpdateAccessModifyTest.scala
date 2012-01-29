@@ -20,7 +20,7 @@ import uk.co.randomcoding.partsdb.core.vehicle.Vehicle
  *
  * @deprecated("Changing Access API")
  */
-class MongoUpdateAccessModifyTest extends MongoDbTestBase with ShouldMatchers {
+class MongoUpdateAccessModifyTest { //} extends MongoDbTestBase with ShouldMatchers {
   /*
   val dbName = "UpdateTest"
 

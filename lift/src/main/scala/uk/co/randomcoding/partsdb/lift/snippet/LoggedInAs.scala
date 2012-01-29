@@ -9,6 +9,8 @@ import uk.co.randomcoding.partsdb.lift.model.Session
 import scala.xml.Text
 import scala.xml.NodeSeq
 import net.liftweb.common.Logger
+import uk.co.randomcoding.partsdb.core.user.Role
+import uk.co.randomcoding.partsdb.core.user.Role._
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
@@ -18,16 +20,16 @@ object LoggedInAs extends Logger {
     val currentUser = Session.currentUser.is
     info("Current User: %s".format(currentUser))
     "#loggedInAs" #> (currentUser match {
-      case (user: String, role: String) if (user.nonEmpty && role.nonEmpty) => loggedIn(user, role)
+      case (user: String, role: Role) if (user.nonEmpty && role != NO_ROLE) => loggedIn(user, role)
       case _ => notLoggedIn
     })
   }
 
   private def notLoggedIn: NodeSeq = <span>{ Text("Not Logged In") }</span>
 
-  private def loggedIn(user: String, role: String): NodeSeq = {
+  private def loggedIn(user: String, role: Role): NodeSeq = {
     val loggedInText = Text("Logged in as: %s (%s) - ".format(user, role))
-    val logoutLink = SHtml.link("/app/", () => Session.currentUser(("", "")), Text("logout"))
+    val logoutLink = SHtml.link("/logout", () => Session.currentUser(("", "")), Text("logout"))
 
     <span>{ loggedInText } { logoutLink }</span>
   }

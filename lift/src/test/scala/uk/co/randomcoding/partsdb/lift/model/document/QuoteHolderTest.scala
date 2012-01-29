@@ -20,20 +20,17 @@ import org.joda.time.DateTime
  */
 class QuoteHolderTest extends MongoDbTestBase with ShouldMatchers {
 
-  test("Dummy Test") {
-    fail("No Quote Holder Tests as changing API")
-  }
-  /*RegisterJodaTimeConversionHelpers()
-
   override val dbName = "QuoteHolderTest"
 
-  lazy val databaseName = dbName
+  /*lazy val databaseName = dbName
   lazy val collName = collectionName
 
   private lazy val access = new DbAccess {
     override val dbName = databaseName
     override val collectionName = collName
   }
+  
+  // TODO: Add Joda Time dependency
 
   private def quoteHolder = new QuoteHolder(access)
 

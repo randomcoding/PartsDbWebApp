@@ -13,10 +13,10 @@ import uk.co.randomcoding.partsdb.core.transaction.Transaction
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
-class AddQuoteDbAccessTest extends MongoDbTestBase {
-  /*val dbName = "QuoteHolderDbAccessTest"
+class AddQuoteDbAccessTest { //}extends MongoDbTestBase {
+  //override val dbName = "QuoteHolderDbAccessTest"
 
-  lazy val databaseName = dbName
+  /*lazy val databaseName = dbName
   lazy val collName = collectionName
 
   private lazy val access = new DbAccess {

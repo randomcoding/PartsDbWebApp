@@ -2,10 +2,13 @@ alias run-webapp = ;project lift;container:start;project root
 alias start-webapp = ;project lift;container:start;project root
 alias stop-webapp = ;project lift;container:stop;project root
 alias restart-webapp = ;project lift;container:stop;container:start;project root
+
 alias test-core = ;project core;test;project root
 alias test-db = ;project db;test;project root
 alias test-lift = ;project lift;test; project root
+
 alias clean-test-core = ;project core;clean;test;project root
 alias clean-test-db = ;project db;clean;test;project root
 alias clean-test-lift = ;project lift;clean;test;project root
 
+alias setup-eclipse = ;project root;eclipse skip-root;

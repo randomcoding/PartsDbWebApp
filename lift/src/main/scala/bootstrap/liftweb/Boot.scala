@@ -1,12 +1,18 @@
 package bootstrap.liftweb
 
 import uk.co.randomcoding.partsdb.lift.util.auth.AppAuthentication
+import uk.co.randomcoding.partsdb.lift.model.Session
 import net.liftweb.common.{ Loggable, Full }
 import net.liftweb.http._
 import net.liftweb.http.auth.AuthRole
 import net.liftweb.sitemap._
 import net.liftweb.sitemap.Loc._
 import uk.co.randomcoding.partsdb.lift.util.search.SearchProviders
+import uk.co.randomcoding.partsdb.db.mongo.MongoConfig
+import net.liftweb.util.Props
+import uk.co.randomcoding.partsdb.core.user.Role._
+import uk.co.randomcoding.partsdb.core.user.User
+import uk.co.randomcoding.partsdb.db.util.Helpers
 
 /**
  * A class that's instantiated early and run.  It allows the application
@@ -14,16 +20,21 @@ import uk.co.randomcoding.partsdb.lift.util.search.SearchProviders
  */
 class Boot extends Loggable {
   def boot {
+    MongoConfig.init(Props.get("mongo.db", "MainDb"))
     // where to search for snippet code
     LiftRules.addToPackages("uk.co.randomcoding.partsdb.lift")
 
-    // authentication
-    LiftRules.httpAuthProtectedResource.prepend {
+    // Default users to add to the DB to bootstrap the login process
+    //User.createRecord.username("Dave").password(Helpers.hash("dave123")).role(USER).save
+    //User.createRecord.username("Adam").password(Helpers.hash("adam123")).role(ADMIN).save
+
+    // authentication - removed http auth now as we are using custom in lift auth.
+    /*LiftRules.httpAuthProtectedResource.prepend {
       case (Req("admin" :: _, _, _)) => Full(AuthRole("Admin"))
       case (Req("app" :: _, _, _)) => Full(AuthRole("User"))
-    }
+    }*/
 
-    LiftRules.authentication = AppAuthentication.simpleAuth
+    //LiftRules.authentication = AppAuthentication.simpleAuth
 
     /*
      * Create the various menus here.
@@ -32,20 +43,40 @@ class Boot extends Loggable {
      * as the Link form incorrectly escapes the ? and = characters in the address bar.
      */
     // This provides access to all the pages under /app/
-    val mainAppLoc = Menu(Loc("mainApp", new Link("app" :: Nil, true), "Home"))
+
+    val userLoggedIn = If(() => Session.currentUser.get match {
+      case (s: String, r: Role) => r == USER
+      case _ => false
+    }, () => RedirectResponse("/"))
+
+    val adminLoggedIn = If(() => Session.currentUser.get match {
+      case (s: String, r: Role) => r == ADMIN
+      case _ => false
+    }, () => RedirectResponse("/"))
+
+    val loggedIn = If(() => Session.currentUser.get match {
+      case (s, r) => r != NO_ROLE
+      case _ => false
+    }, () => RedirectResponse(Session.currentUser.get._2 match {
+      case USER => "/app"
+      case ADMIN => "/admin"
+      case _ => "/"
+    }))
+
+    val mainAppLoc = Menu(Loc("mainApp", new Link("app" :: Nil, true), "Home", userLoggedIn))
 
     // Create links for the show... parts here
-    val showCustomers = Menu(Loc("showCustomers", ExtLink("/app/show?entityType=Customer"), "Customers"))
-    val showParts = Menu(Loc("showParts", ExtLink("/app/show?entityType=Part"), "Parts"))
-    val showSuppliers = Menu(Loc("showSuppliers", ExtLink("/app/show?entityType=Supplier"), "Suppliers"))
-    val showVehicles = Menu(Loc("showVehicles", ExtLink("/app/show?entityType=Vehicle"), "Vehicles"))
+    val showCustomers = Menu(Loc("showCustomers", ExtLink("/app/show?entityType=Customer"), "Customers", userLoggedIn))
+    val showParts = Menu(Loc("showParts", ExtLink("/app/show?entityType=Part"), "Parts", userLoggedIn))
+    val showSuppliers = Menu(Loc("showSuppliers", ExtLink("/app/show?entityType=Supplier"), "Suppliers", userLoggedIn))
+    val showVehicles = Menu(Loc("showVehicles", ExtLink("/app/show?entityType=Vehicle"), "Vehicles", userLoggedIn))
 
-    val searchLoc = Menu(Loc("search", new Link("app" :: "search" :: Nil, false), "Search"))
+    val searchLoc = Menu(Loc("search", new Link("app" :: "search" :: Nil, false), "Search", userLoggedIn))
 
-    val addQuoteLoc = Menu(Loc("addQuote", new Link("app" :: "addQuote" :: Nil, false), "New Quote"))
+    val addQuoteLoc = Menu(Loc("addQuote", new Link("app" :: "addQuote" :: Nil, false), "New Quote", userLoggedIn))
 
     // Provide access to the admin menu. This is hidden.
-    val adminLoc = Menu(Loc("adminSection", new Link("admin" :: Nil, true), "Admin", Hidden))
+    val adminLoc = Menu(Loc("adminSection", new Link("admin" :: Nil, true), "Admin", Hidden, adminLoggedIn))
     val rootLoc = Menu(Loc("root", new Link("index" :: Nil, false), "Root", Hidden))
 
     // Construct the menu list to use
@@ -70,6 +101,12 @@ class Boot extends Loggable {
     // Use HTML5 for rendering
     LiftRules.htmlProperties.default.set((r: Req) =>
       new Html5Properties(r.userAgent))
+
+    LiftRules.dispatch.append {
+      case Req("logout" :: Nil, _, GetRequest) =>
+        S.request.foreach(_.request.session.terminate) //
+        S.redirectTo("/")
+    }
 
     ResourceServer.allow {
       case "css" :: _ => true
