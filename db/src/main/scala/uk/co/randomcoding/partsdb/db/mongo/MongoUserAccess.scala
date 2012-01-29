@@ -3,9 +3,11 @@
  */
 package uk.co.randomcoding.partsdb.db.mongo
 
+import uk.co.randomcoding.partsdb.core.user.{ User, Role }
+import uk.co.randomcoding.partsdb.core.user.User._
 import uk.co.randomcoding.partsdb.db.util.Helpers._
-
 import net.liftweb.common.Loggable
+import uk.co.randomcoding.partsdb.core.user.Role._
 
 /**
  * Provides access to the user database for the app
@@ -35,19 +37,15 @@ class MongoUserAccess private (dbName: String, collectionName: String) extends L
    * @return An optional error message. If this is defined then the user was not added to the database and the option contains the error message.
    * An undefined return value (i.e. `None` indicates success)
    */
-  def addUser(userName: String, plainPassword: String, userRole: String): Option[String] = {
-    None
-    /*authCollection.findOne(userByNameQuery(userName)) match {
-      case Some(dbo) => {
-        val errorMessage = "User '%s' already exists. Please use modifyUser instead".format(userName)
-        logger.error(errorMessage)
-        Some(errorMessage)
+  def addNewUser(userName: String, plainPassword: String, userRole: String): Option[String] = {
+    val found = findUser(userName)
+    found match {
+      case None => addUser(userName, hash(plainPassword), userRole) match {
+        case u: User => None // all ok
+        case _ => Some("Failed to create User %s with Role %s".format(userName, userRole))
       }
-      case None => {
-        authCollection += userObject(userName, hash(plainPassword), userRole)
-        None
-      }
-    }*/
+      case Some(user) => Some("Cannot add user '%s' as they already exist with role %s.".format(user.username.get, user.role.get))
+    }
   }
 
   /**
@@ -68,32 +66,17 @@ class MongoUserAccess private (dbName: String, collectionName: String) extends L
    * An undefined return value (i.e. `None` indicates success)
    */
   def modifyUser(userName: String, plainPassword: String, userRole: String): Option[String] = {
-    None
-    /*val findUserQuery = userByNameQuery(userName)
-    authCollection.findOne(findUserQuery) match {
-      case None => {
-        val errorMessage = "User '%s' does not exist. Please use addUser instead".format(userName)
-        logger.error(errorMessage)
-        Some(errorMessage)
+    findUser(userName) match {
+      case Some(user) => user.password(hash(plainPassword)).role(userRole).save match {
+        case u: User if u.password.get == hash(plainPassword) && u.role.get.toString == userRole => None
+        case _ => Some("Failed to update user %s".format(userName))
       }
-      case Some(dbo) => {
-        val response = authCollection.findAndModify(findUserQuery, userObject(userName, hash(plainPassword), userRole)) match {
-          case Some(dbo) if (dbo.getAs[String]("user")) == Some(userName) => None
-          case Some(dbo) if (dbo.getAs[String]("user")) isDefined => Some("Updating user %s returned a user with name %s".format(userName, dbo.getAs[String]("user").get))
-          case Some(dbo) => Some("Updating user %s returned unknown db object %s".format(userName, dbo))
-          case _ => Some("Updating user %s returned empty db object".format(userName))
-          case _ => None
-        }
-
-        if (response.isDefined) logger.error(response.get)
-
-        response
-      }
-    }*/
+      case _ => Some("User '%s' does not exist.".format(userName))
+    }
   }
 
   /**
-   * Accessor for the ''role'' of an authenticated user
+   * Attempt to authenticate a user. If successful, the user's [[uk.co.randomcoding.partsdb.core.user.Role]] is returned in an `Option`
    *
    * This will return the ''userRole'' portion of the user data '''iff''' the user name ''and'' hashed password are located in the database together
    *
@@ -106,12 +89,11 @@ class MongoUserAccess private (dbName: String, collectionName: String) extends L
    * @return An optional string. If this is defined then the user and hashed password have been found in the database and the user is authenticated into a specific role.
    * If this is undefined (i.e. `None`) then the user is not authenticated and should be rejected.
    */
-  def userRole(userName: String, hashedPassword: String): Option[String] = {
-    /*findAuthenticatedUser(userName, hashedPassword) match {
-      case Some(dbo: DBObject) if (dbo.getAs[String]("userRole") isDefined) => dbo.getAs[String]("userRole")
+  def authenticateUser(userName: String, hashedPassword: String): Option[Role] = {
+    authenticate(userName, hashedPassword) match {
+      case Some(user) => Some(user.role.get)
       case _ => None
-    }*/
-    None
+    }
   }
 
   /**
@@ -124,61 +106,14 @@ class MongoUserAccess private (dbName: String, collectionName: String) extends L
    *
    *  @return An optional string containing any error message. If this is empty (i.e. `None`) then the remove operation succeeded
    */
-  def removeUser(userName: String, userRole: String): Option[String] = {
-    None
-    /*authCollection.findOne(userByNameAndRoleQuery(userName, userRole)) match {
-      case Some(dbo) => authCollection.findAndRemove(dbo) match {
-        case Some(_) => None
-        case None => Some("Error whie removing user '%s' with role '%s'. Please check the database".format(userName, userRole))
-      }
-      case None => Some("User '%s' with role '%s' does not exist and cannot be removed".format(userName, userRole))
-    }*/
-  }
+  def removeUser(userName: String, userRole: String): Option[String] = if (remove(userName)) None else Some("Failed to remove user '%s' with role '%s'".format(userName, userRole))
 
   /**
    * Get the users currently defined in the auth database.
    *
    * @return A list of pairs of usernames and user roles
    */
-  def users: List[(String, String)] = {
-    /*val query = "user" $exists true
-
-    authCollection.find(query).toList.map {
-      userObj => (userObj.getAs[String]("user").get, userObj.getAsOrElse[String]("userRole", "Role Undefined"))
-    }*/
-    Nil
+  def users: Map[String, Role] = {
+    User.findAll map (user => (user.username.get, user.role.get)) toMap
   }
-
-  // Created to allow for compilation
-  class DBObject {}
-
-  /**
-   * Locate a user in the database by name and hashed password
-   */
-  private def findAuthenticatedUser(userName: String, hashedPassword: String): Option[DBObject] = None //authCollection.findOne(authUserQuery(userName, hashedPassword))
-
-  /**
-   * Generate a MongoDBObject that will find a user by name
-   */
-  private[this] val userByNameQuery = (userName: String) => None //MongoDBObject("user" -> userName)
-
-  /**
-   * Generate a MongoDBObject that will find a user by name an role
-   */
-  private[this] val userByNameAndRoleQuery = (userName: String, userRole: String) => None //MongoDBObject("user" -> userName, "userRole" -> userRole)
-
-  /**
-   * Generate a MongoDBObject that will find a user by name and hashed password, i.e. find the user is they are authenticated
-   */
-  private[this] val authUserQuery = (userName: String, hashedPassword: String) => None //MongoDBObject("user" -> userName, "hashPw" -> hashedPassword)
-
-  /**
-   * Generate a user object that can be added to the database (or matched against) from the name, plain password and role
-   */
-  private[this] val userObject = (userName: String, hashedPassword: String, userRole: String) => None //MongoDBObject("user" -> userName, "hashPw" -> hashedPassword, "userRole" -> userRole)
-
-  /**
-   * The collection to use for access and storage of authentication information
-   */
-  //private[this] lazy val authCollection = MongoConfig.getCollection(dbName, collectionName)
 }

@@ -3,13 +3,6 @@
  */
 package uk.co.randomcoding.partsdb.db.mongo
 
-/**
- * Provides access to MongoDB collection instances.
- *
- * @author RandomCoder <randomcoder@randomcoding.co.uk>
- *
- */
-
 import com.mongodb.Mongo
 
 import net.liftweb._
@@ -45,6 +38,8 @@ object MongoConfig extends Logger {
    *
    * Furthermore, a local connection assumes that MongoDB is running on port 27017 and is accessible via `127.0.0.1`
    *
+   * This will use the `DefaultMongoIdentifier` to identify the named database, so (I think) only one database can be used at a time.
+   *
    * @param dbName The name of the local database to connect to. If connecting to a CloudFoundry database then this parameters is ignored and can be empty.
    *
    */
@@ -52,8 +47,12 @@ object MongoConfig extends Logger {
     mongoConnectionDetails(dbName) match {
       case Some(x) => x match {
         case config: MongoConnectionConfig => config match {
-          case MongoConnectionConfig(host, port, user, pass, db, true) => MongoDB.defineDbAuth(DefaultMongoIdentifier, (host, port), db, user, pass)
-          case MongoConnectionConfig(_, _, _, _, db, false) => MongoDB.defineDb(config.dbId, new Mongo, db)
+          case MongoConnectionConfig(host, port, user, pass, db, true) => {
+            MongoDB.defineDbAuth(DefaultMongoIdentifier, (host, port), db, user, pass)
+          }
+          case MongoConnectionConfig(_, _, _, _, db, false) => {
+            MongoDB.defineDb(DefaultMongoIdentifier, new Mongo, db)
+          }
           case _ => error("Failed To initialise mongo DB Connection!")
         }
         case _ => error("Failed To initialise mongo DB Connection!")
@@ -116,8 +115,4 @@ object MongoConfig extends Logger {
  */
 case class MongoConnectionConfig(host: String, port: Int, user: String, password: String, dbName: String, onCloudFoundry: Boolean) {
   require(dbName.trim nonEmpty, "DB Name Cannot be empty")
-
-  object dbId extends MongoIdentifier {
-    val jndiName = dbName
-  }
 }

@@ -37,6 +37,7 @@ class User private () extends MongoRecord[User] with ObjectIdPk[User] {
 }
 
 object User extends User with MongoMetaRecord[User] {
+
   def findUser(userName: String): Option[User] = User where (_.username eqs userName) get
 
   def addUser(userName: String, hashedPassword: String, role: Role.Role) = User.createRecord.username(userName).password(hashedPassword).role(role).save
