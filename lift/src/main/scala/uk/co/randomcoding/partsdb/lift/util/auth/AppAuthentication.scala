@@ -17,8 +17,7 @@ import uk.co.randomcoding.partsdb.core.user.Role
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
 object AppAuthentication extends Loggable with MongoConversionFormats {
-  private lazy val dbAccess = MongoUserAccess()
-  import dbAccess._
+  import MongoUserAccess._
 
   /**
    * Provides Http Basic authentication against the user database

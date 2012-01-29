@@ -15,16 +15,6 @@ import uk.co.randomcoding.partsdb.core.user.Role._
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
 object MongoUserAccess extends Loggable {
-  private lazy val defaultAccess = new MongoUserAccess("AuthDb", "Authentication")
-
-  private var accessMap = Map.empty[(String, String), MongoUserAccess].withDefault(tuple => new MongoUserAccess(tuple._1, tuple._2))
-
-  def apply(): MongoUserAccess = defaultAccess
-
-  def apply(dbName: String, collectionName: String): MongoUserAccess = accessMap((dbName, collectionName))
-}
-
-class MongoUserAccess private (dbName: String, collectionName: String) extends Loggable {
   /**
    * Add a new user to the user database.
    *
