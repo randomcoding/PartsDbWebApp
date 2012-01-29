@@ -12,6 +12,7 @@ import net.liftweb.record.field.BooleanField
 import net.liftweb.mongodb.record.field.MongoCaseClassField
 import com.foursquare.rogue.Rogue._
 import net.liftweb.record.field.EnumField
+import Role._
 
 /**
  * Simple User class
@@ -34,13 +35,18 @@ class User private () extends MongoRecord[User] with ObjectIdPk[User] {
    * The role of this user
    */
   object role extends EnumField(this, Role)
+
+  override def toString = "User: [username: %s, role: %s]".format(username.get, role.get)
 }
 
 object User extends User with MongoMetaRecord[User] {
 
   def findUser(userName: String): Option[User] = User where (_.username eqs userName) get
 
-  def addUser(userName: String, hashedPassword: String, role: Role.Role) = User.createRecord.username(userName).password(hashedPassword).role(role).save
+  def addUser(userName: String, hashedPassword: String, role: Role.Role) = role match {
+    case NO_ROLE => None
+    case _ => Some(User.createRecord.username(userName).password(hashedPassword).role(role).save)
+  }
 
   def authenticate(userName: String, hashedPassword: String) = User where (_.username eqs userName) and (_.password eqs hashedPassword) get
 

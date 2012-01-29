@@ -41,8 +41,11 @@ class MongoUserAccess private (dbName: String, collectionName: String) extends L
     val found = findUser(userName)
     found match {
       case None => addUser(userName, hash(plainPassword), userRole) match {
-        case u: User => None // all ok
-        case _ => Some("Failed to create User %s with Role %s".format(userName, userRole))
+        case Some(user) => {
+          logger.info("Added User %s".format(user))
+          None // all ok
+        }
+        case _ => Some("Failed to create User '%s' with Role '%s'".format(userName, userRole))
       }
       case Some(user) => Some("Cannot add user '%s' as they already exist with role %s.".format(user.username.get, user.role.get))
     }
@@ -67,7 +70,7 @@ class MongoUserAccess private (dbName: String, collectionName: String) extends L
    */
   def modifyUser(userName: String, plainPassword: String, userRole: String): Option[String] = {
     findUser(userName) match {
-      case Some(user) => user.password(hash(plainPassword)).role(userRole).save match {
+      case Some(user) => user.password(hash(plainPassword)).role(userRole).update match {
         case u: User if u.password.get == hash(plainPassword) && u.role.get.toString == userRole => None
         case _ => Some("Failed to update user %s".format(userName))
       }

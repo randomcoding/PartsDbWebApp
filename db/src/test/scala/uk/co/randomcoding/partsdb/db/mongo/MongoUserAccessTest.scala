@@ -25,19 +25,23 @@ class MongoUserAccessTest extends MongoDbTestBase {
     users should be(Map(("Name" -> USER)))
   }
 
+  test("Adding user with unrecognised role fails correctly") {
+    access.addNewUser("Name3", "Pass3", "Unknown") should be(Some("Failed to create User 'Name3' with Role 'Unknown'"))
+    access.addNewUser("Name4", "Pass4", "") should be(Some("Failed to create User 'Name4' with Role ''"))
+
+  }
+
   test("Adding a multiple different users works correctly") {
     access.addNewUser("Name", "Pass", "user") should be(None)
     access.addNewUser("Name1", "Pass1", "USER") should be(None)
     access.addNewUser("Name2", "Pass2", "AdMin") should be(None)
-    access.addNewUser("Name3", "Pass3", "Unknown") should be(None)
 
     val registeredUsers = users
 
-    registeredUsers should have size (4)
-    registeredUsers("Name") should be(USER)
-    registeredUsers("Name1") should be(USER)
-    registeredUsers("Name2") should be(ADMIN)
-    registeredUsers("Name3") should be(USER)
+    registeredUsers should (have size (3) and
+      contain(("Name" -> USER)) and
+      contain(("Name1" -> USER)) and
+      contain(("Name2" -> ADMIN)))
   }
 
   test("Adding the same user multiple times does not duplicate the user") {

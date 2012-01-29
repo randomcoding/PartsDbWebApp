@@ -14,8 +14,8 @@ object Role extends Enumeration("user", "admin", "") {
 
   implicit def stringToRole(roleString: String): Role = roleString.trim toLowerCase match {
     case "admin" => ADMIN
-    case "" => NO_ROLE
-    case _ => USER
+    case "user" => USER
+    case _ => NO_ROLE
   }
 }
 
