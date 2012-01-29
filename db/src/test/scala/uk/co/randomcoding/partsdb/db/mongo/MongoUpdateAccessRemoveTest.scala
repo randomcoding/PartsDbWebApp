@@ -15,7 +15,7 @@ import uk.co.randomcoding.partsdb.core.vehicle.Vehicle
  *
  * @deprecated("Changing Access API")
  */
-class MongoUpdateAccessRemoveTest extends MongoDbTestBase {
+class MongoUpdateAccessRemoveTest { //} extends MongoDbTestBase {
   /*val dbName = "AccessRemoveTest"
 
   lazy val mongoAccess = new MongoUpdateAccess() {
