@@ -15,6 +15,8 @@ import uk.co.randomcoding.partsdb.core.user.Role
  * Authentication mechanisms for use in `Boot.scala`
  *
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
+ *
+ * @deprecated("Moved to pure lift auth")
  */
 object AppAuthentication extends Loggable with MongoConversionFormats {
   import MongoUserAccess._
