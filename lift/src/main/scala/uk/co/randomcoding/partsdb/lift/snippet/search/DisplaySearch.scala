@@ -3,12 +3,11 @@
  */
 package uk.co.randomcoding.partsdb.lift.snippet.search
 
-import uk.co.randomcoding.partsdb.lift.util.TransformHelpers.styledAjaxSelect
+import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
 import uk.co.randomcoding.partsdb.lift.util.search.SearchProviders
-import uk.co.randomcoding.partsdb.lift.util.snippet.DbAccessSnippet
 
 import net.liftweb.common.Box.box2Option
-import net.liftweb.common.{Logger, Full, Empty, Box}
+import net.liftweb.common.{ Logger, Full, Empty, Box }
 import net.liftweb.http.js.JsCmds
 import net.liftweb.http.RequestVar
 import net.liftweb.util.AnyVar.whatVarIs
@@ -18,7 +17,7 @@ import net.liftweb.util.Helpers._
  * Displays the search options and results.
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
-class DisplaySearch extends DbAccessSnippet with Logger {
+class DisplaySearch extends Logger {
 
   object currentProvider extends RequestVar[Box[String]](Empty)
 

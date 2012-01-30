@@ -10,7 +10,7 @@ import uk.co.randomcoding.partsdb.db.mongo.MongoUserAccess
 import uk.co.randomcoding.partsdb.lift.util.CustomerDisplay
 import uk.co.randomcoding.partsdb.lift.util.UserDisplay
 import uk.co.randomcoding.partsdb.lift.util.TransformHelpers.buttonLink
-import uk.co.randomcoding.partsdb.lift.util.snippet.{ ErrorDisplay, DbAccessSnippet }
+import uk.co.randomcoding.partsdb.lift.util.snippet.ErrorDisplay
 import net.liftweb.common.Logger
 import net.liftweb.http.S
 import net.liftweb.http.SHtml.link
@@ -29,7 +29,7 @@ import uk.co.randomcoding.partsdb.core.document.LineItem
  *
  * The entity type is specified by the `entityType` query parameter * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
-class DisplayExisting extends DbAccessSnippet with ErrorDisplay with Logger {
+class DisplayExisting extends ErrorDisplay with Logger {
 
   /**
    * Display the web page content

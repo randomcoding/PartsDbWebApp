@@ -8,7 +8,7 @@ import uk.co.randomcoding.partsdb.core.customer.Customer
 import uk.co.randomcoding.partsdb.core.part.Part
 import uk.co.randomcoding.partsdb.lift.model.document.QuoteHolder
 import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
-import uk.co.randomcoding.partsdb.lift.util.snippet.{ ErrorDisplay, DbAccessSnippet, DataValidation }
+import uk.co.randomcoding.partsdb.lift.util.snippet.{ ErrorDisplay, DataValidation }
 import net.liftweb.common.StringOrNodeSeq.strTo
 import net.liftweb.common.{ Logger, Full }
 import net.liftweb.http.SHtml._
@@ -24,10 +24,10 @@ import uk.co.randomcoding.partsdb.core.supplier.Supplier
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
-class AddQuote extends StatefulSnippet with DbAccessSnippet with ErrorDisplay with DataValidation with Logger {
+class AddQuote extends StatefulSnippet with ErrorDisplay with DataValidation with Logger {
 
   var customerName = ""
-  val quoteHolder = new QuoteHolder(this)
+  val quoteHolder = new QuoteHolder
 
   val parts = List.empty[Part] //getAll[Part]("partId") sortBy (_.partName)
   val partsSelect = (None, "Select Part") :: (parts map ((p: Part) => (Some(p), p.partName.get)))

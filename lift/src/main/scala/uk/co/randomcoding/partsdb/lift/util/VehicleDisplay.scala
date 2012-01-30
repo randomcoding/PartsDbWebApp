@@ -7,7 +7,6 @@ import net.liftweb.http.SHtml._
 import net.liftweb.http.js.JsCmds.Noop
 import scala.xml.NodeSeq
 import net.liftweb.common.Logger
-import uk.co.randomcoding.partsdb.lift.util.snippet.DbAccessSnippet
 import uk.co.randomcoding.partsdb.core.part.Part
 import scala.xml.Text
 import uk.co.randomcoding.partsdb.db.DbAccess
@@ -20,7 +19,7 @@ import uk.co.randomcoding.partsdb.core.vehicle.Vehicle
  *
  * @author Jane Rowe
  */
-object VehicleDisplay extends EntityDisplay with Logger with DbAccessSnippet {
+object VehicleDisplay extends EntityDisplay with Logger {
   type EntityType = Vehicle
   /**
    * The headings to use for the display of the vehicle data table

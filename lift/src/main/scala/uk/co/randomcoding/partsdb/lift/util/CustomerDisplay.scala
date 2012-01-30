@@ -15,7 +15,6 @@ import scala.xml.Text
 import net.liftweb.common.Logger
 import scala.io.Source
 import uk.co.randomcoding.partsdb.db.DbAccess
-import uk.co.randomcoding.partsdb.lift.util.snippet.DbAccessSnippet
 import uk.co.randomcoding.partsdb.core.address.Address
 
 /**
@@ -23,7 +22,7 @@ import uk.co.randomcoding.partsdb.core.address.Address
  *
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
-object CustomerDisplay extends EntityDisplay with Logger with DbAccessSnippet {
+object CustomerDisplay extends EntityDisplay with Logger {
   type EntityType = Customer
   /**
    * The headings to use for the display of the customer data table

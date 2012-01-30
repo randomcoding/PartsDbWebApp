@@ -7,7 +7,6 @@ import uk.co.randomcoding.partsdb.core.customer.Customer
 import uk.co.randomcoding.partsdb.db.search.SearchKeys._
 import uk.co.randomcoding.partsdb.db.search.{ SearchKeys, MongoSearchTerm }
 import uk.co.randomcoding.partsdb.lift.util.TransformHelpers.styledAjaxText
-import uk.co.randomcoding.partsdb.lift.util.snippet.DbAccessSnippet
 import uk.co.randomcoding.partsdb.lift.util.CustomerDisplay
 
 import net.liftweb.util.Helpers._
@@ -20,7 +19,7 @@ import net.liftweb.util.Helpers._
  *
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
-object CustomerSearch extends DbAccessSnippet {
+object CustomerSearch {
   private val searchKeys = List(customerName, billingAddressText, contactsName, contactsPhoneNumber, contactsMobileNumber, contactsEmailAddress)
 
   def render = {

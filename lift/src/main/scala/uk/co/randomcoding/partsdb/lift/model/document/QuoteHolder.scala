@@ -27,7 +27,7 @@ import uk.co.randomcoding.partsdb.db.DbAccess
  * This is used by the [[uk.co.randomcoding.partsdb.lift.snippet.AddQuote]] class as a cell.
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
-class QuoteHolder(dbAccess: DbAccess) extends Logger {
+class QuoteHolder extends Logger {
   /**
    * The default markup rate for new lines
    */

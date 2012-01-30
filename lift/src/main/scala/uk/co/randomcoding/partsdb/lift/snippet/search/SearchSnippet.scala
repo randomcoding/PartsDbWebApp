@@ -3,7 +3,6 @@
  */
 package uk.co.randomcoding.partsdb.lift.snippet.search
 
-import uk.co.randomcoding.partsdb.lift.util.snippet.DbAccessSnippet
 import net.liftweb.http.js.JsCmd
 import uk.co.randomcoding.partsdb.db.search.SearchKeys
 import uk.co.randomcoding.partsdb.db.search.MongoSearchTerm
@@ -11,7 +10,7 @@ import uk.co.randomcoding.partsdb.db.search.MongoSearchTerm
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
-trait SearchSnippet extends DbAccessSnippet {
+trait SearchSnippet {
   val searchKeys: List[String]
   /**
    * Helper function to generate a regex search term

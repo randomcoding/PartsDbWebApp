@@ -6,7 +6,7 @@ package uk.co.randomcoding.partsdb.lift.snippet
 
 import uk.co.randomcoding.partsdb.core.part.Part
 import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
-import uk.co.randomcoding.partsdb.lift.util.snippet.{ ValidationItem, ErrorDisplay, DbAccessSnippet, DataValidation, StyleAttributes }
+import uk.co.randomcoding.partsdb.lift.util.snippet.{ ValidationItem, ErrorDisplay, DataValidation, StyleAttributes }
 import uk.co.randomcoding.partsdb.lift.util.snippet.StyleAttributes._
 import net.liftweb.common.StringOrNodeSeq.strTo
 import net.liftweb.common.{ Logger, Full }
@@ -21,7 +21,7 @@ import uk.co.randomcoding.partsdb.core.vehicle.Vehicle
 import uk.co.randomcoding.partsdb.db.mongo.MongoAllOrOneAccess
 import net.liftweb.http.RequestVar
 
-class EditVehicle extends StatefulSnippet with DbAccessSnippet with ErrorDisplay with DataValidation with Logger {
+class EditVehicle extends StatefulSnippet with ErrorDisplay with DataValidation with Logger {
 
   var vehicleName = ""
   val cameFrom = S.referer openOr "/app/show?entityType=Vehicle"

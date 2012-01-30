@@ -6,7 +6,7 @@ package uk.co.randomcoding.partsdb.lift.snippet
 
 import uk.co.randomcoding.partsdb.core.part.Part
 import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
-import uk.co.randomcoding.partsdb.lift.util.snippet.{ ValidationItem, ErrorDisplay, DbAccessSnippet, DataValidation, StyleAttributes }
+import uk.co.randomcoding.partsdb.lift.util.snippet.{ ValidationItem, ErrorDisplay, DataValidation, StyleAttributes }
 import uk.co.randomcoding.partsdb.lift.util.snippet.StyleAttributes._
 import net.liftweb.common.StringOrNodeSeq.strTo
 import net.liftweb.common.{ Logger, Full }
@@ -19,7 +19,7 @@ import scala.xml.Text
 import net.liftweb.http.StatefulSnippet
 import uk.co.randomcoding.partsdb.core.vehicle.Vehicle
 
-class EditPart extends StatefulSnippet with DbAccessSnippet with ErrorDisplay with DataValidation with Logger {
+class EditPart extends StatefulSnippet with ErrorDisplay with DataValidation with Logger {
   val cameFrom = S.referer openOr "/app/show?entityType=Part"
   var partName = ""
   var modId = ""

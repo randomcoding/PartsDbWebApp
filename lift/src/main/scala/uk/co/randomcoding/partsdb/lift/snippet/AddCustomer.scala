@@ -8,7 +8,7 @@ import uk.co.randomcoding.partsdb.core.contact.{ Phone, Mobile, Email, ContactDe
 import uk.co.randomcoding.partsdb.core.terms.PaymentTerms
 import uk.co.randomcoding.partsdb.core.util.CountryCodes.countryCodes
 import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
-import uk.co.randomcoding.partsdb.lift.util.snippet.{ ValidationItem, ErrorDisplay, DbAccessSnippet, DataValidation, StyleAttributes }
+import uk.co.randomcoding.partsdb.lift.util.snippet.{ ValidationItem, ErrorDisplay, DataValidation, StyleAttributes }
 import uk.co.randomcoding.partsdb.lift.util.snippet.StyleAttributes._
 import net.liftweb.common.StringOrNodeSeq.strTo
 import net.liftweb.common.{ Logger, Full }
@@ -23,7 +23,7 @@ import net.liftweb.http.StatefulSnippet
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
-class AddCustomer extends StatefulSnippet with DbAccessSnippet with ErrorDisplay with DataValidation with Logger {
+class AddCustomer extends StatefulSnippet with ErrorDisplay with DataValidation with Logger {
   val terms = List(("30" -> "30"), ("45" -> "45"), ("60" -> "60"), ("90" -> "90"))
 
   val cameFrom = S.referer openOr "/app/customers"
