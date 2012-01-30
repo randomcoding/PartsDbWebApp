@@ -70,6 +70,7 @@ class VehicleRecordTest extends MongoDbTestBase {
 
   test("Rename a vehicle") {
     add("V678") should be('defined)
+
     rename("V678", "V987")
 
     findNamed("V678") should be(Nil)
@@ -77,5 +78,21 @@ class VehicleRecordTest extends MongoDbTestBase {
     findNamed("V987")(0).vehicleName.get should be("V987")
 
     (Vehicle where (_.vehicleName eqs "V987") fetch) should be(List(Vehicle.createRecord.vehicleName("V987")))
+  }
+
+  test("Rename a vehicle does not modify its object id") {
+    val v1 = add("V678")
+    v1 should be('defined)
+
+    val oid = v1.get.id.get
+
+    rename("V678", "V987")
+
+    val v2 = findById(oid)
+    v2 should be('defined)
+
+    findNamed("V987")(0).id.get should be(oid)
+
+    v2.get.vehicleName.get should be("V987")
   }
 }
