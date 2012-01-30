@@ -3,12 +3,12 @@
  */
 package uk.co.randomcoding.partsdb.db.mongo
 
-import org.scalatest.{ FunSuite, BeforeAndAfterEach }
-import org.scalatest.matchers.ShouldMatchers
-import net.liftweb.mongodb.MongoDB
-import net.liftweb.mongodb.MongoIdentifier
-import net.liftweb.mongodb.DefaultMongoIdentifier
 import scala.collection.JavaConversions._
+
+import org.scalatest.matchers.ShouldMatchers
+import org.scalatest.{ FunSuite, BeforeAndAfterEach, BeforeAndAfterAll }
+
+import net.liftweb.mongodb.{ MongoIdentifier, MongoDB, DefaultMongoIdentifier }
 
 /**
  * A base class for all tests involving MongoDB usage.
@@ -23,7 +23,7 @@ import scala.collection.JavaConversions._
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  *
  */
-abstract class MongoDbTestBase extends FunSuite with BeforeAndAfterEach with ShouldMatchers {
+abstract class MongoDbTestBase extends FunSuite with BeforeAndAfterEach with BeforeAndAfterAll with ShouldMatchers {
 
   /**
    * Define the database name to use for testing
@@ -38,6 +38,7 @@ abstract class MongoDbTestBase extends FunSuite with BeforeAndAfterEach with Sho
   override def beforeEach(): Unit = {
     MongoConfig.init(dbName)
     MongoDB.getDb(DefaultMongoIdentifier) should be('defined)
+    Thread.sleep(250)
   }
 
   /**
@@ -48,5 +49,8 @@ abstract class MongoDbTestBase extends FunSuite with BeforeAndAfterEach with Sho
     val db = MongoDB.getDb(DefaultMongoIdentifier).get
     db.getCollectionNames filterNot (_ startsWith "system.") foreach (db.getCollection(_).drop)
     db.dropDatabase()
+    Thread.sleep(250)
   }
+
+  override def afterAll = Thread.sleep(500)
 }
