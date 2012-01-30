@@ -18,7 +18,6 @@ import uk.co.randomcoding.partsdb.core.user.Role._
 object LoggedInAs extends Logger {
   def render = {
     val currentUser = Session.currentUser.is
-    info("Current User: %s".format(currentUser))
     "#loggedInAs" #> (currentUser match {
       case (user: String, role: Role) if (user.nonEmpty && role != NO_ROLE) => loggedIn(user, role)
       case _ => notLoggedIn

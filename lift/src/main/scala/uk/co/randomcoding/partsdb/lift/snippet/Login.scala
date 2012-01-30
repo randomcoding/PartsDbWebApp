@@ -25,10 +25,7 @@ object Login extends Logger {
     var password = ""
 
     def processLogin() = {
-      info("Logging in as: %s, %s".format(username, password))
-      val authed = authenticateUser(username, pwhash(password))
-      info("Authed: %s".format(authed))
-      authed match {
+      authenticateUser(username, pwhash(password)) match {
         case Some(role) if role != NO_ROLE => {
           Session.currentUser.set(username, role)
           S.redirectTo(role match {
