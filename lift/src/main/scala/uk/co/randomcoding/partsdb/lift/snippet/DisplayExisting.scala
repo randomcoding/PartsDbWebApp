@@ -4,6 +4,7 @@
 package uk.co.randomcoding.partsdb.lift.snippet
 
 import scala.xml.Text
+import com.foursquare.rogue.Rogue._
 import uk.co.randomcoding.partsdb.core.address.Address
 import uk.co.randomcoding.partsdb.core.customer.Customer
 import uk.co.randomcoding.partsdb.db.mongo.MongoUserAccess
@@ -69,6 +70,8 @@ class DisplayExisting extends ErrorDisplay with Logger {
 
   private[this] lazy val matchingTypes: String => List[AnyRef] = (entityType: String) => {
     entityType.toLowerCase match {
+      case "part" => Part where (_.partName exists true) orderDesc (_.partName) fetch
+      case "vehicle" => Vehicle where (_.vehicleName exists true) orderDesc (_.vehicleName) fetch
       /*case "customer" => getAll[Customer]("customerId") sortBy (_.customerName)
       case "address" =>
         getAll[Address]("addressId") sortBy (_.shortName)

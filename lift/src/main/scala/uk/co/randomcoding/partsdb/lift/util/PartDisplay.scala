@@ -12,12 +12,14 @@ import scala.xml.Text
 import uk.co.randomcoding.partsdb.db.DbAccess
 import scala.io.Source
 import uk.co.randomcoding.partsdb.core.vehicle.Vehicle
-import uk.co.randomcoding.partsdb.core.vehicle.Vehicle
+import com.foursquare.rogue.Rogue._
+import org.bson.types.ObjectId
 
 /**
  * Helper functions for displaying parts in lift pages
  *
  * @author Jane Rowe
+ * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
 object PartDisplay extends EntityDisplay with Logger {
   type EntityType = Part
@@ -37,16 +39,20 @@ object PartDisplay extends EntityDisplay with Logger {
    *     // <td>{ displayVehicle(part) }</td>
    */
   override def displayEntity(part: Part): NodeSeq = {
-    <td>{ part.partName }</td>
+    <td>{ part.partName.get }</td>
+    <td>{ vehicleName(part.vehicle.get) }</td>
     <td>{
-      /*part.vehicles match {
-        case Some(v) => v.vehicleName
-        case _ =>*/ "No Vehicle"
-      //}
-    }</td>
-    <td>{ /*part.modId*/ }</td>
-    ++ <td></td>
-    //editEntityCell(editEntityLink("Part", part.id))
+      part.modId.get match {
+        case Some(mid) => mid
+        case _ => ""
+      }
+    }</td> ++
+      editEntityCell(editEntityLink("Part", part.id.get))
+  }
+
+  private[this] def vehicleName(vehicleId: ObjectId) = Vehicle findById vehicleId match {
+    case Some(vehicle) => vehicle.vehicleName.get
+    case _ => "No Vehicle"
   }
 
   private[this] def displayVehicle(part: Part) = {

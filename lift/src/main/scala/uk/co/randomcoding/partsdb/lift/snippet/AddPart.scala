@@ -21,6 +21,7 @@ import net.liftweb.http.StatefulSnippet
 import uk.co.randomcoding.partsdb.db.mongo.MongoAllOrOneAccess
 import uk.co.randomcoding.partsdb.core.vehicle.Vehicle
 import uk.co.randomcoding.partsdb.core.part.PartCost
+import com.foursquare.rogue.Rogue._
 
 class AddPart extends StatefulSnippet with ErrorDisplay with DataValidation with Logger {
 
@@ -31,7 +32,9 @@ class AddPart extends StatefulSnippet with ErrorDisplay with DataValidation with
   var partCosts: Option[List[PartCost]] = None
 
   var vehicle: Option[Vehicle] = None
-  val allVehicles = List.empty[(Option[Vehicle], String)] //getAllVehicles().map(v => (Some(v), v.vehicleName))
+  val allVehicles: List[(Option[Vehicle], String)] = (None, "-- Select Vehicle --") :: {
+    (Vehicle where (_.vehicleName exists true) orderDesc (_.vehicleName) fetch) map (v => (Some(v), v.vehicleName.get))
+  }
 
   def dispatch = {
     case "render" => render
@@ -40,7 +43,7 @@ class AddPart extends StatefulSnippet with ErrorDisplay with DataValidation with
   def render = {
     "#formTitle" #> Text("Add Part") &
       "#nameEntry" #> styledText(partName, partName = _) &
-      "#vehicleEntry" #> styledObjectSelect[Option[Vehicle]](allVehicles, vehicle, (v: Option[Vehicle]) => vehicle = v) &
+      "#vehicleEntry" #> styledObjectSelect[Option[Vehicle]](allVehicles, vehicle, vehicle = _) &
       "#modIdEntry" #> styledText(modId, modId = _) &
       "#submit" #> button("Submit", processSubmit)
   }

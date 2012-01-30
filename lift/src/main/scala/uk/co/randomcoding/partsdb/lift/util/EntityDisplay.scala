@@ -7,6 +7,7 @@ import net.liftweb.http.SHtml.link
 import uk.co.randomcoding.partsdb.core.id.Identifier
 import scala.xml.Text
 import scala.xml.NodeSeq
+import org.bson.types.ObjectId
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
@@ -41,7 +42,7 @@ trait EntityDisplay {
   /**
    * Create the link to display the edit button for the entity
    */
-  val editEntityLink = (entityType: String, entityId: Identifier) => link("edit%s?id=%d".format(entityType, entityId.id), () => Unit, Text("Edit"), "class" -> "btn")
+  val editEntityLink = (entityType: String, entityId: ObjectId) => link("edit%s?id=%s".format(entityType, entityId.toString), () => Unit, Text("Edit"), "class" -> "btn")
 
   /**
    * This is the list of heading to be displayed for the entity table

@@ -35,7 +35,7 @@ object VehicleDisplay extends EntityDisplay with Logger {
    * @return A [[scala.xml.NodeSeq]] of `<td>` elements to display the vehicle details
    */
   override def displayEntity(vehicle: Vehicle): NodeSeq = {
-    <td>{ vehicle.vehicleName }</td> ++ <td></td>
-    //editEntityCell(editEntityLink("Vehicle", vehicle.id))
+    <td>{ vehicle.vehicleName }</td> ++
+      editEntityCell(editEntityLink("Vehicle", vehicle.id.get))
   }
 }
