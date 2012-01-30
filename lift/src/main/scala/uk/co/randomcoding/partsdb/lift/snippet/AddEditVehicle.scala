@@ -19,12 +19,20 @@ import scala.xml.Text
 import net.liftweb.http.StatefulSnippet
 import uk.co.randomcoding.partsdb.core.vehicle.Vehicle
 import uk.co.randomcoding.partsdb.db.mongo.MongoAllOrOneAccess
+import org.bson.types.ObjectId
 
-class AddVehicle extends StatefulSnippet with ErrorDisplay with DataValidation with Logger {
+class AddEditVehicle extends StatefulSnippet with ErrorDisplay with DataValidation with Logger {
 
-  val cameFrom = S.referer openOr "/app/show?entityType=vehicle"
-  var vehicleName = ""
-  val defaultVehicle: Option[Vehicle] = None
+  val initialVehicle = S param ("id") match {
+    case Full(id) => Vehicle findById (new ObjectId(id))
+    case _ => None
+  }
+
+  val cameFrom = S.referer openOr "/app/show?entityType=Vehicle"
+  var vehicleName = initialVehicle match {
+    case Some(v) => v.vehicleName.get
+    case _ => ""
+  }
 
   def dispatch = {
     case "render" => render
@@ -50,7 +58,10 @@ class AddVehicle extends StatefulSnippet with ErrorDisplay with DataValidation w
 
     validate(validationChecks: _*) match {
       case Nil => {
-        add(vehicleName)
+        initialVehicle match {
+          case Some(v) => Vehicle.modify(v.vehicleName.get, vehicleName)
+          case _ => add(vehicleName)
+        }
         S redirectTo "/app/show?entityType=Vehicle"
       }
       case errors => {

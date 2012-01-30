@@ -71,7 +71,7 @@ class VehicleRecordTest extends MongoDbTestBase {
   test("Rename a vehicle") {
     add("V678") should be('defined)
 
-    rename("V678", "V987")
+    modify("V678", "V987")
 
     findNamed("V678") should be(Nil)
     findNamed("V987") should be(List(Vehicle.createRecord.vehicleName("V987")))
@@ -86,7 +86,7 @@ class VehicleRecordTest extends MongoDbTestBase {
 
     val oid = v1.get.id.get
 
-    rename("V678", "V987")
+    modify("V678", "V987")
 
     val v2 = findById(oid)
     v2 should be('defined)
