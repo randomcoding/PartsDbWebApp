@@ -4,6 +4,7 @@ package uk.co.randomcoding.partsdb.lift.snippet
  * @author Jane Rowe
  */
 
+import uk.co.randomcoding.partsdb.core.part.Part._
 import uk.co.randomcoding.partsdb.core.part.Part
 import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
 import uk.co.randomcoding.partsdb.lift.util.snippet.{ ValidationItem, ErrorDisplay, DataValidation, StyleAttributes }
@@ -58,7 +59,10 @@ class AddPart extends StatefulSnippet with ErrorDisplay with DataValidation with
 
     validate(validationChecks: _*) match {
       case Nil => {
-        addNewPart(partName, vehicle.get, modId)
+        add(partName, vehicle.get, modId.trim match {
+          case "" => None
+          case s: String => Some(s)
+        })
         S redirectTo "/app/show?entityType=Part"
       }
       case errors => {
