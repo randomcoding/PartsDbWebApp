@@ -29,6 +29,13 @@ class Vehicle private () extends MongoRecord[Vehicle] with ObjectIdPk[Vehicle] {
 
 object Vehicle extends Vehicle with MongoMetaRecord[Vehicle] {
 
+  import org.bson.types.ObjectId
+
+  /**
+   * Find a vehicle with a given object id
+   */
+  def findById(objectId: ObjectId): Option[Vehicle] = Vehicle where (_.id eqs objectId) get
+
   /**
    * Find all vehicles with a given name.
    *

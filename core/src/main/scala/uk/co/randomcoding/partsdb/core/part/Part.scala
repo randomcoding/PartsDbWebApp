@@ -48,6 +48,15 @@ class Part private () extends MongoRecord[Part] with ObjectIdPk[Part] {
 
 object Part extends Part with MongoMetaRecord[Part] {
 
+  import org.bson.types.ObjectId
+  
+  /**
+   * Find a part by its object id
+   * 
+   * @return An optional part containing the `Part` with the given id if it is found or `None` if it is not
+   */
+  def findById(id: ObjectId): Option[Part] = Part where (_.id eqs id) get
+  
   /**
    * Find all parts with the given name in the database.
    *
