@@ -4,7 +4,7 @@ package uk.co.randomcoding.partsdb.lift.snippet
  * @author Jane Rowe
  */
 
-import uk.co.randomcoding.partsdb.core.part.Part
+import uk.co.randomcoding.partsdb.core.part.Part._
 import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
 import uk.co.randomcoding.partsdb.lift.util.snippet.{ ValidationItem, ErrorDisplay, DataValidation, StyleAttributes }
 import uk.co.randomcoding.partsdb.lift.util.snippet.StyleAttributes._
@@ -20,6 +20,7 @@ import net.liftweb.http.StatefulSnippet
 import uk.co.randomcoding.partsdb.core.vehicle.Vehicle
 
 class EditPart extends StatefulSnippet with ErrorDisplay with DataValidation with Logger {
+  // TODO: THis has no idea of the part to edit etc.
   val cameFrom = S.referer openOr "/app/show?entityType=Part"
   var partName = ""
   var modId = ""
@@ -48,29 +49,14 @@ class EditPart extends StatefulSnippet with ErrorDisplay with DataValidation wit
    * On successful addition, this will (possibly display a dialogue and then) redirect to the main parts page
    */
   private[this] def processSubmit() = {
-    //      val validationChecks = Seq(ValidationItem(name, "partNameError", "Part Name must be entered"),
-    //        ValidationItem(cost, "partCostError", "Part Cost is not valid"))
-    //  
-    //          validate(validationChecks: _*) match {
-    //            case Nil => {
-    //              val newId = editPart(name, cost.toDouble).partId
-    //              S redirectTo "/parts?highlight=%d".format(newId.id)
-    //            }
-    //            case errors => {
-    //              errors foreach (error => displayError(error._1, error._2))
-    //              // TODO: Need to ensure that the entered details are still present
-    //              Noop
-    //            }
-    //          }
     val validationChecks = Seq(
       ValidationItem(partName, "partNameError", "Part Name must be entered"),
       ValidationItem(vehicle, "partVehicleError", "Vehicle is not valid"))
-    //ValidationItem(modId, "modIdError", "MoD ID must be entered"))
 
     validate(validationChecks: _*) match {
       case Nil => {
-        addNewPart(partName, vehicle.get, modId)
-        S redirectTo "/app/show?entityType=" + "Part"
+        //addNewPart(partName, vehicle.get, modId)
+        S redirectTo "/app/show?entityType=Part"
       }
       case errors => {
         errors foreach (error => displayError(error._1, error._2))

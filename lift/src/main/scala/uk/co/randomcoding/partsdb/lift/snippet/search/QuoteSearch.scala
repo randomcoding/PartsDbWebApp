@@ -6,7 +6,6 @@ package uk.co.randomcoding.partsdb.lift.snippet.search
 import uk.co.randomcoding.partsdb.db.search.SearchKeys._
 import uk.co.randomcoding.partsdb.db.search.{ SearchKeys, MongoSearchTerm }
 import uk.co.randomcoding.partsdb.lift.util.TransformHelpers.styledAjaxText
-import uk.co.randomcoding.partsdb.lift.util.snippet.DbAccessSnippet
 import uk.co.randomcoding.partsdb.lift.util.CustomerDisplay
 import net.liftweb.util.Helpers._
 import net.liftweb.http.SHtml._
