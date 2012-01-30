@@ -77,7 +77,7 @@ class Boot extends Loggable {
 
     // Provide access to the admin menu. This is hidden.
     val adminLoc = Menu(Loc("adminSection", new Link("admin" :: Nil, true), "Admin", Hidden, adminLoggedIn))
-    val rootLoc = Menu(Loc("root", new Link("index" :: Nil, false), "Root", Hidden))
+    val rootLoc = Menu(Loc("login", new Link("index" :: Nil, false), "Login", Hidden))
 
     // Construct the menu list to use
     val menus = mainAppLoc :: showCustomers :: showParts :: showVehicles :: showSuppliers :: searchLoc :: addQuoteLoc :: adminLoc :: rootLoc :: Nil
