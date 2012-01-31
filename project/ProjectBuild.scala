@@ -10,7 +10,10 @@ object ProjectBuild extends Build {
 	lazy val root = Project("root", 
 		file("."),
 		settings = buildSettings ++ Unidoc.settings ++ Seq (
-                    scaladocOptions := Seq()
+                    scaladocOptions := Seq(),
+                    // Disable publish and publish-local for empty root project
+                    publish := {},
+                    publishLocal := {}
                 )
 	) aggregate(coreProject, liftProject, dbProject, loggingProject)
 
