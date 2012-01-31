@@ -148,36 +148,36 @@ class MongoUpdateAccessModifyTest extends MongoDbTestBase with ShouldMatchers {
 
   // Vehicle Tests
   test("Modify of Vehicle already added to database correctly modifies object") {
-    val vehicle1 = Vehicle(Identifier(9880), "Vehicle 9880")
+    val vehicle1 = Vehicle(Identifier(9880), "Vehicle 9880", "VehicleManual 1")
     mongoAccess add vehicle1 should be(true)
 
-    val vehicle2 = Vehicle(Identifier(9880), "Vehicle 9880 Modified")
+    val vehicle2 = Vehicle(Identifier(9880), "Vehicle 9880 Modified", "VehicleManual 2")
     mongoAccess modify vehicle2 should be(true)
 
     findInDatabase[Vehicle]("vehicleId", 9880) should be(List(vehicle2))
   }
 
   test("Multiple modifications to the same Vehicle result in the Vehicle Part in the database") {
-    val vehicle1 = Vehicle(Identifier(9881), "Vehicle 9881")
+    val vehicle1 = Vehicle(Identifier(9881), "Vehicle 9881", "VehicleManual 1")
     mongoAccess add vehicle1 should be(true)
 
-    val vehicle2 = Vehicle(Identifier(9881), "Big Vehicle 9881")
+    val vehicle2 = Vehicle(Identifier(9881), "Big Vehicle 9881", "VehicleManual 2")
     mongoAccess modify vehicle2 should be(true)
 
-    val vehicle3 = Vehicle(Identifier(9881), "Really Big Vehicle 9881")
+    val vehicle3 = Vehicle(Identifier(9881), "Really Big Vehicle 9881", "VehicleManual 3")
     mongoAccess modify vehicle3 should be(true)
 
-    val vehicle4 = Vehicle(Identifier(9881), "Enormous Vehicle 9881")
+    val vehicle4 = Vehicle(Identifier(9881), "Enormous Vehicle 9881", "VehicleManual 4")
     mongoAccess modify vehicle4 should be(true)
 
     findInDatabase[Vehicle]("vehicleId", 9881) should be(List(vehicle4))
   }
 
   test("Modify called on Vehicle that is not is database does not add it to database") {
-    val vehicle1 = Vehicle(Identifier(9882), "Vehicle 9882")
+    val vehicle1 = Vehicle(Identifier(9882), "Vehicle 9882", "VehicleManual 1")
     mongoAccess add vehicle1 should be(true)
 
-    val vehicle2 = Vehicle(Identifier(98822), "Enormous Vehicle 98822")
+    val vehicle2 = Vehicle(Identifier(98822), "Enormous Vehicle 98822", "VehicleManual 2")
     mongoAccess modify vehicle2 should be(false)
 
     findInDatabase[Vehicle]("vehicleId", 9882) should be(List(vehicle1))

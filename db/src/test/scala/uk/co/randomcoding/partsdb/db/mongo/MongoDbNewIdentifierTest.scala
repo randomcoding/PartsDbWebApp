@@ -72,9 +72,55 @@ class MongoDbNewIdentifierTest extends MongoDbTestBase with ShouldMatchers {
       be theSameInstanceAs addr5)
   }
 
+  // Vehicle Tests
+  test("Vehicle with default id is correctly assigned new id") {
+    val vehicle = Vehicle(DefaultIdentifier, "Vehicle1", "Manual1")
+
+    access assignId vehicle should be(Vehicle(Identifier(0), "Vehicle1", "Manual1"))
+  }
+
+  test("Sending multiple different vehicles with default ids result in different ids being assigned") {
+    val vehicle1 = Vehicle(DefaultIdentifier, "Vehicle1", "Manual1")
+    val vehicle2 = Vehicle(DefaultIdentifier, "Vehicle2", "Manual2")
+    val vehicle3 = Vehicle(DefaultIdentifier, "Vehicle3", "Manual3")
+    val vehicle4 = Vehicle(DefaultIdentifier, "Vehicle4", "Manual4")
+
+    access assignId vehicle1 should be(Vehicle(Identifier(0), "Vehicle1", "Manual1"))
+    access assignId vehicle2 should be(Vehicle(Identifier(1), "Vehicle2", "Manual2"))
+    access assignId vehicle3 should be(Vehicle(Identifier(2), "Vehicle3", "Manual3"))
+    access assignId vehicle4 should be(Vehicle(Identifier(3), "Vehicle4", "Manual4"))
+  }
+
+  test("Sending the same original vehicle with a default id multiple times results in different ids being assigned") {
+    val vehicle1 = Vehicle(DefaultIdentifier, "Vehicle1", "Manual1")
+
+    access assignId vehicle1 should be(Vehicle(Identifier(0), "Vehicle1", "Manual1"))
+    access assignId vehicle1 should be(Vehicle(Identifier(1), "Vehicle1", "Manual1"))
+    access assignId vehicle1 should be(Vehicle(Identifier(2), "Vehicle1", "Manual1"))
+    access assignId vehicle1 should be(Vehicle(Identifier(3), "Vehicle1", "Manual1"))
+  }
+
+  test("Sending the same vehicle multiple times results in only one change of id and subsequent calls return the same item reference") {
+    val vehicle1 = Vehicle(DefaultIdentifier, "Vehicle1", "Manual1")
+    val vehicle2 = access assignId vehicle1
+    val vehicle3 = access assignId vehicle2
+    val vehicle4 = access assignId vehicle3
+    val vehicle5 = access assignId vehicle4
+
+    vehicle2 should be(Vehicle(Identifier(0), "Vehicle1", "Manual1"))
+    vehicle3 should be(Vehicle(Identifier(0), "Vehicle1", "Manual1"))
+    vehicle4 should be(Vehicle(Identifier(0), "Vehicle1", "Manual1"))
+    vehicle5 should be(Vehicle(Identifier(0), "Vehicle1", "Manual1"))
+
+    vehicle2 should (be theSameInstanceAs vehicle3 and
+      be theSameInstanceAs vehicle4 and
+      be theSameInstanceAs vehicle5)
+  }
+
   // Part Tests with no options
   test("Part with default id is correctly assigned new id") {
     val part = Part(DefaultIdentifier, "Part1")
+
     access assignId part should be(Part(Identifier(0), "Part1"))
   }
 
@@ -92,6 +138,7 @@ class MongoDbNewIdentifierTest extends MongoDbTestBase with ShouldMatchers {
 
   test("Sending the same original part with a default id multiple times results in different ids being assigned") {
     val part1 = Part(DefaultIdentifier, "Part1")
+
     access assignId part1 should be(Part(Identifier(0), "Part1"))
     access assignId part1 should be(Part(Identifier(1), "Part1"))
     access assignId part1 should be(Part(Identifier(2), "Part1"))
@@ -116,98 +163,67 @@ class MongoDbNewIdentifierTest extends MongoDbTestBase with ShouldMatchers {
       be theSameInstanceAs part5)
   }
 
-  // Part Tests with option
-  //  test("Part with default id is correctly assigned new id") {
-  //    val part = Part(DefaultIdentifier, "ModPartId", "SupplierPartId", "No Part", "00.00".toDouble, Some(Vehicle(Identifier(199), "SomeVehicle")))
-  //    val cost: Double = 00.00
-  //    access assignId part should be(Part(Identifier(0), "ModPartId", "SupplierPartId", "No Part", cost, Some(Vehicle(Identifier(199), "SomeVehicle"))))
-  //  }
-  //
-  //  test("Sending multiple different parts with default ids result in different ids being assigned") {
-  //    val part1 = Part(DefaultIdentifier, "ModPartId", "SupplierPartId", "Part1", 0.1, Some(Vehicle(Identifier(200), "Vehicle200")))
-  //    val part2 = Part(DefaultIdentifier, "ModPartId", "SupplierPartId", "Part2", 0.2, Some(Vehicle(Identifier(200), "Vehicle200")))
-  //    val part3 = Part(DefaultIdentifier, "ModPartId", "SupplierPartId", "Part3", 0.3, Some(Vehicle(Identifier(200), "Vehicle200")))
-  //    val part4 = Part(DefaultIdentifier, "ModPartId", "SupplierPartId", "Part4", 0.4, Some(Vehicle(Identifier(200), "Vehicle200")))
-  //
-  //    val cost1: Double = 0.1
-  //    val cost2: Double = 0.2
-  //    val cost3: Double = 0.3
-  //    val cost4: Double = 0.4
-  //
-  //    access assignId part1 should be(Part(Identifier(0), "ModPartId1", "SupplierPartId1", "Part1", cost1, Some(Vehicle(Identifier(200), "Vehicle200"))))
-  //    access assignId part2 should be(Part(Identifier(1), "ModPartId2", "SupplierPartId2", "Part2", cost2, Some(Vehicle(Identifier(200), "Vehicle200"))))
-  //    access assignId part3 should be(Part(Identifier(2), "ModPartId3", "SupplierPartId3", "Part3", cost3, Some(Vehicle(Identifier(200), "Vehicle200"))))
-  //    access assignId part4 should be(Part(Identifier(3), "ModPartId4", "SupplierPartId4", "Part4", cost4, Some(Vehicle(Identifier(200), "Vehicle200"))))
-  //  }
-  //
-  //  test("Sending the same original part with a default id multiple times results in different ids being assigned") {
-  //    val cost1: Double = 00.1
-  //    val part1 = Part(DefaultIdentifier, "ModPartId", "SupplierPartId", "Part1", "0.10".toDouble, Some(Vehicle(Identifier(200), "Vehicle200")))
-  //    access assignId part1 should be(Part(Identifier(0), "ModPartId", "SupplierPartId", "Part1", cost1, Some(Vehicle(Identifier(200), "Vehicle200"))))
-  //    access assignId part1 should be(Part(Identifier(1), "ModPartId", "SupplierPartId", "Part1", cost1, Some(Vehicle(Identifier(200), "Vehicle200"))))
-  //    access assignId part1 should be(Part(Identifier(2), "ModPartId", "SupplierPartId", "Part1", cost1, Some(Vehicle(Identifier(200), "Vehicle200"))))
-  //    access assignId part1 should be(Part(Identifier(3), "ModPartId", "SupplierPartId", "Part1", cost1, Some(Vehicle(Identifier(200), "Vehicle200"))))
-  //  }
-  //
-  //  test("Sending the same part multiple times results in only one change of id and subsequent calls return the same item reference") {
-  //    val part1 = Part(DefaultIdentifier, "ModPartId", "SupplierPartId", "Part1", 0.1, Some(Vehicle(Identifier(200), "Vehicle200")))
-  //    val part2 = access assignId part1
-  //    val part3 = access assignId part2
-  //    val part4 = access assignId part3
-  //    val part5 = access assignId part4
-  //    val cost1: Double = 0.1
-  //
-  //    part2 should be(Part(Identifier(0), "ModPartId", "SupplierPartId", "Part1", cost1, Some(Vehicle(Identifier(200), "Vehicle200"))))
-  //    part3 should be(Part(Identifier(0), "ModPartId", "SupplierPartId", "Part1", cost1, Some(Vehicle(Identifier(200), "Vehicle200"))))
-  //    part4 should be(Part(Identifier(0), "ModPartId", "SupplierPartId", "Part1", cost1, Some(Vehicle(Identifier(200), "Vehicle200"))))
-  //    part5 should be(Part(Identifier(0), "ModPartId", "SupplierPartId", "Part1", cost1, Some(Vehicle(Identifier(200), "Vehicle200"))))
-  //
-  //    part2 should (be theSameInstanceAs part3 and
-  //      be theSameInstanceAs part4 and
-  //      be theSameInstanceAs part5)
-  //  }
+  // Part Tests with options
+  test("Part with Options with default id is correctly assigned new id") {
+    val optionListVehicle: Option[List[Vehicle]] = Option(List(Vehicle(Identifier(23), "Vehicle1", "Manual1")))
+    val optionModString: Option[String] = Option("ModId1")
+    val part = Part(DefaultIdentifier, "Part1", optionListVehicle, optionModString)
 
-  // Vehicle Tests
-  test("Vehicle with default id is correctly assigned new id") {
-    val vehicle = Vehicle(DefaultIdentifier, "SomeVehicle")
-    access assignId vehicle should be(Vehicle(Identifier(0), "SomeVehicle"))
+    access assignId part should be(Part(Identifier(0), "Part1", optionListVehicle, optionModString))
   }
 
-  test("Sending multiple different vehicles with default ids result in different ids being assigned") {
-    val vehicle1 = Vehicle(DefaultIdentifier, "Vehicle1")
-    val vehicle2 = Vehicle(DefaultIdentifier, "Vehicle2")
-    val vehicle3 = Vehicle(DefaultIdentifier, "Vehicle3")
-    val vehicle4 = Vehicle(DefaultIdentifier, "Vehicle4")
+  test("Sending multiple different parts with Options with default ids result in different ids being assigned") {
+    val optionListVehicle1: Option[List[Vehicle]] = Option(List(Vehicle(Identifier(24), "Vehicle1", "Manual1")))
+    val optionModString1: Option[String] = Option("ModId1")
+    val part1 = Part(DefaultIdentifier, "Part1", optionListVehicle1, optionModString1)
 
-    access assignId vehicle1 should be(Vehicle(Identifier(0), "Vehicle1"))
-    access assignId vehicle2 should be(Vehicle(Identifier(1), "Vehicle2"))
-    access assignId vehicle3 should be(Vehicle(Identifier(2), "Vehicle3"))
-    access assignId vehicle4 should be(Vehicle(Identifier(3), "Vehicle4"))
+    val optionListVehicle2: Option[List[Vehicle]] = Option(List(Vehicle(Identifier(25), "Vehicle2", "Manual2")))
+    val optionModString2: Option[String] = Option("ModId2")
+    val part2 = Part(DefaultIdentifier, "Part2", optionListVehicle2, optionModString2)
+
+    val optionListVehicle3: Option[List[Vehicle]] = Option(List(Vehicle(Identifier(26), "Vehicle3", "Manual3")))
+    val optionModString3: Option[String] = Option("ModId3")
+    val part3 = Part(DefaultIdentifier, "Part3", optionListVehicle3, optionModString3)
+
+    val optionListVehicle4: Option[List[Vehicle]] = Option(List(Vehicle(Identifier(27), "Vehicle4", "Manual4")))
+    val optionModString4: Option[String] = Option("ModId4")
+    val part4 = Part(DefaultIdentifier, "Part4", optionListVehicle4, optionModString4)
+
+    access assignId part1 should be(Part(Identifier(0), "Part1", optionListVehicle1, optionModString1))
+    access assignId part2 should be(Part(Identifier(1), "Part2", optionListVehicle2, optionModString2))
+    access assignId part3 should be(Part(Identifier(2), "Part3", optionListVehicle3, optionModString3))
+    access assignId part4 should be(Part(Identifier(3), "Part4", optionListVehicle4, optionModString4))
   }
 
-  test("Sending the same original vehicle with a default id multiple times results in different ids being assigned") {
-    val vehicle1 = Vehicle(DefaultIdentifier, "Vehicle1")
-    access assignId vehicle1 should be(Vehicle(Identifier(0), "Vehicle1"))
-    access assignId vehicle1 should be(Vehicle(Identifier(1), "Vehicle1"))
-    access assignId vehicle1 should be(Vehicle(Identifier(2), "Vehicle1"))
-    access assignId vehicle1 should be(Vehicle(Identifier(3), "Vehicle1"))
+  test("Sending the same original part  with Options with a default id multiple times results in different ids being assigned") {
+    val optionListVehicle1: Option[List[Vehicle]] = Option(List(Vehicle(Identifier(24), "Vehicle1", "Manual1")))
+    val optionModString1: Option[String] = Option("ModId1")
+    val part1 = Part(DefaultIdentifier, "Part1", optionListVehicle1, optionModString1)
+
+    access assignId part1 should be(Part(Identifier(0), "Part1", optionListVehicle1, optionModString1))
+    access assignId part1 should be(Part(Identifier(1), "Part1", optionListVehicle1, optionModString1))
+    access assignId part1 should be(Part(Identifier(2), "Part1", optionListVehicle1, optionModString1))
+    access assignId part1 should be(Part(Identifier(3), "Part1", optionListVehicle1, optionModString1))
   }
 
-  test("Sending the same vehicle multiple times results in only one change of id and subsequent calls return the same item reference") {
-    val vehicle1 = Vehicle(DefaultIdentifier, "Vehicle200")
-    val vehicle2 = access assignId vehicle1
-    val vehicle3 = access assignId vehicle2
-    val vehicle4 = access assignId vehicle3
-    val vehicle5 = access assignId vehicle4
+  test("Sending the same part  with Options multiple times results in only one change of id and subsequent calls return the same item reference") {
+    val optionListVehicle1: Option[List[Vehicle]] = Option(List(Vehicle(Identifier(24), "Vehicle1", "Manual1")))
+    val optionModString1: Option[String] = Option("ModId1")
+    val part1 = Part(DefaultIdentifier, "Part1", optionListVehicle1, optionModString1)
 
-    vehicle2 should be(Vehicle(Identifier(0), "Vehicle200"))
-    vehicle3 should be(Vehicle(Identifier(0), "Vehicle200"))
-    vehicle4 should be(Vehicle(Identifier(0), "Vehicle200"))
-    vehicle5 should be(Vehicle(Identifier(0), "Vehicle200"))
+    val part2 = access assignId part1
+    val part3 = access assignId part2
+    val part4 = access assignId part3
+    val part5 = access assignId part4
 
-    vehicle2 should (be theSameInstanceAs vehicle3 and
-      be theSameInstanceAs vehicle4 and
-      be theSameInstanceAs vehicle5)
+    part2 should be(Part(Identifier(0), "Part1", optionListVehicle1, optionModString1))
+    part3 should be(Part(Identifier(0), "Part1", optionListVehicle1, optionModString1))
+    part4 should be(Part(Identifier(0), "Part1", optionListVehicle1, optionModString1))
+    part5 should be(Part(Identifier(0), "Part1", optionListVehicle1, optionModString1))
+
+    part2 should (be theSameInstanceAs part3 and
+      be theSameInstanceAs part4 and
+      be theSameInstanceAs part5)
   }
 
 }

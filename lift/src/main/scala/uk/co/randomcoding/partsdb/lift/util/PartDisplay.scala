@@ -41,7 +41,7 @@ object PartDisplay extends EntityDisplay with Logger with DbAccessSnippet {
     <td>{ part.partName }</td>
     <td>{
       part.vehicles match {
-        case Some(v) => v.vehicleName
+        case Some(v) => v(0).vehicleName
         case _ => "No Vehicle"
       }
     }</td>
@@ -54,7 +54,7 @@ object PartDisplay extends EntityDisplay with Logger with DbAccessSnippet {
     debug("Displaying Vehicle for Part: %s".format(part))
     part.vehicles match {
       case Some(v) => {
-        val vehicleLines = Source.fromString(v.vehicleName).getLines()
+        val vehicleLines = Source.fromString(v(0).vehicleName).getLines()
         <span>{ vehicleLines map (line => <span>{ line }</span><br/>) }</span>
       }
       case _ => Text("Unspecified Vehicle.")

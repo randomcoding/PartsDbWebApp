@@ -3,13 +3,12 @@
  */
 package uk.co.randomcoding.partsdb.core.part
 
-import uk.co.randomcoding.partsdb.core.id.{ Identifier, Identifiable }
-import uk.co.randomcoding.partsdb.core.id.DefaultIdentifier
+import uk.co.randomcoding.partsdb.core.id.{ Identifier, Identifiable, DefaultIdentifier }
 import uk.co.randomcoding.partsdb.core.vehicle.Vehicle
-import uk.co.randomcoding.partsdb.core.supplier.{ Supplier, DefaultSupplier }
-import java.util.Date
 
 /**
+ * The data object for a Part.
+ *
  * @constructor Create a new part object
  * @param partId The [[uk.co.randomcoding.partsdb.core.id.Identifier]] of this part. This is used for internal referencing of part objects from other entities.
  * @param partName The short (friendly) name of this part
@@ -23,22 +22,9 @@ import java.util.Date
  * @author Jane Rowe
  *
  */
-case class Part(val partId: Identifier, val partName: String, val vehicles: Option[Vehicle] = None, val modId: Option[String] = None) extends Identifiable {
+case class Part(val partId: Identifier, val partName: String, val vehicles: Option[List[Vehicle]] = None, val modId: Option[String] = None) extends Identifiable {
   override val identifierFieldName = "partId"
 }
 
 object DefaultPart extends Part(DefaultIdentifier, "No Part")
-
-/**
- * @constructor Create a new PartKit object which is a collection of parts
- * @param partsId The [[uk.co.randomcoding.partsdb.core.id.Identifier]] of this part collection. This is used for internal referencing of part collection objects from other entities.
- * @param partsName The short (friendly) name of this part collection
- * @param cost The aggregated cost of this part collection
- *
- * @author Jane Rowe
- *
- */
-case class PartKit(val kitId: Identifier, val kitName: String, val parts: List[Part]) extends Identifiable {
-  override val identifierFieldName = "kitId"
-}
 

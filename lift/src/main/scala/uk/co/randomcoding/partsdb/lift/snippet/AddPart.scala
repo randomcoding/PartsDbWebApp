@@ -27,14 +27,13 @@ class AddPart extends StatefulSnippet with DbAccessSnippet with ErrorDisplay wit
   var partName = ""
   var modId = ""
 
-  var partCosts: Option[List[PartCost]] = None
-
   var vehicle: Option[Vehicle] = None
-  val allVehicles = getAllVehicles().map(v => (Some(v), v.vehicleName))
+  var vehicles: Option[List[Vehicle]] = None
+  val allVehicles = getAllVehicles.map(v => (Some(v), v.vehicleName))
+  var vehicleList: List[Vehicle] = Nil
 
-  //       "#vehicleEntry" #> styledObjectSelect[Option[Vehicle]](allVehicles, vehicle, (v: Option[Vehicle]) => vehicle = v) & 
-  //    var vehicles: Option[List[Vehicle]] = None
-  //    val allVehicles = getAllVehicles.map(v => (Some(v), v.vehicleName))
+  //  val allVehicles = getAllVehicles().map(v => (Some(v), v.vehicleName))
+  //         "#vehicleEntry" #> styledObjectSelect[Option[Vehicle]](allVehicles, vehicle, (v: Option[Vehicle]) => vehicle = v) & 
 
   def dispatch = {
     case "render" => render
@@ -43,9 +42,20 @@ class AddPart extends StatefulSnippet with DbAccessSnippet with ErrorDisplay wit
   def render = {
     "#formTitle" #> Text("Add Part") &
       "#nameEntry" #> styledText(partName, partName = _) &
-      "#vehicleEntry" #> styledObjectSelect[Option[Vehicle]](allVehicles, vehicle, (v: Option[Vehicle]) => vehicle = v) &
       "#modIdEntry" #> styledText(modId, modId = _) &
+      "#vehicleEntry" #> styledObjectSelect[Option[Vehicle]](allVehicles, vehicle, (v: Option[Vehicle]) => vehicle = v) &
+      "#vehicleSubmit" #> button("Vehicle Submit", processVehicleSubmit) &
       "#submit" #> button("Submit", processSubmit)
+  }
+
+  /**
+   * Method called when the vehicle submit button is pressed.
+   *
+   * This adds a vehicle to the list of vehicles.
+   */
+  private[this] def processVehicleSubmit() = {
+    // vehicleList.+:(vehicle)
+    vehicleList.+:(vehicle)
   }
 
   /**
@@ -59,6 +69,10 @@ class AddPart extends StatefulSnippet with DbAccessSnippet with ErrorDisplay wit
 
     //    var vehicles = List[Vehicle]()
     //    vehicles = vehicle ::: List(vehicle)
+    /*    if (!vehicleList.isEmpty)
+    {
+      var vehicles: Option[List[Vehicle]] = Option[List[Vehicle]](vehicleList)     
+    }*/
 
     val validationChecks = Seq(
       ValidationItem(partName, "partNameError", "Part Name must be entered"),
@@ -69,7 +83,9 @@ class AddPart extends StatefulSnippet with DbAccessSnippet with ErrorDisplay wit
     validate(validationChecks: _*) match {
       case Nil => {
         //        addNewPart(partName, cost, vehicle.get)
-        addNewPart(partName, vehicle.get, modId)
+        //Part(val partId: Identifier, val partName: String, val vehicles: Option[List[Vehicle]] = None, val modId: Option[String] = None)
+
+        addNewPart(partName, vehicleList, modId)
         S redirectTo "/app/show?entityType=" + "Part"
       }
       case errors => {

@@ -21,7 +21,7 @@ object MongoConverters extends MongoConversionFormats {
    * This is usually used to convert from the results returned from a query into types objects.
    *
    * @param mongoObject The object from the MongoDB database to convert
-   * @tparam T The type to convert the object into
+   * @param T The type to convert the object into
    * @return The converted object. This will be of type '''`T`'''
    */
   implicit def convertFromMongoDbObject[T](mongoObject: DBObject)(implicit mf: Manifest[T]): T = {

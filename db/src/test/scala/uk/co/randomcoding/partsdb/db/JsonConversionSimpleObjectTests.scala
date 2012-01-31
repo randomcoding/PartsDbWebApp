@@ -141,16 +141,16 @@ class JsonConversionSimpleObjectTests extends JsonConversionTesting {
 
   // Vehicle Tests
   test("Can convert Vehicle to JSON") {
-    val vehicle = Vehicle(Identifier(4570), "TestVehicle")
+    val vehicle = Vehicle(Identifier(4570), "TestVehicle", "TestManual")
     val json: String = vehicle
 
-    json should be("""{"vehicleId" : {{"id":4570},"vehicleName" : "TestVehicle"}""")
-    checkJsonConversion[Vehicle](json, Vehicle(Identifier(4570), "TestVehicle"))
+    json should be("""{"vehicleId" : {{"id":4570},"vehicleName" : "TestVehicle", "vehicleManual" : "TestManual"}""")
+    checkJsonConversion[Vehicle](json, Vehicle(Identifier(4570), "TestVehicle", "TestManual"))
   }
 
   test("Can convert JSON to Vehicle") {
-    val json = """{"vehicleId" : {{"id":4571},"vehicleName" : "TestVehicle"}"""
+    val json = """{"vehicleId" : {{"id":4571},"vehicleName" : "TestVehicle", "vehicleManual" : "TestManual"}"""
 
-    checkJsonConversion[Vehicle](json, Vehicle(Identifier(4571), "TestVehicle"))
+    checkJsonConversion[Vehicle](json, Vehicle(Identifier(4571), "TestVehicle", "TestManual"))
   }
 }

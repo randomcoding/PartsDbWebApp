@@ -10,6 +10,8 @@ import uk.co.randomcoding.partsdb.core.id.Identifier._
 import uk.co.randomcoding.partsdb.core.id.{ Identifiable, DefaultIdentifier }
 import uk.co.randomcoding.partsdb.core.part.Part
 import uk.co.randomcoding.partsdb.core.vehicle.Vehicle
+import uk.co.randomcoding.partsdb.core.part.PartCost
+import uk.co.randomcoding.partsdb.core.part.PartKit
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
@@ -65,8 +67,10 @@ trait MongoIdentifierAccess {
     item match {
       case cust: Customer if defaultId(cust) => Customer(nextId(), cust.customerName, cust.billingAddress, cust.terms, cust.contactDetails)
       case addr: Address if defaultId(addr) => Address(nextId(), addr.shortName, addr.addressText, addr.country)
-      case vehicle: Vehicle if defaultId(vehicle) => Vehicle(nextId(), vehicle.vehicleName)
+      case vehicle: Vehicle if defaultId(vehicle) => Vehicle(nextId(), vehicle.vehicleName, vehicle.vehicleManual)
       case part: Part if defaultId(part) => Part(nextId(), part.partName, part.vehicles, part.modId)
+      case partCost: PartCost if defaultId(partCost) => PartCost(nextId(), partCost.partId, partCost.supplierPartId, partCost.suppliedCost, partCost.lastSuppliedDate)
+      case partKit: PartKit if defaultId(partKit) => PartKit(nextId(), partKit.kitName, partKit.parts)
       case _ => item
     }
   }

@@ -25,19 +25,30 @@ class EditPart extends StatefulSnippet with DbAccessSnippet with ErrorDisplay wi
   var modId = ""
 
   var vehicle: Option[Vehicle] = None
-  val allVehicles = getAllVehicles().map(v => (Some(v), v.vehicleName))
+  var vehicles: Option[List[Vehicle]] = None
+  val allVehicles = getAllVehicles.map(v => (Some(v), v.vehicleName))
+  var vehicleList: List[Vehicle] = Nil
 
   def dispatch = {
     case "render" => render
   }
 
   def render = {
-    "#formTitle" #> Text("Edit Part") &
+    "#formTitle" #> Text("Add Part") &
       "#nameEntry" #> styledText(partName, partName = _) &
-      "#vehicleEntry" #> styledObjectSelect[Option[Vehicle]](allVehicles, vehicle, (v: Option[Vehicle]) => vehicle = v) &
       "#modIdEntry" #> styledText(modId, modId = _) &
+      "#vehicleEntry" #> styledObjectSelect[Option[Vehicle]](allVehicles, vehicle, (v: Option[Vehicle]) => vehicle = v) &
+      "#vehicleSubmit" #> button("Vehicle Submit", processVehicleSubmit) &
       "#submit" #> button("Submit", processSubmit)
+  }
 
+  /**
+   * Method called when the vehicle submit button is pressed.
+   *
+   * This adds a vehicle to the list of vehicles.
+   */
+  private[this] def processVehicleSubmit() = {
+    vehicleList.+:(vehicle)
   }
 
   /**
@@ -64,12 +75,16 @@ class EditPart extends StatefulSnippet with DbAccessSnippet with ErrorDisplay wi
     //          }
     val validationChecks = Seq(
       ValidationItem(partName, "partNameError", "Part Name must be entered"),
+      //      ValidationItem(partCosts, "partCostError", "Part Cost is not valid"),
       ValidationItem(vehicle, "partVehicleError", "Vehicle is not valid"))
-    //ValidationItem(modId, "modIdError", "MoD ID must be entered"))
+    // ValidationItem(modId, "modIdError", "MoD ID must be entered"))
 
     validate(validationChecks: _*) match {
       case Nil => {
-        addNewPart(partName, vehicle.get, modId)
+        //        addNewPart(partName, cost, vehicle.get)
+        //Part(val partId: Identifier, val partName: String, val vehicles: Option[List[Vehicle]] = None, val modId: Option[String] = None)
+
+        addNewPart(partName, vehicleList, modId)
         S redirectTo "/app/show?entityType=" + "Part"
       }
       case errors => {

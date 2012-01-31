@@ -10,7 +10,7 @@ import uk.co.randomcoding.partsdb.db.util.Helpers._
 import net.liftweb.common.Loggable
 
 /**
- * Provides access to the user database for the app
+ * Provides access to the user database for the application
  *
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */

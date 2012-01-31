@@ -29,7 +29,7 @@ trait MongoUpdateAccess {
    * @todo Make the type be `[T <: Identifiable]` where `Identifiable` is used to guarantee the identifier field.
    *
    * @param newItem The new item to add to the database.
-   * @return `true` iff there was no other object with the same [[uk.co.randomcoding.partsdb.core.id.Identifier]] and
+   * @return `true` if there was no other object with the same [[uk.co.randomcoding.partsdb.core.id.Identifier]] and
    * 	the add operation resulted in there being an object with the new [[uk.co.randomcoding.partsdb.core.id.Identifier]] in the db
    */
   def add[TYPE <: Identifiable](newItem: TYPE)(implicit mf: Manifest[TYPE]): Boolean = {
@@ -48,7 +48,7 @@ trait MongoUpdateAccess {
    * @todo Make the type be `[T <: Identifiable]` where `Identifiable` is used to guarantee the identifier field.
    *
    * @param modifiedItem The item with the new values to be added to the database
-   * @return `true` iff there is an item in the database with the same identifier and the update operation succeeds.
+   * @return `true` if there is an item in the database with the same identifier and the update operation succeeds.
    */
   def modify[TYPE <: Identifiable](modifiedItem: TYPE)(implicit mf: Manifest[TYPE]): Boolean = {
     if (idIsInDb[TYPE](modifiedItem, collection)) {

@@ -99,7 +99,7 @@ class MongoUpdateAccessAddTest extends MongoDbTestBase with ShouldMatchers {
 
   //----------------
   test("Adding a Vehicle") {
-    val vehicle = Vehicle(Identifier(2469), "Vehicle2469")
+    val vehicle = Vehicle(Identifier(2469), "Vehicle2469", "VehicleManual1")
 
     mongoAccess add vehicle should be(true)
 
@@ -109,8 +109,8 @@ class MongoUpdateAccessAddTest extends MongoDbTestBase with ShouldMatchers {
   }
 
   test("Adding a Vehicle with the same id as an existing one but different details does not update the previous one") {
-    val vehicle1 = Vehicle(Identifier(2470), "MyVehicle")
-    val vehicle2 = Vehicle(Identifier(2470), "MyVehicleAltered")
+    val vehicle1 = Vehicle(Identifier(2470), "MyVehicle", "VehicleManual1")
+    val vehicle2 = Vehicle(Identifier(2470), "MyVehicleAltered", "VehicleManual2")
 
     mongoAccess add vehicle1 should be(true)
     mongoAccess add vehicle2 should be(false)

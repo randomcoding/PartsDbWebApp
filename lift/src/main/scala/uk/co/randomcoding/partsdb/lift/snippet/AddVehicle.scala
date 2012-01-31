@@ -24,6 +24,7 @@ class AddVehicle extends StatefulSnippet with DbAccessSnippet with ErrorDisplay 
 
   val cameFrom = S.referer openOr "/app/show?entityType=vehicle"
   var vehicleName = ""
+  var vehicleManual = ""
   val defaultVehicle: Option[Vehicle] = None
 
   def dispatch = {
@@ -33,6 +34,7 @@ class AddVehicle extends StatefulSnippet with DbAccessSnippet with ErrorDisplay 
   def render = {
     "#formTitle" #> Text("Add Vehicle") &
       "#nameEntry" #> styledText(vehicleName, vehicleName = _) &
+      "#manualEntry" #> styledText(vehicleManual, vehicleManual = _) &
       "#submit" #> button("Submit", processSubmit)
   }
 
@@ -50,7 +52,7 @@ class AddVehicle extends StatefulSnippet with DbAccessSnippet with ErrorDisplay 
 
     validate(validationChecks: _*) match {
       case Nil => {
-        val newId = addNewVehicle(vehicleName).vehicleId
+        val newId = addNewVehicle(vehicleName, vehicleManual).vehicleId
         S redirectTo "/app/show?entityType=Vehicle".format(newId.id)
       }
       case errors => {

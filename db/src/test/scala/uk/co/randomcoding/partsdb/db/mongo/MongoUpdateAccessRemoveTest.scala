@@ -290,7 +290,7 @@ class MongoUpdateAccessRemoveTest extends MongoDbTestBase {
   }
 
   test("Remove a vehicle from the database does remove it") {
-    val vehicle = Vehicle(Identifier(3580), "Vehicle Test 1")
+    val vehicle = Vehicle(Identifier(3580), "Vehicle Test 1", "VehicleManual 1")
 
     mongo += vehicle
     findVehicle(3580) should be(Some(vehicle))
@@ -301,10 +301,10 @@ class MongoUpdateAccessRemoveTest extends MongoDbTestBase {
   }
 
   test("Remove a vehicle from an empty database returns false") {
-    val vehicle1 = Vehicle(Identifier(3581), "Vehicle Test 1")
-    val vehicle2 = Vehicle(Identifier(3582), "Vehicle Test 2")
-    val vehicle3 = Vehicle(Identifier(3583), "Vehicle Test 3")
-    val vehicle4 = Vehicle(Identifier(3584), "Vehicle Test 4")
+    val vehicle1 = Vehicle(Identifier(3581), "Vehicle Test 1", "VehicleManual 1")
+    val vehicle2 = Vehicle(Identifier(3582), "Vehicle Test 2", "VehicleManual 2")
+    val vehicle3 = Vehicle(Identifier(3583), "Vehicle Test 3", "VehicleManual 3")
+    val vehicle4 = Vehicle(Identifier(3584), "Vehicle Test 4", "VehicleManual 4")
     findVehicle(3581) should be(None)
     findVehicle(3582) should be(None)
     findVehicle(3583) should be(None)
@@ -317,10 +317,10 @@ class MongoUpdateAccessRemoveTest extends MongoDbTestBase {
   }
 
   test("Remove a vehicle from a database with multiple vehicle in removes only the correct vehicle") {
-    val vehicle1 = Vehicle(Identifier(3585), "Vehicle Test 1")
-    val vehicle2 = Vehicle(Identifier(3586), "Vehicle Test 2")
-    val vehicle3 = Vehicle(Identifier(3587), "Vehicle Test 3")
-    val vehicle4 = Vehicle(Identifier(3588), "Vehicle Test 4")
+    val vehicle1 = Vehicle(Identifier(3585), "Vehicle Test 1", "VehicleManual 1")
+    val vehicle2 = Vehicle(Identifier(3586), "Vehicle Test 2", "VehicleManual 2")
+    val vehicle3 = Vehicle(Identifier(3587), "Vehicle Test 3", "VehicleManual 3")
+    val vehicle4 = Vehicle(Identifier(3588), "Vehicle Test 4", "VehicleManual 4")
 
     mongo += vehicle1
     mongo += vehicle2
@@ -344,10 +344,10 @@ class MongoUpdateAccessRemoveTest extends MongoDbTestBase {
   }
 
   test("Remove a vehicle multiple times only removes it once and does not remove any other entries from the database") {
-    val vehicle1 = Vehicle(Identifier(3585), "Vehicle Test 1")
-    val vehicle2 = Vehicle(Identifier(3586), "Vehicle Test 2")
-    val vehicle3 = Vehicle(Identifier(3587), "Vehicle Test 3")
-    val vehicle4 = Vehicle(Identifier(3588), "Vehicle Test 4")
+    val vehicle1 = Vehicle(Identifier(3585), "Vehicle Test 1", "VehicleManual 1")
+    val vehicle2 = Vehicle(Identifier(3586), "Vehicle Test 2", "VehicleManual 2")
+    val vehicle3 = Vehicle(Identifier(3587), "Vehicle Test 3", "VehicleManual 3")
+    val vehicle4 = Vehicle(Identifier(3588), "Vehicle Test 4", "VehicleManual 4")
 
     mongo += vehicle1
     mongo += vehicle2
