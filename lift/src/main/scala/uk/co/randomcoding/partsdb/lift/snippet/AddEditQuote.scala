@@ -24,7 +24,7 @@ import uk.co.randomcoding.partsdb.core.supplier.Supplier
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
-class AddQuote extends StatefulSnippet with ErrorDisplay with DataValidation with Logger {
+class AddEditQuote extends StatefulSnippet with ErrorDisplay with DataValidation with Logger {
 
   var customerName = ""
   val quoteHolder = new QuoteHolder

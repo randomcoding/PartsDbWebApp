@@ -13,7 +13,6 @@ import net.liftweb.common.Full
 import net.liftweb.common.Logger
 import uk.co.randomcoding.partsdb.core.supplier.Supplier
 import uk.co.randomcoding.partsdb.core.id.Identifier
-import uk.co.randomcoding.partsdb.db.DbAccess
 
 /**
  * Encapsulates the data required to generate a `Quote` document.
