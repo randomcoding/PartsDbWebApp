@@ -8,7 +8,7 @@ import uk.co.randomcoding.partsdb.core.contact.{ Phone, Mobile, Email, ContactDe
 import uk.co.randomcoding.partsdb.core.terms.PaymentTerms
 import uk.co.randomcoding.partsdb.core.util.CountryCodes.countryCodes
 import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
-import uk.co.randomcoding.partsdb.lift.util.snippet.{ ValidationItem, ErrorDisplay, DbAccessSnippet, DataValidation, StyleAttributes }
+import uk.co.randomcoding.partsdb.lift.util.snippet.{ ValidationItem, ErrorDisplay, DataValidation, StyleAttributes }
 import uk.co.randomcoding.partsdb.lift.util.snippet.StyleAttributes._
 import net.liftweb.common._
 import net.liftweb.http.SHtml.{ select, button }
@@ -20,16 +20,25 @@ import scala.xml.Text
 import net.liftweb.http.StatefulSnippet
 import uk.co.randomcoding.partsdb.db.mongo.MongoUserAccess._
 import uk.co.randomcoding.partsdb.lift.util.auth.PasswordValidation._
+import uk.co.randomcoding.partsdb.core.user.User
+import org.bson.types.ObjectId
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
-class AddUser extends StatefulSnippet with ErrorDisplay with DataValidation with Logger {
+class AddEditUser extends StatefulSnippet with ErrorDisplay with DataValidation with Logger {
   val roles = List(("User" -> "User"), ("Admin" -> "Admin"))
 
+  val initialUser = S param ("id") match {
+    case Full(id) => User findById (new ObjectId(id))
+    case _ => None
+  }
+
   val cameFrom = S.referer openOr "/admin/"
-  var userName = ""
-  var userRole = ""
+  var (userName, userRole) = initialUser match {
+    case Some(u) => (u.username.get, u.role.get.toString)
+    case _ => ("", "")
+  }
   var password = ""
   var confirmPassword = ""
 
@@ -54,19 +63,24 @@ class AddUser extends StatefulSnippet with ErrorDisplay with DataValidation with
    */
   private[this] def processSubmit() = {
     validate match {
-      case Nil => addUser
+      case Nil => initialUser match {
+        case Some(u) => {
+          User.modify(u.username.get, userName, password match {
+            case "" => u.password.get
+            case p => hash(p)
+          }, userRole)
+          S.redirectTo("/admin/")
+        }
+        case _ => addNewUser(userName, password, userRole) match {
+          case None => S.redirectTo("/admin/")
+          case Some(message) => {
+            displayError("addUserErrorId", message)
+            Noop
+          }
+        }
+      }
       case errors => {
         displayError(errors: _*)
-        Noop
-      }
-    }
-  }
-
-  private[this] def addUser: JsCmd = {
-    addNewUser(userName, password, userRole) match {
-      case None => S.redirectTo("/admin/")
-      case Some(message) => {
-        displayError("addUserErrorId", message)
         Noop
       }
     }

@@ -42,7 +42,7 @@ trait EntityDisplay {
   /**
    * Create the link to display the edit button for the entity
    */
-  val editEntityLink = (entityType: String, entityId: ObjectId) => link("edit%s?id=%s".format(entityType, entityId.toString), () => Unit, Text("Edit"), "class" -> "btn")
+  val editEntityLink = (entityType: String, entityId: ObjectId) => link("%s?id=%s".format(entityType toLowerCase, entityId.toString), () => Unit, Text("Edit"), "class" -> "btn")
 
   /**
    * This is the list of heading to be displayed for the entity table

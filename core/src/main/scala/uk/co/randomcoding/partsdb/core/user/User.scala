@@ -13,6 +13,7 @@ import net.liftweb.mongodb.record.field.MongoCaseClassField
 import com.foursquare.rogue.Rogue._
 import net.liftweb.record.field.EnumField
 import Role._
+import Role.Role
 
 /**
  * Simple User class
@@ -41,11 +42,22 @@ class User private () extends MongoRecord[User] with ObjectIdPk[User] {
 
 object User extends User with MongoMetaRecord[User] {
 
-  def findUser(userName: String): Option[User] = User where (_.username eqs userName) get
+  import org.bson.types.ObjectId
 
-  def addUser(userName: String, hashedPassword: String, role: Role.Role) = role match {
-    case NO_ROLE => None
-    case _ => Some(User.createRecord.username(userName).password(hashedPassword).role(role).save)
+  def findById(oid: ObjectId) = User where (_.id eqs oid) get
+
+  def findUser(userName: String): Option[User] = User where (_.username eqs userName) get
+  
+  def modify(originalName: String, newName: String, newHashedPassword: String, newRole: Role) = {
+    User where (_.username eqs originalName) modify (_.username setTo newName) and (_.password setTo newHashedPassword) and (_.role setTo newRole) updateMulti
+  }
+
+  def addUser(userName: String, hashedPassword: String, role: Role) = findUser(userName) match {
+    case None => role match {
+      case NO_ROLE => None
+      case _ => Some(User.createRecord.username(userName).password(hashedPassword).role(role).save)
+    }
+    case _ => None
   }
 
   def authenticate(userName: String, hashedPassword: String) = User where (_.username eqs userName) and (_.password eqs hashedPassword) get

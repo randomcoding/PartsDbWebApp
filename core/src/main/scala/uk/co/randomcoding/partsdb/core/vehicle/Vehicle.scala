@@ -61,7 +61,7 @@ object Vehicle extends Vehicle with MongoMetaRecord[Vehicle] {
    *
    * This '''should''' only affect a single record.
    */
-  def rename(oldName: String, newName: String) = Vehicle where (_.vehicleName eqs oldName) modify (_.vehicleName setTo newName) updateMulti
+  def modify(oldName: String, newName: String) = Vehicle where (_.vehicleName eqs oldName) modify (_.vehicleName setTo newName) updateMulti
 
   /**
    * Remove all records found with the given name.

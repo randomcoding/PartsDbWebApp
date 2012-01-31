@@ -25,6 +25,7 @@ import uk.co.randomcoding.partsdb.lift.util.PartDisplay
 import uk.co.randomcoding.partsdb.core.vehicle.Vehicle
 import uk.co.randomcoding.partsdb.lift.util.VehicleDisplay
 import uk.co.randomcoding.partsdb.core.document.LineItem
+import uk.co.randomcoding.partsdb.core.user.User
 /**
  * Displays the existing entities from the database.
  *
@@ -51,13 +52,13 @@ class DisplayExisting extends ErrorDisplay with Logger {
 
     "#displayCurrentTitle" #> Text("%ss".format(entityType)) &
       "#details" #> displayTable(entitiesFromDb, entityType) &
-      "#add" #> buttonLink("add%s".format(entityType), addText)
+      "#add" #> buttonLink("%s".format(entityType toLowerCase), addText)
   }
 
   private[this] def displayTable(entities: List[AnyRef], entityType: String) = {
     entityType.toLowerCase match {
       case "customer" => CustomerDisplay.displayTable(entities map (_.asInstanceOf[Customer]))
-      case "user" => UserDisplay.displayTable(entities map (_.asInstanceOf[(String, String)]))
+      case "user" => UserDisplay.displayTable(entities map (_.asInstanceOf[User]))
       case "part" => PartDisplay.displayTable(entities map (_.asInstanceOf[Part]))
       case "vehicle" => VehicleDisplay.displayTable(entities map (_.asInstanceOf[Vehicle]))
       case "lineitem" => DisplayLineItem.displayTable(entities map (_.asInstanceOf[LineItem]))
@@ -72,6 +73,7 @@ class DisplayExisting extends ErrorDisplay with Logger {
     entityType.toLowerCase match {
       case "part" => Part where (_.partName exists true) orderDesc (_.partName) fetch
       case "vehicle" => Vehicle where (_.vehicleName exists true) orderDesc (_.vehicleName) fetch
+      case "user" => User where (_.username exists true) orderDesc (_.username) fetch
       /*case "customer" => getAll[Customer]("customerId") sortBy (_.customerName)
       case "address" =>
         getAll[Address]("addressId") sortBy (_.shortName)

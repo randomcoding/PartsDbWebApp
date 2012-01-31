@@ -23,7 +23,7 @@ import net.liftweb.http.StatefulSnippet
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
-class AddCustomer extends StatefulSnippet with ErrorDisplay with DataValidation with Logger {
+class AddEditCustomer extends StatefulSnippet with ErrorDisplay with DataValidation with Logger {
   val terms = List(("30" -> "30"), ("45" -> "45"), ("60" -> "60"), ("90" -> "90"))
 
   val cameFrom = S.referer openOr "/app/customers"

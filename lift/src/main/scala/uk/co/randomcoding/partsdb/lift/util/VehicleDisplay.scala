@@ -9,7 +9,6 @@ import scala.xml.NodeSeq
 import net.liftweb.common.Logger
 import uk.co.randomcoding.partsdb.core.part.Part
 import scala.xml.Text
-import uk.co.randomcoding.partsdb.db.DbAccess
 import scala.io.Source
 import uk.co.randomcoding.partsdb.core.vehicle.Vehicle
 import uk.co.randomcoding.partsdb.core.vehicle.Vehicle
