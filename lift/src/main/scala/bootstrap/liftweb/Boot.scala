@@ -20,21 +20,11 @@ import uk.co.randomcoding.partsdb.db.util.Helpers
  */
 class Boot extends Loggable {
   def boot {
+    // Initialise MongoDB
     MongoConfig.init(Props.get("mongo.db", "MainDb"))
-    // where to search for snippet code
+
+    // packages to search for snippet code
     LiftRules.addToPackages("uk.co.randomcoding.partsdb.lift")
-
-    // Default users to add to the DB to bootstrap the login process
-    //User.createRecord.username("Dave").password(Helpers.hash("dave123")).role(USER).save
-    //User.createRecord.username("Adam").password(Helpers.hash("adam123")).role(ADMIN).save
-
-    // authentication - removed http auth now as we are using custom in lift auth.
-    /*LiftRules.httpAuthProtectedResource.prepend {
-      case (Req("admin" :: _, _, _)) => Full(AuthRole("Admin"))
-      case (Req("app" :: _, _, _)) => Full(AuthRole("User"))
-    }*/
-
-    //LiftRules.authentication = AppAuthentication.simpleAuth
 
     /*
      * Create the various menus here.
@@ -42,8 +32,6 @@ class Boot extends Loggable {
      * To create a link to the show page use ExtLink to form the link with the '?entityType=...'
      * as the Link form incorrectly escapes the ? and = characters in the address bar.
      */
-    // This provides access to all the pages under /app/
-
     val userLoggedIn = If(() => Session.currentUser.get match {
       case (s: String, r: Role) => r == USER
       case _ => false
@@ -71,12 +59,16 @@ class Boot extends Loggable {
     val showSuppliers = Menu(Loc("showSuppliers", ExtLink("/app/show?entityType=Supplier"), "Suppliers", userLoggedIn))
     val showVehicles = Menu(Loc("showVehicles", ExtLink("/app/show?entityType=Vehicle"), "Vehicles", userLoggedIn))
 
+    // Search Button
     val searchLoc = Menu(Loc("search", new Link("app" :: "search" :: Nil, false), "Search", userLoggedIn))
 
+    // Add Quote Button
     val addQuoteLoc = Menu(Loc("addQuote", new Link("app" :: "addQuote" :: Nil, false), "New Quote", userLoggedIn))
 
     // Provide access to the admin menu. This is hidden.
     val adminLoc = Menu(Loc("adminSection", new Link("admin" :: Nil, true), "Admin", Hidden, adminLoggedIn))
+
+    // The root of the app. Provides login
     val rootLoc = Menu(Loc("login", new Link("index" :: Nil, false), "Login", Hidden))
 
     // Construct the menu list to use
@@ -88,19 +80,16 @@ class Boot extends Loggable {
     LiftRules.jsArtifacts = net.liftweb.http.js.jquery.JQuery14Artifacts
 
     //Show the spinny image when an Ajax call starts
-    LiftRules.ajaxStart =
-      Full(() => LiftRules.jsArtifacts.show("ajax-loader").cmd)
+    LiftRules.ajaxStart = Full(() => LiftRules.jsArtifacts.show("ajax-loader").cmd)
 
     // Make the spinny image go away when it ends
-    LiftRules.ajaxEnd =
-      Full(() => LiftRules.jsArtifacts.hide("ajax-loader").cmd)
+    LiftRules.ajaxEnd = Full(() => LiftRules.jsArtifacts.hide("ajax-loader").cmd)
 
     // Force the request to be UTF-8
     LiftRules.early.append(_.setCharacterEncoding("UTF-8"))
 
     // Use HTML5 for rendering
-    LiftRules.htmlProperties.default.set((r: Req) =>
-      new Html5Properties(r.userAgent))
+    LiftRules.htmlProperties.default.set((r: Req) => new Html5Properties(r.userAgent))
 
     LiftRules.dispatch.append {
       case Req("logout" :: Nil, _, GetRequest) =>
