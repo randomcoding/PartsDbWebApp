@@ -12,7 +12,7 @@ import uk.co.randomcoding.partsdb.db.mongo.MongoConfig
 import net.liftweb.util.Props
 import uk.co.randomcoding.partsdb.core.user.Role._
 import uk.co.randomcoding.partsdb.core.user.User
-import uk.co.randomcoding.partsdb.db.util.Helpers
+import uk.co.randomcoding.partsdb.db.util.Helpers._
 
 /**
  * A class that's instantiated early and run.  It allows the application
@@ -26,6 +26,8 @@ class Boot extends Loggable {
     // packages to search for snippet code
     LiftRules.addToPackages("uk.co.randomcoding.partsdb.lift")
 
+    // Uncomment this to add new users required for user access initialisation
+    //addBootstrapUsers
     /*
      * Create the various menus here.
      * 
@@ -105,5 +107,12 @@ class Boot extends Loggable {
     // register search providers
     /*SearchProviders.register(CustomerSearchPageProvider)
     SearchProviders.register(QuoteSearchPageProvider)*/
+  }
+
+  // Default users to add to the DB to bootstrap the login process
+  private[this] def addBootstrapUsers: Unit = {
+    import uk.co.randomcoding.partsdb.core.user.User._
+    addUser("Dave", hash("dave123"), USER)
+    addUser("Adam", hash("adam123"), ADMIN)
   }
 }
