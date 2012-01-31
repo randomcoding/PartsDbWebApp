@@ -29,4 +29,11 @@ class Customer private () extends MongoRecord[Customer] with ObjectIdPk[Customer
   object contactDetails extends MongoCaseClassField[Customer, ContactDetails](this)
 }
 
-object Customer extends Customer with MongoMetaRecord[Customer]
+object Customer extends Customer with MongoMetaRecord[Customer] {
+  def add(name: String, businessAddress: Address, terms: PaymentTerms, contactDetails: ContactDetails) = {
+    Customer.createRecord.customerName(name).businessAddress(businessAddress.id.get).terms(terms).contactDetails(contactDetails).save match {
+      case cust: Customer => Some(cust)
+      case _ => None
+    }
+  }
+}
