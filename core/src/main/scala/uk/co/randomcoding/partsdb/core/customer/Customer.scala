@@ -9,7 +9,7 @@ import uk.co.randomcoding.partsdb.core.id.{ Identifier, Identifiable, DefaultIde
 import uk.co.randomcoding.partsdb.core.terms.PaymentTerms
 
 import net.liftweb.mongodb.record.{ MongoRecord, MongoMetaRecord }
-import net.liftweb.mongodb.record.field.{ ObjectIdPk, MongoCaseClassField, ObjectIdRefField }
+import net.liftweb.mongodb.record.field.{ ObjectIdPk, ObjectIdRefField, ObjectIdRefListField }
 import net.liftweb.record.field.{ StringField, IntField }
 
 /**
@@ -23,7 +23,7 @@ class Customer private () extends MongoRecord[Customer] with ObjectIdPk[Customer
   object customerName extends StringField(this, 50)
   object businessAddress extends ObjectIdRefField(this, Address)
   object terms extends IntField(this)
-  object contactDetails extends MongoCaseClassField[Customer, ContactDetails](this)
+  object contactDetails extends ObjectIdRefListField(this, ContactDetails)
 
   override def equals(that: Any): Boolean = {
     that.isInstanceOf[Customer] match {
@@ -32,7 +32,7 @@ class Customer private () extends MongoRecord[Customer] with ObjectIdPk[Customer
         val other = that.asInstanceOf[Customer]
 
         customerName.get == other.customerName.get && businessAddress.get == other.businessAddress.get &&
-          terms.get == other.terms.get && contactDetails.get == other.contactDetails.get
+          terms.get == other.terms.get && contactDetails.get.sortBy(_.toString) == other.contactDetails.get.sortBy(_.toString)
       }
     }
   }
@@ -53,7 +53,7 @@ object Customer extends Customer with MongoMetaRecord[Customer] {
    */
   def add(customerName: String, businessAddress: Address, termsDays: Int, contactDetails: ContactDetails) = findNamed(customerName) match {
     case Nil => {
-      Customer.createRecord.customerName(customerName).businessAddress(businessAddress.id.get).terms(termsDays).contactDetails(contactDetails).save match {
+      Customer.createRecord.customerName(customerName).businessAddress(businessAddress.id.get).terms(termsDays).contactDetails(contactDetails.id.get :: Nil).save match {
         case cust: Customer => Some(cust)
         case _ => None
       }
@@ -89,9 +89,14 @@ object Customer extends Customer with MongoMetaRecord[Customer] {
   /**
    * Update the values of '''''all''''' the fields of a `Customer`.
    *
+   * If the `newContacts` are not already
+   *
    * To keep a field with the same value, simply use the original value
    */
-  def modify(oid: ObjectId, newName: String, newAddress: Address, newTerms: Int, newContacts: ContactDetails) = {
-    Customer.where(_.id eqs oid).modify(_.customerName setTo newName) and (_.businessAddress setTo newAddress.id.get) and (_.terms setTo newTerms) and (_.contactDetails setTo newContacts) updateMulti
+  def modify(oid: ObjectId, newName: String, newAddress: Address, newTerms: Int, newContacts: List[ContactDetails]) = {
+    Customer.where(_.id eqs oid).modify(_.customerName setTo newName) and
+      (_.businessAddress setTo newAddress.id.get) and
+      (_.terms setTo newTerms) and
+      (_.contactDetails setTo (newContacts map (_.id.get))) updateMulti
   }
 }
