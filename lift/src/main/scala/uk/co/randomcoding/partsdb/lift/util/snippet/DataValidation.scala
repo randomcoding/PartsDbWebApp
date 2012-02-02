@@ -59,7 +59,20 @@ trait DataValidation extends Logger {
    * @return `true` if the address is not a [[uk.co.randomcoding.partsdb.core.address.NullAddress]] and has a valid entry for country
    */
   private def validateAddress(address: Address) = {
-    addressShortNameChecks.view map (_(address.shortName.get)) contains (false) && matchToCountryCode(address.country.get).isDefined
+    val countryCodeIsOk = (address: Address) => matchToCountryCode(address.country.get).isDefined
+
+    val shortNameIsOk = (address: Address) => addressShortNameChecks map (_(address.shortName.get)) contains (false) == false
+
+    countryCodeIsOk(address) && shortNameIsOk(address)
+
+    //matchToCountryCode(address.country.get).isDefined && (addressShortNameChecks.view map (_(address.shortName.get)) distinct == List(true))
+    /*val shortNameChecks = addressShortNameChecks.view map (_(address.shortName.get)) distinct
+    val shortNameOk = shortNameChecks find (_)
+    val ccMatch = matchToCountryCode(address.country.get)
+
+    debug("Address validation, short name checks for %s: %s".format(address.shortName.get, shortNameChecks.mkString(", ")))
+    debug("Address validation, country code match for %s: %s".format(address.country.get, ccMatch))
+    shortNameOk && ccMatch.isDefined*/
   }
 
   /**

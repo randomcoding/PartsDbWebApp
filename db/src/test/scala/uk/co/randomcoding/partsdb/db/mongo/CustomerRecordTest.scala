@@ -117,4 +117,8 @@ class CustomerRecordTest extends MongoDbTestBase {
 
     cust1.hashCode should (be(cust2.hashCode) and be(cust3.hashCode))
   }
+
+  test("Saving A Customer also saves the address and contact details") {
+    pending
+  }
 }

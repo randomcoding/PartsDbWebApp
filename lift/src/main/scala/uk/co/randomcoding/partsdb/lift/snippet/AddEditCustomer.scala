@@ -25,7 +25,7 @@ import net.liftweb.http.js.JsCmd
 class AddEditCustomer extends StatefulSnippet with ErrorDisplay with DataValidation with Logger {
   val terms = List(("30" -> "30"), ("45" -> "45"), ("60" -> "60"), ("90" -> "90"))
 
-  val cameFrom = S.referer openOr "/app/customers"
+  val cameFrom = S.referer openOr "/app/show?entityType=Customer"
   var name = ""
   var billingAddressText = ""
   var billingAddressCountry = "United Kingdom"
@@ -61,6 +61,7 @@ class AddEditCustomer extends StatefulSnippet with ErrorDisplay with DataValidat
    */
   private[this] def processSubmit(): JsCmd = {
     val billingAddress = addressFromInput(billingAddressText, billingAddressCountry)
+    debug("Generated Address: %s".format(billingAddress))
     val contact = contactDetails(contactName, phoneNumber, mobileNumber, email, billingAddressCountry)
 
     val paymentTerms = asInt(paymentTermsText) match {
@@ -68,6 +69,7 @@ class AddEditCustomer extends StatefulSnippet with ErrorDisplay with DataValidat
       case _ => -1
     }
 
+    debug("About to validate")
     val validationChecks = Seq(ValidationItem(billingAddress, "businessAddressError", "Business Address is not valid.\n Please ensure there is a Customer Name and that the country is selected."),
       ValidationItem(paymentTerms, "paymentTermsError", "Payment Terms are not valid"),
       ValidationItem(contact, "contactDetailsError", "Contact Details are not valid"),
@@ -91,7 +93,7 @@ class AddEditCustomer extends StatefulSnippet with ErrorDisplay with DataValidat
     }
 
     Customer.add(name, address, paymentTerms, contact) match {
-      case Some(c) => S redirectTo "/app/customers"
+      case Some(c) => S redirectTo cameFrom
       case _ => {
         error("Failed to add new customer, [name: %s, address: %s, terms: %s, contact: %s".format(name, billingAddress, paymentTerms, contact))
         displayError("addCustomerError", "Failed to add Customer")

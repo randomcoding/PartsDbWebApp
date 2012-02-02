@@ -48,20 +48,20 @@ class DisplayExisting extends ErrorDisplay with Logger {
     }
     val highlightId = asLong(S.attr("highlight") openOr "No Highlight")
     val addText = "Add " + entityType
-    val entitiesFromDb = matchingTypes(entityType)
+    //val entitiesFromDb = matchingTypes(entityType)
 
     "#displayCurrentTitle" #> Text("%ss".format(entityType)) &
-      "#details" #> displayTable(entitiesFromDb, entityType) &
+      "#details" #> displayTable(entityType) &
       "#add" #> buttonLink("%s".format(entityType toLowerCase), addText)
   }
 
-  private[this] def displayTable(entities: List[AnyRef], entityType: String) = {
+  private[this] def displayTable(entityType: String) = {
     entityType.toLowerCase match {
-      case "customer" => CustomerDisplay.displayTable(entities map (_.asInstanceOf[Customer]))
-      case "user" => UserDisplay.displayTable(entities map (_.asInstanceOf[User]))
-      case "part" => PartDisplay.displayTable(entities map (_.asInstanceOf[Part]))
-      case "vehicle" => VehicleDisplay.displayTable(entities map (_.asInstanceOf[Vehicle]))
-      case "lineitem" => DisplayLineItem.displayTable(entities map (_.asInstanceOf[LineItem]))
+      case "customer" => CustomerDisplay.displayTable(Customer where (_.id exists true) orderDesc (_.customerName) fetch)
+      case "user" => UserDisplay.displayTable(User where (_.id exists true) orderDesc (_.username) fetch)
+      case "part" => PartDisplay.displayTable(Part where (_.id exists true) orderDesc (_.partName) fetch)
+      case "vehicle" => VehicleDisplay.displayTable(Vehicle where (_.id exists true) orderDesc (_.vehicleName) fetch)
+      //case "lineitem" => DisplayLineItem.displayTable(entities map (_.asInstanceOf[LineItem]))
       case _ => {
         error("Unknown Type: %s".format(entityType))
         EntityDisplay.emptyTable
@@ -69,12 +69,13 @@ class DisplayExisting extends ErrorDisplay with Logger {
     }
   }
 
-  private[this] lazy val matchingTypes: String => List[AnyRef] = (entityType: String) => {
+  /*private[this] lazy val matchingTypes: String => List[AnyRef] = (entityType: String) => {
     entityType.toLowerCase match {
       case "part" => Part where (_.partName exists true) orderDesc (_.partName) fetch
       case "vehicle" => Vehicle where (_.vehicleName exists true) orderDesc (_.vehicleName) fetch
       case "user" => User where (_.username exists true) orderDesc (_.username) fetch
-      /*case "customer" => getAll[Customer]("customerId") sortBy (_.customerName)
+      case "customer" => Customer where (_.id exists true) orderDesc (_.customerName) fetch
+      case "customer" => getAll[Customer]("customerId") sortBy (_.customerName)
       case "address" =>
         getAll[Address]("addressId") sortBy (_.shortName)
       case "user" =>
@@ -86,13 +87,13 @@ class DisplayExisting extends ErrorDisplay with Logger {
       case "unspecified" => {
         error("Entity Type not specified.")
         List.empty
-      }*/
+      }
       case _ => {
         error("Unhandled Entity Type: %s".format(entityType))
         List.empty
       }
     }
-  }
+  }*/
 
   /**
    * Generates the table headings for the display of each type
