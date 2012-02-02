@@ -3,6 +3,12 @@
  */
 package uk.co.randomcoding.partsdb.db.mongo
 
+import uk.co.randomcoding.partsdb.core._
+import address.Address
+import terms.PaymentTerms
+import contact.ContactDetails
+import customer.Customer
+import customer.Customer._
 import com.foursquare.rogue.Rogue._
 import org.bson.types.ObjectId
 
@@ -10,14 +16,6 @@ import org.bson.types.ObjectId
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
 class CustomerRecordTest extends MongoDbTestBase {
-  import uk.co.randomcoding.partsdb.core._
-  import address.Address
-  import terms.PaymentTerms
-  import contact.ContactDetails
-  import contact.ContactDetails._
-  import customer.Customer
-  import customer.Customer._
-  import customer.Customer.createRecord
 
   override val dbName = "CustomerRecordTest"
   val contactDave = ContactDetails.createRecord.contactName("Dave")
