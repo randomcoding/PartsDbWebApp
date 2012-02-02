@@ -41,34 +41,32 @@ object CustomerDisplay extends EntityDisplay with Logger {
     <td>{ customer.customerName }</td>
     <td>{ displayAddress(customer) }</td>
     <td>{ displayContacts(customer) }</td>
-    <td>{ "%d days".format(customer.terms.get.days) }</td> ++ <td></td>
-    //editEntityCell(editEntityLink("Customer", customer.id.get))
+    <td>{ "%d days".format(customer.terms.get) }</td> ++
+      editEntityCell(editEntityLink("Customer", customer.id.get))
   }
 
   private[this] def displayAddress(customer: Customer) = {
     debug("Displaying Details for Customer: %s".format(customer))
-    //debug("Customer Billing Address Id: %s".format(customer.billingAddress))
-    /*val addr = getOne[Address]("addressId", customer.billingAddress).getOrElse(NullAddress)
-    addr match {
-      case adr: Address => {
-        val addressLines = Source.fromString(addr.addressText).getLines()
+    Address findById customer.businessAddress.get match {
+      case Some(addr) => {
+        val addressLines = Source.fromString(addr.addressText.get).getLines()
         <span>{ addressLines map (line => <span>{ line }</span><br/>) }</span>
       }
-      case NullAddress _ => Text("Unknown Address. Identifier: %d".format(customer.businessAddress.get))
-    }*/
+      case _ => Text("Unknown Address. Identifier: %s".format(customer.businessAddress.get))
+    }
   }
 
   private[this] def displayContacts(customer: Customer): NodeSeq = {
-    val contacts = customer.contactDetails
+    val contacts = customer.contactDetails.get
 
-    val detailsNodes = (details: Seq[AnyRef]) => details map (detail => contactDetail(detail)) flatten
+    /*val detailsNodes = (details: Seq[AnyRef]) => details map (detail => contactDetail(detail)) flatten
     implicit def optionListToList[T](opt: Option[List[T]]): List[T] = opt getOrElse List.empty[T]
 
-    val phoneNodes = detailsNodes(contacts.get.phoneNumbers)
-    val mobileNodes = detailsNodes(contacts.get.mobileNumbers)
-    val emailNodes = detailsNodes(contacts.get.emailAddresses)
-
-    nameNode(contacts.get.contactName) ++ emailNodes ++ mobileNodes ++ phoneNodes
+    val phoneNodes = detailsNodes(contacts.phoneNumbers)
+    val mobileNodes = detailsNodes(contacts.mobileNumbers)
+    val emailNodes = detailsNodes(contacts.emailAddresses)*/
+    <span>Contact Details TDB</span>
+    //nameNode(contacts.contactName.get) // ++ emailNodes ++ mobileNodes ++ phoneNodes
   }
 
   private[this] val nameNode = (name: String) => { <span>{ name }</span><br/> }

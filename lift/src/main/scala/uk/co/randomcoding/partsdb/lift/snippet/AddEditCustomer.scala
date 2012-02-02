@@ -64,8 +64,8 @@ class AddEditCustomer extends StatefulSnippet with ErrorDisplay with DataValidat
     val contact = contactDetails(contactName, phoneNumber, mobileNumber, email, billingAddressCountry)
 
     val paymentTerms = asInt(paymentTermsText) match {
-      case Full(terms) => PaymentTerms(terms)
-      case _ => PaymentTerms(-1)
+      case Full(terms) => terms
+      case _ => -1
     }
 
     val validationChecks = Seq(ValidationItem(billingAddress, "businessAddressError", "Business Address is not valid.\n Please ensure there is a Customer Name and that the country is selected."),
@@ -84,7 +84,7 @@ class AddEditCustomer extends StatefulSnippet with ErrorDisplay with DataValidat
     }
   }
 
-  private def addCustomer(billingAddress: Option[Address], paymentTerms: PaymentTerms, contact: ContactDetails) = {
+  private def addCustomer(billingAddress: Option[Address], paymentTerms: Int, contact: ContactDetails) = {
     val address = Address.findByAddressText(billingAddressText) match {
       case Nil => billingAddress.get
       case results => results(0)
@@ -123,10 +123,10 @@ class AddEditCustomer extends StatefulSnippet with ErrorDisplay with DataValidat
 
   private def contactDetails(name: String, phone: String, mobile: String, email: String, countryCode: String): ContactDetails = {
     val isInternational = countryCode == "UK"
-    val ph = if (phone.trim.isEmpty) None else Some(List(Phone(phone, isInternational)))
-    val mo = if (mobile.trim.isEmpty) None else Some(List(Mobile(mobile, isInternational)))
-    val em = if (email.trim.isEmpty) None else Some(List(Email(email)))
+    val ph = phone.trim
+    val mo = mobile.trim
+    val em = email.trim
 
-    ContactDetails(name, ph, mo, em)
+    ContactDetails.createRecord.contactName(name).phoneNumbers(ph).mobileNumbers(mo).emailAddresses(em)
   }
 }

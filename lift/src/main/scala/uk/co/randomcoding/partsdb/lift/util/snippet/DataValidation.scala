@@ -82,10 +82,12 @@ trait DataValidation extends Logger {
       details filterNot (detail => (detail == None || detail.get.isEmpty)) nonEmpty
     }
 
-    contacts.contactName.trim match {
+    /*    contacts.contactName.trim match {
       case "" => false
       case _ => areValid(contacts.phoneNumbers, contacts.mobileNumbers, contacts.emailAddresses)
-    }
+    }*/
+
+    true
   }
 }
 
