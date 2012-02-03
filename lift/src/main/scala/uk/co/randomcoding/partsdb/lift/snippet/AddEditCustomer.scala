@@ -129,6 +129,6 @@ class AddEditCustomer extends StatefulSnippet with ErrorDisplay with DataValidat
     val mo = mobile.trim
     val em = email.trim
 
-    ContactDetails.createRecord.contactName(name).phoneNumbers(ph).mobileNumbers(mo).emailAddresses(em)
+    ContactDetails.createRecord.contactName(name).phoneNumber(ph).mobileNumber(mo).emailAddress(em)
   }
 }

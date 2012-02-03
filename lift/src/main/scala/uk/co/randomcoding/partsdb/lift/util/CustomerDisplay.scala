@@ -16,6 +16,7 @@ import net.liftweb.common.Logger
 import scala.io.Source
 import uk.co.randomcoding.partsdb.db.DbAccess
 import uk.co.randomcoding.partsdb.core.address.Address
+import org.bson.types.ObjectId
 
 /**
  * Helper functions for displaying customers in lift pages
@@ -57,16 +58,20 @@ object CustomerDisplay extends EntityDisplay with Logger {
   }
 
   private[this] def displayContacts(customer: Customer): NodeSeq = {
-    val contacts = customer.contactDetails.get
+    val contacts: List[ObjectId] = customer.contactDetails.get
 
-    /*val detailsNodes = (details: Seq[AnyRef]) => details map (detail => contactDetail(detail)) flatten
-    implicit def optionListToList[T](opt: Option[List[T]]): List[T] = opt getOrElse List.empty[T]
+    (for {
+      contactId <- contacts
+      val contact = ContactDetails.findById(contactId)
+      if contact isDefined
+    } yield {
+      displayContact(contact.get)
+    }) flatten
 
-    val phoneNodes = detailsNodes(contacts.phoneNumbers)
-    val mobileNodes = detailsNodes(contacts.mobileNumbers)
-    val emailNodes = detailsNodes(contacts.emailAddresses)*/
-    <span>Contact Details TDB</span>
-    //nameNode(contacts.contactName.get) // ++ emailNodes ++ mobileNodes ++ phoneNodes
+  }
+
+  private[this] def displayContact(contactDetails: ContactDetails): NodeSeq = {
+    <span>{ contactDetails.contactName.get }</span>
   }
 
   private[this] val nameNode = (name: String) => { <span>{ name }</span><br/> }
