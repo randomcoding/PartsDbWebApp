@@ -7,10 +7,10 @@ import uk.co.randomcoding.partsdb.core.contact.ContactDetails
 import uk.co.randomcoding.partsdb.core.address.Address
 import uk.co.randomcoding.partsdb.core.id.{ Identifier, Identifiable, DefaultIdentifier }
 import uk.co.randomcoding.partsdb.core.terms.PaymentTerms
-
 import net.liftweb.mongodb.record.{ MongoRecord, MongoMetaRecord }
 import net.liftweb.mongodb.record.field.{ ObjectIdPk, ObjectIdRefField, ObjectIdRefListField }
 import net.liftweb.record.field.{ StringField, IntField }
+import net.liftweb.common.Logger
 
 /**
  * Customer information, including the main business addresses, payment terms and contact details
@@ -42,23 +42,76 @@ class Customer private () extends MongoRecord[Customer] with ObjectIdPk[Customer
   override def hashCode: Int = getClass.hashCode + (hashCodeFields map (_.get.hashCode) sum)
 }
 
-object Customer extends Customer with MongoMetaRecord[Customer] {
+object Customer extends Customer with MongoMetaRecord[Customer] with Logger {
   import org.bson.types.ObjectId
   import com.foursquare.rogue.Rogue._
 
   /**
-   * Add a new customer unless there is already one with the same `customerName`
+   * Find a record that ''matches'' the provided one.
    *
-   * @return An `Option[Customer]`, populated if the addition was successful, or `None` if it failed
+   * A match is where:
+   *  * There is a `Customer` with the same `ObjectId` as the provided one already present
+   * '''or'''
+   *  * There is a `Customer` with the same name
+   *
+   * If there are multiple matches (which there should not be) then this will return the ''first value'' which might not be consistently the same
+   * as the query results are not sorted
+   *
+   * @return an optional value that will be populated with a matching record if there is one already present in the database
    */
-  def add(customerName: String, businessAddress: Address, termsDays: Int, contactDetails: ContactDetails) = findNamed(customerName) match {
-    case Nil => {
-      Customer.createRecord.customerName(customerName).businessAddress(businessAddress.id.get).terms(termsDays).contactDetails(contactDetails.id.get :: Nil).save match {
-        case cust: Customer => Some(cust)
-        case _ => None
+  def findMatching(customer: Customer): Option[Customer] = {
+    Customer.or(
+      _.where(_.id eqs customer.id.get),
+      _.where(_.customerName eqs customer.customerName.get)) get
+  }
+
+  /**
+   * Add a new customer unless there is already a ''matching'' record. In which case the found entry is returned.
+   *
+   * This method assumes that the referenced [[uk.co.randomcoding.partsdb.core.address.Address]] and [[uk.co.randomcoding.partsdb.core.contactDetails.ContactDetails]]
+   * already exist in the database.
+   *
+   * @return An `Option[Customer]`, populated if the addition was successful, or `None` if it failed.
+   * If there are multiple customers with the same short name present, then this will return the first in the returned list
+   * which is not guaranteed to be the same as the query is not ordered.
+   */
+  def add(customer: Customer): Option[Customer] = findMatching(customer) match {
+    case Some(c) => Some(c)
+    case _ => customer.save match {
+      case c: Customer => Some(c)
+      case _ => None
+    }
+  }
+
+  /**
+   * Add a new customer unless there is already a ''matching'' record. In which case the found entry is returned.
+   *
+   * @return An `Option[Customer]`, populated if the addition was successful, or `None` if it failed.
+   * If there are multiple customers with the same short name present, then this will return the first in the returned list
+   * which is not guaranteed to be the same as the query is not ordered.
+   */
+  def add(customerName: String, businessAddress: Address, termsDays: Int, contactDetails: ContactDetails): Option[Customer] = {
+    val address = Address.add(businessAddress)
+    val contacts = ContactDetails.add(contactDetails)
+
+    (address, contacts) match {
+      case (Some(addr), Some(cont)) => {
+        add(Customer.createRecord.customerName(customerName).businessAddress(addr.id.get).terms(termsDays).contactDetails(cont.id.get :: Nil))
+      }
+      case (None, None) => {
+        error("Failed to add Contact Details %s".format(contactDetails))
+        error("Failed to add Address %s".format(businessAddress))
+        None
+      }
+      case (None, _) => {
+        error("Failed to add Address %s".format(businessAddress))
+        None
+      }
+      case (_, None) => {
+        error("Failed to add Contact Details %s".format(contactDetails))
+        None
       }
     }
-    case _ => None
   }
 
   /**
@@ -94,6 +147,7 @@ object Customer extends Customer with MongoMetaRecord[Customer] {
    * To keep a field with the same value, simply use the original value
    */
   def modify(oid: ObjectId, newName: String, newAddress: Address, newTerms: Int, newContacts: List[ContactDetails]) = {
+    //val newAddressId = 
     Customer.where(_.id eqs oid).modify(_.customerName setTo newName) and
       (_.businessAddress setTo newAddress.id.get) and
       (_.terms setTo newTerms) and

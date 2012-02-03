@@ -38,7 +38,7 @@ class CustomerRecordTest extends MongoDbTestBase {
     val addr = Address.createRecord.shortName("Addr1").addressText("Address").country("UK")
     val cust = add("cust1", addr, 30, contactDave)
     cust should be('defined)
-    add("cust1", addr, 30, contactDave) should be('empty)
+    add("cust1", addr, 30, contactDave) should be(cust)
 
     val expectedCustomer = createRecord.customerName("cust1").businessAddress(addr.id.get).terms(30).contactDetails(List(contactDave.id.get))
 
@@ -119,6 +119,35 @@ class CustomerRecordTest extends MongoDbTestBase {
   }
 
   test("Saving A Customer also saves the address and contact details") {
+    val addr = Address.createRecord.shortName("Addr1").addressText("Address").country("UK")
+    val cust1 = add("cust1", addr, 30, contactDave)
+    cust1 should be('defined)
+
+    Address.findById(addr.id.get) should be(Some(addr))
+    Address.findNamed("Addr1") should be(List(addr))
+
+    ContactDetails.findById(contactDave.id.get) should be(Some(contactDave))
+    ContactDetails.findNamed("Dave") should be(List(contactDave))
+  }
+
+  test("Modify correctly modifies the address and contact details records") {
     pending
+  }
+
+  test("Find Matching correctly finds a record with the same Object Id") {
+    val addr = Address.createRecord.shortName("Addr1").addressText("Address").country("UK")
+    val cust1 = add("cust1", addr, 30, contactDave).get
+    val otherCust = createRecord.id(cust1.id.get).customerName("Another Customer").businessAddress(addr.id.get).terms(30).contactDetails(List(contactDave.id.get))
+
+    findMatching(otherCust) should be(Some(cust1))
+  }
+
+  test("Find Matching correctly finds a record with the same Customer Name") {
+    val addr = Address.createRecord.shortName("Addr1").addressText("Address").country("UK")
+    val addr2 = Address.createRecord.shortName("Addr2").addressText("Address 2").country("UD")
+    val cust1 = add("cust1", addr, 30, contactDave).get
+    val otherCust = createRecord.customerName("cust1").businessAddress(addr2.id.get).terms(45).contactDetails(List(contactSally.id.get))
+
+    findMatching(otherCust) should be(Some(cust1))
   }
 }

@@ -32,13 +32,44 @@ class AddressRecordTest extends MongoDbTestBase {
   test("Adding the same address more than once does not result in a duplication, or a change of underlying id") {
     val addr = add("Addr1", "An Address", "UK")
     addr should be('defined)
-    add("Addr1", "An Address", "UK") should be('empty)
+    add("Addr1", "An Address", "UK") should be(addr)
 
     val expectedAddress = createRecord.shortName("Addr1").addressText("An Address").country("UK")
 
     (Address where (_.id exists true) fetch) should be(List(expectedAddress))
 
     findNamed("Addr1")(0).id.get should be(addr.get.id.get)
+  }
+
+  test("Adding an address with the same name but different other details as an already existing address returns the original record") {
+    val addr = add("Addr1", "An Address", "UK").get
+
+    add("Addr1", "ANother Address", "UR") should be(Some(addr))
+    add("Addr1", "ANother Address", "UR").get.id.get should be(addr.id.get)
+  }
+
+  test("Adding an address with the same address text but different other details as an already existing address returns the original record") {
+    val addr = add("Addr1", "An Address", "UK").get
+
+    add("Addr2", "An Address", "UR") should be(Some(addr))
+    add("Addr2", "An Address", "UR").get.id.get should be(addr.id.get)
+  }
+
+  test("Find Matching can find a matching record by Object Id") {
+    val addr = add("Addr1", "An Address", "UK").get
+
+    val otherAddress = createRecord.id(addr.id.get).shortName("Addr2").addressText("Another Text").country("ZR")
+
+    findMatching(otherAddress) should be(Some(addr))
+  }
+
+  test("Find Matching can find a matching record by address name or address text") {
+    val addr = add("Addr1", "An Address", "UK")
+    val otherAddress1 = createRecord.shortName("Addr1").addressText("Another Text").country("ZR")
+    val otherAddress2 = createRecord.shortName("Addr2").addressText("An Address").country("ZR")
+
+    findMatching(otherAddress1) should be(addr)
+    findMatching(otherAddress2) should be(addr)
   }
 
   test("Removing an address") {

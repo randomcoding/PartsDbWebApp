@@ -77,18 +77,41 @@ object Address extends Address with MongoMetaRecord[Address] {
   }
 
   /**
-   * Add a new Address unless there is an address with the same `shortName` or `addressText` in the database
+   * Add a new address constructed from the paramters unless a matching record is found.
    *
-   * @return An `Option[Address]`, populated with the new `Address` if it was added successfully, or None if it was not.
+   * @return `Some(address)` if a match was made, or the addition was successful. `None` if the save operation failed
    */
-  def add(shortName: String, addressText: String, country: String) = (findNamed(shortName) ++ findByAddressText(addressText)) match {
-    case Nil => {
-      Address.createRecord.shortName(shortName).addressText(addressText).country(country).save match {
-        case addr: Address => Some(addr)
-        case _ => None
-      }
-    }
-    case _ => None
+  def add(shortName: String, addressText: String, country: String): Option[Address] = {
+    add(Address.createRecord.shortName(shortName).addressText(addressText).country(country))
   }
 
+  /**
+   * Add a new address unless a matching record is found.
+   *
+   * @return `Some(address)` if a match was made, or the addition was successful. `None` if the save operation failed
+   */
+  def add(address: Address): Option[Address] = findMatching(address) match {
+    case Some(addr) => Some(addr)
+    case _ => address.save match {
+      case a: Address => Some(a)
+      case _ => None
+    }
+  }
+
+  /**
+   * Find an `Address` that ''matches'' the provided one
+   *
+   * An `Address` matches if one of the  following is true:
+   *  * There is an address with the same `ObjectId`
+   *  * There is a record with the same `short name`
+   *  * There is a record with the same `address text`
+   *
+   * @return An optional `Address` that is populated if a match is found, or `None` otherwise
+   */
+  def findMatching(address: Address): Option[Address] = findById(address.id.get) match {
+    case Some(addr) => Some(addr)
+    case _ => Address.or(
+      _.where(_.shortName eqs address.shortName.get),
+      _.where(_.addressText eqs address.addressText.get)) get
+  }
 }
