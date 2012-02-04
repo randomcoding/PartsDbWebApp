@@ -3,20 +3,16 @@
  */
 package uk.co.randomcoding.partsdb.lift.util
 
-import uk.co.randomcoding.partsdb.core.contact.Mobile
-import uk.co.randomcoding.partsdb.core.contact.Email
-import net.liftweb.http.SHtml._
-import net.liftweb.http.js.JsCmds.Noop
-import uk.co.randomcoding.partsdb.core.contact.Phone
-import uk.co.randomcoding.partsdb.core.customer.Customer
-import uk.co.randomcoding.partsdb.core.contact.ContactDetails
-import scala.xml.NodeSeq
-import scala.xml.Text
-import net.liftweb.common.Logger
 import scala.io.Source
-import uk.co.randomcoding.partsdb.db.DbAccess
-import uk.co.randomcoding.partsdb.core.address.Address
+import scala.xml.{ Text, NodeSeq }
+
 import org.bson.types.ObjectId
+
+import uk.co.randomcoding.partsdb.core.address.Address
+import uk.co.randomcoding.partsdb.core.contact.ContactDetails
+import uk.co.randomcoding.partsdb.core.customer.Customer
+
+import net.liftweb.common.Logger
 
 /**
  * Helper functions for displaying customers in lift pages
@@ -51,7 +47,8 @@ object CustomerDisplay extends EntityDisplay with Logger {
     Address findById customer.businessAddress.get match {
       case Some(addr) => {
         val addressLines = Source.fromString(addr.addressText.get).getLines()
-        <span>{ addressLines map (line => <span>{ line }</span><br/>) }</span>
+        <span>{ addressLines map (line => <span>{ line }</span><br/>) }</span> ++
+          <span>{ addr.country.get }</span>
       }
       case _ => Text("Unknown Address. Identifier: %s".format(customer.businessAddress.get))
     }
@@ -71,19 +68,19 @@ object CustomerDisplay extends EntityDisplay with Logger {
   }
 
   private[this] def displayContact(contactDetails: ContactDetails): NodeSeq = {
-    <span>{ contactDetails.contactName.get }</span>
+    <span>{ contactDetails.contactName.get }</span><br/>
+    ++ numbersDetails (contactDetails)
   }
 
-  private[this] val nameNode = (name: String) => { <span>{ name }</span><br/> }
+  private[this] def numbersDetails(contactDetails: ContactDetails): NodeSeq = {
+    val details = (detailString: String, heading: String) =>
+      detailString.trim match {
+        case "" => <span>&nbsp;</span><br/>
+        case other => <span>{ "%s: %s".format(heading, detailString) }</span><br/>
+      }
 
-  private[this] def contactDetail(detail: AnyRef) = {
-    debug("Generating contact detail for: %s".format(detail))
-    val detailNode = detail match {
-      case p: Phone => Text("Phone: %s".format(p.phoneNumber))
-      case m: Mobile => Text("Mobile: %s".format(m.mobileNumber))
-      case em: Email => Text("EMail: %s".format(em.emailAddress))
-    }
-
-    (<span>{ detailNode }</span><br/>).toSeq
+    details(contactDetails.phoneNumber.get, "Phone") ++
+      details(contactDetails.mobileNumber.get, "Mobile") ++
+      details(contactDetails.emailAddress.get, "EMail")
   }
 }

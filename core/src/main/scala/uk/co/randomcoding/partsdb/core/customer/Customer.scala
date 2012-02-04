@@ -91,8 +91,15 @@ object Customer extends Customer with MongoMetaRecord[Customer] with Logger {
    * which is not guaranteed to be the same as the query is not ordered.
    */
   def add(customerName: String, businessAddress: Address, termsDays: Int, contactDetails: ContactDetails): Option[Customer] = {
-    val address = Address.add(businessAddress)
-    val contacts = ContactDetails.add(contactDetails)
+    val address = Address findMatching (businessAddress) match {
+      case Some(addr) => Some(addr)
+      case None => Address.add(businessAddress)
+    }
+
+    val contacts = ContactDetails findMatching contactDetails match {
+      case Some(con) => Some(con)
+      case None => ContactDetails.add(contactDetails)
+    }
 
     (address, contacts) match {
       case (Some(addr), Some(cont)) => {
@@ -117,7 +124,7 @@ object Customer extends Customer with MongoMetaRecord[Customer] with Logger {
   /**
    * Find a single customer by its Object Id
    *
-   * @return An `Oprion[Customer]`, populated if the customer was found, or `None` if not.
+   * @return An `Option[Customer]`, populated if the customer was found, or `None` if not.
    */
   def findById(oid: ObjectId) = Customer where (_.id eqs oid) get
 
@@ -147,10 +154,23 @@ object Customer extends Customer with MongoMetaRecord[Customer] with Logger {
    * To keep a field with the same value, simply use the original value
    */
   def modify(oid: ObjectId, newName: String, newAddress: Address, newTerms: Int, newContacts: List[ContactDetails]) = {
-    //val newAddressId = 
+    val address = Address findMatching (newAddress) match {
+      case Some(addr) => Some(addr)
+      case None => Address.add(newAddress)
+    }
+
+    require(address isDefined, "Failed to get valid address from: %s".format(newAddress))
+
+    val contacts = newContacts map (newContact => ContactDetails findMatching newContact match {
+      case Some(c) => Some(c)
+      case _ => ContactDetails add (newContact)
+    }) filter (_ isDefined) map (_ get)
+
+    if (contacts.size != newContacts.size) error("Failed to add all new contacts the the database")
+
     Customer.where(_.id eqs oid).modify(_.customerName setTo newName) and
-      (_.businessAddress setTo newAddress.id.get) and
+      (_.businessAddress setTo address.get.id.get) and
       (_.terms setTo newTerms) and
-      (_.contactDetails setTo (newContacts map (_.id.get))) updateMulti
+      (_.contactDetails setTo (contacts map (_.id.get))) updateMulti
   }
 }

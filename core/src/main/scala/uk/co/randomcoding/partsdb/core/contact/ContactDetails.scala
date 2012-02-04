@@ -22,6 +22,7 @@ class ContactDetails private () extends MongoRecord[ContactDetails] with ObjectI
   object phoneNumber extends StringField(this, 50)
   object mobileNumber extends StringField(this, 50)
   object emailAddress extends StringField(this, 50)
+  object isPrimary extends BooleanField(this)
 
   override def equals(that: Any): Boolean = {
     that.isInstanceOf[ContactDetails] match {
@@ -101,8 +102,8 @@ object ContactDetails extends ContactDetails with MongoMetaRecord[ContactDetails
    * otherwise, the new record will be saved and if successful, will be returned as an `Option[ContactDetails]`.
    * If the save operation fails then `None` is returned
    */
-  def add(contactName: String, phoneNumber: String, mobileNumber: String, emailAddress: String): Option[ContactDetails] = {
-    add(ContactDetails.createRecord.contactName(contactName).phoneNumber(phoneNumber).mobileNumber(mobileNumber).emailAddress(emailAddress))
+  def add(contactName: String, phoneNumber: String, mobileNumber: String, emailAddress: String, isPrimary: Boolean): Option[ContactDetails] = {
+    add(ContactDetails.createRecord.contactName(contactName).phoneNumber(phoneNumber).mobileNumber(mobileNumber).emailAddress(emailAddress).isPrimary(isPrimary))
   }
 
   /**
