@@ -27,7 +27,7 @@ class Supplier private () extends MongoRecord[Supplier] with ObjectIdPk[Supplier
   /**
    * The contact details for this supplier
    */
-  object contactDetails extends MongoCaseClassField[Supplier, ContactDetails](this)
+  object contactDetails extends ObjectIdRefField(this, ContactDetails)
 
   /**
    * The parts this supplier provides as [[uk.co.randomcoding.partsdb.core.part.PartCost]] objects
@@ -42,4 +42,6 @@ class Supplier private () extends MongoRecord[Supplier] with ObjectIdPk[Supplier
   object notes extends OptionalStringField(this, 500)
 }
 
-object Supplier extends Supplier with MongoMetaRecord[Supplier]
+object Supplier extends Supplier with MongoMetaRecord[Supplier] {
+
+}
