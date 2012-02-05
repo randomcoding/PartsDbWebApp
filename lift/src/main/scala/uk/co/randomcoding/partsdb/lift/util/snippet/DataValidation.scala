@@ -38,17 +38,6 @@ trait DataValidation extends Logger {
   private def validateItem(item: ValidationItem): Boolean = {
     debug("Validating: %s".format(item))
     item.toValidate match {
-<<<<<<< HEAD
-      // check all required items are defined
-      /*case addr: Address => validateAddress(addr)
-      case terms: PaymentTerms => terms != PaymentTerms(-1)*/
-
-      case contacts: ContactDetails => validateContactDetails(contacts)
-      case address: Address => address != None
-      case string: String => string.trim nonEmpty
-      case double: Double => double >= 0.0
-      case selectedOption: Option[Any] => !selectedOption.isEmpty
-=======
       // If we have a populated option value, recursively call this method with the item unwrapped
       case Some(thing) => validateItem(ValidationItem(thing, item.errorLocationId, item.errorMessage))
       case addr: Address => validateAddress(addr)
@@ -60,7 +49,6 @@ trait DataValidation extends Logger {
         debug("Received an empty Option in %s. Assuming validation is false".format(item))
         false
       }
->>>>>>> Issue29-MigrateToLiftMongoApi
       case validationItem => {
         debug("Unhandled validation type %s. Assuming it is valid".format(validationItem))
         true
@@ -78,13 +66,6 @@ trait DataValidation extends Logger {
    * @param address The [[uk.co.randomcoding.partsdb.core.address.Address]] to validate
    * @return `true` if the address is not a [[uk.co.randomcoding.partsdb.core.address.NullAddress]] and has a valid entry for country
    */
-<<<<<<< HEAD
-  //  private def validateAddress(address: Address) = {
-  //      case NullAddress => false
-  //      case Address(_, _, _, country) => matchToCountryCode(country).isDefined
-  //    }
-  //  }
-=======
   private def validateAddress(address: Address) = {
     val countryCodeIsOk = (address: Address) => matchToCountryCode(address.country.get).isDefined
 
@@ -99,7 +80,6 @@ trait DataValidation extends Logger {
    * Each function should return `false` if the short name does not validate
    */
   private[this] val addressShortNameChecks = List((shortName: String) => shortName.nonEmpty, (shortName: String) => shortName.replace("Business Address", "").trim.nonEmpty)
->>>>>>> Issue29-MigrateToLiftMongoApi
 
   /**
    * Validates [[uk.co.randomcoding.partsdb.core.contact.ContactDetails]]

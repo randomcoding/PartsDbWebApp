@@ -22,12 +22,6 @@ import net.liftweb.http.js.JsCmds.Noop
 import net.liftweb.http.js.JsCmd
 import net.liftweb.http.{StatefulSnippet, S}
 import net.liftweb.util.Helpers._
-<<<<<<< HEAD
-import scala.xml.Text
-import net.liftweb.http.StatefulSnippet
-import uk.co.randomcoding.partsdb.core.customer.Customer
-=======
->>>>>>> Issue29-MigrateToLiftMongoApi
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
@@ -36,17 +30,6 @@ class AddEditCustomer extends StatefulSnippet with ErrorDisplay with DataValidat
   val terms = List(("30" -> "30"), ("45" -> "45"), ("60" -> "60"), ("90" -> "90"))
 
   val cameFrom = S.referer openOr "/app/show?entityType=Customer"
-<<<<<<< HEAD
-  //val cameFrom = S.referer openOr "/app/customers"
-  var name = ""
-  var billingAddressText = ""
-  var billingAddressCountry = "United Kingdom"
-  var paymentTermsText = "30"
-  var contactName = ""
-  var phoneNumber = ""
-  var mobileNumber = ""
-  var email = ""
-=======
 
   val initialCustomer = S param "id" match {
     case Full(id) => Customer findById new ObjectId(id)
@@ -76,7 +59,6 @@ class AddEditCustomer extends StatefulSnippet with ErrorDisplay with DataValidat
     }
     case _ => ("", "", "", "")
   }
->>>>>>> Issue29-MigrateToLiftMongoApi
 
   def dispatch = {
     case "render" => render
@@ -112,28 +94,11 @@ class AddEditCustomer extends StatefulSnippet with ErrorDisplay with DataValidat
       case _ => -1
     }
 
-<<<<<<< HEAD
-    val validationChecks = Seq(
-      ValidationItem(name, "errorMessages", "Customer Name must be entered"),
-      ValidationItem(billingAddress, "errorMessages", "Billing Address is not valid"),
-      ValidationItem(paymentTerms, "errorMessages", "Payment Terms are not valid"),
-      ValidationItem(contact, "errorMessages", "Contact Details are not valid"))
-
-    validate(validationChecks: _*) match {
-      case Nil => {
-        // Not sure if this is the best way to do this, should we do something to inform the user better if there is an error.
-        /*if (addNewCustomer(name, billingAddress, paymentTerms, contact).isEmpty) {
-          error("Failed to add new customer, [name: %s, address: %s, terms: %s, contact: %s".format(name, billingAddress, paymentTerms, contact))
-        }*/
-
-        S redirectTo "/app/show?entityType=Customer"
-        //S redirectTo "/app/customers"
-=======
     trace("About to validate")
-    val validationChecks = Seq(ValidationItem(billingAddress, "businessAddressError", "Business Address is not valid.\n Please ensure there is a Customer Name and that the country is selected."),
-      ValidationItem(paymentTerms, "paymentTermsError", "Payment Terms are not valid"),
-      ValidationItem(contact, "contactDetailsError", "Contact Details are not valid"),
-      ValidationItem(name, "customerNameError", "Customer Name must be entered"))
+    val validationChecks = Seq(ValidationItem(billingAddress, "errorMessages", "Business Address is not valid.\n Please ensure there is a Customer Name and that the country is selected."),
+      ValidationItem(paymentTerms, "errorMessages", "Payment Terms are not valid"),
+      ValidationItem(contact, "errorMessages", "Contact Details are not valid"),
+      ValidationItem(name, "errorMessages", "Customer Name must be entered"))
 
     validate(validationChecks: _*) match {
       case Nil => {
@@ -141,7 +106,6 @@ class AddEditCustomer extends StatefulSnippet with ErrorDisplay with DataValidat
           case None => addCustomer(billingAddress.get, paymentTerms, contact.get)
           case Some(c) => modifyCustomer(c, billingAddress.get, paymentTerms, contact.get)
         }
->>>>>>> Issue29-MigrateToLiftMongoApi
       }
       case errors => {
         errors foreach (error => displayError(error._1, error._2))
