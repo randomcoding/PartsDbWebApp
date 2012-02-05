@@ -20,6 +20,13 @@ trait DataValidation extends Logger {
   /**
    * Validates the input items and returns a list of error tuples
    *
+   * Will return false for:
+   *   - Empty Strings
+   *   - Numeric values less than zero
+   *   - values of `None`
+   *
+   * If the type is not handled, then will return true and output a debug message
+   *
    * @param items The [[uk.co.randomcoding.partsdb.lift.util.snippet.ValidationItem]]s to validate
    * @return A list of `(String, String)` tuples if any item fails its validation. The tuples contain the `errorLocationId` and `errorMessage`
    * of the [[uk.co.randomcoding.partsdb.lift.util.snippet.ValidationItem]]s that failed.
@@ -31,14 +38,17 @@ trait DataValidation extends Logger {
   private def validateItem(item: ValidationItem): Boolean = {
     debug("Validating: %s".format(item))
     item.toValidate match {
-      // check all required items are defined
-      /*case addr: Address => validateAddress(addr)
-      case terms: PaymentTerms => terms != PaymentTerms(-1)
-      case contacts: ContactDetails => validateContactDetails(contacts)
-      case part: Part => part != DefaultPart
-      case vehicle: Vehicle => vehicle != DefaultVehicle*/
+      // If we have a populated option value, recursively call this method with the item unwrapped
+      case Some(thing) => validateItem(ValidationItem(thing, item.errorLocationId, item.errorMessage))
+      case addr: Address => validateAddress(addr)
+      case contact: ContactDetails => validateContactDetails(contact)
       case string: String => string.trim nonEmpty
       case double: Double => double >= 0.0
+      case int: Int => int >= 0
+      case None => {
+        debug("Received an empty Option in %s. Assuming validation is false".format(item))
+        false
+      }
       case validationItem => {
         debug("Unhandled validation type %s. Assuming it is valid".format(validationItem))
         true
@@ -56,12 +66,20 @@ trait DataValidation extends Logger {
    * @param address The [[uk.co.randomcoding.partsdb.core.address.Address]] to validate
    * @return `true` if the address is not a [[uk.co.randomcoding.partsdb.core.address.NullAddress]] and has a valid entry for country
    */
-  /*private def validateAddress(address: Address) = {
-    address match {
-      case NullAddress => false
-      case Address(_, _, _, country) => matchToCountryCode(country).isDefined
-    }
-  }*/
+  private def validateAddress(address: Address) = {
+    val countryCodeIsOk = (address: Address) => matchToCountryCode(address.country.get).isDefined
+
+    val shortNameIsOk = (address: Address) => addressShortNameChecks map (_(address.shortName.get)) contains (false) == false
+
+    countryCodeIsOk(address) && shortNameIsOk(address)
+  }
+
+  /**
+   * Functions used to validate address short names.
+   *
+   * Each function should return `false` if the short name does not validate
+   */
+  private[this] val addressShortNameChecks = List((shortName: String) => shortName.nonEmpty, (shortName: String) => shortName.replace("Business Address", "").trim.nonEmpty)
 
   /**
    * Validates [[uk.co.randomcoding.partsdb.core.contact.ContactDetails]]
@@ -72,14 +90,14 @@ trait DataValidation extends Logger {
    * @return `true` If the contact details validate
    */
   private def validateContactDetails(contacts: ContactDetails) = {
-    def areValid(details: Option[Seq[_]]*): Boolean = {
-      details filterNot (detail => (detail == None || detail.get.isEmpty)) nonEmpty
+
+    def areValid(details: String*): Boolean = details filter (_.trim.nonEmpty) nonEmpty
+
+    contacts.contactName.get.trim match {
+      case "" => false
+      case _ => areValid(contacts.phoneNumber.get, contacts.mobileNumber.get, contacts.emailAddress.get)
     }
 
-    contacts.contactName.trim match {
-      case "" => false
-      case _ => areValid(contacts.phoneNumbers, contacts.mobileNumbers, contacts.emailAddresses)
-    }
   }
 }
 

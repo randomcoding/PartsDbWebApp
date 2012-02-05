@@ -43,18 +43,27 @@ object Vehicle extends Vehicle with MongoMetaRecord[Vehicle] {
    */
   def findNamed(name: String): List[Vehicle] = Vehicle where (_.vehicleName eqs name) fetch
 
+  def findMatching(vehicle: Vehicle): Option[Vehicle] = findById(vehicle.id.get) match {
+    case Some(v) => Some(v)
+    case _ => findNamed(vehicle.vehicleName.get) headOption
+  }
+
+  def add(vehicle: Vehicle): Option[Vehicle] = findMatching(vehicle) match {
+    case Some(v) => Some(v)
+    case _ => vehicle.save match {
+      case v: Vehicle => Some(v)
+      case _ => None
+    }
+  }
   /**
    * Add a new vehicle, if one does not already exist with the same name
    */
-  def add(name: String): Option[Vehicle] = findNamed(name) match {
-    case Nil => {
-      Vehicle.createRecord.vehicleName(name).save match {
-        case v: Vehicle => Some(v)
-        case _ => None
-      }
-    }
-    case _ => None
-  }
+  def add(name: String): Option[Vehicle] = add(create(name))
+
+  /**
+   * Create a record but '''does not''' add it to the database
+   */
+  def create(vehicleName: String): Vehicle = Vehicle.createRecord.vehicleName(vehicleName)
 
   /**
    * Rename all vehicles with `oldName` to `newName`.

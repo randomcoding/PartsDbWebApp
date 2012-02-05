@@ -21,6 +21,10 @@ object Dependencies {
   // Rogue - used for Mongo DB Queries
   val rogue = "com.foursquare" %% "rogue" % "1.1.1" intransitive()
 
+  // Joda time
+  val jodaTime = "joda-time" % "joda-time" % "2.0"
+  val jodaConvert = "org.joda" % "joda-convert" % "1.2"
+
   // jetty
   val jettyVersion = "8.0.3.v20111011"
   val jetty = "org.eclipse.jetty" % "jetty-webapp" % jettyVersion % "container"
@@ -35,5 +39,6 @@ object Dependencies {
   val liftDeps = Seq(liftUtil, liftCommon, liftWebkit, liftJson, liftMongoRecord, rogue)
   val loggingDeps = Seq(logback, groovy, liftCommon)
   val jettyDeps = Seq(jetty)
+  val jodaDeps = Seq(jodaTime, jodaConvert)
 }
 
