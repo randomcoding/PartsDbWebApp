@@ -8,6 +8,7 @@ import uk.co.randomcoding.partsdb.core.part.PartCost
 import net.liftweb.mongodb.record.{ MongoRecord, MongoMetaRecord }
 import net.liftweb.mongodb.record.field._
 import net.liftweb.record.field._
+import uk.co.randomcoding.partsdb.core.address.Address
 
 /**
  * Supplier information including contact details and a free form notes
@@ -35,12 +36,19 @@ class Supplier private () extends MongoRecord[Supplier] with ObjectIdPk[Supplier
   object suppliedParts extends ObjectIdRefListField(this, PartCost)
 
   /**
+   * The address of the supplier
+   */
+  object businessAddress extends ObjectIdRefField(this, Address)
+
+  /**
    * Any notes about this supplier.
    */
   object notes extends StringField(this, 500)
 
   override def equals(that: Any): Boolean = that match {
-    case other: Supplier => supplierName.get == other.supplierName.get && contactDetails.get == other.contactDetails.get && suppliedParts.get.toSet == other.suppliedParts.get.toSet
+    case other: Supplier => supplierName.get == other.supplierName.get &&
+      contactDetails.get == other.contactDetails.get && businessAddress.get == other.businessAddress.get &&
+      suppliedParts.get.toSet == other.suppliedParts.get.toSet
     case _ => false
   }
 
@@ -57,8 +65,8 @@ object Supplier extends Supplier with MongoMetaRecord[Supplier] {
   /**
    * Create a new `Supplier` record but '''does not''' save it to the database
    */
-  def create(name: String, contacts: ContactDetails, partsSupplied: Seq[PartCost]): Supplier = {
-    Supplier.createRecord.supplierName(name).contactDetails(contacts.id.get).suppliedParts(partsSupplied.toList map (_.id.get))
+  def create(name: String, contacts: ContactDetails, businessAddress: Address, partsSupplied: Seq[PartCost]): Supplier = {
+    Supplier.createRecord.supplierName(name).contactDetails(contacts.id.get).businessAddress(businessAddress.id.get).suppliedParts(partsSupplied.toList map (_.id.get))
   }
 
   /**
@@ -85,8 +93,8 @@ object Supplier extends Supplier with MongoMetaRecord[Supplier] {
    *
    * @return An `Option[Supplier]` that is populated if the addition succeeded, or found a match, and `None` if the save operation failed.
    */
-  def add(name: String, contacts: ContactDetails, suppliedParts: Seq[PartCost]): Option[Supplier] = {
-    add(create(name, contacts, suppliedParts))
+  def add(name: String, contacts: ContactDetails, businessAddress: Address, suppliedParts: Seq[PartCost]): Option[Supplier] = {
+    add(create(name, contacts, businessAddress, suppliedParts))
   }
 
   /**
@@ -94,13 +102,14 @@ object Supplier extends Supplier with MongoMetaRecord[Supplier] {
    *
    * A match is made on:
    *   - Object Id
-   *   - name, contact details
+   *   - name and (contact details or address)
    *
    * @return An `Option` containing the match if found or `None` otherwise
    */
   def findMatching(supplier: Supplier): Option[Supplier] = findById(supplier.id.get) match {
     case Some(s) => Some(s)
-    case _ => Supplier where (_.supplierName eqs supplier.supplierName.get) and (_.contactDetails eqs supplier.contactDetails.get) get
+    case _ => Supplier where (_.supplierName eqs supplier.supplierName.get) or (_.where(_.contactDetails eqs supplier.contactDetails.get),
+      _.where(_.businessAddress eqs supplier.businessAddress.get)) get
   }
 
   /**
@@ -120,8 +129,8 @@ object Supplier extends Supplier with MongoMetaRecord[Supplier] {
    *
    * Any updates that are required to the contact details or the supplied parts themselves must be done externally to this method
    */
-  def modify(oid: ObjectId, newName: String, newContacts: ContactDetails, newParts: Seq[PartCost], newNotes: String) = {
+  def modify(oid: ObjectId, newName: String, newContacts: ContactDetails, newAddress: Address, newParts: Seq[PartCost], newNotes: String) = {
     Supplier.where(_.id eqs oid).modify(_.supplierName setTo newName) and (_.contactDetails setTo newContacts.id.get) and
-      (_.suppliedParts setTo (newParts map (_.id.get))) and (_.notes setTo newNotes) updateMulti
+      (_.suppliedParts setTo (newParts map (_.id.get))) and (_.businessAddress setTo newAddress.id.get) and (_.notes setTo newNotes) updateMulti
   }
 }

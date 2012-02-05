@@ -81,10 +81,14 @@ object Address extends Address with MongoMetaRecord[Address] {
    *
    * @return `Some(address)` if a match was made, or the addition was successful. `None` if the save operation failed
    */
-  def add(shortName: String, addressText: String, country: String): Option[Address] = {
-    add(Address.createRecord.shortName(shortName).addressText(addressText).country(country))
-  }
+  def add(shortName: String, addressText: String, country: String): Option[Address] = add(create(shortName, addressText, country))
 
+  /**
+   * Create a new `Address` record , but '''does not''' add it to the database
+   */
+  def create(shortName: String, addressText: String, country: String): Address = {
+    Address.createRecord.shortName(shortName).addressText(addressText).country(country)
+  }
   /**
    * Add a new address unless a matching record is found.
    *
