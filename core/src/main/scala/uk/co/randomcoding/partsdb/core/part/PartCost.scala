@@ -9,6 +9,7 @@ import net.liftweb.record.field.DoubleField
 import org.joda.time.DateTime
 import org.bson.types.ObjectId
 import com.foursquare.rogue.Rogue._
+import java.util.Date
 
 /**
  * Provides a mapping for [[uk.co.randomcoding.partsdb.core.supplier.Supplier]]s to the
@@ -99,6 +100,14 @@ object PartCost extends PartCost with MongoMetaRecord[PartCost] {
     case _ => {
       PartCost where (_.part eqs partCost.part.get) and (_.suppliedCost between (partCost.suppliedCost.get - 0.01, partCost.suppliedCost.get + 0.01)) get
     }
+  }
+
+  def modify(oid: ObjectId, partId: ObjectId, cost: Double, lastSupplied: Date): Unit = {
+    PartCost.where(_.id eqs oid).modify(_.part setTo partId) and (_.suppliedCost setTo cost) and (_.lastSuppliedDate setTo lastSupplied) updateMulti
+  }
+
+  def modify(oid: ObjectId, newPartCost: PartCost): Unit = {
+    modify(oid, newPartCost.part.get, newPartCost.suppliedCost.get, newPartCost.lastSuppliedDate.get)
   }
 
   /**

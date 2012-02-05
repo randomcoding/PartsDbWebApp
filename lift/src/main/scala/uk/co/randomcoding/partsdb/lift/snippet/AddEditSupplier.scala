@@ -82,44 +82,85 @@ class AddEditSupplier extends StatefulSnippet with AddressSnippet with ContactDe
   def dateString(date: DateTime) = date.toString("dd/MM/yyyy")
 
   def render = {
-
     "#formTitle" #> Text("Add Supplier") &
       "#nameEntry" #> styledText(supplierName, supplierName = _) &
       renderAddress() &
       renderContactDetails() &
       "#partSelect" #> styledAjaxObjectSelect(partsSelect, currentPart, updateAjaxValue[Option[Part]](currentPart = _)) &
-      "#costEntry" #> styledAjaxText("%.2f".format(currentPartCost), updateAjaxValue[String](cost => currentPartCost = asDouble(cost) match {
-        case Full(d) => d
-        case _ => 0.0d
-      })) &
-      "#lastSuppliedDate" #> styledAjaxText(dateString(currentPartLastSuppliedDate), updateAjaxValue[String](date => currentPartLastSuppliedDate = {
-        val dateParts = date split ("/") map (asInt(_) openOr -1)
-        if (dateParts contains -1) {
-          displayError("Error Location", "Cannot create Date from: %s".format(date))
-          defaultDate
-        }
-        else {
-          new DateTime(dateParts(0), dateParts(1), dateParts(2))
-        }
-      })) &
-      "#addPartCost" #> styledAjaxButton("Add Part Cost", addPartCost)
-    "#submit" #> button("Submit", processSubmit)
+      "#costEntry" #> styledAjaxText("%.2f".format(currentPartCost), updateAjaxValue(updateCurrentPartCost(_))) &
+      "#lastSuppliedEntry" #> styledAjaxText(dateString(currentPartLastSuppliedDate), updateAjaxValue(updateCurrentPartLastSuppliedDate(_))) &
+      "#addPartCost" #> styledAjaxButton("Add Part Cost", addPartCost) &
+      "#currentPartCosts" #> PartCostDisplay.displayTable(currentPartCosts) &
+      "#submit" #> button("Submit", processSubmit)
+  }
+
+  private def updateCurrentPartCost(cost: String) = {
+    currentPartCost = asDouble(cost) match {
+      case Full(d) => d
+      case _ => 0.0d
+    }
+  }
+
+  private def updateCurrentPartLastSuppliedDate(dateString: String) = {
+    debug("Updating last supplied date to string %s".format(dateString))
+    currentPartLastSuppliedDate = {
+      val dateParts = dateString split ("/") map (asInt(_) openOr -1)
+      if (dateParts contains -1) {
+        displayError("Error Location", "Cannot create Date from: %s".format(dateString))
+        defaultDate
+      }
+      else {
+        debug("Using d: %d m: %d y: %d".format(dateParts(0), dateParts(1), dateParts(2)))
+        new DateTime(dateParts(2), dateParts(1), dateParts(0), 12, 0)
+      }
+    }
   }
 
   private def addPartCost(): JsCmd = {
     clearErrors
     (currentPart, currentPartCost, currentPartLastSuppliedDate) match {
-      case (_, cost: Double, _) if (cost <= 0.0d) => // cost error
-      case (_, _, date: DateTime) if (date equals defaultDate) => // date error
-      case (None, _, _) => // Part select error
-      case (Some(p), cost: Double, date: DateTime) if (cost > 0.0 && date != defaultDate) => // all ok
+      case (_, cost: Double, _) if (cost <= 0.0d) => displayError("costErrorId", "Please enter a cost")
+      case (_, _, date: DateTime) if (date.equals(defaultDate) || date.isAfter(DateTime.now)) => displayError("dateErrorId", "Date is not valid")
+      case (None, _, _) => displayError("partErrorId", "Please select a part")
+      case (Some(p), cost: Double, date: DateTime) if (cost > 0.0 && date != defaultDate) => updatePartCosts(PartCost.create(p, cost, date))
     }
 
     refreshPartCostDisplay()
   }
 
+  private def updatePartCosts(partCost: PartCost) = {
+    // TODO: Add case for zero price == remove part
+    debug("Adding %s to current part costs".format(partCost))
+
+    currentPartCosts find (_.part.get == partCost.part.get) match {
+      case Some(pc) => {
+        debug("Found part id %s in current part costs".format(pc.part.get))
+        PartCost.modify(pc.id.get, partCost)
+        currentPartCosts = PartCost.findById(pc.id.get).get :: currentPartCosts.filterNot(_.part.get == pc.part.get)
+      }
+      case _ => {
+        debug("Not Found part id %s in current part costs".format(partCost.part.get))
+        currentPartCosts = partCost :: currentPartCosts
+      }
+    }
+    currentPartCosts map (pc => {
+      if (pc.part.get == partCost.part.get) {
+        PartCost.create(Part.findById(pc.part.get).get, partCost.suppliedCost.get, new DateTime(partCost.lastSuppliedDate.get)).id(pc.id.get)
+      }
+      else {
+        pc
+      }
+    })
+
+    debug("Current Part costs are now: %s".format(currentPartCosts.mkString("\n")))
+  }
+
   private[this] def refreshPartCostDisplay(): JsCmd = {
-    SetHtml("currentPartCosts", PartCostDisplay.displayTable(currentPartCosts))
+    debug("Updating current parts to: %s".format(currentPartCosts.mkString("\n")))
+    SetHtml("currentPartCosts", PartCostDisplay.displayTable(currentPartCosts sortBy (partCost => Part.findById(partCost.part.get) match {
+      case Some(p) => p.partName.get
+      case _ => "zzzzzzz"
+    })))
   }
 
   private[this] def processSubmit(): JsCmd = {
@@ -133,6 +174,7 @@ class AddEditSupplier extends StatefulSnippet with AddressSnippet with ContactDe
     validate(validationItems: _*) match {
       case Nil => {
         initialSupplier match {
+          // TODO Add parts supplied here as well
           case Some(s) => modifySupplier(s, supplierName, contacts, address.get)
           case _ => addSupplier(supplierName, contacts, address.get)
         }
@@ -144,7 +186,6 @@ class AddEditSupplier extends StatefulSnippet with AddressSnippet with ContactDe
   }
 
   private[this] def addSupplier(name: String, contacts: ContactDetails, address: Address): JsCmd = {
-
     val contact = updateContactDetails(contacts)
 
     val addr = updateAddress(address)

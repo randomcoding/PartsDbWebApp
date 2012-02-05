@@ -5,7 +5,6 @@ package uk.co.randomcoding.partsdb.lift.util
 
 import scala.xml.NodeSeq
 
-import uk.co.randomcoding.partsdb.lift.util.EntityDisplay
 import uk.co.randomcoding.partsdb.core.document.LineItem
 import uk.co.randomcoding.partsdb.core.part.Part
 import uk.co.randomcoding.partsdb.core.id.Identifier
@@ -13,7 +12,7 @@ import uk.co.randomcoding.partsdb.core.id.Identifier
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
-object DisplayLineItem extends EntityDisplay {
+object LineItemDisplay extends EntityDisplay {
   override type EntityType = LineItem
 
   override val rowHeadings = List("Line No.", "Part", "Quantity", "Base Price", "Markup", "Total")
