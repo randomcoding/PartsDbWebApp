@@ -3,23 +3,31 @@
  */
 package uk.co.randomcoding.partsdb.lift.snippet
 
-import uk.co.randomcoding.partsdb.core.address.{ AddressParser, Address }
-import uk.co.randomcoding.partsdb.core.contact.{ Phone, Mobile, Email, ContactDetails }
-import uk.co.randomcoding.partsdb.core.terms.PaymentTerms
+import scala.io.Source
+import scala.xml.Text
+
+import org.bson.types.ObjectId
+
+import uk.co.randomcoding.partsdb.core.address.{AddressParser, Address}
+import uk.co.randomcoding.partsdb.core.contact.ContactDetails
+import uk.co.randomcoding.partsdb.core.customer.Customer
 import uk.co.randomcoding.partsdb.core.util.CountryCodes.countryCodes
-import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
-import uk.co.randomcoding.partsdb.lift.util.snippet.{ ValidationItem, ErrorDisplay, DataValidation, StyleAttributes }
-import uk.co.randomcoding.partsdb.lift.util.snippet.StyleAttributes._
+import uk.co.randomcoding.partsdb.lift.util.TransformHelpers.{styledTextArea, styledText, styledSelect}
+import uk.co.randomcoding.partsdb.lift.util.snippet.{ValidationItem, ErrorDisplay, DataValidation}
+
 import net.liftweb.common.StringOrNodeSeq.strTo
-import net.liftweb.common.{ Logger, Full }
-import net.liftweb.http.SHtml.{ select, button }
+import net.liftweb.common.{Logger, Full}
+import net.liftweb.http.SHtml._
 import net.liftweb.http.js.JsCmds.Noop
 import net.liftweb.http.js.JsCmd
-import net.liftweb.http.S
+import net.liftweb.http.{StatefulSnippet, S}
 import net.liftweb.util.Helpers._
+<<<<<<< HEAD
 import scala.xml.Text
 import net.liftweb.http.StatefulSnippet
 import uk.co.randomcoding.partsdb.core.customer.Customer
+=======
+>>>>>>> Issue29-MigrateToLiftMongoApi
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
@@ -28,6 +36,7 @@ class AddEditCustomer extends StatefulSnippet with ErrorDisplay with DataValidat
   val terms = List(("30" -> "30"), ("45" -> "45"), ("60" -> "60"), ("90" -> "90"))
 
   val cameFrom = S.referer openOr "/app/show?entityType=Customer"
+<<<<<<< HEAD
   //val cameFrom = S.referer openOr "/app/customers"
   var name = ""
   var billingAddressText = ""
@@ -37,6 +46,37 @@ class AddEditCustomer extends StatefulSnippet with ErrorDisplay with DataValidat
   var phoneNumber = ""
   var mobileNumber = ""
   var email = ""
+=======
+
+  val initialCustomer = S param "id" match {
+    case Full(id) => Customer findById new ObjectId(id)
+    case _ => None
+  }
+
+  var (name, paymentTermsText) = initialCustomer match {
+    case Some(cust) => (cust.customerName.get, "%d".format(cust.terms.get))
+    case _ => ("", "30")
+  }
+
+  var (billingAddressText, billingAddressCountry) = initialCustomer match {
+    case Some(cust) => Address findById cust.businessAddress.get match {
+      case Some(addr) => (addr.addressText.get, addr.country.get)
+      case _ => ("", "United Kingdom")
+    }
+    case _ => ("", "United Kingdom")
+  }
+
+  var (contactName, phoneNumber, mobileNumber, email) = initialCustomer match {
+    case Some(cust) => cust.contactDetails.get match {
+      case Nil => ("", "", "", "")
+      case contacts => contacts map (ContactDetails findById _) filter (_.isDefined) map (_.get) find (_.isPrimary.get == true) match {
+        case Some(c) => (c.contactName.get, c.phoneNumber.get, c.mobileNumber.get, c.emailAddress.get)
+        case _ => ("", "", "", "")
+      }
+    }
+    case _ => ("", "", "", "")
+  }
+>>>>>>> Issue29-MigrateToLiftMongoApi
 
   def dispatch = {
     case "render" => render
@@ -62,15 +102,17 @@ class AddEditCustomer extends StatefulSnippet with ErrorDisplay with DataValidat
    *
    * On successful addition, this will (possibly display a dialogue and then) redirect to the main customers page
    */
-  private[this] def processSubmit() = {
+  private[this] def processSubmit(): JsCmd = {
     val billingAddress = addressFromInput(billingAddressText, billingAddressCountry)
+    debug("Generated Address: %s".format(billingAddress))
     val contact = contactDetails(contactName, phoneNumber, mobileNumber, email, billingAddressCountry)
 
     val paymentTerms = asInt(paymentTermsText) match {
-      case Full(terms) => PaymentTerms(terms)
-      case _ => PaymentTerms(-1)
+      case Full(terms) => terms
+      case _ => -1
     }
 
+<<<<<<< HEAD
     val validationChecks = Seq(
       ValidationItem(name, "errorMessages", "Customer Name must be entered"),
       ValidationItem(billingAddress, "errorMessages", "Billing Address is not valid"),
@@ -86,6 +128,20 @@ class AddEditCustomer extends StatefulSnippet with ErrorDisplay with DataValidat
 
         S redirectTo "/app/show?entityType=Customer"
         //S redirectTo "/app/customers"
+=======
+    trace("About to validate")
+    val validationChecks = Seq(ValidationItem(billingAddress, "businessAddressError", "Business Address is not valid.\n Please ensure there is a Customer Name and that the country is selected."),
+      ValidationItem(paymentTerms, "paymentTermsError", "Payment Terms are not valid"),
+      ValidationItem(contact, "contactDetailsError", "Contact Details are not valid"),
+      ValidationItem(name, "customerNameError", "Customer Name must be entered"))
+
+    validate(validationChecks: _*) match {
+      case Nil => {
+        initialCustomer match {
+          case None => addCustomer(billingAddress.get, paymentTerms, contact.get)
+          case Some(c) => modifyCustomer(c, billingAddress.get, paymentTerms, contact.get)
+        }
+>>>>>>> Issue29-MigrateToLiftMongoApi
       }
       case errors => {
         errors foreach (error => displayError(error._1, error._2))
@@ -94,16 +150,33 @@ class AddEditCustomer extends StatefulSnippet with ErrorDisplay with DataValidat
     }
   }
 
+  private def addCustomer(billingAddress: Address, paymentTerms: Int, contact: ContactDetails): JsCmd = {
+    Customer add (name, billingAddress, paymentTerms, contact) match {
+      case Some(c) => S redirectTo cameFrom
+      case _ => {
+        error("Failed to add new customer, [name: %s, address: %s, terms: %s, contact: %s".format(name, billingAddress, paymentTerms, contact))
+        displayError("addCustomerError", "Failed to add Customer")
+        Noop
+      }
+    }
+  }
+
+  private def modifyCustomer(cust: Customer, billingAddress: Address, paymentTerms: Int, contact: ContactDetails): JsCmd = {
+    val contacts = contact :: (cust.contactDetails.get map (ContactDetails findById _) filter (_ isDefined) map (_ get))
+    Customer.modify(cust.id.get, name, billingAddress, paymentTerms, contacts.distinct)
+    S redirectTo cameFrom
+  }
+
   private def addressFromInput(addressText: String, country: String): Option[Address] = {
     trace("Input address: %s, country: %s".format(addressText, country))
-    val lines = scala.io.Source.fromString(addressText).getLines.toList
-    val addressLines = lines.map(_.replaceAll(",", "").trim) ::: List(country)
+    val lines = Source.fromString(addressText).getLines toList
+    val addressLines = lines.map(_ replaceAll (",", "") trim)
     trace("Generated Address Lines: %s".format(addressLines))
-    val shortName = "Short Name" // TODO: This should be setup correctly
-    val address = addressLines mkString ","
-    debug("Generating Address from: %s".format(address))
+    val shortName = "%s Business Address".format(name)
+    val address = addressLines mkString ("", ",", "")
+    debug("Generating Address (%s) from: %s".format(shortName, address))
 
-    (shortName, address) match {
+    (shortName, address, country) match {
       case AddressParser(addr) => {
         debug("Created Address: %s".format(addr))
         Some(addr)
@@ -115,12 +188,11 @@ class AddEditCustomer extends StatefulSnippet with ErrorDisplay with DataValidat
     }
   }
 
-  private def contactDetails(name: String, phone: String, mobile: String, email: String, countryCode: String): ContactDetails = {
-    val isInternational = countryCode == "UK"
-    val ph = if (phone.trim.isEmpty) None else Some(List(Phone(phone, isInternational)))
-    val mo = if (mobile.trim.isEmpty) None else Some(List(Mobile(mobile, isInternational)))
-    val em = if (email.trim.isEmpty) None else Some(List(Email(email)))
+  private def contactDetails(name: String, phone: String, mobile: String, email: String, countryCode: String): Option[ContactDetails] = {
+    val ph = phone.trim
+    val mo = mobile.trim
+    val em = email.trim
 
-    ContactDetails(name, ph, mo, em)
+    ContactDetails.add(name, ph, mo, em, true)
   }
 }

@@ -10,7 +10,10 @@ object ProjectBuild extends Build {
 	lazy val root = Project("root", 
 		file("."),
 		settings = buildSettings ++ Unidoc.settings ++ Seq (
-                    scaladocOptions := Seq()
+                    scaladocOptions := Seq(),
+                    // Disable publish and publish-local for empty root project
+                    publish := {},
+                    publishLocal := {}
                 )
 	) aggregate(coreProject, liftProject, dbProject, loggingProject)
 
@@ -44,11 +47,11 @@ object ProjectBuild extends Build {
 	)
 
 	//val commonDeps = loggingDeps ++ testDeps
-	val commonDeps = testDeps
+	val commonDeps = testDeps ++ jodaDeps
 
 	val coreProjectDeps = commonDeps ++ Seq(liftMongoRecord, rogue)
 
-	val dbProjectDeps = Seq(liftJson, liftCommon, liftMongoRecord) ++ commonDeps// ++ mongoDeps
+	val dbProjectDeps = Seq(liftJson, liftCommon, liftMongoRecord) ++ commonDeps
 
 	val liftProjectDeps = commonDeps ++ liftDeps ++ jettyDeps
 }

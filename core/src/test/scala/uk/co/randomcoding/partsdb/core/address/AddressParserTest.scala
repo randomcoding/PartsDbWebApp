@@ -16,12 +16,11 @@ class AddressParserTest extends FunSuite with ShouldMatchers {
     val addressString = "15 Holly Lane,\n" +
       "A Town,\n" +
       "A County,\n" +
-      "AC23 8FD,\n" +
-      "UK"
+      "AC23 8FD"
 
-    val expectedAddress = List("15 Holly Lane", "A Town", "A County", "AC23 8FD", "UK").mkString("\n")
+    val expectedAddress = List("15 Holly Lane", "A Town", "A County", "AC23 8FD").mkString("\n")
 
-    (shortName, addressString) match {
+    (shortName, addressString, "UK") match {
       case AddressParser(addr) => verifyDefaultAddress(expectedAddress, addr)
       case _ => fail("No Address Match made")
     }
@@ -32,41 +31,40 @@ class AddressParserTest extends FunSuite with ShouldMatchers {
     val addressString = "15 Holly Lane,\n" +
       "A Town,\n" +
       "A County,\n" +
-      "AC23 8FD.\n" +
-      "UK"
+      "AC23 8FD."
 
-    val expectedAddress = List("15 Holly Lane", "A Town", "A County", "AC23 8FD", "UK").mkString("\n")
-    (shortName, addressString) match {
+    val expectedAddress = List("15 Holly Lane", "A Town", "A County", "AC23 8FD").mkString("\n")
+    (shortName, addressString, "UK") match {
       case AddressParser(addr) => verifyDefaultAddress(expectedAddress, addr)
       case _ => fail("No Address Match made")
     }
   }
 
   test("Parser correctly uses the first line of the address as short name if the short name is empty") {
-    val addressString = """15 Holly Lane,A Town,A County,AC23 8FD.UK"""
-    val expectedAddress = List("15 Holly Lane", "A Town", "A County", "AC23 8FD", "UK").mkString("\n")
+    val addressString = """15 Holly Lane,A Town,A County,AC23 8FD."""
+    val expectedAddress = List("15 Holly Lane", "A Town", "A County", "AC23 8FD").mkString("\n")
 
-    ("", addressString) match {
+    ("", addressString, "UK") match {
       case AddressParser(addr) => verifyNamedAddress(expectedAddress, addr, "15 Holly Lane")
       case _ => fail("No Address Match made")
     }
   }
 
   test("Parser correctly uses the first line of the address as short name if the short name is only made up of spaces") {
-    val addressString = """15 Holly Lane,A Town,A County,AC23 8FD.UK"""
-    val expectedAddress = List("15 Holly Lane", "A Town", "A County", "AC23 8FD", "UK").mkString("\n")
+    val addressString = """15 Holly Lane,A Town,A County,AC23 8FD."""
+    val expectedAddress = List("15 Holly Lane", "A Town", "A County", "AC23 8FD").mkString("\n")
 
-    ("   ", addressString) match {
+    ("   ", addressString, "UK") match {
       case AddressParser(addr) => verifyNamedAddress(expectedAddress, addr, "15 Holly Lane")
       case _ => fail("No Address Match made")
     }
   }
 
   test("Parser correctly uses the first line of the address as short name if the short name is made up of spaces, tabs and new lines") {
-    val addressString = """15 Holly Lane,A Town,A County,AC23 8FD.UK"""
-    val expectedAddress = List("15 Holly Lane", "A Town", "A County", "AC23 8FD", "UK").mkString("\n")
+    val addressString = """15 Holly Lane,A Town,A County,AC23 8FD."""
+    val expectedAddress = List("15 Holly Lane", "A Town", "A County", "AC23 8FD").mkString("\n")
 
-    (" \t  \n  ", addressString) match {
+    (" \t  \n  ", addressString, "UK") match {
       case AddressParser(addr) => verifyNamedAddress(expectedAddress, addr, "15 Holly Lane")
       case _ => fail("No Address Match made")
     }
@@ -74,10 +72,10 @@ class AddressParserTest extends FunSuite with ShouldMatchers {
 
   test("Test can match a UK address string with all address lines on the same line separated only by full stops and commas (no spaces)") {
     val shortName = "Holly Lane"
-    val addressString = """15 Holly Lane,A Town,A County,AC23 8FD.UK"""
+    val addressString = """15 Holly Lane,A Town,A County,AC23 8FD."""
 
-    val expectedAddress = List("15 Holly Lane", "A Town", "A County", "AC23 8FD", "UK").mkString("\n")
-    (shortName, addressString) match {
+    val expectedAddress = List("15 Holly Lane", "A Town", "A County", "AC23 8FD").mkString("\n")
+    (shortName, addressString, "UK") match {
       case AddressParser(addr) => verifyDefaultAddress(expectedAddress, addr)
       case _ => fail("No Address Match made")
     }
@@ -85,37 +83,33 @@ class AddressParserTest extends FunSuite with ShouldMatchers {
 
   test("Test can match a UK address string with all address lines on the same line separated only by full stops and commas with trailing spaces") {
     val shortName = "Holly Lane"
-    val addressString = """15 Holly Lane, A Town, A County, AC23 8FD. UK"""
-
-    val expectedAddress = List("15 Holly Lane", "A Town", "A County", "AC23 8FD", "UK").mkString("\n")
-    (shortName, addressString) match {
-      case AddressParser(addr) => verifyDefaultAddress(expectedAddress, addr)
-      case _ => fail("No Address Match made")
-    }
-  }
-
-  test("Test can match a UK address without a UK country") {
-    val shortName = "Holly Lane"
     val addressString = """15 Holly Lane, A Town, A County, AC23 8FD."""
 
     val expectedAddress = List("15 Holly Lane", "A Town", "A County", "AC23 8FD").mkString("\n")
-    (shortName, addressString) match {
+    (shortName, addressString, "UK") match {
       case AddressParser(addr) => verifyDefaultAddress(expectedAddress, addr)
       case _ => fail("No Address Match made")
     }
   }
 
   test("Address with only a country code fails to generate address") {
-    ("Short", "UK") match {
-      case AddressParser(addr) => fail("UK should not generate an address")
+    ("Short", "", "UK") match {
+      case AddressParser(addr) => fail("No address text should not generate an address")
+      case _ => //passed
+    }
+  }
+
+  test("Address with out a country code fails to generate address") {
+    ("Short", "Address Text", "") match {
+      case AddressParser(addr) => fail("No country code should not generate an address")
       case _ => //passed
     }
   }
 
   private val addressStringMatch = (addressString: String) => {
     val shortName = "Holly Lane"
-    val expectedAddress = List("15 Holly Lane", "A Town", "A County", "AC23 8FD", "UK").mkString("\n")
-    (shortName, addressString) match {
+    val expectedAddress = List("15 Holly Lane", "A Town", "A County", "AC23 8FD").mkString("\n")
+    (shortName, addressString, "UK") match {
       case AddressParser(addr) => verifyDefaultAddress(expectedAddress, addr)
       case _ => fail("No Address Match made")
     }

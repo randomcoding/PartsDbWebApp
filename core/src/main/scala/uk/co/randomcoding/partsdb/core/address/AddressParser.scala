@@ -37,7 +37,7 @@ object AddressParser {
    *
    * @return An Option[[[uk.co.randomcoding.partsdb.core.address.Address]]] if the input string matches
    */
-  def unapply(nameAndAddress: (String, String)): Option[Address] = {
+  def unapply(nameAndAddress: (String, String, String)): Option[Address] = {
     val addressString = nameAndAddress._2
     val lines = addressString.split("""[,\.]+""") map (_ trim)
     val shortName = nameAndAddress._1.trim match {
@@ -45,7 +45,7 @@ object AddressParser {
       case s => s
     }
 
-    identifyCountry(lines) match {
+    identifyCountry(nameAndAddress._3) match {
       case Some(code) if (lines.size > 1) => Some(Address.createRecord.shortName(shortName).addressText(lines.mkString("\n")).country(code.countryName))
       case _ => None
     }
@@ -60,12 +60,7 @@ object AddressParser {
    *
    * This needs a better means of country identification
    */
-  private def identifyCountry(addressLines: Seq[String]): Option[CountryCode] = {
-    quickCountryMatch(addressLines) match {
-      case Some(code) => matchToCountryCode(code)
-      case None => countryCodeFromAddressLines(addressLines)
-    }
-  }
+  private def identifyCountry(country: String): Option[CountryCode] = matchToCountryCode(country)
 
   /**
    * Performs shortcut matching on addresses.
@@ -77,7 +72,7 @@ object AddressParser {
    *
    * @return An `Option[String]` with the country's code is a quick match was possible, otherwise returns `None`
    */
-  private def quickCountryMatch(addressLines: Seq[String]): Option[String] = {
+  /*private def quickCountryMatch(addressLines: Seq[String]): Option[String] = {
     var quickMatch: Option[String] = None
     if (hasPostCode(addressLines)) quickMatch = Some("UK")
 
@@ -93,5 +88,5 @@ object AddressParser {
 
   private val isCode = (line: String, codeMatchOption: (String => Option[String])) => codeMatchOption(line) isDefined
 
-  private val hasPostCode = (addressLines: Seq[String]) => addressLines.find(isCode(_, postCodeOption)).isDefined
+  private val hasPostCode = (addressLines: Seq[String]) => addressLines.find(isCode(_, postCodeOption)).isDefined*/
 }
