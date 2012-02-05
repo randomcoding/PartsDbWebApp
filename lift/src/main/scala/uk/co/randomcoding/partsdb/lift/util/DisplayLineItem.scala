@@ -1,7 +1,7 @@
 /**
  *
  */
-package uk.co.randomcoding.partsdb.lift.snippet
+package uk.co.randomcoding.partsdb.lift.util
 
 import scala.xml.NodeSeq
 

@@ -20,6 +20,8 @@ import net.liftweb.http.{ WiringUI, StatefulSnippet, S }
 import net.liftweb.util.Helpers._
 import net.liftweb.util.ValueCell._
 import uk.co.randomcoding.partsdb.core.supplier.Supplier
+import com.foursquare.rogue.Rogue._
+import uk.co.randomcoding.partsdb.lift.util.DisplayLineItem
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
@@ -29,10 +31,10 @@ class AddEditQuote extends StatefulSnippet with ErrorDisplay with DataValidation
   var customerName = ""
   val quoteHolder = new QuoteHolder
 
-  val parts = List.empty[Part] //getAll[Part]("partId") sortBy (_.partName)
+  val parts = Part where (_.id exists true) orderDesc (_.partName) fetch
   val partsSelect = (None, "Select Part") :: (parts map ((p: Part) => (Some(p), p.partName.get)))
 
-  val customers = List.empty[Customer] //getAll[Customer]("customerId")
+  val customers = Customer where (_.id exists true) orderDesc (_.customerName) fetch
   val customersSelect = (None, "Select Customer") :: (customers map ((c: Customer) => (Some(c), c.customerName.get)))
   var currentCustomer: Option[Customer] = None
 
