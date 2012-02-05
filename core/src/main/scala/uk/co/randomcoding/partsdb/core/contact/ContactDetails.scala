@@ -48,6 +48,13 @@ object ContactDetails extends ContactDetails with MongoMetaRecord[ContactDetails
   import com.foursquare.rogue.Rogue._
 
   /**
+   * Create a new `ContactDetails` record, but '''does not''' add it to the database
+   */
+  def create(contactName: String, phoneNumber: String, mobileNumber: String, emailAddress: String, isPrimary: Boolean): ContactDetails = {
+    ContactDetails.createRecord.contactName(contactName).phoneNumber(phoneNumber).mobileNumber(mobileNumber).emailAddress(emailAddress).isPrimary(isPrimary)
+  }
+
+  /**
    * Find all records that have a `contactName` field with the given value
    */
   def findNamed(contactName: String): List[ContactDetails] = ContactDetails where (_.contactName eqs contactName) fetch
@@ -103,7 +110,7 @@ object ContactDetails extends ContactDetails with MongoMetaRecord[ContactDetails
    * If the save operation fails then `None` is returned
    */
   def add(contactName: String, phoneNumber: String, mobileNumber: String, emailAddress: String, isPrimary: Boolean): Option[ContactDetails] = {
-    add(ContactDetails.createRecord.contactName(contactName).phoneNumber(phoneNumber).mobileNumber(mobileNumber).emailAddress(emailAddress).isPrimary(isPrimary))
+    add(create(contactName, phoneNumber, mobileNumber, emailAddress, isPrimary))
   }
 
   /**

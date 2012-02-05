@@ -36,12 +36,92 @@ class Supplier private () extends MongoRecord[Supplier] with ObjectIdPk[Supplier
 
   /**
    * Any notes about this supplier.
-   *
-   * These are optional
    */
-  object notes extends OptionalStringField(this, 500)
+  object notes extends StringField(this, 500)
+
+  override def equals(that: Any): Boolean = that match {
+    case other: Supplier => supplierName.get == other.supplierName.get && contactDetails.get == other.contactDetails.get && suppliedParts.get.toSet == other.suppliedParts.get.toSet
+    case _ => false
+  }
+
+  private val hashCodeFields = Seq(supplierName, contactDetails, suppliedParts)
+
+  override def hashCode: Int = getClass.hashCode + (hashCodeFields map (_.get.hashCode) sum)
 }
 
 object Supplier extends Supplier with MongoMetaRecord[Supplier] {
 
+  import org.bson.types.ObjectId
+  import com.foursquare.rogue.Rogue._
+
+  /**
+   * Create a new `Supplier` record but '''does not''' save it to the database
+   */
+  def create(name: String, contacts: ContactDetails, partsSupplied: Seq[PartCost]): Supplier = {
+    Supplier.createRecord.supplierName(name).contactDetails(contacts.id.get).suppliedParts(partsSupplied.toList map (_.id.get))
+  }
+
+  /**
+   * Add a new supplier to the database
+   *
+   * If there is a matching record present, this will be returned and the addition will not happen.
+   * If there is no matching record then a new record will be created and returned.
+   *
+   * @return An `Option[Supplier]` that is populated if the addition succeeded, or found a match, and `None` if the save operation failed.
+   */
+  def add(supplier: Supplier): Option[Supplier] = findMatching(supplier) match {
+    case Some(s) => Some(s)
+    case _ => supplier.save match {
+      case s: Supplier => Some(s)
+      case _ => None
+    }
+  }
+
+  /**
+   * Add a new supplier to the database
+   *
+   * If there is a matching record present, this will be returned and the addition will not happen.
+   * If there is no matching record then a new record will be created and returned.
+   *
+   * @return An `Option[Supplier]` that is populated if the addition succeeded, or found a match, and `None` if the save operation failed.
+   */
+  def add(name: String, contacts: ContactDetails, suppliedParts: Seq[PartCost]): Option[Supplier] = {
+    add(create(name, contacts, suppliedParts))
+  }
+
+  /**
+   * Find a supplier that matches the provided one.
+   *
+   * A match is made on:
+   *   - Object Id
+   *   - name, contact details
+   *
+   * @return An `Option` containing the match if found or `None` otherwise
+   */
+  def findMatching(supplier: Supplier): Option[Supplier] = findById(supplier.id.get) match {
+    case Some(s) => Some(s)
+    case _ => Supplier where (_.supplierName eqs supplier.supplierName.get) and (_.contactDetails eqs supplier.contactDetails.get) get
+  }
+
+  /**
+   * Find all suppliers that have the given name
+   */
+  def findNamed(name: String): List[Supplier] = Supplier where (_.supplierName eqs name) fetch
+
+  def findById(oid: ObjectId): Option[Supplier] = Supplier where (_.id eqs oid) get
+
+  def remove(oid: ObjectId): Option[Boolean] = findById(oid) match {
+    case Some(s) => Some(s.delete_!)
+    case _ => None
+  }
+
+  /**
+   * Updates the record with the given `Object Id` with the new `name`, `contact details` and `supplied parts` values.
+   *
+   * Any updates that are required to the contact details or the supplied parts themselves must be done externally to this method
+   */
+  def modify(oid: ObjectId, newName: String, newContacts: ContactDetails, newParts: Seq[PartCost], newNotes: String) = {
+    Supplier.where(_.id eqs oid).modify(_.supplierName setTo newName) and (_.contactDetails setTo newContacts.id.get) and
+      (_.suppliedParts setTo (newParts map (_.id.get))) and (_.notes setTo newNotes) updateMulti
+  }
 }
