@@ -19,6 +19,7 @@ import net.liftweb.http.S
 import net.liftweb.util.Helpers._
 import scala.xml.Text
 import net.liftweb.http.StatefulSnippet
+import uk.co.randomcoding.partsdb.core.customer.Customer
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
@@ -26,7 +27,8 @@ import net.liftweb.http.StatefulSnippet
 class AddEditCustomer extends StatefulSnippet with ErrorDisplay with DataValidation with Logger {
   val terms = List(("30" -> "30"), ("45" -> "45"), ("60" -> "60"), ("90" -> "90"))
 
-  val cameFrom = S.referer openOr "/app/customers"
+  val cameFrom = S.referer openOr "/app/show?entityType=Customer"
+  //val cameFrom = S.referer openOr "/app/customers"
   var name = ""
   var billingAddressText = ""
   var billingAddressCountry = "United Kingdom"
@@ -69,10 +71,11 @@ class AddEditCustomer extends StatefulSnippet with ErrorDisplay with DataValidat
       case _ => PaymentTerms(-1)
     }
 
-    val validationChecks = Seq(ValidationItem(billingAddress, "billingAddressError", "Billing Address is not valid"),
+    val validationChecks = Seq(
+      ValidationItem(name, "customerNameError", "Customer Name must be entered"),
+      ValidationItem(billingAddress, "billingAddressError", "Billing Address is not valid"),
       ValidationItem(paymentTerms, "paymentTermsError", "Payment Terms are not valid"),
-      ValidationItem(contact, "contactDetailsError", "Contact Details are not valid"),
-      ValidationItem(name, "customerNameError", "Customer Name must be entered"))
+      ValidationItem(contact, "contactDetailsError", "Contact Details are not valid"))
 
     validate(validationChecks: _*) match {
       case Nil => {
@@ -81,7 +84,8 @@ class AddEditCustomer extends StatefulSnippet with ErrorDisplay with DataValidat
           error("Failed to add new customer, [name: %s, address: %s, terms: %s, contact: %s".format(name, billingAddress, paymentTerms, contact))
         }*/
 
-        S redirectTo "/app/customers"
+        S redirectTo "/app/show?entityType=Customer"
+        //S redirectTo "/app/customers"
       }
       case errors => {
         errors foreach (error => displayError(error._1, error._2))
@@ -105,7 +109,7 @@ class AddEditCustomer extends StatefulSnippet with ErrorDisplay with DataValidat
         Some(addr)
       }
       case _ => {
-        error("Null Adress Created from %s".format(address))
+        error("Null Address Created from %s".format(address))
         None
       }
     }

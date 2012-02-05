@@ -33,12 +33,13 @@ trait DataValidation extends Logger {
     item.toValidate match {
       // check all required items are defined
       /*case addr: Address => validateAddress(addr)
-      case terms: PaymentTerms => terms != PaymentTerms(-1)
+      case terms: PaymentTerms => terms != PaymentTerms(-1)*/
+
       case contacts: ContactDetails => validateContactDetails(contacts)
-      case part: Part => part != DefaultPart
-      case vehicle: Vehicle => vehicle != DefaultVehicle*/
+      case address: Address => address != None
       case string: String => string.trim nonEmpty
       case double: Double => double >= 0.0
+      case selectedOption: Option[Any] => !selectedOption.isEmpty
       case validationItem => {
         debug("Unhandled validation type %s. Assuming it is valid".format(validationItem))
         true
@@ -56,12 +57,11 @@ trait DataValidation extends Logger {
    * @param address The [[uk.co.randomcoding.partsdb.core.address.Address]] to validate
    * @return `true` if the address is not a [[uk.co.randomcoding.partsdb.core.address.NullAddress]] and has a valid entry for country
    */
-  /*private def validateAddress(address: Address) = {
-    address match {
-      case NullAddress => false
-      case Address(_, _, _, country) => matchToCountryCode(country).isDefined
-    }
-  }*/
+  //  private def validateAddress(address: Address) = {
+  //      case NullAddress => false
+  //      case Address(_, _, _, country) => matchToCountryCode(country).isDefined
+  //    }
+  //  }
 
   /**
    * Validates [[uk.co.randomcoding.partsdb.core.contact.ContactDetails]]

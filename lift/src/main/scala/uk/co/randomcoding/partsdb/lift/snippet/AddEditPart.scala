@@ -1,22 +1,19 @@
 package uk.co.randomcoding.partsdb.lift.snippet
 
 import scala.xml.Text
-
 import org.bson.types.ObjectId
-
 import com.foursquare.rogue.Rogue._
-
 import uk.co.randomcoding.partsdb.core.part.Part.add
 import uk.co.randomcoding.partsdb.core.part.Part
 import uk.co.randomcoding.partsdb.core.vehicle.Vehicle
 import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
 import uk.co.randomcoding.partsdb.lift.util.snippet.{ ValidationItem, ErrorDisplay, DataValidation }
-
 import net.liftweb.common.{ Logger, Full, Empty, Box }
 import net.liftweb.http.SHtml._
 import net.liftweb.http.js.JsCmds.Noop
 import net.liftweb.http.{ StatefulSnippet, S }
 import net.liftweb.util.Helpers._
+import net.liftweb.http.LiftScreen
 
 /**
  * Snippet to add, or edit, a part
@@ -66,9 +63,10 @@ class AddEditPart extends StatefulSnippet with ErrorDisplay with DataValidation 
    */
   private[this] def processSubmit() = {
     val validationChecks = Seq(
-      ValidationItem(partName, "partNameError", "Part Name must be entered"),
-      ValidationItem(vehicle, "partVehicleError", "Vehicle is not valid"))
+      ValidationItem(partName, "partNameError", "A part Name must be entered"),
+      ValidationItem(vehicle, "partVehicleError", "A vehicle must be chosen from the list"))
 
+    // Allows the MoD Id to be an optional string value
     val modIdValue = () => modId.trim match {
       case "" => None
       case s: String => Some(s)
