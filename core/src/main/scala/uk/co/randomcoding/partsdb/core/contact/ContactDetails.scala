@@ -123,10 +123,18 @@ object ContactDetails extends ContactDetails with MongoMetaRecord[ContactDetails
    *
    * This will update '''ALL''' the fields so if you want to keep the same value for a field then pass it in as the new value
    */
-  def modify(oid: ObjectId, newName: String, newPhoneNumber: String, newMobileNumber: String, newEMailAddress: String) = {
+  def modify(oid: ObjectId, newName: String, newPhoneNumber: String, newMobileNumber: String, newEMailAddress: String, isPrimary: Boolean): Unit = {
     ContactDetails.where(_.id eqs oid).modify(_.contactName setTo newName) and
       (_.phoneNumber setTo newPhoneNumber) and
       (_.mobileNumber setTo newMobileNumber) and
-      (_.emailAddress setTo newEMailAddress) updateMulti
+      (_.emailAddress setTo newEMailAddress) and
+      (_.isPrimary setTo isPrimary) updateMulti
+  }
+
+  /**
+   * Modify a `ContactDetails` record by setting all its fields to match those of then `newDetails`
+   */
+  def modify(oid: ObjectId, newDetails: ContactDetails): Unit = {
+    modify(oid, newDetails.contactName.get, newDetails.phoneNumber.get, newDetails.mobileNumber.get, newDetails.emailAddress.get, newDetails.isPrimary.get)
   }
 }

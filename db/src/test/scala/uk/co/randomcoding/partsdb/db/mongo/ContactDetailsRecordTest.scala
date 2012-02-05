@@ -116,9 +116,9 @@ class ContactDetailsRecordTest extends MongoDbTestBase {
   test("Modify a Contact Details") {
     val contacts1 = add("Dave", "01234 567890", "", "", true).get
     val contactId = contacts1.id.get
-    modify(contactId, "Fred", "", "07777888999", "an@em.ail")
+    modify(contactId, "Fred", "", "07777888999", "an@em.ail", true)
 
-    val expected = ContactDetails.createRecord.contactName("Fred").mobileNumber("07777888999").emailAddress("an@em.ail")
+    val expected = ContactDetails.createRecord.contactName("Fred").mobileNumber("07777888999").emailAddress("an@em.ail").isPrimary(true)
     findNamed("Dave") should be(Nil)
     findNamed("Fred") should be(List(expected))
   }
@@ -126,9 +126,9 @@ class ContactDetailsRecordTest extends MongoDbTestBase {
   test("Modify a Contact Details does not modify its object id") {
     val contacts1 = add("Dave", "01234 567890", "", "", true).get
     val contactId = contacts1.id.get
-    modify(contactId, "Fred", "", "07777888999", "an@em.ail")
+    modify(contactId, "Fred", "", "07777888999", "an@em.ail", false)
 
-    val expected = ContactDetails.createRecord.contactName("Fred").mobileNumber("07777888999").emailAddress("an@em.ail")
+    val expected = ContactDetails.createRecord.contactName("Fred").mobileNumber("07777888999").emailAddress("an@em.ail").isPrimary(false)
 
     findById(contactId) should be(Some(expected))
   }
