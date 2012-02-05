@@ -21,7 +21,7 @@ import net.liftweb.util.Helpers._
 import net.liftweb.util.ValueCell._
 import uk.co.randomcoding.partsdb.core.supplier.Supplier
 import com.foursquare.rogue.Rogue._
-import uk.co.randomcoding.partsdb.lift.util.DisplayLineItem
+import uk.co.randomcoding.partsdb.lift.util.LineItemDisplay
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
@@ -58,7 +58,7 @@ class AddEditQuote extends StatefulSnippet with ErrorDisplay with DataValidation
       "#basePartCost" #> WiringUI.asText(quoteHolder.currentPartBaseCostDisplay) &
       "#markup" #> styledAjaxText(quoteHolder.markup, updateHolderValue(quoteHolder.markup(_))) &
       "#submit" #> button("Save Quote", processSubmit) &
-      "#currentLineItems" #> DisplayLineItem.displayTable(quoteHolder.lineItems) &
+      "#currentLineItems" #> LineItemDisplay.displayTable(quoteHolder.lineItems) &
       "#subTotal" #> WiringUI.asText(quoteHolder.subTotal) &
       "#vatAmount" #> WiringUI.asText(quoteHolder.vatAmount) &
       "#totalCost" #> WiringUI.asText(quoteHolder.totalCost, JqWiringSupport.fade)
@@ -96,7 +96,7 @@ class AddEditQuote extends StatefulSnippet with ErrorDisplay with DataValidation
   }
 
   private def refreshLineItemDisplay(): JsCmd = {
-    SetHtml("currentLineItems", DisplayLineItem.displayTable(quoteHolder.lineItems))
+    SetHtml("currentLineItems", LineItemDisplay.displayTable(quoteHolder.lineItems))
   }
 
   private[this] def processSubmit() = {
