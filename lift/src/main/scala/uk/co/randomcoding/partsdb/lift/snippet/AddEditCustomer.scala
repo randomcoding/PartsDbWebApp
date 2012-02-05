@@ -8,19 +8,19 @@ import scala.xml.Text
 
 import org.bson.types.ObjectId
 
-import uk.co.randomcoding.partsdb.core.address.{AddressParser, Address}
+import uk.co.randomcoding.partsdb.core.address.{ AddressParser, Address }
 import uk.co.randomcoding.partsdb.core.contact.ContactDetails
 import uk.co.randomcoding.partsdb.core.customer.Customer
 import uk.co.randomcoding.partsdb.core.util.CountryCodes.countryCodes
-import uk.co.randomcoding.partsdb.lift.util.TransformHelpers.{styledTextArea, styledText, styledSelect}
-import uk.co.randomcoding.partsdb.lift.util.snippet.{ValidationItem, ErrorDisplay, DataValidation}
+import uk.co.randomcoding.partsdb.lift.util.TransformHelpers.{ styledTextArea, styledText, styledSelect }
+import uk.co.randomcoding.partsdb.lift.util.snippet.{ ValidationItem, ErrorDisplay, DataValidation }
 
 import net.liftweb.common.StringOrNodeSeq.strTo
-import net.liftweb.common.{Logger, Full}
+import net.liftweb.common.{ Logger, Full }
 import net.liftweb.http.SHtml._
 import net.liftweb.http.js.JsCmds.Noop
 import net.liftweb.http.js.JsCmd
-import net.liftweb.http.{StatefulSnippet, S}
+import net.liftweb.http.{ StatefulSnippet, S }
 import net.liftweb.util.Helpers._
 
 /**
@@ -119,7 +119,7 @@ class AddEditCustomer extends StatefulSnippet with ErrorDisplay with DataValidat
       case Some(c) => S redirectTo cameFrom
       case _ => {
         error("Failed to add new customer, [name: %s, address: %s, terms: %s, contact: %s".format(name, billingAddress, paymentTerms, contact))
-        displayError("addCustomerError", "Failed to add Customer")
+        displayError("errorMessages", "Failed to add Customer")
         Noop
       }
     }

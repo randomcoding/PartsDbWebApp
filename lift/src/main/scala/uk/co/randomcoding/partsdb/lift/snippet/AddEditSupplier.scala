@@ -84,8 +84,8 @@ class AddEditSupplier extends StatefulSnippet with AddressSnippet with ContactDe
     val contacts = contactDetailsFromInput
 
     val validationItems = Seq(
-      ValidationItem(address, "addressErrorId", "Address Entry was invalid"),
-      ValidationItem(contacts, "contactDetailsId", "Contact Details entry was invalid"))
+      ValidationItem(address, "errorMessages", "Address Entry was invalid"),
+      ValidationItem(contacts, "errorMessages", "Contact Details entry was invalid"))
 
     validate(validationItems: _*) match {
       case Nil => {
