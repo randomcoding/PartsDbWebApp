@@ -130,10 +130,6 @@ class CustomerRecordTest extends MongoDbTestBase {
     ContactDetails.findNamed("Dave") should be(List(contactDave))
   }
 
-  test("Modify correctly modifies the address and contact details records") {
-    pending
-  }
-
   test("Find Matching correctly finds a record with the same Object Id") {
     val addr = Address.createRecord.shortName("Addr1").addressText("Address").country("UK")
     val cust1 = add("cust1", addr, 30, contactDave).get
