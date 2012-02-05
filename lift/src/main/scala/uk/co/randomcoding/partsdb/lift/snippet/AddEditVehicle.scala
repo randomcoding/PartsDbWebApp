@@ -54,7 +54,7 @@ class AddEditVehicle extends StatefulSnippet with ErrorDisplay with DataValidati
   private[this] def processSubmit() = {
 
     val validationChecks = Seq(
-      ValidationItem(vehicleName, "vehicleNameError", "Vehicle Name must be entered"))
+      ValidationItem(vehicleName, "errorMessages", "Vehicle Name must be entered"))
 
     validate(validationChecks: _*) match {
       case Nil => {

@@ -63,8 +63,8 @@ class AddEditPart extends StatefulSnippet with ErrorDisplay with DataValidation 
    */
   private[this] def processSubmit() = {
     val validationChecks = Seq(
-      ValidationItem(partName, "partNameError", "A part Name must be entered"),
-      ValidationItem(vehicle, "partVehicleError", "A vehicle must be chosen from the list"))
+      ValidationItem(partName, "errorMessages", "A part Name must be entered"),
+      ValidationItem(vehicle, "errorMessages", "A vehicle must be chosen from the list"))
 
     // Allows the MoD Id to be an optional string value
     val modIdValue = () => modId.trim match {

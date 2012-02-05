@@ -72,10 +72,10 @@ class AddEditCustomer extends StatefulSnippet with ErrorDisplay with DataValidat
     }
 
     val validationChecks = Seq(
-      ValidationItem(name, "customerNameError", "Customer Name must be entered"),
-      ValidationItem(billingAddress, "billingAddressError", "Billing Address is not valid"),
-      ValidationItem(paymentTerms, "paymentTermsError", "Payment Terms are not valid"),
-      ValidationItem(contact, "contactDetailsError", "Contact Details are not valid"))
+      ValidationItem(name, "errorMessages", "Customer Name must be entered"),
+      ValidationItem(billingAddress, "errorMessages", "Billing Address is not valid"),
+      ValidationItem(paymentTerms, "errorMessages", "Payment Terms are not valid"),
+      ValidationItem(contact, "errorMessages", "Contact Details are not valid"))
 
     validate(validationChecks: _*) match {
       case Nil => {

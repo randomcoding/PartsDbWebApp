@@ -74,7 +74,8 @@ class AddEditUser extends StatefulSnippet with ErrorDisplay with DataValidation 
         case _ => addNewUser(userName, password, userRole) match {
           case None => S.redirectTo("/admin/")
           case Some(message) => {
-            displayError("addUserErrorId", message)
+            //displayError("addUserErrorId", message)
+            displayError("errorMessages", message)
             Noop
           }
         }
@@ -89,9 +90,11 @@ class AddEditUser extends StatefulSnippet with ErrorDisplay with DataValidation 
   private[this] def validate = {
     var errors = List.empty[(String, String)]
 
-    if (userName.trim.isEmpty) errors = ("userNameErrorId", "User Name cannot be empty") :: errors
+    // if (userName.trim.isEmpty) errors = ("userNameErrorId", "User Name cannot be empty") :: errors
+    if (userName.trim.isEmpty) errors = ("errorMessages", "User Name cannot be empty") :: errors
 
-    val pwErrorId = "passwordErrorId"
+    //val pwErrorId = "passwordErrorId"
+    val pwErrorId = "errorMessages"
     val validationErrors = passwordErrors(password, confirmPassword, 6) map ((pwErrorId, _))
     validationErrors ::: errors
   }

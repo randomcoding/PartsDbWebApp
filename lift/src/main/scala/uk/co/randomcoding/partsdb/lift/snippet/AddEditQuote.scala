@@ -78,15 +78,27 @@ class AddEditQuote extends StatefulSnippet with ErrorDisplay with DataValidation
    *
    *  If the line item part is already present, simply update the value and refresh.
    */
+  //  private def addLine(): JsCmd = {
+  //    clearErrors
+  //    (asInt(quoteHolder.quantity), quoteHolder.currentPart) match {
+  //      case (Full(q), Some(part)) => quoteHolder.addLineItem()
+  //      case (Full(q), None) => displayError("partErrorId", "Please select a Part")
+  //      case (_, Some(part)) => displayError("quantityErrorId", "Please specify a valid quantity")
+  //      case (_, None) => {
+  //        displayError("quantityErrorId", "Please specify a valid quantity")
+  //        displayError("partErrorId", "Please select a Part")
+  //      }
+  //    }
+
   private def addLine(): JsCmd = {
     clearErrors
     (asInt(quoteHolder.quantity), quoteHolder.currentPart) match {
       case (Full(q), Some(part)) => quoteHolder.addLineItem()
-      case (Full(q), None) => displayError("partErrorId", "Please select a Part")
-      case (_, Some(part)) => displayError("quantityErrorId", "Please specify a valid quantity")
+      case (Full(q), None) => displayError("errorMessages", "Please select a Part")
+      case (_, Some(part)) => displayError("errorMessages", "Please specify a valid quantity")
       case (_, None) => {
-        displayError("quantityErrorId", "Please specify a valid quantity")
-        displayError("partErrorId", "Please select a Part")
+        displayError("errorMessages", "Please specify a valid quantity")
+        displayError("errorMessages", "Please select a Part")
       }
     }
 
@@ -103,7 +115,8 @@ class AddEditQuote extends StatefulSnippet with ErrorDisplay with DataValidation
         //addQuote(quoteHolder.lineItems, cust.customerId)
         S.redirectTo("/app/")
       }
-      case None => displayError("customerErrorId", "Please select a Customer")
+      //case None => displayError("customerErrorId", "Please select a Customer")
+      case None => displayError("errorMessages", "Please select a Customer")
     }
   }
 }
