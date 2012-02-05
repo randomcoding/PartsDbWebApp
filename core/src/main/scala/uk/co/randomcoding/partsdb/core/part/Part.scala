@@ -49,14 +49,14 @@ class Part private () extends MongoRecord[Part] with ObjectIdPk[Part] {
 object Part extends Part with MongoMetaRecord[Part] {
 
   import org.bson.types.ObjectId
-  
+
   /**
    * Find a part by its object id
-   * 
+   *
    * @return An optional part containing the `Part` with the given id if it is found or `None` if it is not
    */
   def findById(id: ObjectId): Option[Part] = Part where (_.id eqs id) get
-  
+
   /**
    * Find all parts with the given name in the database.
    *
@@ -65,17 +65,35 @@ object Part extends Part with MongoMetaRecord[Part] {
   def findNamed(name: String): List[Part] = Part where (_.partName eqs name) fetch
 
   /**
-   * Add a new part to the database, unless there is a part with the same name already present
+   * Find a part that matches the provided one.
+   *
+   * A match is found if:
+   *   - There is a `Part` with the same `object id` in the database
+   *   - There is another part that has the same `part name` and `vehicle ref id`
    */
-  def add(name: String, vehicle: Vehicle, modId: Option[String] = None) = {
-    findNamed(name) match {
-      case Nil => {
-        Part.createRecord.partName(name).vehicle(vehicle.id.get).modId(modId).save match {
-          case p: Part => Some(p)
-          case _ => None
-        }
+  def findMatching(part: Part): Option[Part] = findById(part.id.get) match {
+    case Some(p) => Some(p)
+    case _ => Part where (_.partName eqs part.partName.get) and (_.vehicle eqs part.vehicle.get) get
+  }
+
+  /**
+   * Create a `Part` record instance but '''DO NOT''' commit it to the database
+   */
+  def create(name: String, vehicle: Vehicle, modId: Option[String] = None): Part = {
+    Part.createRecord.partName(name).vehicle(vehicle.id.get).modId(modId)
+  }
+
+  /**
+   * Add a new part to the database, unless there is a matching part already present
+   */
+  def add(name: String, vehicle: Vehicle, modId: Option[String] = None): Option[Part] = {
+    val part = create(name, vehicle, modId)
+    findMatching(part) match {
+      case Some(p) => Some(p)
+      case _ => part.save match {
+        case p: Part => Some(p)
+        case _ => None
       }
-      case _ => None
     }
   }
 
@@ -92,7 +110,7 @@ object Part extends Part with MongoMetaRecord[Part] {
    *  This '''should''' only affect a single record however.
    */
   def modify(oldName: String, newName: String, newVehicle: Vehicle, newModId: Option[String] = None) = {
-    Part where (_.partName eqs oldName) modify (_.partName setTo newName) and (_.vehicle setTo newVehicle.id.get) and (_.modId setTo newModId.getOrElse("")) updateMulti
+    Part.where(_.partName eqs oldName).modify(_.partName setTo newName) and (_.vehicle setTo newVehicle.id.get) and (_.modId setTo newModId.getOrElse("")) updateMulti
   }
 }
 
