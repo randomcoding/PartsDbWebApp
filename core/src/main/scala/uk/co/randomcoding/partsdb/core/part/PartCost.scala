@@ -52,11 +52,13 @@ object PartCost extends PartCost with MongoMetaRecord[PartCost] {
    * @return A full `Option[PartCost]` if the db add was k, `None` otherwise
    */
   def add(part: Part, cost: Double, lastSupplied: DateTime): Option[PartCost] = {
-    // TODO: Check for the existence of the part in the database. Set the part id to that part if it does exist, or ad the new one if it doesn't.
-    /*Part.findMatching(part) match {
-      case None
-    }*/
-    add(create(part, cost, lastSupplied))
+    val partToAdd = Part.findMatching(part) match {
+      case None => Part.add(part)
+      case Some(p) => Some(p)
+    }
+
+    require(partToAdd isDefined, "Failed to find or create the part record. Not adding Part Cost")
+    add(create(partToAdd get, cost, lastSupplied))
   }
 
   /**

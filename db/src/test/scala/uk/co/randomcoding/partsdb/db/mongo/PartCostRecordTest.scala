@@ -94,7 +94,7 @@ class PartCostRecordTest extends MongoDbTestBase {
     findByPart(part2) should be(List(pc2))
   }
 
-  test("Find a ??? that is not present in the database") {
+  test("Find a Part Cost that is not present in the database") {
     findById(new ObjectId) should be('empty)
     findByPart(part2) should be('empty)
   }
@@ -107,7 +107,6 @@ class PartCostRecordTest extends MongoDbTestBase {
     pending
   }
 
-  // These are only required if this has embedded objects, referenced by Object Id
   test("Adding a new Part Cost adds the Part to the database if it does not already exist records to the database") {
     add(part1, 10.0, now) should be('defined)
     (Part where (_.id exists true) fetch) should be(List(part1))

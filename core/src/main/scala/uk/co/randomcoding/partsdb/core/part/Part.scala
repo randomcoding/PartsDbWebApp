@@ -87,13 +87,17 @@ object Part extends Part with MongoMetaRecord[Part] {
    * Add a new part to the database, unless there is a matching part already present
    */
   def add(name: String, vehicle: Vehicle, modId: Option[String] = None): Option[Part] = {
-    val part = create(name, vehicle, modId)
-    findMatching(part) match {
-      case Some(p) => Some(p)
-      case _ => part.save match {
-        case p: Part => Some(p)
-        case _ => None
-      }
+    add(create(name, vehicle, modId))
+  }
+
+  /**
+   * Add a new part to the database, unless there is a matching part already present
+   */
+  def add(part: Part): Option[Part] = findMatching(part) match {
+    case Some(p) => Some(p)
+    case _ => part.save match {
+      case p: Part => Some(p)
+      case _ => None
     }
   }
 
