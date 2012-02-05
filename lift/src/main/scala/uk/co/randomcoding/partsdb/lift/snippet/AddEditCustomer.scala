@@ -3,23 +3,25 @@
  */
 package uk.co.randomcoding.partsdb.lift.snippet
 
+import scala.io.Source
 import scala.xml.Text
-import uk.co.randomcoding.partsdb.core.address.{ AddressParser, Address }
-import uk.co.randomcoding.partsdb.core.contact.{ Phone, Mobile, Email, ContactDetails }
-import uk.co.randomcoding.partsdb.core.terms.PaymentTerms
+
+import org.bson.types.ObjectId
+
+import uk.co.randomcoding.partsdb.core.address.{AddressParser, Address}
+import uk.co.randomcoding.partsdb.core.contact.ContactDetails
+import uk.co.randomcoding.partsdb.core.customer.Customer
 import uk.co.randomcoding.partsdb.core.util.CountryCodes.countryCodes
-import uk.co.randomcoding.partsdb.lift.util.TransformHelpers.{ styledTextArea, styledText, styledSelect }
-import uk.co.randomcoding.partsdb.lift.util.snippet.{ ValidationItem, ErrorDisplay, DataValidation }
+import uk.co.randomcoding.partsdb.lift.util.TransformHelpers.{styledTextArea, styledText, styledSelect}
+import uk.co.randomcoding.partsdb.lift.util.snippet.{ValidationItem, ErrorDisplay, DataValidation}
+
 import net.liftweb.common.StringOrNodeSeq.strTo
-import net.liftweb.common.{ Logger, Full }
+import net.liftweb.common.{Logger, Full}
 import net.liftweb.http.SHtml._
 import net.liftweb.http.js.JsCmds.Noop
-import net.liftweb.http.{ StatefulSnippet, S }
-import net.liftweb.util.Helpers._
-import uk.co.randomcoding.partsdb.core.customer.Customer
 import net.liftweb.http.js.JsCmd
-import org.bson.types.ObjectId
-import scala.io.Source
+import net.liftweb.http.{StatefulSnippet, S}
+import net.liftweb.util.Helpers._
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>

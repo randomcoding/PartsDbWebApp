@@ -11,6 +11,7 @@ import org.bson.types.ObjectId
 import uk.co.randomcoding.partsdb.core.address.Address
 import uk.co.randomcoding.partsdb.core.contact.ContactDetails
 import uk.co.randomcoding.partsdb.core.customer.Customer
+import SnippetDisplayHelpers._
 
 import net.liftweb.common.Logger
 
@@ -45,42 +46,18 @@ object CustomerDisplay extends EntityDisplay with Logger {
   private[this] def displayAddress(customer: Customer) = {
     debug("Displaying Details for Customer: %s".format(customer))
     Address findById customer.businessAddress.get match {
-      case Some(addr) => {
-        val addressLines = Source.fromString(addr.addressText.get).getLines()
-        <span>{ addressLines map (line => <span>{ line }</span><br/>) }</span> ++
-          <span>{ addr.country.get }</span>
-      }
+      case Some(addr) => displayAddressCell(addr)
       case _ => Text("Unknown Address. Identifier: %s".format(customer.businessAddress.get))
     }
   }
 
   private[this] def displayContacts(customer: Customer): NodeSeq = {
-    val contacts: List[ObjectId] = customer.contactDetails.get
-
     (for {
-      contactId <- contacts
+      contactId <- customer.contactDetails.get
       val contact = ContactDetails.findById(contactId)
       if contact isDefined
     } yield {
-      displayContact(contact.get)
+      displayContactCell(contact.get)
     }) flatten
-
-  }
-
-  private[this] def displayContact(contactDetails: ContactDetails): NodeSeq = {
-    <span>{ contactDetails.contactName.get }</span><br/>
-    ++ numbersDetails (contactDetails)
-  }
-
-  private[this] def numbersDetails(contactDetails: ContactDetails): NodeSeq = {
-    val details = (detailString: String, heading: String) =>
-      detailString.trim match {
-        case "" => <span>&nbsp;</span><br/>
-        case other => <span>{ "%s: %s".format(heading, detailString) }</span><br/>
-      }
-
-    details(contactDetails.phoneNumber.get, "Phone") ++
-      details(contactDetails.mobileNumber.get, "Mobile") ++
-      details(contactDetails.emailAddress.get, "EMail")
   }
 }
