@@ -36,7 +36,7 @@ trait DataValidation extends Logger {
   }
 
   private def validateItem(item: ValidationItem): Boolean = {
-    debug("Validating: %s".format(item))
+    trace("Validating: %s".format(item))
     item.toValidate match {
       // If we have a populated option value, recursively call this method with the item unwrapped
       case Some(thing) => validateItem(ValidationItem(thing, item.errorLocationId, item.errorMessage))
@@ -46,11 +46,11 @@ trait DataValidation extends Logger {
       case double: Double => double >= 0.0
       case int: Int => int >= 0
       case None => {
-        debug("Received an empty Option in %s. Assuming validation is false".format(item))
+        trace("Received an empty Option in %s. Assuming validation is false".format(item))
         false
       }
       case validationItem => {
-        debug("Unhandled validation type %s. Assuming it is valid".format(validationItem))
+        error("Unhandled validation type %s. Assuming it is valid".format(validationItem))
         true
       }
     }

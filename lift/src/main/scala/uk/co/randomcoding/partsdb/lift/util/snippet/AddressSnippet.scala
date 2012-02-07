@@ -3,18 +3,14 @@
  */
 package uk.co.randomcoding.partsdb.lift.util.snippet
 
-import net.liftweb.common.{ Logger, Full }
-import net.liftweb.http.SHtml._
-import net.liftweb.http.js.JsCmds.Noop
-import net.liftweb.http.js.JsCmd
-import net.liftweb.http.{ StatefulSnippet, S }
-import net.liftweb.util.Helpers._
-import scala.xml.Text
-import uk.co.randomcoding.partsdb.core.address.Address
-import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
-import uk.co.randomcoding.partsdb.core.util.CountryCodes.countryCodes
-import uk.co.randomcoding.partsdb.core.address.AddressParser
 import scala.io.Source
+
+import uk.co.randomcoding.partsdb.core.address.{AddressParser, Address}
+import uk.co.randomcoding.partsdb.core.util.CountryCodes.countryCodes
+import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
+
+import net.liftweb.common.Logger
+import net.liftweb.util.Helpers._
 
 /**
  * A Snippet that renders and provides an [[uk.co.randomcoding.partsdb.core.address.Address]]
