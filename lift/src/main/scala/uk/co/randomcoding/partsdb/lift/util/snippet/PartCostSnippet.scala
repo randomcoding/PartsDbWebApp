@@ -48,7 +48,7 @@ trait PartCostSnippet extends ErrorDisplay with Logger {
     "#partSelect" #> styledAjaxObjectSelect(partsSelect, currentPart, updateAjaxValue[Option[Part]](currentPart = _)) &
       "#costEntry" #> styledAjaxText("%.2f".format(currentPartCost), updateAjaxValue(updateCurrentPartCost(_))) &
       "#lastSuppliedEntry" #> styledAjaxText(dateString(currentPartLastSuppliedDate), updateAjaxValue(updateCurrentPartLastSuppliedDate(_))) &
-      "#addPartCost" #> styledAjaxButton("Add", addPartCost) &
+      "#addPartCost" #> styledAjaxButton("Add / Update", addPartCost) &
       "#removePartCost" #> styledAjaxButton("Remove", removePartCost)
   }
 
@@ -100,7 +100,7 @@ trait PartCostSnippet extends ErrorDisplay with Logger {
     })))
   }
 
-  private def addPartCost(): JsCmd = {
+  private[this] def addPartCost(): JsCmd = {
     clearErrors
     debug("Adding a part cost")
     (currentPart, currentPartCost, currentPartLastSuppliedDate) match {
@@ -111,19 +111,29 @@ trait PartCostSnippet extends ErrorDisplay with Logger {
       case (opt, cost, date) => error("Unhandled options supplied (%s, %.2f, %s)".format(opt, cost, dateString(date)))
     }
 
-    resetCurrentPartCost()
-
-    refreshPartCostDisplay()
+    clearErrorsAndRefresh
   }
 
   private[this] def removePartCost(): JsCmd = {
     currentPart isDefined match {
       case true => {
+        debug("Current part is defined as: %s".format(currentPart))
+        debug("Removing part cost for part: %s from the part costs".format(currentPart))
         clearErrors
+        debug("Current Parts initially: %s".format(currentPartCosts.mkString(", ")))
         currentPartCosts = currentPartCosts filterNot (_.part.get == currentPart.get.id.get)
+        debug("Current Parts after removal: %s".format(currentPartCosts.mkString(", ")))
       }
       case false => displayError("ErrorMessages", "Please select a Part to remove")
     }
+
+    clearErrorsAndRefresh
+  }
+
+  private[this] def clearErrorsAndRefresh(): JsCmd = {
+    //resetCurrentPartCost &
+    clearErrors &
+      refreshPartCostDisplay
   }
 
   private[this] def resetCurrentPartCost() = {
@@ -132,7 +142,7 @@ trait PartCostSnippet extends ErrorDisplay with Logger {
     currentPartLastSuppliedDate = defaultDate
   }
 
-  private def updatePartCosts(partCost: PartCost) = {
+  private[this] def updatePartCosts(partCost: PartCost) = {
     debug("Adding %s to current part costs".format(partCost))
 
     currentPartCosts find (_.part.get == partCost.part.get) match {
@@ -151,7 +161,7 @@ trait PartCostSnippet extends ErrorDisplay with Logger {
     debug("Current Part costs are now: %s".format(currentPartCosts.mkString("\n")))
   }
 
-  private def updatePartCosts(partCosts: List[PartCost]): List[PartCost] = {
+  private[this] def updatePartCosts(partCosts: List[PartCost]): List[PartCost] = {
     val updatedCosts = partCosts map { pc =>
       PartCost findById pc.id.get match {
         case Some(partCost) => {
