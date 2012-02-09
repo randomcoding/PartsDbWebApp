@@ -36,11 +36,6 @@ class QuoteHolder extends Logger {
    */
   val DEFAULT_MARKUP = 25;
 
-  /**
-   * Holder for the current line items
-   */
-  private val lineItemsCell = ValueCell[List[LineItem]](Nil)
-
   // Cells to maintain values for current new line values
 
   /**
@@ -103,6 +98,12 @@ class QuoteHolder extends Logger {
    * This applies the markup to the base cost
    */
   private val currentLinePartCost = currentPartBaseCostCell.lift(markupCell)((partBaseCost, markupPercentage) => partBaseCost + (partBaseCost * (markupPercentage / 100.0)))
+
+  // TODO: These line item & totals cells can be moved into a common trait, as we will want to use the same functionality for other documents 
+  /**
+   * Holder for the current line items
+   */
+  private val lineItemsCell = ValueCell[List[LineItem]](Nil)
 
   /**
    * The total computed base cost of the line items, before tax
