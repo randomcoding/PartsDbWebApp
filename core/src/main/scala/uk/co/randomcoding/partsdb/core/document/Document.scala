@@ -38,7 +38,7 @@ class Document private () extends MongoRecord[Document] with ObjectIdPk[Document
   /**
    * The line items that are in this document
    */
-  object lineItems extends MongoCaseClassListField[Document, LineItem](this)
+  object lineItems extends BsonRecordField(this, LineItem)
 
   /**
    * Is this `Document` editable?
@@ -47,7 +47,7 @@ class Document private () extends MongoRecord[Document] with ObjectIdPk[Document
 
   /**
    * The printable identifier for this document.
-   * Comprises the document type string plus the `docNUmber` zero padded to 6 digits.
+   * Comprises the document type string plus the `docNumber` zero padded to 6 digits.
    *
    * E.g. INV002401
    */
@@ -56,12 +56,3 @@ class Document private () extends MongoRecord[Document] with ObjectIdPk[Document
 
 object Document extends Document with MongoMetaRecord[Document]
 
-/*case class Document(val documentId: Identifier, val documentType: String, val lineItems: List[LineItem], transactionId: Identifier) extends Identifiable {
-  override val identifierFieldName = "documentId"
-
-  */
-/**
- * The printable version of the document id
- */ /*
-  lazy val documentNumber = "%s%d".format(documentType, documentId.id)
-}*/
