@@ -12,7 +12,7 @@ import uk.co.randomcoding.partsdb.lift.util.snippet.{ ErrorDisplay, DataValidati
 import net.liftweb.common.StringOrNodeSeq.strTo
 import net.liftweb.common.{ Logger, Full }
 import net.liftweb.http.SHtml._
-import net.liftweb.http.js.JsCmds.{ SetHtml, Noop }
+import net.liftweb.http.js.JsCmds.{ SetHtml, Noop, Replace }
 import net.liftweb.http.js.JsCmd.unitToJsCmd
 import net.liftweb.http.js.jquery.JqWiringSupport
 import net.liftweb.http.js.JsCmd
@@ -49,8 +49,9 @@ class AddEditQuote extends StatefulSnippet with ErrorDisplay with DataValidation
       "#partName" #> styledAjaxObjectSelect[Option[Part]](partsSelect, quoteHolder.currentPart, updateHolderValue(part => {
         quoteHolder currentPart part
         // update the suppliers
+        refreshSuppliers()
       })) &
-      "#supplierName" #> styledAjaxObjectSelect[Option[Supplier]](quoteHolder.suppliers, quoteHolder.supplier, updateHolderValue(quoteHolder.supplier(_))) &
+      "#supplierName" #> suppliersContent() &
       "#partQuantity" #> styledAjaxText(quoteHolder.quantity, updateHolderValue(quantity => quoteHolder.quantity(asInt(quantity) match {
         case Full(q) => q
         case _ => 0
@@ -62,6 +63,14 @@ class AddEditQuote extends StatefulSnippet with ErrorDisplay with DataValidation
       "#subTotal" #> WiringUI.asText(quoteHolder.subTotal) &
       "#vatAmount" #> WiringUI.asText(quoteHolder.vatAmount) &
       "#totalCost" #> WiringUI.asText(quoteHolder.totalCost, JqWiringSupport.fade)
+  }
+
+  private[this] val suppliersContent = () => styledAjaxObjectSelect[Option[Supplier]](quoteHolder.suppliers, quoteHolder.supplier, updateHolderValue(quoteHolder.supplier(_)))
+
+  private def refreshSuppliers(): JsCmd = {
+    val html = suppliersContent()
+    debug("Setting suppliers html to: %s".format(html))
+    Replace("supplierName", html)
   }
 
   /**

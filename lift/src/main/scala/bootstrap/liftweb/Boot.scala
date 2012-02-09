@@ -28,6 +28,7 @@ class Boot extends Loggable {
 
     // Uncomment this to add new users required for user access initialisation
     //addBootstrapUsers
+
     /*
      * Create the various menus here.
      * 
@@ -65,7 +66,7 @@ class Boot extends Loggable {
     val searchLoc = Menu(Loc("search", new Link("app" :: "search" :: Nil, false), "Search", userLoggedIn))
 
     // Add Quote Button
-    val addQuoteLoc = Menu(Loc("addQuote", new Link("app" :: "addQuote" :: Nil, false), "New Quote", userLoggedIn))
+    val addQuoteLoc = Menu(Loc("addQuote", new Link("app" :: "quote" :: Nil, false), "New Quote", userLoggedIn))
 
     // Provide access to the admin menu. This is hidden.
     val adminLoc = Menu(Loc("adminSection", new Link("admin" :: Nil, true), "Admin", Hidden, adminLoggedIn))

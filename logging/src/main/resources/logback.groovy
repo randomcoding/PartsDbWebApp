@@ -26,5 +26,6 @@ logger("ch", WARN)
 logger("uk.co.randomcoding.partsdb", INFO)
 logger("uk.co.randomcoding.partsdb.lift.util.snippet", DEBUG)
 logger("uk.co.randomcoding.partsdb.lift.snippet", DEBUG)
+logger("uk.co.randomcoding.partsdb.lift.model.document", DEBUG)
 
 root(WARN, ["STDOUT"])
