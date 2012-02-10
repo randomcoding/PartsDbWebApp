@@ -69,8 +69,8 @@ class AddEditSupplier extends StatefulSnippet with AddressSnippet with ContactDe
   /*
    * Set the current part costs to display
    */
-  override var currentPartCosts = initialSupplier match {
-    case Some(s) => s.suppliedParts.get map (PartCost findById _) filter (_ isDefined) map (_ get)
+  override var currentPartCosts: List[PartCost] = initialSupplier match {
+    case Some(s) => s.suppliedParts.get
     case _ => Nil
   }
 

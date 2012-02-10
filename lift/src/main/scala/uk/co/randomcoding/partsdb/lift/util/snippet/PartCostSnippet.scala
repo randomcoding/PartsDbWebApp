@@ -57,19 +57,16 @@ trait PartCostSnippet extends ErrorDisplay with Logger {
   }
 
   def addSupplier(name: String, contacts: ContactDetails, address: Address, currentPartCosts: List[PartCost]): Option[Supplier] = {
-    currentPartCosts map (PartCost add _) contains (None) match {
+    /*currentPartCosts map (PartCost add _) contains (None) match {
       case true => error("Did not add all part costs to the database. Please check")
       case false => // all ok
-    }
+    }*/
 
     Supplier.add(name, contacts, address, currentPartCosts)
   }
 
   def modifySupplier(supplier: Supplier, newName: String, contacts: ContactDetails, address: Address, currentPartCosts: List[PartCost]): JsCmd = {
-
-    val partCosts = updatePartCosts(currentPartCosts)
-
-    Supplier.modify(supplier.id.get, newName, contacts, address, partCosts, supplier.notes.get)
+    Supplier.modify(supplier.id.get, newName, contacts, address, currentPartCosts, supplier.notes.get)
   }
 
   private def updateCurrentPartCost(cost: String) = currentPartCost = asDouble(cost) match {
@@ -149,7 +146,7 @@ trait PartCostSnippet extends ErrorDisplay with Logger {
       case Some(pc) => {
         debug("Found part id %s in current part costs".format(pc.part.get))
         // create copy of part with same id and replace entry in list
-        val newPartCost = PartCost.create(Part.findById(partCost.part.get).get, partCost.suppliedCost.get, new DateTime(partCost.lastSuppliedDate.get)).id(pc.id.get)
+        val newPartCost = PartCost.create(Part.findById(partCost.part.get).get, partCost.suppliedCost.get, new DateTime(partCost.lastSuppliedDate.get))
         currentPartCosts = newPartCost :: currentPartCosts.filterNot(_.part.get == pc.part.get)
       }
       case _ => {
@@ -161,7 +158,7 @@ trait PartCostSnippet extends ErrorDisplay with Logger {
     debug("Current Part costs are now: %s".format(currentPartCosts.mkString("\n")))
   }
 
-  private[this] def updatePartCosts(partCosts: List[PartCost]): List[PartCost] = {
+  /*private[this] def updatePartCosts(partCosts: List[PartCost]): List[PartCost] = {
     val updatedCosts = partCosts map { pc =>
       PartCost findById pc.id.get match {
         case Some(partCost) => {
@@ -176,5 +173,5 @@ trait PartCostSnippet extends ErrorDisplay with Logger {
     if (updatedCosts contains (None)) error("Failed to update all part costs. Please Check")
 
     updatedCosts filter (_ isDefined) map (_ get)
-  }
+  }*/
 }

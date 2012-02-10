@@ -57,21 +57,43 @@ class QuoteHolder extends Logger {
     }
   })
 
-  private def suppliedBy(partId: ObjectId): List[Supplier] = {
-    val costsForPart = (PartCost where (_.part eqs partId) fetch) map (_.id.get)
+  private val suppliersCostsForPart = currentPartCell.lift(_ match {
+    case Some(part) => {
+      debug("Current Part is: %s. Generating list of suppliers who supply it")
 
-    Supplier where (_.suppliedParts in costsForPart) fetch
-  }
+      val suppliersToCostForPart = suppliedBy(part.id.get) map (supplier => (Some(supplier), supplier.suppliedParts.get.find(_.part.get == part.id.get)))
+      suppliersToCostForPart filter (entry => (entry._1.isDefined && entry._2.isDefined))
+    }
+    case _ => {
+      debug("Current Part is not defined. Generating an empty list of suppliers")
+      List((None, None))
+    }
+  })
+
+  private def suppliedBy(partId: ObjectId): List[Supplier] = Supplier where (_.suppliedParts.subfield(_.part) eqs partId) fetch
 
   /**
    * The current supplier of the part
    */
-  private val currentSupplierCell = ValueCell[Option[Supplier]](None)
+  private val currentSupplierCell = suppliersCostsForPart.lift(suppliersOfPart => {
+    suppliersOfPart.map(entry => (entry._1.get, entry._2.get.suppliedCost.get)).sortBy(_._2).head
+  })
+
+  //ValueCell[Option[Supplier]](None)
+
+  /**
+   * Text representation of the current supplier's name
+   */
+  val supplierText = currentSupplierCell.lift(_ match {
+    case (s: Supplier, price: Double) => s.supplierName.get
+    case _ => "No Supplier Set"
+  })
 
   /**
    * Calculated value of the base cost of the currently selected part
    */
-  private val currentPartBaseCostCell = currentPartCell.lift(currentSupplierCell)((_, _) match {
+  // This version uses the supplier
+  /*private val currentPartBaseCostCell = currentPartCell.lift(currentSupplierCell)((_, _) match {
     case (Some(part), Some(supplier)) => PartCost where (_.id in supplier.suppliedParts) and (_.part eqs part.id.get) get match {
       case Some(pc) => pc.suppliedCost.get
       case _ => {
@@ -83,7 +105,43 @@ class QuoteHolder extends Logger {
       error("Expected a pair(Some(part), Some(Supplier)), but got (%s, %s)".format(p, s))
       0.0d
     }
+  })*/
+  /**
+   * Calculated value of the base cost of the currently selected part
+   *
+   * No use of supplier
+   *
+   * This will return the cheapest price and set the supplier value
+   */
+  private val currentPartBaseCostCell = currentSupplierCell.lift(_ match {
+    case (s: Supplier, price: Double) => price
+    case _ => 0.0d
   })
+
+  /*currentPartCell.lift(_ match {
+    case Some(part) => {
+      val cForPart = suppliersCostsForPart.get.filter(entry => (entry._1.isDefined && entry._2.isDefined)) map (entry => ((entry._1.get, entry._2.get, entry._2.get.suppliedCost.get)))
+      //val sorted = cForPart.sortBy(entry => entry.3.)
+      //val costForPart = cForPart.sortBy(tuple => tuple.2.get.suppliedCost.get.toDouble)
+      PartCost where (_.part eqs part.id.get) orderAsc (_.suppliedCost) get match {
+        case Some(pc) => {
+          val cost = pc.suppliedCost.get
+
+          cost
+        }
+        case _ => {
+          //error("No Suppliers found for part: %s".format(part))
+          error("Did not get a part cost for part %s".format(part))
+          0.0d
+        }
+      }
+    }
+    case _ => {
+      //error("Expected a pair(Some(part), Some(Supplier)), but got (%s, %s)".format(p, s))
+      debug("Current part not set")
+      0.0d
+    }
+  })*/
 
   private val quantityCell = ValueCell[Int](0)
 
@@ -260,19 +318,19 @@ class QuoteHolder extends Logger {
 
   def quantity(q: Int) = quantityCell.set(q)
 
-  def suppliers = {
+  /*def suppliers = {
     val s = suppliersForPart.get
     debug("Generates %s for 'suppliers'".format(s.mkString(", ")))
     s
-  }
+  }*/
 
-  def supplier(supplier: Option[Supplier]) = currentSupplierCell.set(supplier)
+  /*def supplier(supplier: Option[Supplier]) = currentSupplierCell.set(supplier)
 
   def supplier = {
     val s = currentSupplierCell.get
     debug("Supplier is %s".format(s))
     s
-  }
+  }*/
 
   /**
    * Gets the current line items, sorted by line number

@@ -18,6 +18,8 @@ import net.liftweb.common.Full
 import net.liftweb.http.WiringUI
 
 /**
+ * A snippet to process the display an update of [[uk.co.randomcoding.partsdb.core.document.LineItem]]s
+ *
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
 trait LineItemSnippet extends ErrorDisplay with Logger {
@@ -30,10 +32,11 @@ trait LineItemSnippet extends ErrorDisplay with Logger {
   def renderAddEditLineItem() = {
     "#addLineButton" #> styledAjaxButton("Add Line", addLine) &
       "#partName" #> styledAjaxObjectSelect[Option[Part]](partsSelect, quoteHolder.currentPart, updateAjaxValue(part => {
-        quoteHolder currentPart part
-        refreshSuppliers()
+        debug("Setting current part as %s".format(part))
+        quoteHolder.currentPart(part)
+        //refreshSuppliers()
       })) &
-      "#supplierName" #> suppliersContent() &
+      "#supplierName" #> WiringUI.asText(quoteHolder.supplierText) &
       "#partQuantity" #> styledAjaxText(quoteHolder.quantity, updateAjaxValue(quantity => quoteHolder.quantity(asInt(quantity) match {
         case Full(q) => q
         case _ => 0
@@ -46,13 +49,13 @@ trait LineItemSnippet extends ErrorDisplay with Logger {
     "#currentLineItems" #> LineItemDisplay.displayTable(quoteHolder.lineItems)
   }
 
-  private[this] val suppliersContent = () => styledAjaxObjectSelect[Option[Supplier]](quoteHolder.suppliers, quoteHolder.supplier, updateAjaxValue(quoteHolder.supplier(_)))
+  //private[this] val suppliersContent = () => styledAjaxObjectSelect[Option[Supplier]](quoteHolder.suppliers, quoteHolder.supplier, updateAjaxValue(quoteHolder.supplier(_)))
 
-  private[this] def refreshSuppliers(): JsCmd = {
+  /*private[this] def refreshSuppliers(): JsCmd = {
     val html = suppliersContent()
     debug("Setting suppliers html to: %s".format(html))
     Replace("supplierName", html)
-  }
+  }*/
 
   /**
    * Add a new line item to the quote holder and refresh the line items display.
