@@ -10,6 +10,8 @@ import org.joda.time.DateTime
 import org.bson.types.ObjectId
 import com.foursquare.rogue.Rogue._
 import java.util.Date
+import net.liftweb.mongodb.record.BsonRecord
+import net.liftweb.mongodb.record.BsonMetaRecord
 
 /**
  * Provides a mapping for [[uk.co.randomcoding.partsdb.core.supplier.Supplier]]s to the
@@ -19,7 +21,7 @@ import java.util.Date
  * @author Jane Rowe
  * @author RandomCoder - Changed to MongoRecord class
  */
-class PartCost private () extends MongoRecord[PartCost] with ObjectIdPk[PartCost] {
+class PartCost private () extends BsonRecord[PartCost] { // with ObjectIdPk[PartCost] {
   def meta = PartCost
 
   object part extends ObjectIdRefField(this, Part)
@@ -36,7 +38,7 @@ class PartCost private () extends MongoRecord[PartCost] with ObjectIdPk[PartCost
   override def hashCode: Int = getClass.hashCode + part.get.hashCode + suppliedCost.get.hashCode
 }
 
-object PartCost extends PartCost with MongoMetaRecord[PartCost] {
+object PartCost extends PartCost with BsonMetaRecord[PartCost] {
 
   /**
    * Creates a new `PartCost` record but '''does not''' commit it to the database
@@ -44,14 +46,15 @@ object PartCost extends PartCost with MongoMetaRecord[PartCost] {
   def create(part: Part, cost: Double, lastSupplied: DateTime): PartCost = {
     PartCost.createRecord.part(part.id.get).suppliedCost(cost).lastSuppliedDate(lastSupplied.toDate)
   }
-
+  /*
+  */
   /**
    * Creates a new `PartCost` and adds it to the database.
    *
    * This will add the part to the database if if is not already present
    *
    * @return A full `Option[PartCost]` if the db add was k, `None` otherwise
-   */
+   */ /*
   def add(part: Part, cost: Double, lastSupplied: DateTime): Option[PartCost] = {
     val partToAdd = Part.findMatching(part) match {
       case None => Part.add(part)
@@ -62,13 +65,14 @@ object PartCost extends PartCost with MongoMetaRecord[PartCost] {
     add(create(partToAdd get, cost, lastSupplied))
   }
 
+  */
   /**
    * Creates a new `PartCost` and adds it to the database.
    *
    * This will '''not''' be able to add a new Part to the database if the referenced part does not exist
    *
    * @return A full `Option[PartCost]` if the db add was ok, `None` otherwise
-   */
+   */ /*
   def add(partCost: PartCost): Option[PartCost] = findMatching(partCost) match {
     case Some(pc) => Some(pc)
     case _ => partCost save match {
@@ -77,24 +81,27 @@ object PartCost extends PartCost with MongoMetaRecord[PartCost] {
     }
   }
 
+  */
   /**
    * Find the `PartCost` with the given Object Id.
    *
    * @return A populated `Option[PartCost]` if there is a match in the database, `None` otherwise
-   */
+   */ /*
   def findById(oid: ObjectId): Option[PartCost] = PartCost where (_.id eqs oid) get
 
+  */
   /**
    * Find all that `PartCost`s that are for the given part
-   */
+   */ /*
   def findByPart(part: Part): List[PartCost] = PartCost where (_.part eqs part.id.get) fetch
 
+  */
   /**
    * Find a record that matches the provided one.
    *
    * If there is a record with a matching `id` then that is returned, otherwise the ''first''
    * record that has the same part id and supplied cost is returned.
-   */
+   */ /*
   def findMatching(partCost: PartCost): Option[PartCost] = findById(partCost.id.get) match {
     case Some(pc) => Some(pc)
     case _ => {
@@ -110,8 +117,9 @@ object PartCost extends PartCost with MongoMetaRecord[PartCost] {
     modify(oid, newPartCost.part.get, newPartCost.suppliedCost.get, newPartCost.lastSuppliedDate.get)
   }
 
+  */
   /**
    * Remove the `PartCost` with the given object id
-   */
-  def remove(oid: ObjectId) = PartCost where (_.id eqs oid) bulkDelete_!!
+   */ /*
+  def remove(oid: ObjectId) = PartCost where (_.id eqs oid) bulkDelete_!!*/
 }

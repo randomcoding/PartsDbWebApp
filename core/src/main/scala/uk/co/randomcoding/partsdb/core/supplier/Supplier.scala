@@ -33,7 +33,7 @@ class Supplier private () extends MongoRecord[Supplier] with ObjectIdPk[Supplier
   /**
    * The parts this supplier provides as [[uk.co.randomcoding.partsdb.core.part.PartCost]] objects
    */
-  object suppliedParts extends ObjectIdRefListField(this, PartCost)
+  object suppliedParts extends BsonRecordListField(this, PartCost)
 
   /**
    * The address of the supplier
@@ -45,10 +45,14 @@ class Supplier private () extends MongoRecord[Supplier] with ObjectIdPk[Supplier
    */
   object notes extends StringField(this, 500)
 
+  /**
+   * A `Supplier` is equal to another `Supplier` if their name, contact details and business address fields match
+   */
   override def equals(that: Any): Boolean = that match {
     case other: Supplier => supplierName.get == other.supplierName.get &&
-      contactDetails.get == other.contactDetails.get && businessAddress.get == other.businessAddress.get &&
-      suppliedParts.get.toSet == other.suppliedParts.get.toSet
+      contactDetails.get == other.contactDetails.get &&
+      businessAddress.get == other.businessAddress.get /*&&
+      suppliedParts.get.toSet == other.suppliedParts.get.toSet*/
     case _ => false
   }
 
@@ -66,7 +70,7 @@ object Supplier extends Supplier with MongoMetaRecord[Supplier] {
    * Create a new `Supplier` record but '''does not''' save it to the database
    */
   def create(name: String, contacts: ContactDetails, businessAddress: Address, partsSupplied: Seq[PartCost]): Supplier = {
-    Supplier.createRecord.supplierName(name).contactDetails(contacts.id.get).businessAddress(businessAddress.id.get).suppliedParts(partsSupplied.toList map (_.id.get))
+    Supplier.createRecord.supplierName(name).contactDetails(contacts.id.get).businessAddress(businessAddress.id.get).suppliedParts(partsSupplied.toList)
   }
 
   /**
@@ -108,8 +112,9 @@ object Supplier extends Supplier with MongoMetaRecord[Supplier] {
    */
   def findMatching(supplier: Supplier): Option[Supplier] = findById(supplier.id.get) match {
     case Some(s) => Some(s)
-    case _ => Supplier where (_.supplierName eqs supplier.supplierName.get) or (_.where(_.contactDetails eqs supplier.contactDetails.get),
-      _.where(_.businessAddress eqs supplier.businessAddress.get)) get
+    case _ => Supplier.where(_.supplierName eqs supplier.supplierName.get).or(
+      _.where(_.contactDetails eqs supplier.contactDetails.get),
+      _.where(_.businessAddress eqs supplier.businessAddress.get)).get
   }
 
   /**
@@ -130,7 +135,10 @@ object Supplier extends Supplier with MongoMetaRecord[Supplier] {
    * Any updates that are required to the contact details or the supplied parts themselves must be done externally to this method
    */
   def modify(oid: ObjectId, newName: String, newContacts: ContactDetails, newAddress: Address, newParts: Seq[PartCost], newNotes: String) = {
-    Supplier.where(_.id eqs oid).modify(_.supplierName setTo newName) and (_.contactDetails setTo newContacts.id.get) and
-      (_.suppliedParts setTo (newParts map (_.id.get))) and (_.businessAddress setTo newAddress.id.get) and (_.notes setTo newNotes) updateMulti
+    Supplier.where(_.id eqs oid).modify(_.supplierName setTo newName).
+      and(_.contactDetails setTo newContacts.id.get).
+      and(_.suppliedParts setTo newParts).
+      and(_.businessAddress setTo newAddress.id.get).
+      and(_.notes setTo newNotes) updateMulti
   }
 }

@@ -7,14 +7,15 @@ import org.joda.time.DateTime.now
 
 import com.foursquare.rogue.Rogue._
 
-import uk.co.randomcoding.partsdb.core.part.PartCost.{ remove, findMatching, findByPart, findById, create, add }
+//import uk.co.randomcoding.partsdb.core.part.PartCost.{ remove, findMatching, findByPart, findById, create, add }
 import uk.co.randomcoding.partsdb.core.part.{ PartCost, Part }
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
-class PartCostRecordTest extends MongoDbTestBase {
-  import uk.co.randomcoding.partsdb.core.part.PartCost._
+@deprecated("Item is now embedded so not directly used", "")
+class PartCostRecordTest { // extends MongoDbTestBase {
+  /*import uk.co.randomcoding.partsdb.core.part.PartCost._
   import uk.co.randomcoding.partsdb.core.part.PartCost
   import com.foursquare.rogue.Rogue._
 
@@ -130,6 +131,6 @@ class PartCostRecordTest extends MongoDbTestBase {
 
   test("Modifying a ObjectRefId field will not remove the referenced object if it is still in use in the database") {
     pending
-  }
+  }*/
 
 }
