@@ -16,6 +16,7 @@ object BuildSettings {
     organization := buildOrganization,
     version      := buildVersion,
     scalaVersion := buildScalaVersion,
+    parallelExecution in Test := false,
     shellPrompt  := ShellPrompt.buildShellPrompt,
     scalacOptions := Seq("-deprecation", "-unchecked")
 //    EclipseKeys.createSrc := EclipseCreateSrc.Default + EclipseCreateSrc.Resource
