@@ -57,11 +57,15 @@ class QuoteHolder extends Logger {
     }
   })
 
+  /**
+   * Generate a list of `(Option[Supplier], Double)` (suppliers -> price) for the part currently stored in the `currentPartCell`
+   */
   private val suppliersCostsForPart = currentPartCell.lift(_ match {
     case Some(part) => {
-      debug("Current Part is: %s. Generating list of suppliers who supply it")
+      debug("Current Part is: %s. Generating list of suppliers who supply it".format(part.partName.get))
 
       val suppliersToCostForPart = suppliedBy(part.id.get) map (supplier => (Some(supplier), supplier.suppliedParts.get.find(_.part.get == part.id.get)))
+      debug("Got %s as suppliers for costs for part %s".format(suppliersToCostForPart.mkString("[", "\n", "]"), part.partName.get))
       suppliersToCostForPart filter (entry => (entry._1.isDefined && entry._2.isDefined))
     }
     case _ => {
@@ -70,78 +74,31 @@ class QuoteHolder extends Logger {
     }
   })
 
+  /**
+   * Find all the suppliers who provide a part
+   */
   private def suppliedBy(partId: ObjectId): List[Supplier] = Supplier where (_.suppliedParts.subfield(_.part) eqs partId) fetch
 
   /**
    * The current supplier of the part
    */
   private val currentSupplierCell = suppliersCostsForPart.lift(suppliersOfPart => {
-    suppliersOfPart.map(entry => (entry._1.get, entry._2.get.suppliedCost.get)).sortBy(_._2).head
-  })
-
-  //ValueCell[Option[Supplier]](None)
-
-  /**
-   * Text representation of the current supplier's name
-   */
-  val supplierText = currentSupplierCell.lift(_ match {
-    case (s: Supplier, price: Double) => s.supplierName.get
-    case _ => "No Supplier Set"
+    suppliersOfPart match {
+      case ((None, None)) :: Nil => (None, 0.0)
+      case Nil => (None, 0.0)
+      case values => values.map(entry => (entry._1, entry._2.get.suppliedCost.get)).sortBy(_._2).head
+    }
   })
 
   /**
    * Calculated value of the base cost of the currently selected part
-   */
-  // This version uses the supplier
-  /*private val currentPartBaseCostCell = currentPartCell.lift(currentSupplierCell)((_, _) match {
-    case (Some(part), Some(supplier)) => PartCost where (_.id in supplier.suppliedParts) and (_.part eqs part.id.get) get match {
-      case Some(pc) => pc.suppliedCost.get
-      case _ => {
-        error("No Suppliers found for part: %s".format(part))
-        0.0d
-      }
-    }
-    case (p, s) => {
-      error("Expected a pair(Some(part), Some(Supplier)), but got (%s, %s)".format(p, s))
-      0.0d
-    }
-  })*/
-  /**
-   * Calculated value of the base cost of the currently selected part
    *
-   * No use of supplier
-   *
-   * This will return the cheapest price and set the supplier value
+   * The cost is derived from the
    */
   private val currentPartBaseCostCell = currentSupplierCell.lift(_ match {
-    case (s: Supplier, price: Double) => price
+    case (Some(s), price: Double) => price
     case _ => 0.0d
   })
-
-  /*currentPartCell.lift(_ match {
-    case Some(part) => {
-      val cForPart = suppliersCostsForPart.get.filter(entry => (entry._1.isDefined && entry._2.isDefined)) map (entry => ((entry._1.get, entry._2.get, entry._2.get.suppliedCost.get)))
-      //val sorted = cForPart.sortBy(entry => entry.3.)
-      //val costForPart = cForPart.sortBy(tuple => tuple.2.get.suppliedCost.get.toDouble)
-      PartCost where (_.part eqs part.id.get) orderAsc (_.suppliedCost) get match {
-        case Some(pc) => {
-          val cost = pc.suppliedCost.get
-
-          cost
-        }
-        case _ => {
-          //error("No Suppliers found for part: %s".format(part))
-          error("Did not get a part cost for part %s".format(part))
-          0.0d
-        }
-      }
-    }
-    case _ => {
-      //error("Expected a pair(Some(part), Some(Supplier)), but got (%s, %s)".format(p, s))
-      debug("Current part not set")
-      0.0d
-    }
-  })*/
 
   private val quantityCell = ValueCell[Int](0)
 
@@ -216,6 +173,14 @@ class QuoteHolder extends Logger {
   val totalCost = total.lift("£%.2f".format(_))
 
   /**
+   * Text representation of the current supplier's name
+   */
+  val supplierText = currentSupplierCell.lift(_ match {
+    case (Some(s), price: Double) => s.supplierName.get
+    case _ => "No Supplier Set"
+  })
+
+  /**
    * Add a new [[uk.co.randomcoding.partsdb.core.document.LineItem]] to the quote.
    *
    * This gets the part from [[uk.co.randomcoding.partsdb.lift.model.document.QuoteHolder#currentPart()]], the markup from [[uk.co.randomcoding.partsdb.lift.model.document.QuoteHolder#markupCell]]
@@ -228,6 +193,7 @@ class QuoteHolder extends Logger {
    * @param quant The quantity of the current part to use for the line item.
    */
   def addLineItem(): Unit = {
+    debug("Adding %d of %s with a price of %.2f and a %d markup".format(quantityCell.get, currentPart, currentPartBaseCostCell.get, markupCell.get))
     (currentPart, quantityCell.get) match {
       case (None, _) => // do nothing
       case (Some(part), q) if q <= 0 => removeItem(part)
