@@ -49,30 +49,18 @@ class QuoteHolder extends Logger {
   private val suppliersForPart = currentPartCell.lift(_ match {
     case Some(part) => {
       debug("Current Part is: %s. Generating list of suppliers who supply it")
-      (None, "--Select Supplier--") :: (suppliedBy(part.id.get) map (supplier => (Some(supplier), supplier.supplierName.get)))
+      (None, "Select Supplier") :: (suppliedBy(part.id.get) map (supplier => (Some(supplier), supplier.supplierName.get)))
     }
     case _ => {
       debug("Current Part is not defined. Generating an empty list of suppliers")
-      List((None, "--Select Part--"))
+      List((None, "Select a Part"))
     }
   })
 
   /**
-   * Generate a list of `(Option[Supplier], Double)` (suppliers -> price) for the part currently stored in the `currentPartCell`
+   * The current supplier of the part
    */
-  private val suppliersCostsForPart = currentPartCell.lift(_ match {
-    case Some(part) => {
-      debug("Current Part is: %s. Generating list of suppliers who supply it".format(part.partName.get))
-
-      val suppliersToCostForPart = suppliedBy(part.id.get) map (supplier => (Some(supplier), supplier.suppliedParts.get.find(_.part.get == part.id.get)))
-      debug("Got %s as suppliers for costs for part %s".format(suppliersToCostForPart.mkString("[", "\n", "]"), part.partName.get))
-      suppliersToCostForPart filter (entry => (entry._1.isDefined && entry._2.isDefined))
-    }
-    case _ => {
-      debug("Current Part is not defined. Generating an empty list of suppliers")
-      List((None, None))
-    }
-  })
+  val currentSupplierCell = ValueCell[Option[Supplier]](None)
 
   /**
    * Find all the suppliers who provide a part
@@ -80,24 +68,22 @@ class QuoteHolder extends Logger {
   private def suppliedBy(partId: ObjectId): List[Supplier] = Supplier where (_.suppliedParts.subfield(_.part) eqs partId) fetch
 
   /**
-   * The current supplier of the part
-   */
-  private val currentSupplierCell = suppliersCostsForPart.lift(suppliersOfPart => {
-    suppliersOfPart match {
-      case ((None, None)) :: Nil => (None, 0.0)
-      case Nil => (None, 0.0)
-      case values => values.map(entry => (entry._1, entry._2.get.suppliedCost.get)).sortBy(_._2).head
-    }
-  })
-
-  /**
    * Calculated value of the base cost of the currently selected part
    *
    * The cost is derived from the
    */
-  private val currentPartBaseCostCell = currentSupplierCell.lift(_ match {
-    case (Some(s), price: Double) => price
-    case _ => 0.0d
+  private val currentPartBaseCostCell = currentPartCell.lift(currentSupplierCell)((_, _) match {
+    case (Some(p), Some(s)) => s.suppliedParts.get filter (_.part.get == p.id.get) match {
+      case Nil => {
+        error("Supplier %s does not suppli part %s".format(s.supplierName.get, p.partName.get))
+        0.0d
+      }
+      case head :: tail => head.suppliedCost.get
+    }
+    case _ => {
+      debug("Either part or supplier not set")
+      0.0d
+    }
   })
 
   private val quantityCell = ValueCell[Int](0)
@@ -176,7 +162,7 @@ class QuoteHolder extends Logger {
    * Text representation of the current supplier's name
    */
   val supplierText = currentSupplierCell.lift(_ match {
-    case (Some(s), price: Double) => s.supplierName.get
+    case Some(s) => s.supplierName.get
     case _ => "No Supplier Set"
   })
 
@@ -284,19 +270,19 @@ class QuoteHolder extends Logger {
 
   def quantity(q: Int) = quantityCell.set(q)
 
-  /*def suppliers = {
+  def suppliers = {
     val s = suppliersForPart.get
     debug("Generates %s for 'suppliers'".format(s.mkString(", ")))
     s
-  }*/
+  }
 
-  /*def supplier(supplier: Option[Supplier]) = currentSupplierCell.set(supplier)
+  def supplier(supplier: Option[Supplier]) = currentSupplierCell.set(supplier)
 
   def supplier = {
     val s = currentSupplierCell.get
     debug("Supplier is %s".format(s))
     s
-  }*/
+  }
 
   /**
    * Gets the current line items, sorted by line number

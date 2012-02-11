@@ -12,6 +12,7 @@ import uk.co.randomcoding.partsdb.lift.util.LineItemDisplay
 import com.foursquare.rogue.Rogue._
 import uk.co.randomcoding.partsdb.core.supplier.Supplier
 import net.liftweb.http.js.JsCmd
+import net.liftweb.http.SHtml
 import net.liftweb.http.js.JsCmds.Replace
 import net.liftweb.http.js.JsCmds.SetHtml
 import net.liftweb.common.Full
@@ -34,9 +35,8 @@ trait LineItemSnippet extends ErrorDisplay with Logger {
       "#partName" #> styledAjaxObjectSelect[Option[Part]](partsSelect, quoteHolder.currentPart, updateAjaxValue(part => {
         debug("Setting current part as %s".format(part))
         quoteHolder.currentPart(part)
-        //refreshSuppliers()
-      })) &
-      "#supplierName" #> WiringUI.asText(quoteHolder.supplierText) &
+      }, refreshSuppliers)) &
+      "#supplierName" #> suppliersContent() &
       "#partQuantity" #> styledAjaxText(quoteHolder.quantity, updateAjaxValue(quantity => quoteHolder.quantity(asInt(quantity) match {
         case Full(q) => q
         case _ => 0
@@ -45,17 +45,18 @@ trait LineItemSnippet extends ErrorDisplay with Logger {
       "#markup" #> styledAjaxText(quoteHolder.markup, updateAjaxValue(quoteHolder.markup(_)))
   }
 
-  def renderAllLineItems() = {
-    "#currentLineItems" #> LineItemDisplay.displayTable(quoteHolder.lineItems)
-  }
+  def renderAllLineItems() = "#currentLineItems" #> LineItemDisplay.displayTable(quoteHolder.lineItems)
 
-  //private[this] val suppliersContent = () => styledAjaxObjectSelect[Option[Supplier]](quoteHolder.suppliers, quoteHolder.supplier, updateAjaxValue(quoteHolder.supplier(_)))
+  private[this] val suppliersContent = () => styledAjaxObjectSelect[Option[Supplier]](quoteHolder.suppliers, quoteHolder.supplier, updateAjaxValue(quoteHolder.supplier(_)))
 
-  /*private[this] def refreshSuppliers(): JsCmd = {
+  /**
+   * Update the suppliers combo box based on the currently selected part
+   */
+  private[this] def refreshSuppliers(): JsCmd = SHtml.ajaxInvoke(() => {
     val html = suppliersContent()
     debug("Setting suppliers html to: %s".format(html))
     Replace("supplierName", html)
-  }*/
+  })._2.cmd
 
   /**
    * Add a new line item to the quote holder and refresh the line items display.
