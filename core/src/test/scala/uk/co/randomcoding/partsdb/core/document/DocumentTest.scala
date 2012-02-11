@@ -12,7 +12,7 @@ import uk.co.randomcoding.partsdb.core.document.DocumentType._
  */
 class DocumentTest extends FunSuite with ShouldMatchers {
   test("Generation of printable Document Number") {
-    val doc = Document.createRecord.documentType(Invoice).docNumber(10001).editable(true)
+    val doc = Document.createRecord.documentType(DocumentType.Invoice).docNumber(10001).editable(true)
 
     doc.documentNumber should be("INV010001")
   }
