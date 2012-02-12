@@ -20,6 +20,7 @@ import net.liftweb.http.js.JsCmd
 import net.liftweb.http.{ WiringUI, StatefulSnippet, S }
 import net.liftweb.util.Helpers._
 import uk.co.randomcoding.partsdb.core.document.Quote
+import uk.co.randomcoding.partsdb.core.transaction.Transaction
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
@@ -48,23 +49,27 @@ class AddEditQuote extends StatefulSnippet with ErrorDisplay with DataValidation
       "#totalCost" #> WiringUI.asText(quoteHolder.totalCost, JqWiringSupport.fade)
   }
 
-  private[this] def processSubmit() = {
-    currentCustomer match {
-      case Some(cust) => {
+  private[this] def processSubmit(): JsCmd = currentCustomer match {
+    case Some(cust) => addQuoteAndTransaction(cust)
+    case None => displayError("customerErrorId", "Please select a Customer")
+  }
 
-        // create quote
-        Quote.add(quoteHolder.lineItems) match {
-          case Some(q) => S.redirectTo("/app/")
-          case _ => {
-            error("Failed to add quote  with items %s".format(quoteHolder.lineItems.mkString("[", "\n", "]")))
-            Noop
-          }
+  private[this] def addQuoteAndTransaction(cust: Customer): JsCmd = {
+    Quote.add(quoteHolder.lineItems) match {
+      case Some(q) => Transaction.add(cust, Seq(q)) match {
+        case Some(t) => {
+          info("Successfully added quote %s to transaction %s".format(q, t))
+          S.redirectTo("/app/")
         }
-
-        // TODO: create transaction containing quote
-        //addQuote(quoteHolder.lineItems, cust.customerId)
+        case _ => {
+          error("Added quote %s, but failed to add transaction".format(q))
+          Noop
+        }
       }
-      case None => displayError("customerErrorId", "Please select a Customer")
+      case _ => {
+        error("Failed to add quote  with items %s".format(quoteHolder.lineItems.mkString("[", "\n", "]")))
+        Noop
+      }
     }
   }
 }
