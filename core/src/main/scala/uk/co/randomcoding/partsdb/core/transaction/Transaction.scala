@@ -61,7 +61,7 @@ class Transaction private () extends MongoRecord[Transaction] with ObjectIdPk[Tr
     case _ => false
   }
 
-  override def hashCode: Int = getClass.hashCode + customer.get.hashCode + (documents.get map (_.hashCode) sum)
+  override def hashCode: Int = getClass.toString.hashCode + customer.get.hashCode + (documents.get map (_ hashCode) sum)
 }
 
 object Transaction extends Transaction with MongoMetaRecord[Transaction] {

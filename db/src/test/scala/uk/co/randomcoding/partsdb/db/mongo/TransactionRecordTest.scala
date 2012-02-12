@@ -4,7 +4,6 @@
 package uk.co.randomcoding.partsdb.db.mongo
 
 import com.foursquare.rogue.Rogue._
-
 import uk.co.randomcoding.partsdb.core.address.Address
 import uk.co.randomcoding.partsdb.core.contact.ContactDetails
 import uk.co.randomcoding.partsdb.core.customer.Customer
@@ -12,6 +11,7 @@ import uk.co.randomcoding.partsdb.core.document.{ LineItem, DocumentType, Docume
 import uk.co.randomcoding.partsdb.core.part.Part
 import uk.co.randomcoding.partsdb.core.transaction.Transaction
 import uk.co.randomcoding.partsdb.core.vehicle.Vehicle
+import org.bson.types.ObjectId
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
@@ -28,9 +28,23 @@ class TransactionRecordTest extends MongoDbTestBase {
 
   val line1 = LineItem.create(1, Part.create("Part", Vehicle.create("Vehicle"), None), 1, 10.0, 0.1)
   val lines = Seq(line1)
-  val doc1 = Document.create(lines, DocumentType.Invoice).docNumber(1001)
-  val doc2 = Document.create(lines, DocumentType.Order).docNumber(2002)
+  /*
+   * Setting the id for doc1 avoids a funny hash collision problem where the object ids generated for
+   * doc1 & cust2 and doc2 & cust1 are effectively sequential. This results in hash code collisions where
+   * the object ids of the two pairs have the same interval.
+   * 
+   * E.g. oid (hash)
+   * Cust1 id: 4f37b14023182cd492f528d7 (1224398707)
+   * Doc2 id: 4f37b14023182cd492f528dc (1224398792)
+   * 
+   * Cust2 id: 4f37b14023182cd492f528db (1224398775)
+   * Doc1 id: 4f37b13e23182cd492f528d6 (1224398688)
+   * 
+   * As only the last two digits change, and the two pairs add to the same then they will collide on hash code - GRR
+   */
+  val doc1 = Document.create(lines, DocumentType.Invoice).docNumber(1001).id(new ObjectId)
   val doc3 = Document.create(lines, DocumentType.Quote).docNumber(3003)
+  val doc2 = Document.create(lines, DocumentType.Order).docNumber(2002)
 
   test("Equality and HashCode") {
     val t1 = Transaction.create(cust1, Seq(doc1))
@@ -46,11 +60,18 @@ class TransactionRecordTest extends MongoDbTestBase {
     val t4 = Transaction.create(cust2, Seq(doc1))
     val t5 = Transaction.create(cust1, Seq(doc2))
 
+    t5.id.get.toString should not be (t4.id.get.toString)
+    doc1.id.get.toString should not be (doc2.id.get.toString())
+
+    // This is a check for hash code collision (see above)
+    cust2.id.get.toString.hashCode + doc1.id.get.toString.hashCode should not be (cust1.id.get.toString.hashCode + doc2.id.get.toString.hashCode)
+
     t1 should (not equal (t4) and not equal (t5))
     t4 should (not equal (t1) and not equal (t5))
     t5 should (not equal (t1) and not equal (t4))
 
     t1.hashCode should (not be (t4.hashCode) and not be (t5.hashCode))
+    t4 should not equal (t5)
     t4.hashCode should not be (t5.hashCode)
   }
 

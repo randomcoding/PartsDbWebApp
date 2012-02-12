@@ -25,21 +25,20 @@ class Customer private () extends MongoRecord[Customer] with ObjectIdPk[Customer
   object terms extends IntField(this)
   object contactDetails extends ObjectIdRefListField(this, ContactDetails)
 
-  override def equals(that: Any): Boolean = {
-    that.isInstanceOf[Customer] match {
-      case false => false
-      case true => {
-        val other = that.asInstanceOf[Customer]
-
-        customerName.get == other.customerName.get && businessAddress.get == other.businessAddress.get &&
-          terms.get == other.terms.get && contactDetails.get.sortBy(_.toString) == other.contactDetails.get.sortBy(_.toString)
-      }
-    }
+  override def equals(that: Any): Boolean = that match {
+    case other: Customer => customerName.get == other.customerName.get &&
+      businessAddress.get == other.businessAddress.get &&
+      terms.get == other.terms.get &&
+      contactDetails.get.toSet == other.contactDetails.get.toSet
+    case _ => false
   }
 
   private val hashCodeFields = List(customerName, businessAddress, terms, contactDetails)
 
-  override def hashCode: Int = getClass.hashCode + (hashCodeFields map (_.get.hashCode) sum)
+  override def hashCode: Int = {
+    val fieldsHashCode = (hashCodeFields map (_.get.hashCode) sum)
+    getClass.hashCode + fieldsHashCode
+  }
 }
 
 object Customer extends Customer with MongoMetaRecord[Customer] with Logger {
@@ -84,13 +83,21 @@ object Customer extends Customer with MongoMetaRecord[Customer] with Logger {
   }
 
   /**
+   * Create a new `Customer` record, but '''do not''' add it to the database
+   */
+  def create(customerName: String, businessAddress: Address, termsDays: Int, contactDetails: ContactDetails): Customer = {
+    Customer.createRecord.customerName(customerName).businessAddress(businessAddress.id.get).terms(termsDays).contactDetails(contactDetails.id.get :: Nil)
+  }
+  /**
    * Add a new customer unless there is already a ''matching'' record. In which case the found entry is returned.
    *
    * @return An `Option[Customer]`, populated if the addition was successful, or `None` if it failed.
    * If there are multiple customers with the same short name present, then this will return the first in the returned list
    * which is not guaranteed to be the same as the query is not ordered.
+   *
    */
   def add(customerName: String, businessAddress: Address, termsDays: Int, contactDetails: ContactDetails): Option[Customer] = {
+    // TODO: This does too much, it should not worry about the address & contact details
     val address = Address findMatching (businessAddress) match {
       case Some(addr) => Some(addr)
       case None => Address.add(businessAddress)
@@ -102,9 +109,7 @@ object Customer extends Customer with MongoMetaRecord[Customer] with Logger {
     }
 
     (address, contacts) match {
-      case (Some(addr), Some(cont)) => {
-        add(Customer.createRecord.customerName(customerName).businessAddress(addr.id.get).terms(termsDays).contactDetails(cont.id.get :: Nil))
-      }
+      case (Some(addr), Some(cont)) => add(create(customerName, addr, termsDays, cont))
       case (None, None) => {
         error("Failed to add Contact Details %s".format(contactDetails))
         error("Failed to add Address %s".format(businessAddress))
