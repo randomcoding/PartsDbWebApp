@@ -13,6 +13,7 @@ import uk.co.randomcoding.partsdb.core.transaction.Transaction
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
+@deprecated("Now using different DB AccessAPI", "0.1")
 class AddQuoteDbAccessTest { //}extends MongoDbTestBase {
   //override val dbName = "QuoteHolderDbAccessTest"
 

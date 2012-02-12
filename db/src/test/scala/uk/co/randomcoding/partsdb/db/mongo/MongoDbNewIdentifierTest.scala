@@ -19,6 +19,7 @@ import uk.co.randomcoding.partsdb.core.vehicle.Vehicle
  *
  * @deprecated("Class under test is deprecated")
  */
+@deprecated("Now using different DB AccessAPI", "0.1")
 class MongoDbNewIdentifierTest /*extends MongoDbTestBase with ShouldMatchers*/ {
   /*  override val dbName = "updateIdTest"
 

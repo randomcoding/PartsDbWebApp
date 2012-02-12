@@ -10,6 +10,7 @@ import org.scalatest.matchers.ShouldMatchers
  *
  * @deprecated("Changing Access API")
  */
+@deprecated("Now using different DB AccessAPI", "0.1")
 class MongoDbUniqueIdAccessTest { //}extends MongoDbTestBase with ShouldMatchers {
   /*override val dbName = "accessIdTest"
 

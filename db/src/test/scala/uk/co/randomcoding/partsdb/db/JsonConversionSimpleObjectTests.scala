@@ -18,6 +18,7 @@ import document.LineItem
  *
  * @deprecated(There is no longer any need to do JSON conversions)
  */
+@deprecated("Now using different DB AccessAPI", "0.1")
 class JsonConversionSimpleObjectTests extends JsonConversionTesting {
 
   /*ignore("Can convert JSON to Identifier") {

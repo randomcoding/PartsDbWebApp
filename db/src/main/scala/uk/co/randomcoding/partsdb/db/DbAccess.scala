@@ -22,6 +22,7 @@ import net.liftweb.common.Logger
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  * @author Jane Rowe
  */
+@deprecated("With new MongoDB api, this is to been removed", "0.1")
 trait DbAccess extends Logger {
 
   /**

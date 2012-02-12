@@ -16,6 +16,7 @@ import net.liftweb.common.Logger
  *
  * @deprecated("Now using different DB AccessAPI")
  */
+@deprecated("Now using different DB AccessAPI", "0.1")
 class MongoDbAccess { //}(override val collection: MongoCollection) extends MongoAllOrOneAccess with MongoIdentifierAccess with MongoUpdateAccess with Logger {
   //override val collection = mongoCollection
 

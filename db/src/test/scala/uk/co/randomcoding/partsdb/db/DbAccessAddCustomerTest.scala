@@ -16,6 +16,7 @@ import uk.co.randomcoding.partsdb.core.contact.{ ContactDetails, Phone }
  *
  * @deprecated("Changing Access API")
  */
+@deprecated("Now using different DB AccessAPI", "0.1")
 class DbAccessAddCustomerTest { //} extends MongoDbTestBase {
   /*override val dbName = "DbAccessAddCustomerTest"
   lazy val databaseName = dbName

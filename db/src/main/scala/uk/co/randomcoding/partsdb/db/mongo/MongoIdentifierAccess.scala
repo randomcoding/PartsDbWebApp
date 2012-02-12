@@ -17,6 +17,7 @@ import uk.co.randomcoding.partsdb.core.transaction.Transaction
  *
  * @deprecated("Identifiers are no longer required to be managed by us directly")
  */
+@deprecated("Now using different DB AccessAPI", "0.1")
 trait MongoIdentifierAccess {
   /*val collection: MongoCollection
 

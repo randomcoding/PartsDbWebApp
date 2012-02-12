@@ -10,6 +10,7 @@ import net.liftweb.json.DefaultFormats
  *
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
+@deprecated("Now using different DB AccessAPI", "0.1")
 trait MongoConversionFormats {
   implicit val formats = DefaultFormats
 }

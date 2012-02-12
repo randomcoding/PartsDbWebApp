@@ -21,6 +21,7 @@ import uk.co.randomcoding.partsdb.core.transaction.Transaction
  *
  * @deprecated(There is no longer any need to do JSON conversions)
  */
+@deprecated("Now using different DB AccessAPI", "0.1")
 class JsonConversionDocumentTests extends JsonConversionTesting {
 
   /*ignore("Can convert Quote to JSON") {

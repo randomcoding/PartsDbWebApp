@@ -10,8 +10,8 @@ package uk.co.randomcoding.partsdb.core.id
  *
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  *
- * @deprecated("Use of the Lift Mongo Record API renders this unnecessary")
  */
+@deprecated("Use of the Lift Mongo Record API renders this unnecessary", "0.1")
 trait Identifiable {
   /**
    * The name of the case class parameter that maps to the object's [[uk.co.randomcoding.partsdb.code.id.Identifier]]
@@ -34,6 +34,7 @@ trait Identifiable {
 /**
  * Default implementation of an Identifiable. Used (for example) as a default return in pattern matches.
  */
+@deprecated("Use of the Lift Mongo Record API renders this unnecessary", "0.1")
 object DefaultIdentifiable extends Identifiable {
   override val identifierFieldName = "idField"
   val idField = DefaultIdentifier

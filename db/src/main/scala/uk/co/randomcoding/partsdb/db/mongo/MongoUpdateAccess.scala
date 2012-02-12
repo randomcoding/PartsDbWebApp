@@ -13,8 +13,8 @@ import uk.co.randomcoding.partsdb.core.id.Identifiable
  *
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  *
- * @deprecated("Now using different DB AccessAPI")
  */
+@deprecated("Now using different DB AccessAPI", "0.1")
 trait MongoUpdateAccess {
   /**
    * The `MongoCollection` this trait will operate upon

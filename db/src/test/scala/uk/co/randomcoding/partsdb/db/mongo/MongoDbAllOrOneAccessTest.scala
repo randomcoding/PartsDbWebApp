@@ -17,6 +17,7 @@ import uk.co.randomcoding.partsdb.core.vehicle.Vehicle
  *
  * @deprecated("AllOrOneAccess is deprecated")
  */
+@deprecated("Now using different DB AccessAPI", "0.1")
 class MongoDbAllOrOneAccessTest { //} extends MongoDbTestBase with ShouldMatchers {
   /*override val dbName = "allOrOneTest"
 

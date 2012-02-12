@@ -17,6 +17,7 @@ import net.liftweb.json.parseOpt
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  *
  */
+@deprecated("Now using different DB AccessAPI", "0.1")
 trait JsonConversionTesting extends FunSuite with ShouldMatchers with MongoConversionFormats {
   /**
    * Convert an object to its JSON representation

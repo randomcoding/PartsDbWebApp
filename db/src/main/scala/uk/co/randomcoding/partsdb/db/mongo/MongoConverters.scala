@@ -14,6 +14,7 @@ import uk.co.randomcoding.partsdb.core.address.Address
  *
  * @deprecated("No longer require converters")
  */
+@deprecated("Now using different DB AccessAPI", "0.1")
 object MongoConverters extends MongoConversionFormats {
   /**
    * Converts from a [[com.mongodb.casbah.Imports.DBObject]] to a class defined within the application codebase.

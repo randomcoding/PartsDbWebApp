@@ -13,6 +13,7 @@ import net.liftweb.mongodb.record.MongoMetaRecord
  *
  * @deprecated("Search Mechanism is now totally different")
  */
+@deprecated("Now using different DB AccessAPI", "0.1")
 trait MongoAllOrOneAccess extends Logger {
 
   /*  */

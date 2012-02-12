@@ -10,8 +10,8 @@ import uk.co.randomcoding.partsdb.core.id.Identifiable
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  *
- * @deprecated("No longer required as API has changed"
  */
+@deprecated("No longer required as API has changed", "0.1")
 object MongoAccessHelpers extends Logger {
 
   /**
