@@ -60,18 +60,11 @@ class TransactionRecordTest extends MongoDbTestBase {
     val t4 = Transaction.create(cust2, Seq(doc1))
     val t5 = Transaction.create(cust1, Seq(doc2))
 
-    t5.id.get.toString should not be (t4.id.get.toString)
-    doc1.id.get.toString should not be (doc2.id.get.toString())
-
-    // This is a check for hash code collision (see above)
-    cust2.id.get.toString.hashCode + doc1.id.get.toString.hashCode should not be (cust1.id.get.toString.hashCode + doc2.id.get.toString.hashCode)
-
     t1 should (not equal (t4) and not equal (t5))
     t4 should (not equal (t1) and not equal (t5))
     t5 should (not equal (t1) and not equal (t4))
 
     t1.hashCode should (not be (t4.hashCode) and not be (t5.hashCode))
-    t4 should not equal (t5)
     t4.hashCode should not be (t5.hashCode)
   }
 
