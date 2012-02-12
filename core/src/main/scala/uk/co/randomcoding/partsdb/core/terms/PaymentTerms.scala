@@ -12,4 +12,5 @@ package uk.co.randomcoding.partsdb.core.terms
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  *
  */
-case class PaymentTerms(val days: Int) {}
+@deprecated("Class no longer in use", "0.1")
+case class PaymentTerms(val days: Int)

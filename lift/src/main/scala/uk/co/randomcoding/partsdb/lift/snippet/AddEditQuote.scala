@@ -61,7 +61,7 @@ class AddEditQuote extends StatefulSnippet with ErrorDisplay with DataValidation
           }
         }
 
-        // create transaction containing quote
+        // TODO: create transaction containing quote
         //addQuote(quoteHolder.lineItems, cust.customerId)
       }
       case None => displayError("customerErrorId", "Please select a Customer")

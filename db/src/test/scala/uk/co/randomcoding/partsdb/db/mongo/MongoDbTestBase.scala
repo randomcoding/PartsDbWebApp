@@ -38,7 +38,7 @@ abstract class MongoDbTestBase extends FunSuite with BeforeAndAfterEach with Bef
   override def beforeEach(): Unit = {
     MongoConfig.init(dbName)
     MongoDB.getDb(DefaultMongoIdentifier) should be('defined)
-    Thread.sleep(250)
+    //Thread.sleep(250)
   }
 
   /**
@@ -49,8 +49,8 @@ abstract class MongoDbTestBase extends FunSuite with BeforeAndAfterEach with Bef
     val db = MongoDB.getDb(DefaultMongoIdentifier).get
     db.getCollectionNames filterNot (_ startsWith "system.") foreach (db.getCollection(_).drop)
     db.dropDatabase()
-    Thread.sleep(250)
+    //Thread.sleep(250)
   }
 
-  override def afterAll = Thread.sleep(500)
+  //override def afterAll = Thread.sleep(500)
 }

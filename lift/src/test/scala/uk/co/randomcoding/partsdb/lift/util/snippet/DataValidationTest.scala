@@ -33,7 +33,7 @@ class DataValidationTest extends FunSuite with ShouldMatchers {
     validate(addrItem) should be(List(("addressErrorId", "Address failed validation")))
   }*/
 
-  test("Valid Payment Terms validate") {
+  /* test("Valid Payment Terms validate") {
     val termsItem = ValidationItem(PaymentTerms(30), "", "")
     validate(termsItem) should be('empty)
   }
@@ -41,7 +41,7 @@ class DataValidationTest extends FunSuite with ShouldMatchers {
   test("Invalid Payment Terms fail to validate") {
     val termsItem = ValidationItem(PaymentTerms(-1), "termsErrorId", "Payment Terms failed validation")
     validate(termsItem) should be(List(("termsErrorId", "Payment Terms failed validation")))
-  }
+  }*/
 
   test("Valid Contact Details validate ok") {
     /*val contactsItem = ValidationItem(ContactDetails("Contact", Some(List(Phone("678"))), Some(List(Mobile("456"))), Some(List(Email("e@m.l")))), "", "")
