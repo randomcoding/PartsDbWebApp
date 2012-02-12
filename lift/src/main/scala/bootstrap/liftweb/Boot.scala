@@ -12,6 +12,7 @@ import net.liftweb.util.Props
 import uk.co.randomcoding.partsdb.core.user.Role._
 import uk.co.randomcoding.partsdb.core.user.User
 import uk.co.randomcoding.partsdb.db.util.Helpers._
+import uk.co.randomcoding.partsdb.lift.util.search.CustomerSearchPageProvider
 
 /**
  * A class that's instantiated early and run.  It allows the application
@@ -105,8 +106,8 @@ class Boot extends Loggable {
     }
 
     // register search providers
-    /*SearchProviders.register(CustomerSearchPageProvider)
-    SearchProviders.register(QuoteSearchPageProvider)*/
+    SearchProviders.register(CustomerSearchPageProvider)
+    /*SearchProviders.register(QuoteSearchPageProvider)*/
   }
 
   // Default users to add to the DB to bootstrap the login process

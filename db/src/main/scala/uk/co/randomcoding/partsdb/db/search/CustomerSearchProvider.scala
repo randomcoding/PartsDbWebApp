@@ -35,12 +35,16 @@ object CustomerSearchProvider {
   def findMatching(customerName: String = "", addressContains: String = "", contactName: String = "", contactPhoneNumber: String = "", contactMobileNumber: String = "", contactEmail: String = ""): Seq[Customer] = {
     val allCustomers = (Customer where (_.id exists true) fetch) toSet
 
-    val matches = Map(customerName -> customerNameMatches(customerName),
-      addressContains -> billingAddressMatches(addressContains),
-      contactName -> contactNameMatches(contactName),
-      contactPhoneNumber -> contactPhoneMatches(contactPhoneNumber),
-      contactMobileNumber -> contactMobileMatches(contactMobileNumber),
-      contactEmail -> contactEmailMatches(contactEmail))
+    val allEmpty = Seq(customerName, addressContains, contactName, contactPhoneNumber, contactMobileNumber, contactEmail) filter (_ nonEmpty) isEmpty
+
+    val matches = if (allEmpty) Map("All" -> allCustomers) else {
+      Map(customerName -> customerNameMatches(customerName),
+        addressContains -> billingAddressMatches(addressContains),
+        contactName -> contactNameMatches(contactName),
+        contactPhoneNumber -> contactPhoneMatches(contactPhoneNumber),
+        contactMobileNumber -> contactMobileMatches(contactMobileNumber),
+        contactEmail -> contactEmailMatches(contactEmail))
+    }
 
     matches.filter(_._1 nonEmpty) map (_._2) match {
       case Nil => Seq.empty
