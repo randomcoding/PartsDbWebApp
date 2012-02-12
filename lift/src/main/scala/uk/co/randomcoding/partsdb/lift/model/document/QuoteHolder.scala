@@ -3,20 +3,17 @@
  */
 package uk.co.randomcoding.partsdb.lift.model.document
 
-import scala.math.BigDecimal.double2bigDecimal
-import uk.co.randomcoding.partsdb.core.document.{ LineItem, DocumentType, Document }
-import uk.co.randomcoding.partsdb.core.id.DefaultIdentifier
-import uk.co.randomcoding.partsdb.core.part.Part
-import net.liftweb.util.ValueCell
-import net.liftweb.util.Helpers._
-import net.liftweb.common.Full
-import net.liftweb.common.Logger
-import uk.co.randomcoding.partsdb.core.supplier.Supplier
-import uk.co.randomcoding.partsdb.core.id.Identifier
-import com.foursquare.rogue.Rogue._
 import org.bson.types.ObjectId
-import uk.co.randomcoding.partsdb.core.part.PartCost
-import uk.co.randomcoding.partsdb.core.util.MongoFieldHelpers._
+
+import com.foursquare.rogue.Rogue._
+
+import uk.co.randomcoding.partsdb.core.document.LineItem
+import uk.co.randomcoding.partsdb.core.part.Part
+import uk.co.randomcoding.partsdb.core.supplier.Supplier
+
+import net.liftweb.common.{Logger, Full}
+import net.liftweb.util.Helpers._
+import net.liftweb.util.ValueCell
 
 /**
  * Encapsulates the data required to generate a `Quote` document.

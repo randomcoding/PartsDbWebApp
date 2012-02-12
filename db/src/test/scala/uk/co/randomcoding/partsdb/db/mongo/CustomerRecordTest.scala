@@ -3,14 +3,14 @@
  */
 package uk.co.randomcoding.partsdb.db.mongo
 
-import uk.co.randomcoding.partsdb.core._
-import address.Address
-import terms.PaymentTerms
-import contact.ContactDetails
-import customer.Customer
-import customer.Customer._
-import com.foursquare.rogue.Rogue._
 import org.bson.types.ObjectId
+
+import com.foursquare.rogue.Rogue._
+
+import uk.co.randomcoding.partsdb.core.address.Address
+import uk.co.randomcoding.partsdb.core.contact.ContactDetails
+import uk.co.randomcoding.partsdb.core.customer.Customer._
+import uk.co.randomcoding.partsdb.core.customer.Customer
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>

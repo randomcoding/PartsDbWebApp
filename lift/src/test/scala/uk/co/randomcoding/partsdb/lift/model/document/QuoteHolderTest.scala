@@ -7,10 +7,8 @@ import org.scalatest.FunSuite
 import org.scalatest.matchers.ShouldMatchers
 import uk.co.randomcoding.partsdb.core.contact.ContactDetails
 import uk.co.randomcoding.partsdb.core.part.{ Part, PartCost }
-import uk.co.randomcoding.partsdb.core.id.Identifier
 import uk.co.randomcoding.partsdb.core.vehicle.Vehicle
 import uk.co.randomcoding.partsdb.core.document.LineItem
-import uk.co.randomcoding.partsdb.db.DbAccess
 import uk.co.randomcoding.partsdb.db.mongo.MongoDbTestBase
 import uk.co.randomcoding.partsdb.core.supplier.Supplier
 import org.joda.time.DateTime

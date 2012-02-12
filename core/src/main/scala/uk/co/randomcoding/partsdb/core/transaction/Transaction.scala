@@ -3,17 +3,17 @@
  */
 package uk.co.randomcoding.partsdb.core.transaction
 
-import uk.co.randomcoding.partsdb.core._
-import id.{ Identifier, Identifiable }
-import customer.Customer
-import document.Document
-import net.liftweb.mongodb.record.field.ObjectIdPk
-import net.liftweb.mongodb.record.MongoRecord
-import net.liftweb.mongodb.record.field.ObjectIdRefListField
-import net.liftweb.mongodb.record.field.ObjectIdRefField
-import net.liftweb.mongodb.record.MongoMetaRecord
-import net.liftweb.mongodb.record.field.DateField
 import java.util.Date
+
+import org.bson.types.ObjectId
+
+import com.foursquare.rogue.Rogue._
+
+import uk.co.randomcoding.partsdb.core.customer.Customer
+import uk.co.randomcoding.partsdb.core.document.Document
+
+import net.liftweb.mongodb.record.field._
+import net.liftweb.mongodb.record.{MongoRecord, MongoMetaRecord}
 
 /**
  * Encapsulates all the data for a transaction between the company and a customer.

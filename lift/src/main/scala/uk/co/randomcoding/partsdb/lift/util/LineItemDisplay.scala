@@ -4,11 +4,14 @@
 package uk.co.randomcoding.partsdb.lift.util
 
 import scala.xml.NodeSeq
+
+import org.bson.types.ObjectId
+
+import com.foursquare.rogue.Rogue._
+
 import uk.co.randomcoding.partsdb.core.document.LineItem
 import uk.co.randomcoding.partsdb.core.part.Part
-import uk.co.randomcoding.partsdb.core.id.Identifier
-import org.bson.types.ObjectId
-import com.foursquare.rogue.Rogue._
+import uk.co.randomcoding.partsdb.lift.util._
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>

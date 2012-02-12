@@ -4,22 +4,20 @@ package uk.co.randomcoding.partsdb.lift.snippet
  * @author Jane Rowe
  */
 
-import uk.co.randomcoding.partsdb.core.vehicle.Vehicle._
-import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
-import uk.co.randomcoding.partsdb.lift.util.snippet.{ ValidationItem, ErrorDisplay, DataValidation, StyleAttributes }
-import uk.co.randomcoding.partsdb.lift.util.snippet.StyleAttributes._
-import net.liftweb.common.StringOrNodeSeq.strTo
-import net.liftweb.common.{ Logger, Full }
-import net.liftweb.http.SHtml.{ select, button }
-import net.liftweb.http.js.JsCmds.Noop
-import net.liftweb.http.js.JsCmd
-import net.liftweb.http.S
-import net.liftweb.util.Helpers._
 import scala.xml.Text
-import net.liftweb.http.StatefulSnippet
-import uk.co.randomcoding.partsdb.core.vehicle.Vehicle
-import uk.co.randomcoding.partsdb.db.mongo.MongoAllOrOneAccess
+
 import org.bson.types.ObjectId
+
+import uk.co.randomcoding.partsdb.core.vehicle.Vehicle.add
+import uk.co.randomcoding.partsdb.core.vehicle.Vehicle
+import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
+import uk.co.randomcoding.partsdb.lift.util.snippet._
+
+import net.liftweb.common.{ Logger, Full }
+import net.liftweb.http.SHtml._
+import net.liftweb.http.js.JsCmds.Noop
+import net.liftweb.http.{ StatefulSnippet, S }
+import net.liftweb.util.Helpers._
 
 class AddEditVehicle extends StatefulSnippet with ErrorDisplay with DataValidation with Logger {
 

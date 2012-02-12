@@ -3,14 +3,17 @@
  */
 package uk.co.randomcoding.partsdb.core.customer
 
-import uk.co.randomcoding.partsdb.core.contact.ContactDetails
+import org.bson.types.ObjectId
+
+import com.foursquare.rogue.Rogue._
+
 import uk.co.randomcoding.partsdb.core.address.Address
-import uk.co.randomcoding.partsdb.core.id.{ Identifier, Identifiable, DefaultIdentifier }
-import uk.co.randomcoding.partsdb.core.terms.PaymentTerms
-import net.liftweb.mongodb.record.{ MongoRecord, MongoMetaRecord }
-import net.liftweb.mongodb.record.field.{ ObjectIdPk, ObjectIdRefField, ObjectIdRefListField }
-import net.liftweb.record.field.{ StringField, IntField }
+import uk.co.randomcoding.partsdb.core.contact.ContactDetails
+
 import net.liftweb.common.Logger
+import net.liftweb.record.field._
+import net.liftweb.mongodb.record.field._
+import net.liftweb.mongodb.record.{ MongoRecord, MongoMetaRecord }
 
 /**
  * Customer information, including the main business addresses, payment terms and contact details

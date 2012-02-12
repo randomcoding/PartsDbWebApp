@@ -4,7 +4,6 @@
 package uk.co.randomcoding.partsdb.lift.util.search
 
 import scala.collection.mutable.{ Set => MSet }
-import uk.co.randomcoding.partsdb.db.search.MongoSearchProvider
 
 /**
  * Provides access to all the search providers that are available.
@@ -21,7 +20,7 @@ object SearchProviders {
   /**
    * Get the registered search providers, sorted by their name
    */
-  def providers = searchProviders.toList sortBy (_.searchProvider.name)
+  def providers = searchProviders.toList sortBy (_.name)
 
-  def providerFor(providesType: String) = searchProviders.find(_.searchProvider.providesType == providesType)
+  def providerFor(providesType: String) = searchProviders.find(_.providesType == providesType)
 }

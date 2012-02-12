@@ -3,7 +3,6 @@
  */
 package uk.co.randomcoding.partsdb.core.address
 
-import uk.co.randomcoding.partsdb.core.id.DefaultIdentifier
 import uk.co.randomcoding.partsdb.core.util.CountryCodes._
 import uk.co.randomcoding.partsdb.core.util.CountryCode
 import uk.co.randomcoding.partsdb.core.util.CountryCode._

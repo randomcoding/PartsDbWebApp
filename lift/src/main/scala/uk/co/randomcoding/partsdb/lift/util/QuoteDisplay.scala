@@ -3,20 +3,12 @@
  */
 package uk.co.randomcoding.partsdb.lift.util
 
-import uk.co.randomcoding.partsdb.core.contact.Mobile
-import uk.co.randomcoding.partsdb.core.contact.Email
-import net.liftweb.http.SHtml._
-import net.liftweb.http.js.JsCmds.Noop
-import uk.co.randomcoding.partsdb.core.contact.Phone
-import uk.co.randomcoding.partsdb.core.customer.Customer
-import uk.co.randomcoding.partsdb.core.contact.ContactDetails
 import scala.xml.NodeSeq
-import scala.xml.Text
-import net.liftweb.common.Logger
-import scala.io.Source
-import uk.co.randomcoding.partsdb.db.DbAccess
-import uk.co.randomcoding.partsdb.core.address.Address
+
 import uk.co.randomcoding.partsdb.core.document.Document
+import uk.co.randomcoding.partsdb.lift.util._
+
+import net.liftweb.common.Logger
 
 /**
  * Helper functions for displaying customers in lift pages

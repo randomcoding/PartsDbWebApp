@@ -27,10 +27,8 @@ class CustomerSearchProviderTest extends MongoDbTestBase {
 
   override def beforeEach(): Unit = {
     super.beforeEach()
-    daveAddress.save
-    sallyAddress.save
-    contactDave.save
-    contactSally.save
+
+    Seq(daveAddress, sallyAddress, contactDave, contactSally) foreach (_ save)
   }
 
   test("Search for a customer in empty database returns no results") {

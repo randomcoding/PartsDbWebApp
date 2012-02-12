@@ -3,25 +3,23 @@
  */
 package uk.co.randomcoding.partsdb.lift.snippet
 
-import uk.co.randomcoding.partsdb.core.address.{ AddressParser, Address }
-import uk.co.randomcoding.partsdb.core.contact.{ Phone, Mobile, Email, ContactDetails }
-import uk.co.randomcoding.partsdb.core.terms.PaymentTerms
-import uk.co.randomcoding.partsdb.core.util.CountryCodes.countryCodes
-import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
-import uk.co.randomcoding.partsdb.lift.util.snippet.{ ValidationItem, ErrorDisplay, DataValidation, StyleAttributes }
-import uk.co.randomcoding.partsdb.lift.util.snippet.StyleAttributes._
-import net.liftweb.common._
-import net.liftweb.http.SHtml.{ select, button }
-import net.liftweb.http.js.JsCmds.Noop
-import net.liftweb.http.js.JsCmd
-import net.liftweb.http.S
-import net.liftweb.util.Helpers._
 import scala.xml.Text
-import net.liftweb.http.StatefulSnippet
-import uk.co.randomcoding.partsdb.db.mongo.MongoUserAccess._
-import uk.co.randomcoding.partsdb.lift.util.auth.PasswordValidation._
-import uk.co.randomcoding.partsdb.core.user.User
+
 import org.bson.types.ObjectId
+
+import uk.co.randomcoding.partsdb.core.user.Role.stringToRole
+import uk.co.randomcoding.partsdb.core.user.User
+import uk.co.randomcoding.partsdb.db.mongo.MongoUserAccess._
+import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
+import uk.co.randomcoding.partsdb.lift.util.auth.PasswordValidation.passwordErrors
+import uk.co.randomcoding.partsdb.lift.util.snippet._
+
+import net.liftweb.common.StringOrNodeSeq.strTo
+import net.liftweb.common.{Logger, Full}
+import net.liftweb.http.SHtml._
+import net.liftweb.http.js.JsCmds.Noop
+import net.liftweb.http.{StatefulSnippet, S}
+import net.liftweb.util.Helpers._
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>

@@ -21,7 +21,7 @@ class DisplaySearch extends Logger {
 
   object currentProvider extends RequestVar[Box[String]](Empty)
 
-  val providers = ("", "Search for Type") :: (SearchProviders.providers map (provider => (provider.searchProvider.providesType, provider.searchProvider.providesType)))
+  val providers = ("", "Search for Type") :: (SearchProviders.providers map (provider => (provider.providesType, provider.providesType)))
 
   def render = {
 

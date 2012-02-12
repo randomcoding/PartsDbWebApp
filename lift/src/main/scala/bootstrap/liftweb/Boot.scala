@@ -1,6 +1,5 @@
 package bootstrap.liftweb
 
-import uk.co.randomcoding.partsdb.lift.util.auth.AppAuthentication
 import uk.co.randomcoding.partsdb.lift.model.Session
 import net.liftweb.common.{ Loggable, Full }
 import net.liftweb.http._

@@ -6,8 +6,6 @@ package uk.co.randomcoding.partsdb.lift.util.snippet
 import org.scalatest.FunSuite
 import org.scalatest.matchers.ShouldMatchers
 import uk.co.randomcoding.partsdb.core.address.Address
-import uk.co.randomcoding.partsdb.core.id.DefaultIdentifier
-import uk.co.randomcoding.partsdb.core.terms.PaymentTerms
 import uk.co.randomcoding.partsdb.core.contact._
 
 /**
