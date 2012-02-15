@@ -1,22 +1,19 @@
 package uk.co.randomcoding.partsdb.lift.snippet
 
 import scala.xml.Text
-
 import org.bson.types.ObjectId
-
 import com.foursquare.rogue.Rogue._
-
 import uk.co.randomcoding.partsdb.core.part.Part.add
 import uk.co.randomcoding.partsdb.core.part.Part
 import uk.co.randomcoding.partsdb.core.vehicle.Vehicle
 import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
 import uk.co.randomcoding.partsdb.lift.util.snippet.{ ValidationItem, ErrorDisplay, DataValidation }
-
 import net.liftweb.common.{ Logger, Full, Empty, Box }
 import net.liftweb.http.SHtml._
 import net.liftweb.http.js.JsCmds.Noop
 import net.liftweb.http.{ StatefulSnippet, S }
 import net.liftweb.util.Helpers._
+import uk.co.randomcoding.partsdb.lift.util.snippet.SubmitAndCancelSnippet
 
 /**
  * Snippet to add, or edit, a part
@@ -24,7 +21,7 @@ import net.liftweb.util.Helpers._
  * @author Jane Rowe
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
-class AddEditPart extends StatefulSnippet with ErrorDisplay with DataValidation with Logger {
+class AddEditPart extends StatefulSnippet with ErrorDisplay with DataValidation with SubmitAndCancelSnippet with Logger {
 
   /**
    * Check if we have been called with an id parameter or not and setup the initial part appropriately
@@ -34,7 +31,7 @@ class AddEditPart extends StatefulSnippet with ErrorDisplay with DataValidation 
     case _ => None
   }
 
-  val cameFrom = S.referer openOr "/app/show?entityType=Part"
+  override val cameFrom = S.referer openOr "/app/show?entityType=Part"
 
   var (partName, vehicle, modId) = initialPart match {
     case Some(part) => (part.partName.get, Vehicle.findById(part.vehicle.get), part.modId.get.getOrElse(""))
@@ -54,7 +51,7 @@ class AddEditPart extends StatefulSnippet with ErrorDisplay with DataValidation 
       "#nameEntry" #> styledText(partName, partName = _) &
       "#vehicleEntry" #> styledObjectSelect[Option[Vehicle]](allVehicles, vehicle, vehicle = _) &
       "#modIdEntry" #> styledText(modId, modId = _) &
-      "#submit" #> button("Submit", processSubmit)
+      renderSubmitAndCancel()
   }
 
   /**
@@ -64,7 +61,7 @@ class AddEditPart extends StatefulSnippet with ErrorDisplay with DataValidation 
    *
    * On successful addition, this will (possibly display a dialogue and then) redirect to the main customers page
    */
-  private[this] def processSubmit() = {
+  override def processSubmit() = {
     val validationChecks = Seq(
       ValidationItem(partName, "partNameError", "Part Name must be entered"),
       ValidationItem(vehicle, "partVehicleError", "Vehicle is not valid"))

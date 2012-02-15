@@ -19,14 +19,15 @@ import net.liftweb.http.js.JsCmds.Noop
 import net.liftweb.http.{ StatefulSnippet, S }
 import net.liftweb.util.Helpers._
 
-class AddEditVehicle extends StatefulSnippet with ErrorDisplay with DataValidation with Logger {
+class AddEditVehicle extends StatefulSnippet with ErrorDisplay with SubmitAndCancelSnippet with DataValidation with Logger {
 
   val initialVehicle = S param ("id") match {
     case Full(id) => Vehicle findById (new ObjectId(id))
     case _ => None
   }
 
-  val cameFrom = S.referer openOr "/app/show?entityType=Vehicle"
+  override val cameFrom = S.referer openOr "/app/show?entityType=Vehicle"
+
   var vehicleName = initialVehicle match {
     case Some(v) => v.vehicleName.get
     case _ => ""
@@ -39,7 +40,7 @@ class AddEditVehicle extends StatefulSnippet with ErrorDisplay with DataValidati
   def render = {
     "#formTitle" #> Text("Add Vehicle") &
       "#nameEntry" #> styledText(vehicleName, vehicleName = _) &
-      "#submit" #> button("Submit", processSubmit)
+      renderSubmitAndCancel()
   }
 
   /**
@@ -49,7 +50,7 @@ class AddEditVehicle extends StatefulSnippet with ErrorDisplay with DataValidati
    *
    * On successful addition, this will (possibly display a dialogue and then) redirect to the main customers page
    */
-  private[this] def processSubmit() = {
+  override def processSubmit() = {
 
     val validationChecks = Seq(
       ValidationItem(vehicleName, "vehicleNameError", "Vehicle Name must be entered"))

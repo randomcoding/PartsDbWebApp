@@ -15,16 +15,16 @@ import uk.co.randomcoding.partsdb.lift.util.auth.PasswordValidation.passwordErro
 import uk.co.randomcoding.partsdb.lift.util.snippet._
 
 import net.liftweb.common.StringOrNodeSeq.strTo
-import net.liftweb.common.{Logger, Full}
+import net.liftweb.common.{ Logger, Full }
 import net.liftweb.http.SHtml._
 import net.liftweb.http.js.JsCmds.Noop
-import net.liftweb.http.{StatefulSnippet, S}
+import net.liftweb.http.{ StatefulSnippet, S }
 import net.liftweb.util.Helpers._
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
-class AddEditUser extends StatefulSnippet with ErrorDisplay with DataValidation with Logger {
+class AddEditUser extends StatefulSnippet with ErrorDisplay with DataValidation with SubmitAndCancelSnippet with Logger {
   val roles = List(("User" -> "User"), ("Admin" -> "Admin"))
 
   val initialUser = S param ("id") match {
@@ -32,11 +32,13 @@ class AddEditUser extends StatefulSnippet with ErrorDisplay with DataValidation 
     case _ => None
   }
 
-  val cameFrom = S.referer openOr "/admin/"
+  override val cameFrom = S.referer openOr "/admin/"
+
   var (userName, userRole) = initialUser match {
     case Some(u) => (u.username.get, u.role.get.toString)
     case _ => ("", "")
   }
+
   var password = ""
   var confirmPassword = ""
 
@@ -50,7 +52,7 @@ class AddEditUser extends StatefulSnippet with ErrorDisplay with DataValidation 
       "#userRoleEntry" #> styledSelect(roles, "User", userRole = _) &
       "#passwordEntry" #> styledPassword(password, password = _) &
       "#confirmPasswordEntry" #> styledPassword(confirmPassword, confirmPassword = _) &
-      "#submit" #> button("Submit", processSubmit)
+      renderSubmitAndCancel()
   }
 
   /**
@@ -59,7 +61,7 @@ class AddEditUser extends StatefulSnippet with ErrorDisplay with DataValidation 
    * This will check the user name is not empty, that the two passwords match and that basic checks are done on the password
    * (not all same case and longer than 6 characters)
    */
-  private[this] def processSubmit() = {
+  override def processSubmit() = {
     validate match {
       case Nil => initialUser match {
         case Some(u) => {

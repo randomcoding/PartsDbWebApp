@@ -5,31 +5,29 @@ package uk.co.randomcoding.partsdb.lift.snippet
 
 import scala.io.Source
 import scala.xml.Text
-
 import org.bson.types.ObjectId
-
-import uk.co.randomcoding.partsdb.core.address.{AddressParser, Address}
+import uk.co.randomcoding.partsdb.core.address.{ AddressParser, Address }
 import uk.co.randomcoding.partsdb.core.contact.ContactDetails
 import uk.co.randomcoding.partsdb.core.customer.Customer
 import uk.co.randomcoding.partsdb.core.util.CountryCodes.countryCodes
-import uk.co.randomcoding.partsdb.lift.util.TransformHelpers.{styledTextArea, styledText, styledSelect}
-import uk.co.randomcoding.partsdb.lift.util.snippet.{ValidationItem, ErrorDisplay, DataValidation}
-
+import uk.co.randomcoding.partsdb.lift.util.TransformHelpers.{ styledTextArea, styledText, styledSelect }
+import uk.co.randomcoding.partsdb.lift.util.snippet.{ ValidationItem, ErrorDisplay, DataValidation }
 import net.liftweb.common.StringOrNodeSeq.strTo
-import net.liftweb.common.{Logger, Full}
+import net.liftweb.common.{ Logger, Full }
 import net.liftweb.http.SHtml._
 import net.liftweb.http.js.JsCmds.Noop
 import net.liftweb.http.js.JsCmd
-import net.liftweb.http.{StatefulSnippet, S}
+import net.liftweb.http.{ StatefulSnippet, S }
 import net.liftweb.util.Helpers._
+import uk.co.randomcoding.partsdb.lift.util.snippet._
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
-class AddEditCustomer extends StatefulSnippet with ErrorDisplay with DataValidation with Logger {
+class AddEditCustomer extends StatefulSnippet with ErrorDisplay with DataValidation with AddressSnippet with ContactDetailsSnippet with SubmitAndCancelSnippet with Logger {
   val terms = List(("30" -> "30"), ("45" -> "45"), ("60" -> "60"), ("90" -> "90"))
 
-  val cameFrom = S.referer openOr "/app/show?entityType=Customer"
+  override val cameFrom = S.referer openOr "/app/show?entityType=Customer"
 
   val initialCustomer = S param "id" match {
     case Full(id) => Customer findById new ObjectId(id)
@@ -41,7 +39,7 @@ class AddEditCustomer extends StatefulSnippet with ErrorDisplay with DataValidat
     case _ => ("", "30")
   }
 
-  var (billingAddressText, billingAddressCountry) = initialCustomer match {
+  override var (addressText, addressCountry) = initialCustomer match {
     case Some(cust) => Address findById cust.businessAddress.get match {
       case Some(addr) => (addr.addressText.get, addr.country.get)
       case _ => ("", "United Kingdom")
@@ -67,14 +65,9 @@ class AddEditCustomer extends StatefulSnippet with ErrorDisplay with DataValidat
   def render = {
     "#formTitle" #> Text("Add Customer") &
       "#nameEntry" #> styledText(name, name = _) &
-      "#billingAddressEntry" #> styledTextArea(billingAddressText, billingAddressText = _) &
-      "#billingAddressCountry" #> styledSelect(countryCodes, billingAddressCountry, billingAddressCountry = _) &
-      "#paymentTermsEntry" #> styledSelect(terms, paymentTermsText, paymentTermsText = _) &
-      "#contactNameEntry" #> styledText(contactName, contactName = _) &
-      "#phoneNumberEntry" #> styledText(phoneNumber, phoneNumber = _) &
-      "#mobileNumberEntry" #> styledText(mobileNumber, mobileNumber = _) &
-      "#emailEntry" #> styledText(email, email = _) &
-      "#submit" #> button("Submit", processSubmit)
+      renderAddress() &
+      renderContactDetails() &
+      renderSubmitAndCancel()
   }
 
   /**
@@ -84,10 +77,10 @@ class AddEditCustomer extends StatefulSnippet with ErrorDisplay with DataValidat
    *
    * On successful addition, this will (possibly display a dialogue and then) redirect to the main customers page
    */
-  private[this] def processSubmit(): JsCmd = {
-    val billingAddress = addressFromInput(billingAddressText, billingAddressCountry)
+  override def processSubmit(): JsCmd = {
+    val billingAddress = addressFromInput("%s Business Address".format(name))
     debug("Generated Address: %s".format(billingAddress))
-    val contact = contactDetails(contactName, phoneNumber, mobileNumber, email, billingAddressCountry)
+    val contact = contactDetailsFromInput()
 
     val paymentTerms = asInt(paymentTermsText) match {
       case Full(terms) => terms
@@ -103,8 +96,8 @@ class AddEditCustomer extends StatefulSnippet with ErrorDisplay with DataValidat
     validate(validationChecks: _*) match {
       case Nil => {
         initialCustomer match {
-          case None => addCustomer(billingAddress.get, paymentTerms, contact.get)
-          case Some(c) => modifyCustomer(c, billingAddress.get, paymentTerms, contact.get)
+          case None => addCustomer(billingAddress.get, paymentTerms, contact)
+          case Some(c) => modifyCustomer(c, billingAddress.get, paymentTerms, contact)
         }
       }
       case errors => {
@@ -129,34 +122,5 @@ class AddEditCustomer extends StatefulSnippet with ErrorDisplay with DataValidat
     val contacts = contact :: (cust.contactDetails.get map (ContactDetails findById _) filter (_ isDefined) map (_ get))
     Customer.modify(cust.id.get, name, billingAddress, paymentTerms, contacts.distinct)
     S redirectTo cameFrom
-  }
-
-  private def addressFromInput(addressText: String, country: String): Option[Address] = {
-    trace("Input address: %s, country: %s".format(addressText, country))
-    val lines = Source.fromString(addressText).getLines toList
-    val addressLines = lines.map(_ replaceAll (",", "") trim)
-    trace("Generated Address Lines: %s".format(addressLines))
-    val shortName = "%s Business Address".format(name)
-    val address = addressLines mkString ("", ",", "")
-    debug("Generating Address (%s) from: %s".format(shortName, address))
-
-    (shortName, address, country) match {
-      case AddressParser(addr) => {
-        debug("Created Address: %s".format(addr))
-        Some(addr)
-      }
-      case _ => {
-        error("Null Adress Created from %s".format(address))
-        None
-      }
-    }
-  }
-
-  private def contactDetails(name: String, phone: String, mobile: String, email: String, countryCode: String): Option[ContactDetails] = {
-    val ph = phone.trim
-    val mo = mobile.trim
-    val em = email.trim
-
-    ContactDetails.add(name, ph, mo, em, true)
   }
 }

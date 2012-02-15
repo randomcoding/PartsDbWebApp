@@ -25,9 +25,9 @@ import uk.co.randomcoding.partsdb.lift.util.PartCostDisplay
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
-class AddEditSupplier extends StatefulSnippet with AddressSnippet with ContactDetailsSnippet with PartCostSnippet with DataValidation with ErrorDisplay with Logger {
+class AddEditSupplier extends StatefulSnippet with AddressSnippet with ContactDetailsSnippet with PartCostSnippet with SubmitAndCancelSnippet with DataValidation with ErrorDisplay with Logger {
 
-  val cameFrom = S.referer openOr "app/show?entityType=Supplier"
+  override val cameFrom = S.referer openOr "app/show?entityType=Supplier"
   /*
    * Have we been called with an id= param that is the id of a Supplier?
    */
@@ -85,10 +85,10 @@ class AddEditSupplier extends StatefulSnippet with AddressSnippet with ContactDe
       renderContactDetails() &
       renderAddPartCost() &
       renderCurrentPartCosts() &
-      "#submit" #> button("Submit", processSubmit)
+      renderSubmitAndCancel()
   }
 
-  private[this] def processSubmit(): JsCmd = {
+  override def processSubmit(): JsCmd = {
     val address = addressFromInput(supplierName)
     val contacts = contactDetailsFromInput
 
