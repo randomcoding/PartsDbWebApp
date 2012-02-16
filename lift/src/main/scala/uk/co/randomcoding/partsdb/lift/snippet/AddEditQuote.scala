@@ -4,28 +4,33 @@
 package uk.co.randomcoding.partsdb.lift.snippet
 
 import scala.xml.Text
+
 import com.foursquare.rogue.Rogue._
+
 import uk.co.randomcoding.partsdb.core.customer.Customer
-import uk.co.randomcoding.partsdb.core.part.Part
-import uk.co.randomcoding.partsdb.core.supplier.Supplier
+import uk.co.randomcoding.partsdb.core.document.Quote
+import uk.co.randomcoding.partsdb.core.transaction.Transaction
 import uk.co.randomcoding.partsdb.lift.model.document.QuoteHolder
 import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
 import uk.co.randomcoding.partsdb.lift.util.snippet._
-import uk.co.randomcoding.partsdb.lift.util._
-import net.liftweb.common.{ Logger, Full }
+
+import net.liftweb.common.StringOrNodeSeq.strTo
+import net.liftweb.common.Logger
 import net.liftweb.http.SHtml._
-import net.liftweb.http.js.JsCmds.{ SetHtml, Replace, Noop }
+import net.liftweb.http.js.JsCmds.Noop
+import net.liftweb.http.js.JsCmd.unitToJsCmd
 import net.liftweb.http.js.jquery.JqWiringSupport
 import net.liftweb.http.js.JsCmd
 import net.liftweb.http.{ WiringUI, StatefulSnippet, S }
 import net.liftweb.util.Helpers._
-import uk.co.randomcoding.partsdb.core.document.Quote
-import uk.co.randomcoding.partsdb.core.transaction.Transaction
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
-class AddEditQuote extends StatefulSnippet with ErrorDisplay with DataValidation with LineItemSnippet with Logger {
+class AddEditQuote extends StatefulSnippet with ErrorDisplay with DataValidation with LineItemSnippet with SubmitAndCancelSnippet with Logger {
+
+  /* Always return to the main app page */
+  override val cameFrom = "/app"
 
   var customerName = ""
   override val quoteHolder = new QuoteHolder
@@ -42,14 +47,14 @@ class AddEditQuote extends StatefulSnippet with ErrorDisplay with DataValidation
     "#formTitle" #> Text("Add Quote") &
       "#customerSelect" #> styledObjectSelect[Option[Customer]](customersSelect, None, currentCustomer = _) &
       renderAddEditLineItem() &
-      "#submit" #> button("Save Quote", processSubmit) &
+      renderSubmitAndCancel() &
       renderAllLineItems() &
       "#subTotal" #> WiringUI.asText(quoteHolder.subTotal) &
       "#vatAmount" #> WiringUI.asText(quoteHolder.vatAmount) &
       "#totalCost" #> WiringUI.asText(quoteHolder.totalCost, JqWiringSupport.fade)
   }
 
-  private[this] def processSubmit(): JsCmd = currentCustomer match {
+  override def processSubmit(): JsCmd = currentCustomer match {
     case Some(cust) => addQuoteAndTransaction(cust)
     case None => displayError("customerErrorId", "Please select a Customer")
       }
