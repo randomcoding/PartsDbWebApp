@@ -29,7 +29,8 @@ import net.liftweb.util.Helpers._
  */
 class AddEditQuote extends StatefulSnippet with ErrorDisplay with DataValidation with LineItemSnippet with SubmitAndCancelSnippet with Logger {
 
-  override val cameFrom = S.referer openOr "/app"
+  /* Always return to the main app page */
+  override val cameFrom = "/app"
 
   var customerName = ""
   override val quoteHolder = new QuoteHolder

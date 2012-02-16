@@ -7,29 +7,17 @@
 </head>
 <body class="lift:content_id=main">
 	<div id="main" class="lift:surround?with=default;at=content">
-		<div class="lift:AddEditCustomer?form=POST">
+		<div class="lift:AddEditCustomer?form=POST&eager_eval=true">
 		<div style="width: 98%" align="center" ></div>
 		<div class="form-title"><span id="formTitle">Title</span></div>
 			<div class="column span-5 form-label">Customer Name:</div>
 			<div class="column span-14 last"><span id="nameEntry">Customer Name Text Entry Here</span></div>
-			<div class="column span-5 form-label">Business Address:</div>
-			<div class="column span-14 last"><span id="billingAddressEntry">Customer Business Address Entry Here</span></div>
-			<div class="column span-5 form-label">Country:</div>
-			<div class="column span-14 last"><span id="billingAddressCountry">Customer Business Address Country Entry Here</span></div>
+			<div class="lift:embed?what=_address_display">Business Address Here</div>
 			<div class="column span-5 form-label">Payment Terms:</div>
 			<div class="column span-14 last"><span id="paymentTermsEntry">Customer Payment Terms Entry Here</span> days</div>
-			<div class="column span-19 last form-label">Primary Contact Details:</div>
-			<div class="column span-5 form-label">Contact Name:</div>
-			<div class="column span-14 last"><span id="contactNameEntry">Primary Contact Phone Number</span></div>
-			<div class="column span-5 form-label">Phone Number:</div>
-			<div class="column span-14 last"><span id="phoneNumberEntry">Primary Contact Phone Number</span></div>
-			<div class="column span-5 form-label">Mobile Number:</div>
-			<div class="column span-14 last"><span id="mobileNumberEntry">Primary Contact Mobile Phone Number</span></div>
-			<div class="column span-5 form-label">Email Address:</div>
-			<div class="column span-14 last"><span id="emailEntry">Primary Contact Email</span></div>
+			<div class="lift:embed?what=_contact_details_display">Display Contact Details Here</div>
 			<div class="column span-9 form-label" align="right">&nbsp;</div>
-			<div class="column span-5 form-label" align="right"><span id="cancel">Cancel Button</span></div>
-			<div class="column span-5 last form-label" align="right"><span id="submit">Submit Button</span></div>
+      <div class="lift:embed?what=_submit_cancel">Submit & Cancel Buttons Here</div>
 		</div>
 	</div>
 </body>

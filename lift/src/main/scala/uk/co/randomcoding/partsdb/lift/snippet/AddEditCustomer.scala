@@ -66,6 +66,7 @@ class AddEditCustomer extends StatefulSnippet with ErrorDisplay with DataValidat
     "#formTitle" #> Text("Add Customer") &
       "#nameEntry" #> styledText(name, name = _) &
       renderAddress() &
+      "#paymentTermsEntry" #> styledSelect(terms, paymentTermsText, paymentTermsText = _) &
       renderContactDetails() &
       renderSubmitAndCancel()
   }

@@ -7,14 +7,13 @@
 </head>
 <body class="lift:content_id=main">
 	<div id="main" class="lift:surround?with=default;at=content">
-		<div class="lift:AddEditVehicle?form=POST">
+		<div class="lift:AddEditVehicle?form=POST&eager_eval=true">
 		<div style="width: 98%" align="center" ></div>
 		<div class="form-title"><span id="formTitle">Title</span></div>
 			<div class="column span-5 form-label">Vehicle Name:</div>
 			<div class="column span-14 last"><span id="nameEntry">Vehicle Name Text Entry Here</span></div>
       <div class="column span-9 form-label" align="right">&nbsp;</div>
-      <div class="column span-5 form-label" align="right"><span id="cancel">Cancel Button</span></div>
-      <div class="column span-5 last form-label" align="right"><span id="submit">Submit Button</span></div>
+      <div class="lift:embed?what=_submit_cancel">Submit & Cancel Buttons Here</div>
 		</div>
 	</div>
 </body>
