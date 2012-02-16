@@ -26,7 +26,7 @@ class VehicleRecordTest extends MongoDbTestBase {
     val v2 = add("Vehicle 2")
 
     v1.vehicleName.get should be("Vehicle 2")
-    v2 should be(None)
+    v2 should be(Some(v1))
 
     val namedVehicles = Vehicle where (_.vehicleName eqs "Vehicle 2") fetch
 

@@ -185,5 +185,18 @@ object TransformHelpers {
     multiSelectObj(values, initialValue, func, styledAttributes(linkAttrs): _*)
   }
 
+  /**
+   * Function that generates an ajax wrapper around setting a value for a variable.
+   *
+   * By default (without the JsCmd parameter) will perform a `Noop` after updating the value
+   */
+  def updateAjaxValue[T](updateFunc: (T) => Any, jscmd: JsCmd = Noop): T => JsCmd = {
+    (t: T) =>
+      {
+        updateFunc(t)
+        jscmd
+      }
+  }
+
   private def styledAttributes(attrs: List[ElemAttr]) = jqueryUiTextStyled :: attrs
 }

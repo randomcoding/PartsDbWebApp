@@ -3,11 +3,11 @@
  */
 package uk.co.randomcoding.partsdb.lift.util
 
-import net.liftweb.http.SHtml.link
-import uk.co.randomcoding.partsdb.core.id.Identifier
-import scala.xml.Text
-import scala.xml.NodeSeq
+import scala.xml.{ Text, NodeSeq }
+
 import org.bson.types.ObjectId
+
+import net.liftweb.http.SHtml._
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>

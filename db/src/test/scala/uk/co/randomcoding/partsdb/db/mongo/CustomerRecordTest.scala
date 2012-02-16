@@ -3,14 +3,14 @@
  */
 package uk.co.randomcoding.partsdb.db.mongo
 
-import uk.co.randomcoding.partsdb.core._
-import address.Address
-import terms.PaymentTerms
-import contact.ContactDetails
-import customer.Customer
-import customer.Customer._
-import com.foursquare.rogue.Rogue._
 import org.bson.types.ObjectId
+
+import com.foursquare.rogue.Rogue._
+
+import uk.co.randomcoding.partsdb.core.address.Address
+import uk.co.randomcoding.partsdb.core.contact.ContactDetails
+import uk.co.randomcoding.partsdb.core.customer.Customer._
+import uk.co.randomcoding.partsdb.core.customer.Customer
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
@@ -20,6 +20,24 @@ class CustomerRecordTest extends MongoDbTestBase {
   override val dbName = "CustomerRecordTest"
   val contactDave = ContactDetails.createRecord.contactName("Dave")
   val contactSally = ContactDetails.createRecord.contactName("Sally")
+
+  test("Equality and HashCode") {
+    val addr = Address.createRecord.shortName("Addr1").addressText("Address").country("UK")
+    val cust1 = createRecord.customerName("cust1").businessAddress(addr.id.get).terms(30).contactDetails(List(contactDave.id.get))
+    val cust2 = createRecord.customerName("cust1").businessAddress(addr.id.get).terms(30).contactDetails(List(contactDave.id.get))
+    val cust3 = createRecord.customerName("cust1").businessAddress(addr.id.get).terms(30).contactDetails(List(contactDave.id.get))
+
+    cust1 should (be(cust2) and be(cust3))
+    cust2 should (be(cust1) and be(cust3))
+    cust3 should (be(cust1) and be(cust2))
+
+    cust1.hashCode should (be(cust2.hashCode) and be(cust3.hashCode))
+
+    val cust4 = create("Cust 2", addr, 30, contactDave)
+    cust4 should not equal (cust1)
+    cust1 should not equal (cust4)
+    cust4.hashCode should not be (cust1.hashCode)
+  }
 
   test("Adding a single customer works ok") {
     val addr = Address.createRecord.shortName("Addr1").addressText("Address").country("UK")
@@ -103,19 +121,6 @@ class CustomerRecordTest extends MongoDbTestBase {
 
     findNamed("cust1") should be(Nil)
     findById(origId) should be(Some(createRecord.customerName("Customer 1-1").businessAddress(addr2.id.get).terms(45).contactDetails(List(contactSally.id.get))))
-  }
-
-  test("Equality and HashCode") {
-    val addr = Address.createRecord.shortName("Addr1").addressText("Address").country("UK")
-    val cust1 = createRecord.customerName("cust1").businessAddress(addr.id.get).terms(30).contactDetails(List(contactDave.id.get))
-    val cust2 = createRecord.customerName("cust1").businessAddress(addr.id.get).terms(30).contactDetails(List(contactDave.id.get))
-    val cust3 = createRecord.customerName("cust1").businessAddress(addr.id.get).terms(30).contactDetails(List(contactDave.id.get))
-
-    cust1 should (be(cust2) and be(cust3))
-    cust2 should (be(cust1) and be(cust3))
-    cust3 should (be(cust1) and be(cust2))
-
-    cust1.hashCode should (be(cust2.hashCode) and be(cust3.hashCode))
   }
 
   test("Saving A Customer also saves the address and contact details") {

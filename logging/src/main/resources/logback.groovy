@@ -20,12 +20,12 @@ logger("org", WARN)
 logger("scala", WARN)
 logger("java", WARN)
 logger("net", WARN)
-
 logger("uk", WARN)
+logger("ch", WARN)
+
 logger("uk.co.randomcoding.partsdb", INFO)
 logger("uk.co.randomcoding.partsdb.lift.util.snippet", DEBUG)
 logger("uk.co.randomcoding.partsdb.lift.snippet", DEBUG)
-//logger("uk.co.randomcoding.partsdb.lift", DEBUG)
-//logger("uk.co.randomcoding.partsdb.lift.snippet", DEBUG)
+logger("uk.co.randomcoding.partsdb.lift.model.document", DEBUG)
 
 root(WARN, ["STDOUT"])

@@ -3,8 +3,6 @@
  */
 package uk.co.randomcoding.partsdb.lift.snippet.search
 
-import uk.co.randomcoding.partsdb.db.search.SearchKeys._
-import uk.co.randomcoding.partsdb.db.search.{ SearchKeys, MongoSearchTerm }
 import uk.co.randomcoding.partsdb.lift.util.TransformHelpers.styledAjaxText
 import uk.co.randomcoding.partsdb.lift.util.CustomerDisplay
 import net.liftweb.util.Helpers._
@@ -20,7 +18,7 @@ import uk.co.randomcoding.partsdb.lift.util.QuoteDisplay
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
 object QuoteSearch extends SearchSnippet {
-  val searchKeys = List(quotePartName)
+  /*  val searchKeys = List(quotePartName)
 
   var partName = ""
 
@@ -36,18 +34,19 @@ object QuoteSearch extends SearchSnippet {
       "#results" #> QuoteDisplay.displayTable(Nil) //getMatching[Document](("documentId" $exists true) ++ MongoDBObject("documentType" -> "QUO")) filter (doc => doc.documentType == "QUO"))
   }
 
+  */
   /**
    * Generate the new live search results and display then in the relevant section of the page
    *
    * This gets the search terms, performs the search and displays the results in the `results` div of the main page
-   */
+   */ /*
   def updateResults(s: String = "") = {
     val results = searchTerms match {
-      /*case Nil => getMatching[Document](MongoDBObject("documentType" -> "QUO"))
-      case terms => QuoteSearchProvider(collection).find(searchTerms.toSet)*/
+      case Nil => getMatching[Document](MongoDBObject("documentType" -> "QUO"))
+      case terms => QuoteSearchProvider(collection).find(searchTerms.toSet)
       case _ => List.empty[Document]
     }
 
     JsCmds.SetHtml("results", QuoteDisplay.displayTable(results.sortBy(_.documentNumber)))
-  }
+  }*/
 }

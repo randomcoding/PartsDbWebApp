@@ -3,29 +3,29 @@
  */
 package uk.co.randomcoding.partsdb.lift.snippet
 
-import uk.co.randomcoding.partsdb.lift.util.snippet.ErrorDisplay
+import scala.xml.Text
+import org.bson.types.ObjectId
+import com.foursquare.rogue.Rogue._
+import uk.co.randomcoding.partsdb.core.address.Address
+import uk.co.randomcoding.partsdb.core.contact.ContactDetails
+import uk.co.randomcoding.partsdb.core.part.{ PartCost, Part }
+import uk.co.randomcoding.partsdb.core.supplier.Supplier
+import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
+import uk.co.randomcoding.partsdb.lift.util.snippet._
+import net.liftweb.common.StringOrNodeSeq.strTo
 import net.liftweb.common.{ Logger, Full }
 import net.liftweb.http.SHtml._
-import net.liftweb.http.js.JsCmds.Noop
+import net.liftweb.http.js.JsCmds.{ SetHtml, Noop }
 import net.liftweb.http.js.JsCmd
 import net.liftweb.http.{ StatefulSnippet, S }
 import net.liftweb.util.Helpers._
-import scala.xml.Text
-import uk.co.randomcoding.partsdb.lift.util.snippet.AddressSnippet
-import uk.co.randomcoding.partsdb.lift.util.snippet.ContactDetailsSnippet
-import uk.co.randomcoding.partsdb.core.supplier.Supplier
-import org.bson.types.ObjectId
-import uk.co.randomcoding.partsdb.core.address.Address
-import uk.co.randomcoding.partsdb.core.contact.ContactDetails
-import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
-import uk.co.randomcoding.partsdb.lift.util.snippet.ValidationItem
-import uk.co.randomcoding.partsdb.lift.util.snippet.DataValidation
-import uk.co.randomcoding.partsdb.core.part.PartCost
+import org.joda.time.DateTime
+import uk.co.randomcoding.partsdb.lift.util.PartCostDisplay
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
-class AddEditSupplier extends StatefulSnippet with AddressSnippet with ContactDetailsSnippet with DataValidation with ErrorDisplay with Logger {
+class AddEditSupplier extends StatefulSnippet with AddressSnippet with ContactDetailsSnippet with PartCostSnippet with DataValidation with ErrorDisplay with Logger {
 
   val cameFrom = S.referer openOr "app/show?entityType=Supplier"
   /*
@@ -66,6 +66,14 @@ class AddEditSupplier extends StatefulSnippet with AddressSnippet with ContactDe
     case _ => ""
   }
 
+  /*
+   * Set the current part costs to display
+   */
+  override var currentPartCosts: List[PartCost] = initialSupplier match {
+    case Some(s) => s.suppliedParts.get
+    case _ => Nil
+  }
+
   def dispatch = {
     case "render" => render
   }
@@ -76,6 +84,8 @@ class AddEditSupplier extends StatefulSnippet with AddressSnippet with ContactDe
       "#nameEntry" #> styledText(supplierName, supplierName = _) &
       renderAddress() &
       renderContactDetails() &
+      renderAddPartCost() &
+      renderCurrentPartCosts() &
       "#submit" #> button("Submit", processSubmit)
   }
 
@@ -83,43 +93,32 @@ class AddEditSupplier extends StatefulSnippet with AddressSnippet with ContactDe
     val address = addressFromInput(supplierName)
     val contacts = contactDetailsFromInput
 
-    val validationItems = Seq(
-      ValidationItem(address, "errorMessages", "Address Entry was invalid"),
-      ValidationItem(contacts, "errorMessages", "Contact Details entry was invalid"))
-
-    validate(validationItems: _*) match {
+    performValidation(address, contacts) match {
       case Nil => {
+        val newContacts = updateContactDetails(contacts)
+        val newAddress = updateAddress(address.get)
+
         initialSupplier match {
-          case Some(s) => modifySupplier(s, supplierName, contacts, address.get)
-          case _ => addSupplier(supplierName, contacts, address.get)
+          case Some(s) => {
+            modifySupplier(s, supplierName, newContacts.get, newAddress.get, currentPartCosts)
+            S redirectTo cameFrom
         }
+          case _ => addSupplier(supplierName, contacts, address.get, currentPartCosts) match {
+            case Some(s) => S redirectTo cameFrom
+            case _ => Noop
       }
+    }
+  }
       case errors => displayError(errors: _*)
     }
-
-    Noop
   }
 
-  private[this] def addSupplier(name: String, contacts: ContactDetails, address: Address): JsCmd = {
+  private[this] def performValidation(address: Option[Address], contacts: ContactDetails): List[(String, String)] = {
+    val validationItems = Seq(
+      ValidationItem(address, "errorMessages", "Address Entry was invalid"),
+      ValidationItem(contacts, "errorMessages", "Contact Details entry was invalid"),
+      ValidationItem(supplierName, "errorMessages", "Supplier Name must be entered"))
 
-    val contact = updateContactDetails(contacts)
-
-    val addr = updateAddress(address)
-
-    Supplier.add(name, contact.get, addr.get, Nil) match {
-      case Some(s) => S redirectTo cameFrom
-      case _ => Noop
-    }
-  }
-
-  private[this] def modifySupplier(supplier: Supplier, newName: String, newContacts: ContactDetails, newAddress: Address): JsCmd = {
-    val contacts = updateContactDetails(newContacts)
-
-    val addr = updateAddress(newAddress)
-
-    val suppliedParts = supplier.suppliedParts.get map (PartCost findById _) filter (_ isDefined) map (_ get)
-    Supplier.modify(supplier.id.get, newName, contacts.get, addr.get, suppliedParts, supplier.notes.get)
-
-    S redirectTo cameFrom
+    validate(validationItems: _*)
   }
 }

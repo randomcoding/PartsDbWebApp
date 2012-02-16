@@ -1,6 +1,5 @@
 package bootstrap.liftweb
 
-import uk.co.randomcoding.partsdb.lift.util.auth.AppAuthentication
 import uk.co.randomcoding.partsdb.lift.model.Session
 import net.liftweb.common.{ Loggable, Full }
 import net.liftweb.http._
@@ -13,6 +12,7 @@ import net.liftweb.util.Props
 import uk.co.randomcoding.partsdb.core.user.Role._
 import uk.co.randomcoding.partsdb.core.user.User
 import uk.co.randomcoding.partsdb.db.util.Helpers._
+import uk.co.randomcoding.partsdb.lift.util.search.CustomerSearchPageProvider
 
 /**
  * A class that's instantiated early and run.  It allows the application
@@ -65,7 +65,7 @@ class Boot extends Loggable {
     val searchLoc = Menu(Loc("search", new Link("app" :: "search" :: Nil, false), "Search", userLoggedIn))
 
     // Add Quote Button
-    val addQuoteLoc = Menu(Loc("addQuote", new Link("app" :: "addQuote" :: Nil, false), "New Quote", userLoggedIn))
+    val addQuoteLoc = Menu(Loc("addQuote", new Link("app" :: "quote" :: Nil, false), "New Quote", userLoggedIn))
 
     // Provide access to the admin menu. This is hidden.
     val adminLoc = Menu(Loc("adminSection", new Link("admin" :: Nil, true), "Admin", Hidden, adminLoggedIn))
@@ -105,8 +105,8 @@ class Boot extends Loggable {
     }
 
     // register search providers
-    /*SearchProviders.register(CustomerSearchPageProvider)
-    SearchProviders.register(QuoteSearchPageProvider)*/
+    SearchProviders.register(CustomerSearchPageProvider)
+    /*SearchProviders.register(QuoteSearchPageProvider)*/
   }
 
   // Default users to add to the DB to bootstrap the login process

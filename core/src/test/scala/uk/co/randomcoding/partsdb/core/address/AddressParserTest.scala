@@ -5,7 +5,6 @@ package uk.co.randomcoding.partsdb.core.address
 
 import org.scalatest.FunSuite
 import org.scalatest.matchers.ShouldMatchers
-import uk.co.randomcoding.partsdb.core.id.DefaultIdentifier
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>

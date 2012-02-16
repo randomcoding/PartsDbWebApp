@@ -3,13 +3,12 @@
  */
 package uk.co.randomcoding.partsdb.lift.util.snippet
 
-import uk.co.randomcoding.partsdb.core.terms.PaymentTerms
-import net.liftweb.common.Logger
 import uk.co.randomcoding.partsdb.core.address.Address
-import uk.co.randomcoding.partsdb.core.util.CountryCodes._
 import uk.co.randomcoding.partsdb.core.contact.ContactDetails
-import uk.co.randomcoding.partsdb.core.vehicle.Vehicle
-import uk.co.randomcoding.partsdb.core.part.Part
+import uk.co.randomcoding.partsdb.core.util.CountryCodes.matchToCountryCode
+import uk.co.randomcoding.partsdb.lift.util.snippet._
+
+import net.liftweb.common.Logger
 
 /**
  * Validates form input items.

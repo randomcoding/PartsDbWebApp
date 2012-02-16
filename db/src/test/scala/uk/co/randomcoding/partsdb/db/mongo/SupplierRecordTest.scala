@@ -13,6 +13,7 @@ import uk.co.randomcoding.partsdb.core.part.Part
 import org.joda.time.DateTime._
 import uk.co.randomcoding.partsdb.core.vehicle.Vehicle
 import uk.co.randomcoding.partsdb.core.address.Address
+import org.joda.time.DateTime
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
@@ -65,7 +66,8 @@ class SupplierRecordTest extends MongoDbTestBase {
 
   test("Find Matching returns the correct record if the Object Id matches") {
     val s1 = add("Supplier 1", contactDave, address1, Seq(partCost1)).get
-    val s2 = Supplier.createRecord.id(s1.id.get).supplierName("Another Supplier").contactDetails(new ObjectId).businessAddress(new ObjectId).suppliedParts((1 to 5) map (index => new ObjectId) toList)
+    val s2 = Supplier.createRecord.id(s1.id.get).supplierName("Another Supplier").contactDetails(new ObjectId)
+      .businessAddress(new ObjectId).suppliedParts(List(PartCost.create(part1, 10.0d, DateTime.now)))
 
     findMatching(s2) should be(Some(s1))
   }

@@ -3,16 +3,17 @@
  */
 package uk.co.randomcoding.partsdb.lift.model.document
 
-import scala.math.BigDecimal.double2bigDecimal
-import uk.co.randomcoding.partsdb.core.document.{ LineItem, DocumentType, Document }
-import uk.co.randomcoding.partsdb.core.id.DefaultIdentifier
+import org.bson.types.ObjectId
+
+import com.foursquare.rogue.Rogue._
+
+import uk.co.randomcoding.partsdb.core.document.LineItem
 import uk.co.randomcoding.partsdb.core.part.Part
-import net.liftweb.util.ValueCell
-import net.liftweb.util.Helpers._
-import net.liftweb.common.Full
-import net.liftweb.common.Logger
 import uk.co.randomcoding.partsdb.core.supplier.Supplier
-import uk.co.randomcoding.partsdb.core.id.Identifier
+
+import net.liftweb.common.{Logger, Full}
+import net.liftweb.util.Helpers._
+import net.liftweb.util.ValueCell
 
 /**
  * Encapsulates the data required to generate a `Quote` document.
@@ -32,11 +33,6 @@ class QuoteHolder extends Logger {
    */
   val DEFAULT_MARKUP = 25;
 
-  /**
-   * Holder for the current line items
-   */
-  private val lineItemsCell = ValueCell[List[LineItem]](Nil)
-
   // Cells to maintain values for current new line values
 
   /**
@@ -48,33 +44,41 @@ class QuoteHolder extends Logger {
    * Calculated value of the suppliers of a part
    */
   private val suppliersForPart = currentPartCell.lift(_ match {
-    //case Some(part) => (None, "--Select Supplier--") :: (suppliedBy(part.partId) map (supplier => (Some(supplier), supplier.supplierName)))
-    case None => List((None, "--Select Part--"))
+    case Some(part) => {
+      debug("Current Part is: %s. Generating list of suppliers who supply it")
+      (None, "Select Supplier") :: (suppliedBy(part.id.get) map (supplier => (Some(supplier), supplier.supplierName.get)))
+    }
+    case _ => {
+      debug("Current Part is not defined. Generating an empty list of suppliers")
+      List((None, "Select a Part"))
+    }
   })
-
-  private def suppliedBy(partId: Identifier): List[Supplier] = {
-    //dbAccess.getMatching[Supplier](MongoDBObject("suppliedParts.part.partId.id" -> partId.id))
-    Nil
-  }
 
   /**
    * The current supplier of the part
    */
-  private val currentSupplierCell = ValueCell[Option[Supplier]](None)
+  val currentSupplierCell = ValueCell[Option[Supplier]](None)
+
+  /**
+   * Find all the suppliers who provide a part
+   */
+  private def suppliedBy(partId: ObjectId): List[Supplier] = Supplier where (_.suppliedParts.subfield(_.part) eqs partId) fetch
 
   /**
    * Calculated value of the base cost of the currently selected part
+   *
+   * The cost is derived from the
    */
   private val currentPartBaseCostCell = currentPartCell.lift(currentSupplierCell)((_, _) match {
-    /*case (Some(part), Some(supplier)) => supplier.suppliedParts.get find (_.part.partId == part.partId) match {
-      case Some(suppliedPart) => suppliedPart.suppliedCost
-      case None => {
-        error("No Suppliers found for part: %s".format(part))
+    case (Some(p), Some(s)) => s.suppliedParts.get filter (_.part.get == p.id.get) match {
+      case Nil => {
+        error("Supplier %s does not suppli part %s".format(s.supplierName.get, p.partName.get))
         0.0d
       }
-    }*/
-    case (p, s) => {
-      error("Expected a pair(Some(part), Some(Supplier)), but got (%s, %s)".format(p, s))
+      case head :: tail => head.suppliedCost.get
+    }
+    case _ => {
+      debug("Either part or supplier not set")
       0.0d
     }
   })
@@ -92,6 +96,12 @@ class QuoteHolder extends Logger {
    * This applies the markup to the base cost
    */
   private val currentLinePartCost = currentPartBaseCostCell.lift(markupCell)((partBaseCost, markupPercentage) => partBaseCost + (partBaseCost * (markupPercentage / 100.0)))
+
+  // TODO: These line item & totals cells can be moved into a common trait, as we will want to use the same functionality for other documents 
+  /**
+   * Holder for the current line items
+   */
+  private val lineItemsCell = ValueCell[List[LineItem]](Nil)
 
   /**
    * The total computed base cost of the line items, before tax
@@ -146,6 +156,14 @@ class QuoteHolder extends Logger {
   val totalCost = total.lift("£%.2f".format(_))
 
   /**
+   * Text representation of the current supplier's name
+   */
+  val supplierText = currentSupplierCell.lift(_ match {
+    case Some(s) => s.supplierName.get
+    case _ => "No Supplier Set"
+  })
+
+  /**
    * Add a new [[uk.co.randomcoding.partsdb.core.document.LineItem]] to the quote.
    *
    * This gets the part from [[uk.co.randomcoding.partsdb.lift.model.document.QuoteHolder#currentPart()]], the markup from [[uk.co.randomcoding.partsdb.lift.model.document.QuoteHolder#markupCell]]
@@ -158,6 +176,7 @@ class QuoteHolder extends Logger {
    * @param quant The quantity of the current part to use for the line item.
    */
   def addLineItem(): Unit = {
+    debug("Adding %d of %s with a price of %.2f and a %d markup".format(quantityCell.get, currentPart, currentPartBaseCostCell.get, markupCell.get))
     (currentPart, quantityCell.get) match {
       case (None, _) => // do nothing
       case (Some(part), q) if q <= 0 => removeItem(part)
@@ -165,32 +184,32 @@ class QuoteHolder extends Logger {
         val partCost = currentPartBaseCostCell.get
         val markupValue = markupCell.get.toDouble / 100.0
 
-        /*lineItemsCell.atomicUpdate(items => items.find(_.partId == part.partId) match {
+        lineItemsCell.atomicUpdate(items => items.find(_.partId.get == part.id.get) match {
           case Some(lineItem) => items.map(li => {
-            li.partId == part.partId match {
+            li.partId.get == part.id.get match {
               case true => updateLineItem(li, q, partCost, markupValue)
-              case faslse => li.copy()
+              case false => li
             }
           })
-          case _ => items :+ LineItem(items.size, part.partId, q, partCost, markupValue)
-        })*/
+          case _ => items :+ LineItem.create(items.size, part, q, partCost, markupValue)
+        })
       }
     }
   }
 
-  private val updateLineItem = (li: LineItem, quant: Int, cost: Double, markupValue: Double) => li.copy(quantity = quant, basePrice = cost, markup = markupValue)
+  private val updateLineItem = (li: LineItem, quant: Int, cost: Double, markupValue: Double) => li.quantity(quant).basePrice(cost).markup(markupValue)
 
   private def zero = BigDecimal(0)
 
   private def removeItem(part: Part) = {
-    //lineItemsCell.atomicUpdate(_.filterNot(_.partId == part.partId))
+    lineItemsCell.atomicUpdate(_.filterNot(_.partId.get == part.id.get))
     renumberLines
   }
 
   private def renumberLines = lineItemsCell.atomicUpdate(items => {
     var index = 0
-    items sortBy (_.lineNumber) map (item => {
-      val newItem = item.copy(lineNumber = index)
+    items sortBy (_.lineNumber.get) map (item => {
+      val newItem = item.lineNumber(index)
       index += 1
       newItem
     })
@@ -248,14 +267,22 @@ class QuoteHolder extends Logger {
 
   def quantity(q: Int) = quantityCell.set(q)
 
-  def suppliers = suppliersForPart.get
+  def suppliers = {
+    val s = suppliersForPart.get
+    debug("Generates %s for 'suppliers'".format(s.mkString(", ")))
+    s
+  }
 
   def supplier(supplier: Option[Supplier]) = currentSupplierCell.set(supplier)
 
-  def supplier = currentSupplierCell.get
+  def supplier = {
+    val s = currentSupplierCell.get
+    debug("Supplier is %s".format(s))
+    s
+  }
 
   /**
    * Gets the current line items, sorted by line number
    */
-  def lineItems = lineItemsCell.get.sortBy(_.lineNumber)
+  def lineItems = lineItemsCell.get.sortBy(_.lineNumber.get)
 }
