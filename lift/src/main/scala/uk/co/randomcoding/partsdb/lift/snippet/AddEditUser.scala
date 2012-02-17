@@ -14,11 +14,9 @@ import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
 import uk.co.randomcoding.partsdb.lift.util.auth.PasswordValidation.passwordErrors
 import uk.co.randomcoding.partsdb.lift.util.snippet._
 
-import net.liftweb.common.StringOrNodeSeq.strTo
-import net.liftweb.common.{ Logger, Full }
-import net.liftweb.http.SHtml._
+import net.liftweb.common.{Logger, Full}
 import net.liftweb.http.js.JsCmds.Noop
-import net.liftweb.http.{ StatefulSnippet, S }
+import net.liftweb.http.{StatefulSnippet, S}
 import net.liftweb.util.Helpers._
 
 /**

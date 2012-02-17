@@ -4,9 +4,11 @@
 package uk.co.randomcoding.partsdb.lift.util
 
 import scala.xml.NodeSeq
-import uk.co.randomcoding.partsdb.core.part.PartCost
-import uk.co.randomcoding.partsdb.core.part.Part
+
 import org.joda.time.DateTime
+
+import uk.co.randomcoding.partsdb.core.part.{ PartCost, Part }
+import uk.co.randomcoding.partsdb.lift.util._
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>

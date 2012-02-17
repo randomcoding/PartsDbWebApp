@@ -3,12 +3,14 @@
  */
 package uk.co.randomcoding.partsdb.lift.util
 
-import uk.co.randomcoding.partsdb.core.supplier.Supplier
-import SnippetDisplayHelpers._
-import scala.xml.NodeSeq
+import scala.xml.{ Text, NodeSeq }
+
 import uk.co.randomcoding.partsdb.core.address.Address
-import scala.xml.Text
 import uk.co.randomcoding.partsdb.core.contact.ContactDetails
+import uk.co.randomcoding.partsdb.core.supplier.Supplier
+import uk.co.randomcoding.partsdb.lift.util._
+
+import SnippetDisplayHelpers.{ displayContactCell, displayAddressCell }
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>

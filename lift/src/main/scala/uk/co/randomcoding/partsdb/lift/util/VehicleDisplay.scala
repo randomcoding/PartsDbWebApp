@@ -3,15 +3,12 @@
  */
 package uk.co.randomcoding.partsdb.lift.util
 
-import net.liftweb.http.SHtml._
-import net.liftweb.http.js.JsCmds.Noop
 import scala.xml.NodeSeq
+
+import uk.co.randomcoding.partsdb.core.vehicle.Vehicle
+import uk.co.randomcoding.partsdb.lift.util._
+
 import net.liftweb.common.Logger
-import uk.co.randomcoding.partsdb.core.part.Part
-import scala.xml.Text
-import scala.io.Source
-import uk.co.randomcoding.partsdb.core.vehicle.Vehicle
-import uk.co.randomcoding.partsdb.core.vehicle.Vehicle
 
 /**
  * Helper functions for displaying vehicles in lift pages

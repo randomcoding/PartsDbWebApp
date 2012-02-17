@@ -3,10 +3,10 @@
  */
 package uk.co.randomcoding.partsdb.lift.util.snippet
 
-import net.liftweb.util.Helpers._
-import net.liftweb.http.SHtml.button
+import net.liftweb.http.SHtml._
 import net.liftweb.http.js.JsCmd
 import net.liftweb.http.S
+import net.liftweb.util.Helpers._
 
 /**
  * This snippet provides basic functionality to render to buttons, '''Submit''' and '''Cancel'''

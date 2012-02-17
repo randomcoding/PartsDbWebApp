@@ -4,6 +4,7 @@
 package uk.co.randomcoding.partsdb.lift.util
 
 import scala.io.Source
+import scala.xml.NodeSeq.seqToNodeSeq
 import scala.xml.NodeSeq
 
 import uk.co.randomcoding.partsdb.core.address.Address

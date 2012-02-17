@@ -1,18 +1,20 @@
 package bootstrap.liftweb
 
-import uk.co.randomcoding.partsdb.lift.model.Session
-import net.liftweb.common.{ Loggable, Full }
-import net.liftweb.http._
-import net.liftweb.http.auth.AuthRole
-import net.liftweb.sitemap._
-import net.liftweb.sitemap.Loc._
-import uk.co.randomcoding.partsdb.lift.util.search.SearchProviders
+import uk.co.randomcoding.partsdb.core.user.Role.{ USER, Role, NO_ROLE, ADMIN }
+import uk.co.randomcoding.partsdb.core.user.User.addUser
 import uk.co.randomcoding.partsdb.db.mongo.MongoConfig
-import net.liftweb.util.Props
-import uk.co.randomcoding.partsdb.core.user.Role._
-import uk.co.randomcoding.partsdb.core.user.User
 import uk.co.randomcoding.partsdb.db.util.Helpers._
-import uk.co.randomcoding.partsdb.lift.util.search.CustomerSearchPageProvider
+import uk.co.randomcoding.partsdb.lift.model.Session
+import uk.co.randomcoding.partsdb.lift.util.search._
+
+import net.liftweb.common.{ Loggable, Full }
+import net.liftweb.http.LiftRulesMocker.toLiftRules
+import net.liftweb.http.{ S, ResourceServer, Req, RedirectResponse, LiftRules, Html5Properties, GetRequest }
+import net.liftweb.sitemap.Loc.LinkText.strToLinkText
+import net.liftweb.sitemap.Loc.{ Link, If, Hidden, ExtLink }
+import net.liftweb.sitemap.{ SiteMap, Menu, Loc }
+import net.liftweb.util.Vendor.valToVender
+import net.liftweb.util.Props
 
 /**
  * A class that's instantiated early and run.  It allows the application

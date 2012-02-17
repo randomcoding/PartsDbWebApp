@@ -3,14 +3,14 @@
  */
 package uk.co.randomcoding.partsdb.lift.snippet
 
-import net.liftweb.util.Helpers._
-import net.liftweb.http.SHtml
+import scala.xml.{Text, NodeSeq}
+
+import uk.co.randomcoding.partsdb.core.user.Role.{stringToRole, Role, NO_ROLE}
 import uk.co.randomcoding.partsdb.lift.model.Session
-import scala.xml.Text
-import scala.xml.NodeSeq
+
 import net.liftweb.common.Logger
-import uk.co.randomcoding.partsdb.core.user.Role
-import uk.co.randomcoding.partsdb.core.user.Role._
+import net.liftweb.http.SHtml
+import net.liftweb.util.Helpers._
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>

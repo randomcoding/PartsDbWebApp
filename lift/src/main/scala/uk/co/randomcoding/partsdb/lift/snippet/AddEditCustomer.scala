@@ -3,24 +3,20 @@
  */
 package uk.co.randomcoding.partsdb.lift.snippet
 
-import scala.io.Source
 import scala.xml.Text
 
 import org.bson.types.ObjectId
 
-import uk.co.randomcoding.partsdb.core.address.{ AddressParser, Address }
+import uk.co.randomcoding.partsdb.core.address.Address
 import uk.co.randomcoding.partsdb.core.contact.ContactDetails
 import uk.co.randomcoding.partsdb.core.customer.Customer
-import uk.co.randomcoding.partsdb.core.util.CountryCodes.countryCodes
 import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
 import uk.co.randomcoding.partsdb.lift.util.snippet._
 
-import net.liftweb.common.StringOrNodeSeq.strTo
-import net.liftweb.common.{ Logger, Full }
-import net.liftweb.http.SHtml._
+import net.liftweb.common.{Logger, Full}
 import net.liftweb.http.js.JsCmds.Noop
 import net.liftweb.http.js.JsCmd
-import net.liftweb.http.{ StatefulSnippet, S }
+import net.liftweb.http.{StatefulSnippet, S}
 import net.liftweb.util.Helpers._
 
 /**

@@ -13,10 +13,10 @@ import uk.co.randomcoding.partsdb.core.supplier.Supplier
 import uk.co.randomcoding.partsdb.core.user.User
 import uk.co.randomcoding.partsdb.core.vehicle.Vehicle
 import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
-import uk.co.randomcoding.partsdb.lift.util.snippet.ErrorDisplay
+import uk.co.randomcoding.partsdb.lift.util.snippet._
 import uk.co.randomcoding.partsdb.lift.util._
 
-import net.liftweb.common.{ Logger, Full }
+import net.liftweb.common.{Logger, Full}
 import net.liftweb.http.S
 import net.liftweb.util.Helpers._
 

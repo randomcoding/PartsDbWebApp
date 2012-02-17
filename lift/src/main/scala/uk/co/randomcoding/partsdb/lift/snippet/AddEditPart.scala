@@ -1,17 +1,20 @@
 package uk.co.randomcoding.partsdb.lift.snippet
 
 import scala.xml.Text
+
 import org.bson.types.ObjectId
+
 import com.foursquare.rogue.Rogue._
+
 import uk.co.randomcoding.partsdb.core.part.Part.add
 import uk.co.randomcoding.partsdb.core.part.Part
 import uk.co.randomcoding.partsdb.core.vehicle.Vehicle
 import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
 import uk.co.randomcoding.partsdb.lift.util.snippet._
-import net.liftweb.common.{ Logger, Full, Empty, Box }
-import net.liftweb.http.SHtml._
+
+import net.liftweb.common.{Logger, Full}
 import net.liftweb.http.js.JsCmds.Noop
-import net.liftweb.http.{ StatefulSnippet, S }
+import net.liftweb.http.{StatefulSnippet, S}
 import net.liftweb.util.Helpers._
 
 /**

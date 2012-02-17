@@ -4,8 +4,9 @@
 package uk.co.randomcoding.partsdb.lift.util
 
 import scala.xml.NodeSeq
-import scala.xml.Text
+
 import uk.co.randomcoding.partsdb.core.user.User
+import uk.co.randomcoding.partsdb.lift.util._
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>

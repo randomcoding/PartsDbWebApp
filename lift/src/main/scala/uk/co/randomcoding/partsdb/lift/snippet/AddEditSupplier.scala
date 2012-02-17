@@ -4,23 +4,22 @@
 package uk.co.randomcoding.partsdb.lift.snippet
 
 import scala.xml.Text
+
 import org.bson.types.ObjectId
-import com.foursquare.rogue.Rogue._
+
 import uk.co.randomcoding.partsdb.core.address.Address
 import uk.co.randomcoding.partsdb.core.contact.ContactDetails
-import uk.co.randomcoding.partsdb.core.part.{ PartCost, Part }
+import uk.co.randomcoding.partsdb.core.part.PartCost
 import uk.co.randomcoding.partsdb.core.supplier.Supplier
 import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
 import uk.co.randomcoding.partsdb.lift.util.snippet._
-import net.liftweb.common.StringOrNodeSeq.strTo
-import net.liftweb.common.{ Logger, Full }
-import net.liftweb.http.SHtml._
-import net.liftweb.http.js.JsCmds.{ SetHtml, Noop }
+
+import net.liftweb.common.{Logger, Full}
+import net.liftweb.http.js.JsCmds.Noop
+import net.liftweb.http.js.JsCmd.unitToJsCmd
 import net.liftweb.http.js.JsCmd
-import net.liftweb.http.{ StatefulSnippet, S }
+import net.liftweb.http.{StatefulSnippet, S}
 import net.liftweb.util.Helpers._
-import org.joda.time.DateTime
-import uk.co.randomcoding.partsdb.lift.util.PartCostDisplay
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>

@@ -3,6 +3,8 @@
  */
 package uk.co.randomcoding.partsdb.lift.util.snippet
 
+import scala.Array.canBuildFrom
+
 import org.joda.time.DateTime
 
 import com.foursquare.rogue.Rogue._
@@ -16,7 +18,7 @@ import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
 import uk.co.randomcoding.partsdb.lift.util.snippet._
 import uk.co.randomcoding.partsdb.lift.util._
 
-import net.liftweb.common.{ Logger, Full }
+import net.liftweb.common.{Logger, Full}
 import net.liftweb.http.js.JsCmds.SetHtml
 import net.liftweb.http.js.JsCmd.unitToJsCmd
 import net.liftweb.http.js.JsCmd

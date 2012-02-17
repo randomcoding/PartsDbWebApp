@@ -3,16 +3,15 @@
  */
 package uk.co.randomcoding.partsdb.lift.util
 
-import net.liftweb.http.SHtml._
-import net.liftweb.http.js.JsCmds.Noop
-import scala.xml.NodeSeq
-import net.liftweb.common.Logger
-import uk.co.randomcoding.partsdb.core.part.Part
-import scala.xml.Text
-import scala.io.Source
-import uk.co.randomcoding.partsdb.core.vehicle.Vehicle
-import com.foursquare.rogue.Rogue._
+import scala.xml.{ Text, NodeSeq }
+
 import org.bson.types.ObjectId
+
+import uk.co.randomcoding.partsdb.core.part.Part
+import uk.co.randomcoding.partsdb.core.vehicle.Vehicle
+import uk.co.randomcoding.partsdb.lift.util._
+
+import net.liftweb.common.Logger
 
 /**
  * Helper functions for displaying parts in lift pages

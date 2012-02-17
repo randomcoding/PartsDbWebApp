@@ -1,9 +1,5 @@
 package uk.co.randomcoding.partsdb.lift.snippet
 
-/**
- * @author Jane Rowe
- */
-
 import scala.xml.Text
 
 import org.bson.types.ObjectId
@@ -14,11 +10,14 @@ import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
 import uk.co.randomcoding.partsdb.lift.util.snippet._
 
 import net.liftweb.common.{ Logger, Full }
-import net.liftweb.http.SHtml._
 import net.liftweb.http.js.JsCmds.Noop
 import net.liftweb.http.{ StatefulSnippet, S }
 import net.liftweb.util.Helpers._
 
+/**
+ * @author Jane Rowe
+ * @author RandomCoder <randomcoder@randomcoding.co.uk>
+ */
 class AddEditVehicle extends StatefulSnippet with ErrorDisplay with SubmitAndCancelSnippet with DataValidation with Logger {
 
   val initialVehicle = S param ("id") match {

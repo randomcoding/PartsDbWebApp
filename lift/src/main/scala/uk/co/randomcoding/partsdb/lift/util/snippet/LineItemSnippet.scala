@@ -3,20 +3,20 @@
  */
 package uk.co.randomcoding.partsdb.lift.util.snippet
 
+import com.foursquare.rogue.Rogue._
+
+import uk.co.randomcoding.partsdb.core.part.Part
+import uk.co.randomcoding.partsdb.core.supplier.Supplier
 import uk.co.randomcoding.partsdb.lift.model.document.QuoteHolder
 import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
-import net.liftweb.common.Logger
-import net.liftweb.util.Helpers._
-import uk.co.randomcoding.partsdb.core.part.Part
-import uk.co.randomcoding.partsdb.lift.util.LineItemDisplay
-import com.foursquare.rogue.Rogue._
-import uk.co.randomcoding.partsdb.core.supplier.Supplier
+import uk.co.randomcoding.partsdb.lift.util.snippet._
+import uk.co.randomcoding.partsdb.lift.util._
+
+import net.liftweb.common.{Logger, Full}
+import net.liftweb.http.js.JsCmds.{SetHtml, Replace}
 import net.liftweb.http.js.JsCmd
-import net.liftweb.http.SHtml
-import net.liftweb.http.js.JsCmds.Replace
-import net.liftweb.http.js.JsCmds.SetHtml
-import net.liftweb.common.Full
-import net.liftweb.http.WiringUI
+import net.liftweb.http.{WiringUI, SHtml}
+import net.liftweb.util.Helpers._
 
 /**
  * A snippet to process the display an update of [[uk.co.randomcoding.partsdb.core.document.LineItem]]s

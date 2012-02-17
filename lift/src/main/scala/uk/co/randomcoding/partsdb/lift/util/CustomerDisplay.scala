@@ -3,16 +3,15 @@
  */
 package uk.co.randomcoding.partsdb.lift.util
 
-import scala.io.Source
-import scala.xml.{ Text, NodeSeq }
-
-import org.bson.types.ObjectId
+import scala.xml.NodeSeq.seqToNodeSeq
+import scala.xml.{Text, NodeSeq}
 
 import uk.co.randomcoding.partsdb.core.address.Address
 import uk.co.randomcoding.partsdb.core.contact.ContactDetails
 import uk.co.randomcoding.partsdb.core.customer.Customer
-import SnippetDisplayHelpers._
+import uk.co.randomcoding.partsdb.lift.util._
 
+import SnippetDisplayHelpers.{displayContactCell, displayAddressCell}
 import net.liftweb.common.Logger
 
 /**

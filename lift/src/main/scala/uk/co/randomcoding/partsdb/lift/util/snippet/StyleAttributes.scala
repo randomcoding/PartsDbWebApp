@@ -3,7 +3,7 @@
  */
 package uk.co.randomcoding.partsdb.lift.util.snippet
 
-import net.liftweb.http.SHtml.ElemAttr
+import net.liftweb.http.SHtml._
 
 /**
  * Contains definitions of commonly used `ElemAttr`s.

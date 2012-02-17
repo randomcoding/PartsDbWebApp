@@ -3,13 +3,10 @@
  */
 package uk.co.randomcoding.partsdb.lift.snippet
 
-import scala.xml.NodeSeq
-
-import net.liftweb.http.SHtml.ElemAttr.pairToBasic
-import net.liftweb.http.{ SHtml, S }
-import net.liftweb.util.Helpers.{ strToSuperArrowAssoc, strToCssBindPromoter }
-
 import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
+
+import net.liftweb.http.S
+import net.liftweb.util.Helpers._
 
 /**
  * Simple snippet that displays Add or Edit buttons.

@@ -14,14 +14,12 @@ import uk.co.randomcoding.partsdb.lift.model.document.QuoteHolder
 import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
 import uk.co.randomcoding.partsdb.lift.util.snippet._
 
-import net.liftweb.common.StringOrNodeSeq.strTo
 import net.liftweb.common.Logger
-import net.liftweb.http.SHtml._
 import net.liftweb.http.js.JsCmds.Noop
 import net.liftweb.http.js.JsCmd.unitToJsCmd
 import net.liftweb.http.js.jquery.JqWiringSupport
 import net.liftweb.http.js.JsCmd
-import net.liftweb.http.{ WiringUI, StatefulSnippet, S }
+import net.liftweb.http.{WiringUI, StatefulSnippet, S}
 import net.liftweb.util.Helpers._
 
 /**

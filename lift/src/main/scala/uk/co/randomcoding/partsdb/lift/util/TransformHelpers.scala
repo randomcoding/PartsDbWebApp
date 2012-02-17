@@ -4,16 +4,14 @@
 package uk.co.randomcoding.partsdb.lift.util
 
 import scala.xml.{ Text, NodeSeq }
-import uk.co.randomcoding.partsdb.lift.util.snippet.StyleAttributes._
+
+import uk.co.randomcoding.partsdb.lift.util.snippet.StyleAttributes.jqueryUiTextStyled
+
 import net.liftweb.common.Full
-import net.liftweb.http.SHtml.ElemAttr.pairToBasic
 import net.liftweb.http.SHtml._
 import net.liftweb.http.js.JsCmds.Noop
-import net.liftweb.util.Helpers._
-import uk.co.randomcoding.partsdb.core.vehicle.Vehicle
 import net.liftweb.http.js.JsCmd
-import net.liftweb.util.ValueCell
-import net.liftweb.http.WiringUI
+import net.liftweb.util.Helpers._
 
 /**
  * Provides common helper functions for generating elements for transformations
