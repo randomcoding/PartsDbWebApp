@@ -1,5 +1,7 @@
 package bootstrap.liftweb
 
+import com.mongodb.MongoException
+
 import uk.co.randomcoding.partsdb.core.user.Role.{ USER, Role, NO_ROLE, ADMIN }
 import uk.co.randomcoding.partsdb.core.user.User.addUser
 import uk.co.randomcoding.partsdb.db.mongo.MongoConfig
@@ -113,8 +115,18 @@ class Boot extends Loggable {
 
   // Default users to add to the DB to bootstrap the login process
   private[this] def addBootstrapUsers: Unit = {
-    import uk.co.randomcoding.partsdb.core.user.User._
-    addUser("Dave", hash("dave123"), USER)
-    addUser("Adam", hash("adam123"), ADMIN)
+    import uk.co.randomcoding.partsdb.core.user.User
+    try {
+      User.addUser("Dave", hash("dave123"), USER)
+      User.addUser("Adam", hash("adam123"), ADMIN)
+    }
+    catch {
+      case e: MongoException => {
+        if (e.getMessage startsWith "Collection not found") {
+          User.createRecord.username("Adam").password(hash("adam123")).role(ADMIN).save
+          //User.createRecord.username("Dave").password(hash("dave123")).role(USER).save
+        }
+      }
+    }
   }
 }
