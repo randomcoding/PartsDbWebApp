@@ -50,14 +50,15 @@
               <ol><li visbl="pub" name="uk.co.randomcoding.partsdb.core.customer.Customer" data-isabs="false">
       <a id="Customer:Customer"></a>
       <h4 class="signature">
-      <span class="kind">case class</span>
+      <span class="kind">class</span>
       <span class="symbol"> 
         <a href="Customer.html"><span class="name">Customer</span></a>
         
-        <span class="params">(<span name="customerId">customerId: Identifier</span>, <span name="customerName">customerName: String</span>, <span name="billingAddress">billingAddress: Identifier</span>, <span name="deliveryAddresses">deliveryAddresses: Set[Identifier]</span>, <span name="terms">terms: PaymentTerms</span>, <span name="contactDetails">contactDetails: ContactDetails</span>)</span><span class="result"> extends Identifiable with Product with Serializable</span>
+        <span class="result"> extends MongoRecord[Customer] with ObjectIdPk[Customer]</span>
       </span>
       </h4>
-      <p class="comment cmt">Customer information, including billing and delivery addresses and payment terms</p>
+      <p class="comment cmt">Customer information, including the main business addresses, payment terms and contact details
+</p>
     </li></ol>
             </div>
         
@@ -65,14 +66,14 @@
 
         <div class="values members" id="values">
               <h3>Value Members</h3>
-              <ol><li visbl="pub" name="uk.co.randomcoding.partsdb.core.customer.DefaultCustomer" data-isabs="false">
-      <a id="DefaultCustomer:DefaultCustomer"></a>
+              <ol><li visbl="pub" name="uk.co.randomcoding.partsdb.core.customer.Customer" data-isabs="false">
+      <a id="Customer:Customer"></a>
       <h4 class="signature">
       <span class="kind">object</span>
       <span class="symbol"> 
-        <a href="DefaultCustomer$.html"><span class="name">DefaultCustomer</span></a>
+        <a href="Customer$.html"><span class="name">Customer</span></a>
         
-        <span class="result"> extends Customer</span>
+        <span class="result"> extends Customer with MongoMetaRecord[Customer] with Logger</span>
       </span>
       </h4>
       

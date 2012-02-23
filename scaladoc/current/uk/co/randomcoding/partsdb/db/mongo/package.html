@@ -47,75 +47,18 @@
 
         <div class="types members" id="types">
               <h3>Type Members</h3>
-              <ol><li visbl="pub" name="uk.co.randomcoding.partsdb.db.mongo.MongoAllOrOneAccess" data-isabs="true">
-      <a id="MongoAllOrOneAccess:MongoAllOrOneAccess"></a>
+              <ol><li visbl="pub" name="uk.co.randomcoding.partsdb.db.mongo.MongoConnectionConfig" data-isabs="false">
+      <a id="MongoConnectionConfig:MongoConnectionConfig"></a>
       <h4 class="signature">
-      <span class="kind">trait</span>
+      <span class="kind">case class</span>
       <span class="symbol"> 
-        <a href="MongoAllOrOneAccess.html"><span class="name">MongoAllOrOneAccess</span></a>
+        <a href="MongoConnectionConfig.html"><span class="name">MongoConnectionConfig</span></a>
         
-        <span class="result"> extends Logger</span>
+        <span class="params">(<span name="host">host: String</span>, <span name="port">port: Int</span>, <span name="user">user: String</span>, <span name="password">password: String</span>, <span name="dbName">dbName: String</span>, <span name="onCloudFoundry">onCloudFoundry: Boolean</span>)</span><span class="result"> extends Product with Serializable</span>
       </span>
       </h4>
-      <p class="comment cmt"></p>
-    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.db.mongo.MongoConversionFormats" data-isabs="true">
-      <a id="MongoConversionFormats:MongoConversionFormats"></a>
-      <h4 class="signature">
-      <span class="kind">trait</span>
-      <span class="symbol"> 
-        <a href="MongoConversionFormats.html"><span class="name">MongoConversionFormats</span></a>
-        
-        <span class="result"> extends AnyRef</span>
-      </span>
-      </h4>
-      <p class="comment cmt">Provides a consistent formats object to use for implementation and testing
+      <p class="comment cmt">Container for the connection details
 </p>
-    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.db.mongo.MongoDbAccess" data-isabs="false">
-      <a id="MongoDbAccess:MongoDbAccess"></a>
-      <h4 class="signature">
-      <span class="kind">class</span>
-      <span class="symbol"> 
-        <a href="MongoDbAccess.html"><span class="name">MongoDbAccess</span></a>
-        
-        <span class="result"> extends MongoAllOrOneAccess with MongoIdentifierAccess with MongoUpdateAccess with Logger</span>
-      </span>
-      </h4>
-      <p class="comment cmt">Provides access to stored items in a MongoDB Collection
-</p>
-    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.db.mongo.MongoIdentifierAccess" data-isabs="true">
-      <a id="MongoIdentifierAccess:MongoIdentifierAccess"></a>
-      <h4 class="signature">
-      <span class="kind">trait</span>
-      <span class="symbol"> 
-        <a href="MongoIdentifierAccess.html"><span class="name">MongoIdentifierAccess</span></a>
-        
-        <span class="result"> extends AnyRef</span>
-      </span>
-      </h4>
-      <p class="comment cmt"></p>
-    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.db.mongo.MongoUpdateAccess" data-isabs="true">
-      <a id="MongoUpdateAccess:MongoUpdateAccess"></a>
-      <h4 class="signature">
-      <span class="kind">trait</span>
-      <span class="symbol"> 
-        <a href="MongoUpdateAccess.html"><span class="name">MongoUpdateAccess</span></a>
-        
-        <span class="result"> extends AnyRef</span>
-      </span>
-      </h4>
-      <p class="comment cmt">Provides an implementation of the capability to add an object to a collection
-</p>
-    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.db.mongo.MongoUserAccess" data-isabs="false">
-      <a id="MongoUserAccess:MongoUserAccess"></a>
-      <h4 class="signature">
-      <span class="kind">class</span>
-      <span class="symbol"> 
-        <a href="MongoUserAccess.html"><span class="name">MongoUserAccess</span></a>
-        
-        <span class="result"> extends Loggable</span>
-      </span>
-      </h4>
-      
     </li></ol>
             </div>
         
@@ -123,52 +66,18 @@
 
         <div class="values members" id="values">
               <h3>Value Members</h3>
-              <ol><li visbl="pub" name="uk.co.randomcoding.partsdb.db.mongo.MongoAccessHelpers" data-isabs="false">
-      <a id="MongoAccessHelpers:MongoAccessHelpers"></a>
-      <h4 class="signature">
-      <span class="kind">object</span>
-      <span class="symbol"> 
-        <a href="MongoAccessHelpers$.html"><span class="name">MongoAccessHelpers</span></a>
-        
-        <span class="result"> extends Logger</span>
-      </span>
-      </h4>
-      <p class="comment cmt"></p>
-    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.db.mongo.MongoConfig" data-isabs="false">
+              <ol><li visbl="pub" name="uk.co.randomcoding.partsdb.db.mongo.MongoConfig" data-isabs="false">
       <a id="MongoConfig:MongoConfig"></a>
       <h4 class="signature">
       <span class="kind">object</span>
       <span class="symbol"> 
         <a href="MongoConfig$.html"><span class="name">MongoConfig</span></a>
         
-        <span class="result"> extends Loggable</span>
+        <span class="result"> extends Logger</span>
       </span>
       </h4>
-      <p class="comment cmt">Configuration for Mongo DB and access to mongo connections
+      <p class="comment cmt">Initialisation for Mongo DB
 </p>
-    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.db.mongo.MongoConverters" data-isabs="false">
-      <a id="MongoConverters:MongoConverters"></a>
-      <h4 class="signature">
-      <span class="kind">object</span>
-      <span class="symbol"> 
-        <a href="MongoConverters$.html"><span class="name">MongoConverters</span></a>
-        
-        <span class="result"> extends MongoConversionFormats</span>
-      </span>
-      </h4>
-      <p class="comment cmt">Provides implicit conversions between <code>MongoDBObject</code>s and library objects
-</p>
-    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.db.mongo.MongoDbAccess" data-isabs="false">
-      <a id="MongoDbAccess:MongoDbAccess"></a>
-      <h4 class="signature">
-      <span class="kind">object</span>
-      <span class="symbol"> 
-        <a href="MongoDbAccess$.html"><span class="name">MongoDbAccess</span></a>
-        
-        <span class="result"> extends AnyRef</span>
-      </span>
-      </h4>
-      <p class="comment cmt">Factory for uk.co.randomcoding.partsdb.db.mongo.MongoDBAccess instances</p>
     </li><li visbl="pub" name="uk.co.randomcoding.partsdb.db.mongo.MongoUserAccess" data-isabs="false">
       <a id="MongoUserAccess:MongoUserAccess"></a>
       <h4 class="signature">

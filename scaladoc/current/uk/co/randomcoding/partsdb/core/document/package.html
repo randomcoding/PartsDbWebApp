@@ -61,25 +61,48 @@
     </li><li visbl="pub" name="uk.co.randomcoding.partsdb.core.document.Document" data-isabs="false">
       <a id="Document:Document"></a>
       <h4 class="signature">
-      <span class="kind">case class</span>
+      <span class="kind">class</span>
       <span class="symbol"> 
         <a href="Document.html"><span class="name">Document</span></a>
         
-        <span class="params">(<span name="documentId">documentId: Identifier</span>, <span name="documentType">documentType: DocumentType</span>)</span><span class="result"> extends Identifiable with Product with Serializable</span>
+        <span class="result"> extends MongoRecord[Document] with ObjectIdPk[Document]</span>
       </span>
       </h4>
-      <p class="comment cmt">Base class for documents.</p>
-    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.core.document.DocumentType" data-isabs="true">
-      <a id="DocumentType:DocumentType"></a>
+      <p class="comment cmt"><code>Document</code>s are the basic objects that make up a <a name="uk.co.randomcoding.partsdb.core.transaction.Transaction" class="extype" href="../transaction/Transaction.html">Transaction</a>.</p>
+    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.core.document.DocumentId" data-isabs="false">
+      <a id="DocumentId:DocumentId"></a>
       <h4 class="signature">
       <span class="kind">class</span>
       <span class="symbol"> 
-        <a href="DocumentType.html"><span class="name">DocumentType</span></a>
+        <a href="DocumentId.html"><span class="name">DocumentId</span></a>
+        
+        <span class="result"> extends MongoRecord[DocumentId] with ObjectIdPk[DocumentId]</span>
+      </span>
+      </h4>
+      <p class="comment cmt"></p>
+    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.core.document.DocumentInstance" data-isabs="true">
+      <a id="DocumentInstance:DocumentInstance"></a>
+      <h4 class="signature">
+      <span class="kind">class</span>
+      <span class="symbol"> 
+        <a href="DocumentInstance.html"><span class="name">DocumentInstance</span></a>
         
         <span class="result"> extends AnyRef</span>
       </span>
       </h4>
-      <p class="comment cmt">An id type for <a name="uk.co.randomcoding.partsdb.core.document.Document" class="extype" href="Document.html">Document</a>s.</p>
+      <p class="comment cmt">Factory object for creating instances of <code>Document</code>s with a fixed <code>DocumentType</code>
+</p>
+    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.core.document.LineItem" data-isabs="false">
+      <a id="LineItem:LineItem"></a>
+      <h4 class="signature">
+      <span class="kind">class</span>
+      <span class="symbol"> 
+        <a href="LineItem.html"><span class="name">LineItem</span></a>
+        
+        <span class="result"> extends BsonRecord[LineItem]</span>
+      </span>
+      </h4>
+      <p class="comment cmt">A line item for documents.</p>
     </li><li visbl="pub" name="uk.co.randomcoding.partsdb.core.document.Printable" data-isabs="true">
       <a id="Printable:Printable"></a>
       <h4 class="signature">
@@ -99,18 +122,40 @@
 
         <div class="values members" id="values">
               <h3>Value Members</h3>
-              <ol><li visbl="pub" name="uk.co.randomcoding.partsdb.core.document.DeliveryNoteType" data-isabs="false">
-      <a id="DeliveryNoteType:DeliveryNoteType"></a>
+              <ol><li visbl="pub" name="uk.co.randomcoding.partsdb.core.document.DeliveryNote" data-isabs="false">
+      <a id="DeliveryNote:DeliveryNote"></a>
       <h4 class="signature">
       <span class="kind">object</span>
       <span class="symbol"> 
-        <a href="DeliveryNoteType$.html"><span class="name">DeliveryNoteType</span></a>
+        <a href="DeliveryNote$.html"><span class="name">DeliveryNote</span></a>
         
-        <span class="result"> extends DocumentType with Product with Serializable</span>
+        <span class="result"> extends DocumentInstance</span>
       </span>
       </h4>
-      <p class="comment cmt">Document type for Delivery notes
+      <p class="comment cmt">Factory for creating Delivery Note Document Instances
 </p>
+    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.core.document.Document" data-isabs="false">
+      <a id="Document:Document"></a>
+      <h4 class="signature">
+      <span class="kind">object</span>
+      <span class="symbol"> 
+        <a href="Document$.html"><span class="name">Document</span></a>
+        
+        <span class="result"> extends Document with MongoMetaRecord[Document]</span>
+      </span>
+      </h4>
+      
+    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.core.document.DocumentId" data-isabs="false">
+      <a id="DocumentId:DocumentId"></a>
+      <h4 class="signature">
+      <span class="kind">object</span>
+      <span class="symbol"> 
+        <a href="DocumentId$.html"><span class="name">DocumentId</span></a>
+        
+        <span class="result"> extends DocumentId with MongoMetaRecord[DocumentId]</span>
+      </span>
+      </h4>
+      
     </li><li visbl="pub" name="uk.co.randomcoding.partsdb.core.document.DocumentType" data-isabs="false">
       <a id="DocumentType:DocumentType"></a>
       <h4 class="signature">
@@ -118,80 +163,57 @@
       <span class="symbol"> 
         <a href="DocumentType$.html"><span class="name">DocumentType</span></a>
         
-        <span class="result"> extends AnyRef</span>
+        <span class="result"> extends Enumeration</span>
+      </span>
+      </h4>
+      <p class="comment cmt">Enumeration of Document Types
+</p>
+    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.core.document.Invoice" data-isabs="false">
+      <a id="Invoice:Invoice"></a>
+      <h4 class="signature">
+      <span class="kind">object</span>
+      <span class="symbol"> 
+        <a href="Invoice$.html"><span class="name">Invoice</span></a>
+        
+        <span class="result"> extends DocumentInstance</span>
+      </span>
+      </h4>
+      <p class="comment cmt">Factory for creating Invoice Document Instances
+</p>
+    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.core.document.LineItem" data-isabs="false">
+      <a id="LineItem:LineItem"></a>
+      <h4 class="signature">
+      <span class="kind">object</span>
+      <span class="symbol"> 
+        <a href="LineItem$.html"><span class="name">LineItem</span></a>
+        
+        <span class="result"> extends LineItem with BsonMetaRecord[LineItem]</span>
       </span>
       </h4>
       
-    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.core.document.InvoiceType" data-isabs="false">
-      <a id="InvoiceType:InvoiceType"></a>
+    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.core.document.Order" data-isabs="false">
+      <a id="Order:Order"></a>
       <h4 class="signature">
       <span class="kind">object</span>
       <span class="symbol"> 
-        <a href="InvoiceType$.html"><span class="name">InvoiceType</span></a>
+        <a href="Order$.html"><span class="name">Order</span></a>
         
-        <span class="result"> extends DocumentType with Product with Serializable</span>
+        <span class="result"> extends DocumentInstance</span>
       </span>
       </h4>
-      <p class="comment cmt">Document type for Invoices
+      <p class="comment cmt">Factory for creating Order Document Instances
 </p>
-    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.core.document.NullDocumentType" data-isabs="false">
-      <a id="NullDocumentType:NullDocumentType"></a>
+    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.core.document.Quote" data-isabs="false">
+      <a id="Quote:Quote"></a>
       <h4 class="signature">
       <span class="kind">object</span>
       <span class="symbol"> 
-        <a href="NullDocumentType$.html"><span class="name">NullDocumentType</span></a>
+        <a href="Quote$.html"><span class="name">Quote</span></a>
         
-        <span class="result"> extends DocumentType with Product with Serializable</span>
+        <span class="result"> extends DocumentInstance</span>
       </span>
       </h4>
-      <p class="comment cmt">Null object for document types.</p>
-    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.core.document.OrderType" data-isabs="false">
-      <a id="OrderType:OrderType"></a>
-      <h4 class="signature">
-      <span class="kind">object</span>
-      <span class="symbol"> 
-        <a href="OrderType$.html"><span class="name">OrderType</span></a>
-        
-        <span class="result"> extends DocumentType with Product with Serializable</span>
-      </span>
-      </h4>
-      <p class="comment cmt">Document type for Orders
-</p>
-    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.core.document.QuoteType" data-isabs="false">
-      <a id="QuoteType:QuoteType"></a>
-      <h4 class="signature">
-      <span class="kind">object</span>
-      <span class="symbol"> 
-        <a href="QuoteType$.html"><span class="name">QuoteType</span></a>
-        
-        <span class="result"> extends DocumentType with Product with Serializable</span>
-      </span>
-      </h4>
-      <p class="comment cmt">Document type for Quotes
-</p>
-    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.core.document.StatementType" data-isabs="false">
-      <a id="StatementType:StatementType"></a>
-      <h4 class="signature">
-      <span class="kind">object</span>
-      <span class="symbol"> 
-        <a href="StatementType$.html"><span class="name">StatementType</span></a>
-        
-        <span class="result"> extends DocumentType with Product with Serializable</span>
-      </span>
-      </h4>
-      <p class="comment cmt">Document type for Statements
-</p>
-    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.core.document.TransactionType" data-isabs="false">
-      <a id="TransactionType:TransactionType"></a>
-      <h4 class="signature">
-      <span class="kind">object</span>
-      <span class="symbol"> 
-        <a href="TransactionType$.html"><span class="name">TransactionType</span></a>
-        
-        <span class="result"> extends DocumentType with Product with Serializable</span>
-      </span>
-      </h4>
-      <p class="comment cmt">Document type for Transactions
+      <p class="comment cmt">Factory for creating Quote Document Instances
 </p>
     </li></ol>
             </div>

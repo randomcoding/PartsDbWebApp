@@ -14,27 +14,27 @@
         </head>
         <body class="type">
       <div id="definition">
-        <img src="../../../../../../lib/class_big.png" />
+        <a title="Go to companion" href="ContactDetails$.html"><img src="../../../../../../lib/class_to_object_big.png" /></a>
         <p id="owner"><a name="uk" class="extype" href="../../../../../package.html">uk</a>.<a name="uk.co" class="extype" href="../../../../package.html">co</a>.<a name="uk.co.randomcoding" class="extype" href="../../../package.html">randomcoding</a>.<a name="uk.co.randomcoding.partsdb" class="extype" href="../../package.html">partsdb</a>.<a name="uk.co.randomcoding.partsdb.core" class="extype" href="../package.html">core</a>.<a name="uk.co.randomcoding.partsdb.core.contact" class="extype" href="package.html">contact</a></p>
-        <h1>ContactDetails</h1>
+        <h1><a title="Go to companion" href="ContactDetails$.html">ContactDetails</a></h1>
       </div>
 
       <h4 class="signature" id="signature">
-      <span class="kind">case class</span>
+      <span class="kind">class</span>
       <span class="symbol"> 
         <span class="name">ContactDetails</span>
         
-        <span class="params">(<span name="contactName">contactName: String</span>, <span name="phoneNumbers">phoneNumbers: <span name="scala.Option" class="extype">Option</span>[List[<a name="uk.co.randomcoding.partsdb.core.contact.Phone" class="extype" href="Phone.html">Phone</a>]]</span>, <span name="mobileNumbers">mobileNumbers: <span name="scala.Option" class="extype">Option</span>[List[<a name="uk.co.randomcoding.partsdb.core.contact.Mobile" class="extype" href="Mobile.html">Mobile</a>]]</span>, <span name="emailAddresses">emailAddresses: <span name="scala.Option" class="extype">Option</span>[List[<a name="uk.co.randomcoding.partsdb.core.contact.Email" class="extype" href="Email.html">Email</a>]]</span>)</span><span class="result"> extends <span name="scala.Product" class="extype">Product</span> with <span name="scala.Serializable" class="extype">Serializable</span></span>
+        <span class="result"> extends <span name="net.liftweb.mongodb.record.MongoRecord" class="extype">MongoRecord</span>[<a name="uk.co.randomcoding.partsdb.core.contact.ContactDetails" class="extype" href="">ContactDetails</a>] with <span name="net.liftweb.mongodb.record.field.ObjectIdPk" class="extype">ObjectIdPk</span>[<a name="uk.co.randomcoding.partsdb.core.contact.ContactDetails" class="extype" href="">ContactDetails</a>]</span>
       </span>
       </h4>
       
-          <div class="fullcommenttop" id="comment"><div class="comment cmt"><p>Some contact details for a customer or supplier.</p><p>This associates a Contact's name to
+          <div class="fullcommenttop" id="comment"><div class="comment cmt"><p>Some contact details for a customer or supplier.</p><p>Associates a phone number, mobile number and email to a name
 </p></div><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><span name="scala.Serializable" class="extype">Serializable</span>, <span name="java.io.Serializable" class="extype">Serializable</span>, <span name="scala.Product" class="extype">Product</span>, <span name="scala.Equals" class="extype">Equals</span>, AnyRef, <span name="scala.Any" class="extype">Any</span></div>
+          <div class="superTypes hiddenContent"><span name="net.liftweb.mongodb.record.field.ObjectIdPk" class="extype">ObjectIdPk</span>[<a name="uk.co.randomcoding.partsdb.core.contact.ContactDetails" class="extype" href="">ContactDetails</a>], <span name="net.liftweb.mongodb.record.field.MongoPk" class="extype">MongoPk</span>[<span name="net.liftweb.mongodb.record.field.ObjectIdField" class="extype">ObjectIdField</span>[<a name="uk.co.randomcoding.partsdb.core.contact.ContactDetails" class="extype" href="">ContactDetails</a>]], <span name="net.liftweb.mongodb.record.MongoRecord" class="extype">MongoRecord</span>[<a name="uk.co.randomcoding.partsdb.core.contact.ContactDetails" class="extype" href="">ContactDetails</a>], <span name="net.liftweb.mongodb.record.BsonRecord" class="extype">BsonRecord</span>[<a name="uk.co.randomcoding.partsdb.core.contact.ContactDetails" class="extype" href="">ContactDetails</a>], <span name="net.liftweb.record.Record" class="extype">Record</span>[<a name="uk.co.randomcoding.partsdb.core.contact.ContactDetails" class="extype" href="">ContactDetails</a>], <span name="net.liftweb.util.FieldContainer" class="extype">FieldContainer</span>, AnyRef, <span name="scala.Any" class="extype">Any</span></div>
         </div><div class="toggleContainer block">
           <span class="toggle">Known Subclasses</span>
-          <div class="subClasses hiddenContent"><a name="uk.co.randomcoding.partsdb.core.contact.NullContactDetails" class="extype" href="NullContactDetails$.html">NullContactDetails</a></div>
+          <div class="subClasses hiddenContent"><a name="uk.co.randomcoding.partsdb.core.contact.ContactDetails" class="extype" href="ContactDetails$.html">ContactDetails</a></div>
         </div></div>
         
 
@@ -50,7 +50,7 @@
                 <span class="filtertype">Inherited</span>
                 <ol><li class="hideall out"><span>Hide All</span></li>
                 <li class="showall in"><span>Show all</span></li></ol>
-                <ol id="linearization"><li name="uk.co.randomcoding.partsdb.core.contact.ContactDetails" class="in"><span>ContactDetails</span></li><li name="scala.Serializable" class="in"><span>Serializable</span></li><li name="java.io.Serializable" class="in"><span>Serializable</span></li><li name="scala.Product" class="in"><span>Product</span></li><li name="scala.Equals" class="in"><span>Equals</span></li><li name="scala.AnyRef" class="in"><span>AnyRef</span></li><li name="scala.Any" class="in"><span>Any</span></li></ol>
+                <ol id="linearization"><li name="uk.co.randomcoding.partsdb.core.contact.ContactDetails" class="in"><span>ContactDetails</span></li><li name="net.liftweb.mongodb.record.field.ObjectIdPk" class="in"><span>ObjectIdPk</span></li><li name="net.liftweb.mongodb.record.field.MongoPk" class="in"><span>MongoPk</span></li><li name="net.liftweb.mongodb.record.MongoRecord" class="in"><span>MongoRecord</span></li><li name="net.liftweb.mongodb.record.BsonRecord" class="in"><span>BsonRecord</span></li><li name="net.liftweb.record.Record" class="in"><span>Record</span></li><li name="net.liftweb.util.FieldContainer" class="in"><span>FieldContainer</span></li><li name="scala.AnyRef" class="in"><span>AnyRef</span></li><li name="scala.Any" class="in"><span>Any</span></li></ol>
               </div>
           <div id="visbl">
               <span class="filtertype">Visibility</span>
@@ -58,23 +58,23 @@
             </div>
         </div>
 
-        <div class="members" id="constructors">
-              <h3>Instance Constructors</h3>
-              <ol><li visbl="pub" name="uk.co.randomcoding.partsdb.core.contact.ContactDetails#this" data-isabs="false">
-      <a id="this:ContactDetails"></a>
-      <h4 class="signature">
-      <span class="kind">new</span>
-      <span class="symbol"> 
-        <span class="name">ContactDetails</span>
         
-        <span class="params">(<span name="contactName">contactName: String</span>, <span name="phoneNumbers">phoneNumbers: <span name="scala.Option" class="extype">Option</span>[List[<a name="uk.co.randomcoding.partsdb.core.contact.Phone" class="extype" href="Phone.html">Phone</a>]]</span>, <span name="mobileNumbers">mobileNumbers: <span name="scala.Option" class="extype">Option</span>[List[<a name="uk.co.randomcoding.partsdb.core.contact.Mobile" class="extype" href="Mobile.html">Mobile</a>]]</span>, <span name="emailAddresses">emailAddresses: <span name="scala.Option" class="extype">Option</span>[List[<a name="uk.co.randomcoding.partsdb.core.contact.Email" class="extype" href="Email.html">Email</a>]]</span>)</span>
+
+        <div class="types members" id="types">
+              <h3>Type Members</h3>
+              <ol><li visbl="pub" name="net.liftweb.record.Record#_$7" data-isabs="true">
+      <a id="_$7:_$7"></a>
+      <h4 class="signature">
+      <span class="kind">type</span>
+      <span class="symbol"> 
+        <span class="name">_$7</span>
+        
+        
       </span>
       </h4>
-      <p class="shortcomment cmt">Create a new Contact details instance.</p>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>abstract </dd><dt>Definition Classes</dt><dd>Record</dd></dl></div>
     </li></ol>
             </div>
-
-        
         
         
 
@@ -135,6 +135,28 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>final </dd><dt>Definition Classes</dt><dd>Any</dd></dl></div>
+    </li><li visbl="pub" name="net.liftweb.record.Record#allFields" data-isabs="false">
+      <a id="allFields:List[net.liftweb.record.Field[_, uk.co.randomcoding.partsdb.core.contact.ContactDetails]]"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">allFields</span>
+        
+        <span class="result">: List[net.liftweb.record.Field[_, uk.co.randomcoding.partsdb.core.contact.ContactDetails]]</span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Record → FieldContainer</dd></dl></div>
+    </li><li visbl="pub" name="net.liftweb.mongodb.record.BsonRecord#asDBObject" data-isabs="false">
+      <a id="asDBObject:DBObject"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">asDBObject</span>
+        
+        <span class="result">: <span name="com.mongodb.DBObject" class="extype">DBObject</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>BsonRecord</dd></dl></div>
     </li><li visbl="pub" name="scala.Any#asInstanceOf" data-isabs="false">
       <a id="asInstanceOf[T0]:T0"></a>
       <h4 class="signature">
@@ -146,17 +168,39 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>final </dd><dt>Definition Classes</dt><dd>Any</dd></dl></div>
-    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.core.contact.ContactDetails#canEqual" data-isabs="false">
-      <a id="canEqual(Any):Boolean"></a>
+    </li><li visbl="pub" name="net.liftweb.record.Record#asJSON" data-isabs="false">
+      <a id="asJSON:JsExp"></a>
       <h4 class="signature">
       <span class="kind">def</span>
       <span class="symbol"> 
-        <span class="name">canEqual</span>
+        <span class="name">asJSON</span>
         
-        <span class="params">(<span name="arg0">arg0: <span name="scala.Any" class="extype">Any</span></span>)</span><span class="result">: <span name="scala.Boolean" class="extype">Boolean</span></span>
+        <span class="result">: <span name="net.liftweb.http.js.JsExp" class="extype">JsExp</span></span>
       </span>
       </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a name="uk.co.randomcoding.partsdb.core.contact.ContactDetails" class="extype" href="">ContactDetails</a> → Equals</dd></dl></div>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Record</dd></dl></div>
+    </li><li visbl="pub" name="net.liftweb.record.Record#asJValue" data-isabs="false">
+      <a id="asJValue:JObject"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">asJValue</span>
+        
+        <span class="result">: <span name="net.liftweb.json.JsonAST.JObject" class="extype">JObject</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Record</dd></dl></div>
+    </li><li visbl="pub" name="net.liftweb.record.Record#asJsExp" data-isabs="false">
+      <a id="asJsExp:JsExp"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">asJsExp</span>
+        
+        <span class="result">: <span name="net.liftweb.http.js.JsExp" class="extype">JsExp</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Record</dd></dl></div>
     </li><li visbl="prt" name="scala.AnyRef#clone" data-isabs="false">
       <a id="clone():AnyRef"></a>
       <h4 class="signature">
@@ -171,25 +215,47 @@
                 <span class="name">@throws</span><span class="args">()</span>
               
         </dd></dl></div>
-    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.core.contact.ContactDetails#contactName" data-isabs="false">
-      <a id="contactName:String"></a>
+    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.core.contact.ContactDetails.contactName" data-isabs="false">
+      <a id="contactName:contactName"></a>
       <h4 class="signature">
-      <span class="kind">val</span>
+      <span class="kind">object</span>
       <span class="symbol"> 
-        <span class="name">contactName</span>
+        <a href="ContactDetails$contactName$.html"><span class="name">contactName</span></a>
         
-        <span class="result">: String</span>
+        <span class="result"> extends StringField[ContactDetails]</span>
       </span>
       </h4>
       
-    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.core.contact.ContactDetails#emailAddresses" data-isabs="false">
-      <a id="emailAddresses:Option[List[Email]]"></a>
+    </li><li visbl="pub" name="net.liftweb.mongodb.record.field.ObjectIdPk#defaultIdValue" data-isabs="false">
+      <a id="defaultIdValue:ObjectId"></a>
       <h4 class="signature">
-      <span class="kind">val</span>
+      <span class="kind">def</span>
       <span class="symbol"> 
-        <span class="name">emailAddresses</span>
+        <span class="name">defaultIdValue</span>
         
-        <span class="result">: <span name="scala.Option" class="extype">Option</span>[List[<a name="uk.co.randomcoding.partsdb.core.contact.Email" class="extype" href="Email.html">Email</a>]]</span>
+        <span class="result">: <span name="org.bson.types.ObjectId" class="extype">ObjectId</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>ObjectIdPk → MongoPk</dd></dl></div>
+    </li><li visbl="pub" name="net.liftweb.mongodb.record.MongoRecord#delete_!" data-isabs="false">
+      <a id="delete_!:Boolean"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">delete_!</span>
+        
+        <span class="result">: <span name="scala.Boolean" class="extype">Boolean</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>MongoRecord</dd></dl></div>
+    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.core.contact.ContactDetails.emailAddress" data-isabs="false">
+      <a id="emailAddress:emailAddress"></a>
+      <h4 class="signature">
+      <span class="kind">object</span>
+      <span class="symbol"> 
+        <a href="ContactDetails$emailAddress$.html"><span class="name">emailAddress</span></a>
+        
+        <span class="result"> extends StringField[ContactDetails]</span>
       </span>
       </h4>
       
@@ -211,10 +277,32 @@
       <span class="symbol"> 
         <span class="name">equals</span>
         
-        <span class="params">(<span name="arg0">arg0: <span name="scala.Any" class="extype">Any</span></span>)</span><span class="result">: <span name="scala.Boolean" class="extype">Boolean</span></span>
+        <span class="params">(<span name="that">that: <span name="scala.Any" class="extype">Any</span></span>)</span><span class="result">: <span name="scala.Boolean" class="extype">Boolean</span></span>
       </span>
       </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a name="uk.co.randomcoding.partsdb.core.contact.ContactDetails" class="extype" href="">ContactDetails</a> → Equals → AnyRef → Any</dd></dl></div>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a name="uk.co.randomcoding.partsdb.core.contact.ContactDetails" class="extype" href="">ContactDetails</a> → AnyRef → Any</dd></dl></div>
+    </li><li visbl="pub" name="net.liftweb.record.Record#fieldByName" data-isabs="false">
+      <a id="fieldByName(String):Box[net.liftweb.record.Field[_, uk.co.randomcoding.partsdb.core.contact.ContactDetails]]"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">fieldByName</span>
+        
+        <span class="params">(<span name="fieldName">fieldName: String</span>)</span><span class="result">: <span name="net.liftweb.common.Box" class="extype">Box</span>[net.liftweb.record.Field[_, uk.co.randomcoding.partsdb.core.contact.ContactDetails]]</span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Record</dd></dl></div>
+    </li><li visbl="pub" name="net.liftweb.record.Record#fields" data-isabs="false">
+      <a id="fields():List[net.liftweb.record.Field[_, uk.co.randomcoding.partsdb.core.contact.ContactDetails]]"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">fields</span>
+        
+        <span class="params">()</span><span class="result">: List[net.liftweb.record.Field[_, uk.co.randomcoding.partsdb.core.contact.ContactDetails]]</span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Record</dd></dl></div>
     </li><li visbl="prt" name="scala.AnyRef#finalize" data-isabs="false">
       <a id="finalize():Unit"></a>
       <h4 class="signature">
@@ -262,14 +350,36 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>final </dd><dt>Definition Classes</dt><dd>Any</dd></dl></div>
-    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.core.contact.ContactDetails#mobileNumbers" data-isabs="false">
-      <a id="mobileNumbers:Option[List[Mobile]]"></a>
+    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.core.contact.ContactDetails.isPrimary" data-isabs="false">
+      <a id="isPrimary:isPrimary"></a>
       <h4 class="signature">
-      <span class="kind">val</span>
+      <span class="kind">object</span>
       <span class="symbol"> 
-        <span class="name">mobileNumbers</span>
+        <a href="ContactDetails$isPrimary$.html"><span class="name">isPrimary</span></a>
         
-        <span class="result">: <span name="scala.Option" class="extype">Option</span>[List[<a name="uk.co.randomcoding.partsdb.core.contact.Mobile" class="extype" href="Mobile.html">Mobile</a>]]</span>
+        <span class="result"> extends BooleanField[ContactDetails]</span>
+      </span>
+      </h4>
+      
+    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.core.contact.ContactDetails#meta" data-isabs="false">
+      <a id="meta:uk.co.randomcoding.partsdb.core.contact.ContactDetails.type"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">meta</span>
+        
+        <span class="result">: uk.co.randomcoding.partsdb.core.contact.ContactDetails.type</span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a name="uk.co.randomcoding.partsdb.core.contact.ContactDetails" class="extype" href="">ContactDetails</a> → MongoRecord → BsonRecord → Record</dd></dl></div>
+    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.core.contact.ContactDetails.mobileNumber" data-isabs="false">
+      <a id="mobileNumber:mobileNumber"></a>
+      <h4 class="signature">
+      <span class="kind">object</span>
+      <span class="symbol"> 
+        <a href="ContactDetails$mobileNumber$.html"><span class="name">mobileNumber</span></a>
+        
+        <span class="result"> extends StringField[ContactDetails]</span>
       </span>
       </h4>
       
@@ -306,61 +416,138 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>final </dd><dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.core.contact.ContactDetails#phoneNumbers" data-isabs="false">
-      <a id="phoneNumbers:Option[List[Phone]]"></a>
+    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.core.contact.ContactDetails.phoneNumber" data-isabs="false">
+      <a id="phoneNumber:phoneNumber"></a>
       <h4 class="signature">
-      <span class="kind">val</span>
+      <span class="kind">object</span>
       <span class="symbol"> 
-        <span class="name">phoneNumbers</span>
+        <a href="ContactDetails$phoneNumber$.html"><span class="name">phoneNumber</span></a>
         
-        <span class="result">: <span name="scala.Option" class="extype">Option</span>[List[<a name="uk.co.randomcoding.partsdb.core.contact.Phone" class="extype" href="Phone.html">Phone</a>]]</span>
+        <span class="result"> extends StringField[ContactDetails]</span>
       </span>
       </h4>
       
-    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.core.contact.ContactDetails#productArity" data-isabs="false">
-      <a id="productArity:Int"></a>
+    </li><li visbl="pub" name="net.liftweb.record.Record#runSafe" data-isabs="false">
+      <a id="runSafe[T](⇒ T):T"></a>
       <h4 class="signature">
       <span class="kind">def</span>
       <span class="symbol"> 
-        <span class="name">productArity</span>
-        
-        <span class="result">: <span name="scala.Int" class="extype">Int</span></span>
+        <span class="name">runSafe</span>
+        <span class="tparams">[<span name="T">T</span>]</span>
+        <span class="params">(<span name="f">f: ⇒ T</span>)</span><span class="result">: T</span>
       </span>
       </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a name="uk.co.randomcoding.partsdb.core.contact.ContactDetails" class="extype" href="">ContactDetails</a> → Product</dd></dl></div>
-    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.core.contact.ContactDetails#productElement" data-isabs="false">
-      <a id="productElement(Int):Any"></a>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Record</dd></dl></div>
+    </li><li visbl="pub" name="net.liftweb.record.Record#safe_?" data-isabs="false">
+      <a id="safe_?:Boolean"></a>
       <h4 class="signature">
       <span class="kind">def</span>
       <span class="symbol"> 
-        <span class="name">productElement</span>
+        <span class="name">safe_?</span>
         
-        <span class="params">(<span name="arg0">arg0: <span name="scala.Int" class="extype">Int</span></span>)</span><span class="result">: <span name="scala.Any" class="extype">Any</span></span>
+        <span class="result">: <span name="scala.Boolean" class="extype">Boolean</span></span>
       </span>
       </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a name="uk.co.randomcoding.partsdb.core.contact.ContactDetails" class="extype" href="">ContactDetails</a> → Product</dd></dl></div>
-    </li><li visbl="pub" name="scala.Product#productIterator" data-isabs="false">
-      <a id="productIterator:Iterator[Any]"></a>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>final </dd><dt>Definition Classes</dt><dd>Record</dd></dl></div>
+    </li><li visbl="pub" name="net.liftweb.mongodb.record.MongoRecord#save" data-isabs="false">
+      <a id="save:ContactDetails"></a>
       <h4 class="signature">
       <span class="kind">def</span>
       <span class="symbol"> 
-        <span class="name">productIterator</span>
+        <span class="name">save</span>
         
-        <span class="result">: Iterator[<span name="scala.Any" class="extype">Any</span>]</span>
+        <span class="result">: <a name="uk.co.randomcoding.partsdb.core.contact.ContactDetails" class="extype" href="">ContactDetails</a></span>
       </span>
       </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Product</dd></dl></div>
-    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.core.contact.ContactDetails#productPrefix" data-isabs="false">
-      <a id="productPrefix:String"></a>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>MongoRecord</dd></dl></div>
+    </li><li visbl="pub" name="net.liftweb.mongodb.record.MongoRecord#save" data-isabs="false">
+      <a id="save(Boolean):ContactDetails"></a>
       <h4 class="signature">
       <span class="kind">def</span>
       <span class="symbol"> 
-        <span class="name">productPrefix</span>
+        <span class="name">save</span>
         
-        <span class="result">: <span name="java.lang.String" class="extype">String</span></span>
+        <span class="params">(<span name="safe">safe: <span name="scala.Boolean" class="extype">Boolean</span></span>)</span><span class="result">: <a name="uk.co.randomcoding.partsdb.core.contact.ContactDetails" class="extype" href="">ContactDetails</a></span>
       </span>
       </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a name="uk.co.randomcoding.partsdb.core.contact.ContactDetails" class="extype" href="">ContactDetails</a> → Product</dd></dl></div>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>MongoRecord</dd></dl></div>
+    </li><li visbl="pub" name="net.liftweb.mongodb.record.MongoRecord#save" data-isabs="false">
+      <a id="save(WriteConcern):ContactDetails"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">save</span>
+        
+        <span class="params">(<span name="concern">concern: <span name="com.mongodb.WriteConcern" class="extype">WriteConcern</span></span>)</span><span class="result">: <a name="uk.co.randomcoding.partsdb.core.contact.ContactDetails" class="extype" href="">ContactDetails</a></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>MongoRecord</dd></dl></div>
+    </li><li visbl="pub" name="net.liftweb.mongodb.record.MongoRecord#saveTheRecord" data-isabs="false">
+      <a id="saveTheRecord():Box[ContactDetails]"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">saveTheRecord</span>
+        
+        <span class="params">()</span><span class="result">: <span name="net.liftweb.common.Box" class="extype">Box</span>[<a name="uk.co.randomcoding.partsdb.core.contact.ContactDetails" class="extype" href="">ContactDetails</a>]</span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>MongoRecord → BsonRecord → Record</dd></dl></div>
+    </li><li visbl="pub" name="net.liftweb.mongodb.record.BsonRecord#setFieldsFromDBObject" data-isabs="false">
+      <a id="setFieldsFromDBObject(DBObject):Unit"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">setFieldsFromDBObject</span>
+        
+        <span class="params">(<span name="dbo">dbo: <span name="com.mongodb.DBObject" class="extype">DBObject</span></span>)</span><span class="result">: <span name="scala.Unit" class="extype">Unit</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>BsonRecord</dd></dl></div>
+    </li><li visbl="pub" name="net.liftweb.record.Record#setFieldsFromJSON" data-isabs="false">
+      <a id="setFieldsFromJSON(String):Box[Unit]"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">setFieldsFromJSON</span>
+        
+        <span class="params">(<span name="json">json: String</span>)</span><span class="result">: <span name="net.liftweb.common.Box" class="extype">Box</span>[<span name="scala.Unit" class="extype">Unit</span>]</span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Record</dd></dl></div>
+    </li><li visbl="pub" name="net.liftweb.record.Record#setFieldsFromJValue" data-isabs="false">
+      <a id="setFieldsFromJValue(JValue):Box[Unit]"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">setFieldsFromJValue</span>
+        
+        <span class="params">(<span name="jvalue">jvalue: <span name="net.liftweb.json.JsonAST.JValue" class="extype">JValue</span></span>)</span><span class="result">: <span name="net.liftweb.common.Box" class="extype">Box</span>[<span name="scala.Unit" class="extype">Unit</span>]</span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Record</dd></dl></div>
+    </li><li visbl="pub" name="net.liftweb.record.Record#setFieldsFromJsonString" data-isabs="false">
+      <a id="setFieldsFromJsonString(String):Box[Unit]"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">setFieldsFromJsonString</span>
+        
+        <span class="params">(<span name="json">json: String</span>)</span><span class="result">: <span name="net.liftweb.common.Box" class="extype">Box</span>[<span name="scala.Unit" class="extype">Unit</span>]</span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Record</dd></dl></div>
+    </li><li visbl="pub" name="net.liftweb.record.Record#setFieldsFromReq" data-isabs="false">
+      <a id="setFieldsFromReq(Req):Unit"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">setFieldsFromReq</span>
+        
+        <span class="params">(<span name="req">req: <span name="net.liftweb.http.Req" class="extype">Req</span></span>)</span><span class="result">: <span name="scala.Unit" class="extype">Unit</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Record</dd></dl></div>
     </li><li visbl="pub" name="scala.AnyRef#synchronized" data-isabs="false">
       <a id="synchronized[T0](⇒ T0):T0"></a>
       <h4 class="signature">
@@ -372,7 +559,29 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>final </dd><dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.core.contact.ContactDetails#toString" data-isabs="false">
+    </li><li visbl="pub" name="net.liftweb.record.Record#toForm" data-isabs="false">
+      <a id="toForm((ContactDetails) ⇒ Unit):NodeSeq"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">toForm</span>
+        
+        <span class="params">(<span name="f">f: (<a name="uk.co.randomcoding.partsdb.core.contact.ContactDetails" class="extype" href="">ContactDetails</a>) ⇒ <span name="scala.Unit" class="extype">Unit</span></span>)</span><span class="result">: <span name="scala.xml.NodeSeq" class="extype">NodeSeq</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Record</dd></dl></div>
+    </li><li visbl="pub" name="net.liftweb.record.Record#toForm" data-isabs="false">
+      <a id="toForm(Box[String])((ContactDetails) ⇒ Unit):NodeSeq"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">toForm</span>
+        
+        <span class="params">(<span name="button">button: <span name="net.liftweb.common.Box" class="extype">Box</span>[String]</span>)</span><span class="params">(<span name="f">f: (<a name="uk.co.randomcoding.partsdb.core.contact.ContactDetails" class="extype" href="">ContactDetails</a>) ⇒ <span name="scala.Unit" class="extype">Unit</span></span>)</span><span class="result">: <span name="scala.xml.NodeSeq" class="extype">NodeSeq</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Record</dd></dl></div>
+    </li><li visbl="pub" name="net.liftweb.mongodb.record.BsonRecord#toString" data-isabs="false">
       <a id="toString():String"></a>
       <h4 class="signature">
       <span class="kind">def</span>
@@ -382,7 +591,40 @@
         <span class="params">()</span><span class="result">: String</span>
       </span>
       </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a name="uk.co.randomcoding.partsdb.core.contact.ContactDetails" class="extype" href="">ContactDetails</a> → AnyRef → Any</dd></dl></div>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>BsonRecord → AnyRef → Any</dd></dl></div>
+    </li><li visbl="pub" name="net.liftweb.record.Record#toXHtml" data-isabs="false">
+      <a id="toXHtml:NodeSeq"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">toXHtml</span>
+        
+        <span class="result">: <span name="scala.xml.NodeSeq" class="extype">NodeSeq</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Record</dd></dl></div>
+    </li><li visbl="pub" name="net.liftweb.mongodb.record.MongoRecord#update" data-isabs="false">
+      <a id="update:ContactDetails"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">update</span>
+        
+        <span class="result">: <a name="uk.co.randomcoding.partsdb.core.contact.ContactDetails" class="extype" href="">ContactDetails</a></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>MongoRecord</dd></dl></div>
+    </li><li visbl="pub" name="net.liftweb.record.Record#validate" data-isabs="false">
+      <a id="validate:List[FieldError]"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">validate</span>
+        
+        <span class="result">: List[<span name="net.liftweb.util.FieldError" class="extype">FieldError</span>]</span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Record</dd></dl></div>
     </li><li visbl="pub" name="scala.AnyRef#wait" data-isabs="false">
       <a id="wait():Unit"></a>
       <h4 class="signature">
@@ -428,33 +670,20 @@
     </li></ol>
             </div>
 
-        <div class="values members" id="values">
-              <h3>Deprecated Value Members</h3>
-              <ol><li visbl="pub" name="scala.Product#productElements" data-isabs="false">
-      <a id="productElements:Iterator[Any]"></a>
-      <h4 class="signature">
-      <span class="kind">def</span>
-      <span class="symbol"> 
-        <span class="name deprecated">productElements</span>
         
-        <span class="result">: Iterator[<span name="scala.Any" class="extype">Any</span>]</span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Product</dd><dt>Annotations</dt><dd>
-                <span class="name">@deprecated</span>
-              
-        </dd><dt>Deprecated</dt><dd class="cmt"><p>use productIterator instead</p></dd></dl></div>
-    </li></ol>
-            </div>
 
-        <div name="scala.Serializable" class="parent">
-              <h3>Inherited from <span name="scala.Serializable" class="extype">Serializable</span></h3>
-            </div><div name="java.io.Serializable" class="parent">
-              <h3>Inherited from <span name="java.io.Serializable" class="extype">Serializable</span></h3>
-            </div><div name="scala.Product" class="parent">
-              <h3>Inherited from <span name="scala.Product" class="extype">Product</span></h3>
-            </div><div name="scala.Equals" class="parent">
-              <h3>Inherited from <span name="scala.Equals" class="extype">Equals</span></h3>
+        <div name="net.liftweb.mongodb.record.field.ObjectIdPk" class="parent">
+              <h3>Inherited from <span name="net.liftweb.mongodb.record.field.ObjectIdPk" class="extype">ObjectIdPk</span>[<a name="uk.co.randomcoding.partsdb.core.contact.ContactDetails" class="extype" href="">ContactDetails</a>]</h3>
+            </div><div name="net.liftweb.mongodb.record.field.MongoPk" class="parent">
+              <h3>Inherited from <span name="net.liftweb.mongodb.record.field.MongoPk" class="extype">MongoPk</span>[<span name="net.liftweb.mongodb.record.field.ObjectIdField" class="extype">ObjectIdField</span>[<a name="uk.co.randomcoding.partsdb.core.contact.ContactDetails" class="extype" href="">ContactDetails</a>]]</h3>
+            </div><div name="net.liftweb.mongodb.record.MongoRecord" class="parent">
+              <h3>Inherited from <span name="net.liftweb.mongodb.record.MongoRecord" class="extype">MongoRecord</span>[<a name="uk.co.randomcoding.partsdb.core.contact.ContactDetails" class="extype" href="">ContactDetails</a>]</h3>
+            </div><div name="net.liftweb.mongodb.record.BsonRecord" class="parent">
+              <h3>Inherited from <span name="net.liftweb.mongodb.record.BsonRecord" class="extype">BsonRecord</span>[<a name="uk.co.randomcoding.partsdb.core.contact.ContactDetails" class="extype" href="">ContactDetails</a>]</h3>
+            </div><div name="net.liftweb.record.Record" class="parent">
+              <h3>Inherited from <span name="net.liftweb.record.Record" class="extype">Record</span>[<a name="uk.co.randomcoding.partsdb.core.contact.ContactDetails" class="extype" href="">ContactDetails</a>]</h3>
+            </div><div name="net.liftweb.util.FieldContainer" class="parent">
+              <h3>Inherited from <span name="net.liftweb.util.FieldContainer" class="extype">FieldContainer</span></h3>
             </div><div name="scala.AnyRef" class="parent">
               <h3>Inherited from AnyRef</h3>
             </div><div name="scala.Any" class="parent">

@@ -50,14 +50,14 @@
               <ol><li visbl="pub" name="uk.co.randomcoding.partsdb.core.address.Address" data-isabs="false">
       <a id="Address:Address"></a>
       <h4 class="signature">
-      <span class="kind">case class</span>
+      <span class="kind">class</span>
       <span class="symbol"> 
         <a href="Address.html"><span class="name">Address</span></a>
         
-        <span class="params">(<span name="addressId">addressId: Identifier</span>, <span name="shortName">shortName: String</span>, <span name="addressText">addressText: String</span>, <span name="country">country: String</span>)</span><span class="result"> extends Identifiable with Product with Serializable</span>
+        <span class="result"> extends MongoRecord[Address] with ObjectIdPk[Address]</span>
       </span>
       </h4>
-      <p class="comment cmt"></p>
+      <p class="comment cmt">A simple representation of an address.</p>
     </li></ol>
             </div>
         
@@ -65,7 +65,18 @@
 
         <div class="values members" id="values">
               <h3>Value Members</h3>
-              <ol><li visbl="pub" name="uk.co.randomcoding.partsdb.core.address.AddressParser" data-isabs="false">
+              <ol><li visbl="pub" name="uk.co.randomcoding.partsdb.core.address.Address" data-isabs="false">
+      <a id="Address:Address"></a>
+      <h4 class="signature">
+      <span class="kind">object</span>
+      <span class="symbol"> 
+        <a href="Address$.html"><span class="name">Address</span></a>
+        
+        <span class="result"> extends Address with MongoMetaRecord[Address]</span>
+      </span>
+      </h4>
+      
+    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.core.address.AddressParser" data-isabs="false">
       <a id="AddressParser:AddressParser"></a>
       <h4 class="signature">
       <span class="kind">object</span>
@@ -76,17 +87,6 @@
       </span>
       </h4>
       <p class="comment cmt">Parses address strings into <a name="uk.co.randomcoding.partsdb.core.address.Address" class="extype" href="Address.html">Address</a>es</p>
-    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.core.address.NullAddress" data-isabs="false">
-      <a id="NullAddress:NullAddress"></a>
-      <h4 class="signature">
-      <span class="kind">object</span>
-      <span class="symbol"> 
-        <a href="NullAddress$.html"><span class="name">NullAddress</span></a>
-        
-        <span class="result"> extends Address</span>
-      </span>
-      </h4>
-      
     </li></ol>
             </div>
 
