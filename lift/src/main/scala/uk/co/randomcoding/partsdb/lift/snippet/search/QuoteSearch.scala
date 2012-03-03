@@ -14,7 +14,10 @@ import uk.co.randomcoding.partsdb.lift.util.QuoteDisplay
 //import uk.co.randomcoding.partsdb.db.search.QuoteSearchProvider
 
 /**
- * @todo: Should this be stateful - refactor as this is a bit mixed up
+ * Provides search for Quote Capabilities
+ *
+ * TODO: Should this be stateful - refactor as this is a bit mixed up
+ *
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
 object QuoteSearch extends SearchSnippet {

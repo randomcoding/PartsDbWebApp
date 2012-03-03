@@ -80,7 +80,7 @@ object Transaction extends Transaction with MongoMetaRecord[Transaction] {
    * If there is a `Transaction` that matches then this transaction will be returned and '''no''' add operation will
    * be attempted. Otherwise the transaction will be added to the database.
    *
-   * @see [[#findMatching(Transaction)]])
+   * @see [[uk.co.randomcoding.partsdb.core.transaction.Transaction#findMatching(Transaction)]])
    * @return A populated `Option[Transaction]` with either the matched or newly added record, if the add operation succeeded. Otherwise 'none'
    */
   def add(transaction: Transaction): Option[Transaction] = findMatching(transaction) match {
@@ -97,7 +97,7 @@ object Transaction extends Transaction with MongoMetaRecord[Transaction] {
    * If there is a `Transaction` that matches then this transaction will be returned and '''no''' add operation will
    * be attempted. Otherwise the transaction will be added to the database.
    *
-   * @see [[#findMatching(Transaction)]])
+   * @see [[uk.co.randomcoding.partsdb.core.transaction.Transaction#findMatching(Transaction)]])
    * @return A populated `Option[Transaction]` with either the matched or newly added record, if the add operation succeeded. Otherwise 'none'
    */
   def add(customer: Customer, documents: Seq[Document]): Option[Transaction] = add(create(customer, documents))

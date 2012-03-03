@@ -26,7 +26,7 @@ import net.liftweb.util.Helpers._
 
 /**
  * Snippet to handle the processing of adding, removing and displaying [[uk.co.randomcoding.partsdb.core.part.PartCost]]s for a
- * [[import uk.co.randomcoding.partsdb.core.supplier.Supplier]]
+ * [[uk.co.randomcoding.partsdb.core.supplier.Supplier]]
  *
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */

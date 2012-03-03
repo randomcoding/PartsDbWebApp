@@ -32,12 +32,7 @@ class Boot extends Loggable {
 
     // Uncomment this to add new users required for user access initialisation
     //addBootstrapUsers
-    /*
-     * Create the various menus here.
-     * 
-     * To create a link to the show page use ExtLink to form the link with the '?entityType=...'
-     * as the Link form incorrectly escapes the ? and = characters in the address bar.
-     */
+
     val userLoggedIn = If(() => Session.currentUser.get match {
       case (s: String, r: Role) => r == USER
       case _ => false
@@ -57,6 +52,12 @@ class Boot extends Loggable {
       case _ => "/"
     }))
 
+    /*
+     * Create the various menus here.
+     * 
+     * To create a link to the show page use ExtLink to form the link with the '?entityType=...'
+     * as the Link form incorrectly escapes the ? and = characters in the address bar.
+     */
     val mainAppLoc = Menu(Loc("mainApp", new Link("app" :: Nil, true), "Home", userLoggedIn))
 
     // Create links for the show... parts here
