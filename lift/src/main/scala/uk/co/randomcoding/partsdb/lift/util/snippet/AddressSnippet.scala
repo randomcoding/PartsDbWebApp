@@ -21,7 +21,6 @@ import net.liftweb.util.Helpers._
  */
 trait AddressSnippet extends Logger {
 
-  val readonly: ElemAttr = ("readonly", "readonly");
   var addressText: String
   var addressCountry: String
 
@@ -32,7 +31,7 @@ trait AddressSnippet extends Logger {
 
   val renderReadOnlyAddress = () => {
     "#billingAddressEntry" #> styledTextArea(addressText, addressText = _, readonly) &
-      "#billingAddressCountry" #> Text(addressCountry);
+      "#billingAddressCountry" #> styledText(addressCountry, addressCountry = _, readonly)
   }
 
   def addressFromInput(name: String): Option[Address] = {

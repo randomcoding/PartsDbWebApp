@@ -21,6 +21,11 @@ import net.liftweb.util.Helpers._
 object TransformHelpers {
 
   /**
+   * A readonly element attribute
+   */
+  val readonly: ElemAttr = ("readonly", "readonly");
+
+  /**
    * Convenience definition of a typed Ajax callback function. This is used in the Ajax styled widget functions
    */
   type ajaxWidgetCallback[T] = (T) => JsCmd
@@ -197,4 +202,6 @@ object TransformHelpers {
   }
 
   private def styledAttributes(attrs: List[ElemAttr]) = jqueryUiTextStyled :: attrs
+
+  implicit def singleElemAttrToList(elem: ElemAttr): List[ElemAttr] = List(elem)
 }

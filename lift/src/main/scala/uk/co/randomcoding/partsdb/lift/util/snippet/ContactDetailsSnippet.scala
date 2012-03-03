@@ -30,10 +30,10 @@ trait ContactDetailsSnippet extends Logger {
   }
 
   val renderReadOnlyContactDetails = () => {
-    "#contactNameEntry" #> Text(contactName) &
-      "#phoneNumberEntry" #> Text(phoneNumber) &
-      "#mobileNumberEntry" #> Text(mobileNumber) &
-      "#emailEntry" #> Text(email)
+    "#contactNameEntry" #> styledText(contactName, contactName = _, readonly) &
+      "#phoneNumberEntry" #> styledText(phoneNumber, phoneNumber = _, readonly) &
+      "#mobileNumberEntry" #> styledText(mobileNumber, mobileNumber = _, readonly) &
+      "#emailEntry" #> styledText(email, email = _, readonly)
   }
 
   /**
