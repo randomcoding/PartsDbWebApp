@@ -18,7 +18,12 @@ trait EntityDisplay {
 
   final val emptyRow = <tr/>
 
-  def displayTable(entities: List[EntityType], editLink: Boolean = true, displayLink: Boolean = true): NodeSeq = {
+  /**
+   * Convenience apply method that generates the html table for the entities
+   */
+  def apply(entities: List[EntityType], editLink: Boolean = true, displayLink: Boolean = true): NodeSeq = displayTable(entities, editLink, displayLink)
+
+  private def displayTable(entities: List[EntityType], editLink: Boolean = true, displayLink: Boolean = true): NodeSeq = {
     <table class="btn">
       <thead>
         <tr>{ headings(rowHeadings) }</tr>

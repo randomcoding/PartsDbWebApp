@@ -18,7 +18,7 @@ import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
 import uk.co.randomcoding.partsdb.lift.util.snippet._
 import uk.co.randomcoding.partsdb.lift.util._
 
-import net.liftweb.common.{Logger, Full}
+import net.liftweb.common.{ Logger, Full }
 import net.liftweb.http.js.JsCmds.SetHtml
 import net.liftweb.http.js.JsCmd.unitToJsCmd
 import net.liftweb.http.js.JsCmd
@@ -54,9 +54,7 @@ trait PartCostSnippet extends ErrorDisplay with Logger {
       "#removePartCost" #> styledAjaxButton("Remove", removePartCost)
   }
 
-  def renderCurrentPartCosts() = {
-    "#currentPartCosts" #> PartCostDisplay.displayTable(currentPartCosts)
-  }
+  def renderCurrentPartCosts() = "#currentPartCosts" #> PartCostDisplay(currentPartCosts, false, false)
 
   def addSupplier(name: String, contacts: ContactDetails, address: Address, currentPartCosts: List[PartCost]): Option[Supplier] = {
     /*currentPartCosts map (PartCost add _) contains (None) match {
@@ -93,10 +91,10 @@ trait PartCostSnippet extends ErrorDisplay with Logger {
 
   private[this] def refreshPartCostDisplay(): JsCmd = {
     debug("Updating current parts to: %s".format(currentPartCosts.mkString("\n")))
-    SetHtml("currentPartCosts", PartCostDisplay.displayTable(currentPartCosts sortBy (partCost => Part.findById(partCost.part.get) match {
+    SetHtml("currentPartCosts", PartCostDisplay(currentPartCosts sortBy (partCost => Part.findById(partCost.part.get) match {
       case Some(p) => p.partName.get
       case _ => "zzzzzzz"
-    })))
+    }), false, false))
   }
 
   private[this] def addPartCost(): JsCmd = {

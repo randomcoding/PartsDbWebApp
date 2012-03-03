@@ -12,10 +12,10 @@ import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
 import uk.co.randomcoding.partsdb.lift.util.snippet._
 import uk.co.randomcoding.partsdb.lift.util._
 
-import net.liftweb.common.{Logger, Full}
-import net.liftweb.http.js.JsCmds.{SetHtml, Replace}
+import net.liftweb.common.{ Logger, Full }
+import net.liftweb.http.js.JsCmds.{ SetHtml, Replace }
 import net.liftweb.http.js.JsCmd
-import net.liftweb.http.{WiringUI, SHtml}
+import net.liftweb.http.{ WiringUI, SHtml }
 import net.liftweb.util.Helpers._
 
 /**
@@ -45,7 +45,7 @@ trait LineItemSnippet extends ErrorDisplay with Logger {
       "#markup" #> styledAjaxText(quoteHolder.markup, updateAjaxValue(quoteHolder.markup(_)))
   }
 
-  def renderAllLineItems() = "#currentLineItems" #> LineItemDisplay.displayTable(quoteHolder.lineItems)
+  def renderAllLineItems() = "#currentLineItems" #> LineItemDisplay(quoteHolder.lineItems, false, false)
 
   private[this] val suppliersContent = () => styledAjaxObjectSelect[Option[Supplier]](quoteHolder.suppliers, quoteHolder.supplier, updateAjaxValue(quoteHolder.supplier(_)))
 
@@ -78,7 +78,5 @@ trait LineItemSnippet extends ErrorDisplay with Logger {
     refreshLineItemDisplay()
   }
 
-  private def refreshLineItemDisplay(): JsCmd = {
-    SetHtml("currentLineItems", LineItemDisplay.displayTable(quoteHolder.lineItems))
-  }
+  private def refreshLineItemDisplay(): JsCmd = SetHtml("currentLineItems", LineItemDisplay(quoteHolder.lineItems, false, false))
 }
