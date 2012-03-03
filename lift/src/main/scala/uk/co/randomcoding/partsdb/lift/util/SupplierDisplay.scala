@@ -21,11 +21,11 @@ object SupplierDisplay extends EntityDisplay {
 
   override val rowHeadings = List("Supplier Name", "Business Address", "Contact Details")
 
-  override def displayEntity(supplier: Supplier): NodeSeq = {
+  override def displayEntity(supplier: Supplier, editLink: Boolean, displayLink: Boolean): NodeSeq = {
     <td>{ supplier.supplierName.get }</td>
     <td>{ displayAddress(supplier) }</td>
     <td>{ displayContacts(supplier) }</td> ++
-      editEntityCell(editEntityLink("Supplier", supplier.id.get))
+      editAndDisplayCells("Supplier", supplier.id.get, editLink, displayLink)
   }
 
   private[this] def displayAddress(supplier: Supplier): NodeSeq = Address findById supplier.businessAddress.get match {

@@ -19,10 +19,10 @@ object PartCostDisplay extends EntityDisplay {
 
   override val rowHeadings = List("Part", "Cost", "Last Updated")
 
-  def displayEntity(entity: PartCost): NodeSeq = {
+  def displayEntity(entity: PartCost, editLink: Boolean = false, displayLink: Boolean = false): NodeSeq = {
     <td>{ displayPartName(entity) }</td>
     <td>{ "£%.2f".format(entity.suppliedCost.get) }</td>
-    <td>{ displayDate(entity) }</td> ++ <td></td>
+    <td>{ displayDate(entity) }</td> ++ emptyEditAndDisplayCells
   }
 
   private def displayPartName(partCost: PartCost) = {

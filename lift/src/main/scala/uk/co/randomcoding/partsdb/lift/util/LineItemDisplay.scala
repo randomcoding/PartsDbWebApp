@@ -21,17 +21,16 @@ object LineItemDisplay extends EntityDisplay {
 
   override val rowHeadings = List("Line No.", "Part", "Quantity", "Base Price", "Markup", "Total")
 
-  override def displayEntity(lineItem: LineItem): NodeSeq = {
+  override def displayEntity(lineItem: LineItem, editLink: Boolean = false, displayLink: Boolean = false): NodeSeq = {
     part(lineItem.partId.get) match {
       case Some(p) => {
-        <tr>
-          <td>{ lineItem.lineNumber }</td>
-          <td>{ p.partName.get }</td>
-          <td>{ lineItem.quantity.get }</td>
-          <td>{ "£%.2f".format(lineItem.basePrice.get) }</td>
-          <td>{ "%.0f%%".format(lineItem.markup.get * 100) }</td>
-          <td>{ "£" + totalCost(lineItem, p) }</td>
-        </tr>
+        <td>{ lineItem.lineNumber }</td>
+        <td>{ p.partName.get }</td>
+        <td>{ lineItem.quantity.get }</td>
+        <td>{ "£%.2f".format(lineItem.basePrice.get) }</td>
+        <td>{ "%.0f%%".format(lineItem.markup.get * 100) }</td>
+        <td>{ "£" + totalCost(lineItem, p) }</td> ++
+          emptyEditAndDisplayCells
       }
       case _ => emptyRow
     }
