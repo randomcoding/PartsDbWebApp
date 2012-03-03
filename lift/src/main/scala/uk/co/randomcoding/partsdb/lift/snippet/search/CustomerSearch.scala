@@ -39,7 +39,7 @@ object CustomerSearch {
     def updateResults(s: String = "") = {
       val results = CustomerSearchProvider.findMatching(customerName, businessAddress, contactName, phoneNumber, mobileNumber, email).toList
 
-      JsCmds.SetHtml("results", CustomerDisplay.displayTable(results.sortBy(_.customerName.get)))
+      JsCmds.SetHtml("results", displayResults(results))
     }
 
     /**
@@ -56,6 +56,8 @@ object CustomerSearch {
       "#phoneNumberEntry" #> styledAjaxText(phoneNumber, (s: String) => updateValue(() => phoneNumber = s)(s)) &
       "#mobileNumberEntry" #> styledAjaxText(mobileNumber, (s: String) => updateValue(() => mobileNumber = s)(s)) &
       "#emailEntry" #> styledAjaxText(email, (s: String) => updateValue(() => email = s)(s)) &
-      "#results" #> CustomerDisplay.displayTable(Customer where (_.id exists true) fetch)
+      "#results" #> displayResults(Customer where (_.id exists true) fetch)
   }
+
+  private def displayResults(results: List[Customer]) = CustomerDisplay(results.sortBy(_.customerName.get), displayLink = true)
 }

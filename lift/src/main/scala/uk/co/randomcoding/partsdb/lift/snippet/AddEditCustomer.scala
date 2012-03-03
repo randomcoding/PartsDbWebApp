@@ -13,10 +13,10 @@ import uk.co.randomcoding.partsdb.core.customer.Customer
 import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
 import uk.co.randomcoding.partsdb.lift.util.snippet._
 
-import net.liftweb.common.{Logger, Full}
+import net.liftweb.common.{ Logger, Full }
 import net.liftweb.http.js.JsCmds.Noop
 import net.liftweb.http.js.JsCmd
-import net.liftweb.http.{StatefulSnippet, S}
+import net.liftweb.http.{ StatefulSnippet, S }
 import net.liftweb.util.Helpers._
 
 /**
@@ -63,9 +63,9 @@ class AddEditCustomer extends StatefulSnippet with ErrorDisplay with DataValidat
   def render = {
     "#formTitle" #> Text("Add Customer") &
       "#nameEntry" #> styledText(name, name = _) &
-      renderAddress() &
+      renderEditableAddress() &
       "#paymentTermsEntry" #> styledSelect(terms, paymentTermsText, paymentTermsText = _) &
-      renderContactDetails() &
+      renderEditableContactDetails() &
       renderSubmitAndCancel()
   }
 

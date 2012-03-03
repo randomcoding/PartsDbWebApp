@@ -19,9 +19,9 @@ object UserDisplay extends EntityDisplay {
   /**
    * Display the `<td>` elements for a user
    */
-  override def displayEntity(userDetails: User): NodeSeq = {
+  override def displayEntity(userDetails: User, editLink: Boolean, displayLink: Boolean): NodeSeq = {
     <td>{ userDetails.username.get }</td>
     <td>{ userDetails.role.get }</td> ++
-      editEntityCell(editEntityLink("User", userDetails.id.get))
+      editAndDisplayCells("User", userDetails.id.get, editLink, displayLink)
   }
 }

@@ -36,7 +36,7 @@ object PartDisplay extends EntityDisplay with Logger {
    *
    *     // <td>{ displayVehicle(part) }</td>
    */
-  override def displayEntity(part: Part): NodeSeq = {
+  override def displayEntity(part: Part, editLink: Boolean, displayLink: Boolean): NodeSeq = {
     <td>{ part.partName.get }</td>
     <td>{ vehicleName(part.vehicle.get) }</td>
     <td>{
@@ -45,7 +45,7 @@ object PartDisplay extends EntityDisplay with Logger {
         case _ => ""
       }
     }</td> ++
-      editEntityCell(editEntityLink("Part", part.id.get))
+      editAndDisplayCells("Part", part.id.get, editLink, displayLink)
   }
 
   private[this] def vehicleName(vehicleId: ObjectId) = Vehicle findById vehicleId match {

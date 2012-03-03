@@ -14,11 +14,11 @@ import uk.co.randomcoding.partsdb.core.supplier.Supplier
 import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
 import uk.co.randomcoding.partsdb.lift.util.snippet._
 
-import net.liftweb.common.{Logger, Full}
+import net.liftweb.common.{ Logger, Full }
 import net.liftweb.http.js.JsCmds.Noop
 import net.liftweb.http.js.JsCmd.unitToJsCmd
 import net.liftweb.http.js.JsCmd
-import net.liftweb.http.{StatefulSnippet, S}
+import net.liftweb.http.{ StatefulSnippet, S }
 import net.liftweb.util.Helpers._
 
 /**
@@ -81,8 +81,8 @@ class AddEditSupplier extends StatefulSnippet with AddressSnippet with ContactDe
 
     "#formTitle" #> Text("Add Supplier") &
       "#nameEntry" #> styledText(supplierName, supplierName = _) &
-      renderAddress() &
-      renderContactDetails() &
+      renderEditableAddress() &
+      renderEditableContactDetails() &
       renderAddPartCost() &
       renderCurrentPartCosts() &
       renderSubmitAndCancel()
@@ -101,13 +101,13 @@ class AddEditSupplier extends StatefulSnippet with AddressSnippet with ContactDe
           case Some(s) => {
             modifySupplier(s, supplierName, newContacts.get, newAddress.get, currentPartCosts)
             S redirectTo cameFrom
-        }
+          }
           case _ => addSupplier(supplierName, contacts, address.get, currentPartCosts) match {
             case Some(s) => S redirectTo cameFrom
             case _ => Noop
+          }
+        }
       }
-    }
-  }
       case errors => displayError(errors: _*)
     }
   }

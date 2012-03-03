@@ -4,14 +4,14 @@
 package uk.co.randomcoding.partsdb.lift.util
 
 import scala.xml.NodeSeq.seqToNodeSeq
-import scala.xml.{Text, NodeSeq}
+import scala.xml.{ Text, NodeSeq }
 
 import uk.co.randomcoding.partsdb.core.address.Address
 import uk.co.randomcoding.partsdb.core.contact.ContactDetails
 import uk.co.randomcoding.partsdb.core.customer.Customer
 import uk.co.randomcoding.partsdb.lift.util._
 
-import SnippetDisplayHelpers.{displayContactCell, displayAddressCell}
+import SnippetDisplayHelpers.{ displayContactCell, displayAddressCell }
 import net.liftweb.common.Logger
 
 /**
@@ -34,12 +34,12 @@ object CustomerDisplay extends EntityDisplay with Logger {
    * @param customer The [[uk.co.randomcoding.partsdb.core.customer.Customer]] to display
    * @return A [[scala.xml.NodeSeq]] of `<td>` elements to display the customer details
    */
-  override def displayEntity(customer: Customer): NodeSeq = {
+  override def displayEntity(customer: Customer, editLink: Boolean, displayLink: Boolean): NodeSeq = {
     <td>{ customer.customerName }</td>
     <td>{ displayAddress(customer) }</td>
     <td>{ displayContacts(customer) }</td>
     <td>{ "%d days".format(customer.terms.get) }</td> ++
-      editEntityCell(editEntityLink("Customer", customer.id.get))
+      editAndDisplayCells("Customer", customer.id.get, editLink, displayLink)
   }
 
   private[this] def displayAddress(customer: Customer) = {
