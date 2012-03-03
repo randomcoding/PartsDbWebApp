@@ -59,21 +59,30 @@ class AddEditQuote extends StatefulSnippet with ErrorDisplay with DataValidation
   }
 
   private[this] def addQuoteAndTransaction(cust: Customer): JsCmd = {
-    Quote.add(quoteHolder.lineItems) match {
-      case Some(q) => Transaction.add(transactionName, cust, Seq(q)) match {
-        case Some(t) => {
-          info("Successfully added quote %s to transaction %s".format(q, t))
-          S.redirectTo("/app/")
-        }
-        case _ => {
-          error("Added quote %s, but failed to add transaction".format(q))
-          Noop
+    validate(ValidationItem(transactionName, "errorMessages", "Please enter an Identifier for this Transaction")) match {
+      case Nil => {
+        Quote.add(quoteHolder.lineItems) match {
+          case Some(q) => Transaction.add(transactionName, cust, Seq(q)) match {
+            case Some(t) => {
+              info("Successfully added quote %s to transaction %s".format(q, t))
+              S.redirectTo("/app/")
+            }
+            case _ => {
+              error("Added quote %s, but failed to add transaction".format(q))
+              Noop
+            }
+          }
+          case _ => {
+            error("Failed to add quote  with items %s".format(quoteHolder.lineItems.mkString("[", "\n", "]")))
+            Noop
+          }
         }
       }
-      case _ => {
-        error("Failed to add quote  with items %s".format(quoteHolder.lineItems.mkString("[", "\n", "]")))
+      case errors => {
+        displayError(errors: _*)
         Noop
       }
     }
   }
+
 }
