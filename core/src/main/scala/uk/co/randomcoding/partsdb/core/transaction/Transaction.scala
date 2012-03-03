@@ -4,16 +4,14 @@
 package uk.co.randomcoding.partsdb.core.transaction
 
 import java.util.Date
-
 import org.bson.types.ObjectId
-
 import com.foursquare.rogue.Rogue._
-
 import uk.co.randomcoding.partsdb.core.customer.Customer
 import uk.co.randomcoding.partsdb.core.document.Document
-
 import net.liftweb.mongodb.record.field._
-import net.liftweb.mongodb.record.{MongoRecord, MongoMetaRecord}
+import net.liftweb.mongodb.record.{ MongoRecord, MongoMetaRecord }
+import uk.co.randomcoding.partsdb.core.document.DocumentType
+import org.joda.time.DateTime
 
 /**
  * Encapsulates all the data for a transaction between the company and a customer.
@@ -62,6 +60,24 @@ class Transaction private () extends MongoRecord[Transaction] with ObjectIdPk[Tr
   }
 
   override def hashCode: Int = getClass.toString.hashCode + customer.get.hashCode + (documents.get map (_ hashCode) sum)
+
+  lazy val transactionState = {
+    new DateTime(completionDate.get) isAfter new DateTime(creationDate.get) match {
+      case true => "Completed"
+      case false => {
+        val docs = documents.get map (Document.findById(_)) filter (_ isDefined) map (_.get)
+        val quoteCount = docs.filter(_.documentType.get == DocumentType.Quote).size
+        val orderCount = docs.filter(_.documentType.get == DocumentType.Order).size
+        val invoiceCount = docs.filter(_.documentType.get == DocumentType.Invoice).size
+        val deliveryCount = docs.filter(_.documentType.get == DocumentType.DeliveryNote).size
+        (quoteCount, orderCount, (invoiceCount + deliveryCount)) match {
+          case (quote, 0, 0) => "Quoted"
+          case (_, order, 0) if order > 0 => "Ordered"
+          case (_, _, invoice) if invoice > 0 => "Invoiced"
+        }
+      }
+    }
+  }
 }
 
 object Transaction extends Transaction with MongoMetaRecord[Transaction] {
