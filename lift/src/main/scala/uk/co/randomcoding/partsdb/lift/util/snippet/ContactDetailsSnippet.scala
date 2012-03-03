@@ -19,12 +19,16 @@ trait ContactDetailsSnippet extends Logger {
   var mobileNumber: String
   var email: String
 
-  val renderContactDetails = () => {
+  val renderEditableContactDetails = () => {
     // TODO: Add a selector for isPrimary
     "#contactNameEntry" #> styledText(contactName, contactName = _) &
       "#phoneNumberEntry" #> styledText(phoneNumber, phoneNumber = _) &
       "#mobileNumberEntry" #> styledText(mobileNumber, mobileNumber = _) &
       "#emailEntry" #> styledText(email, email = _)
+  }
+
+  val renderReadOnlyContactDetails = () => {
+
   }
 
   /**

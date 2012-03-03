@@ -5,7 +5,7 @@ package uk.co.randomcoding.partsdb.lift.util.snippet
 
 import scala.io.Source
 
-import uk.co.randomcoding.partsdb.core.address.{AddressParser, Address}
+import uk.co.randomcoding.partsdb.core.address.{ AddressParser, Address }
 import uk.co.randomcoding.partsdb.core.util.CountryCodes.countryCodes
 import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
 
@@ -22,9 +22,13 @@ trait AddressSnippet extends Logger {
   var addressText: String
   var addressCountry: String
 
-  val renderAddress = () => {
+  val renderEditableAddress = () => {
     "#billingAddressEntry" #> styledTextArea(addressText, addressText = _) &
       "#billingAddressCountry" #> styledSelect(countryCodes, addressCountry, addressCountry = _)
+  }
+
+  val renderReadOnlyAddress = () => {
+
   }
 
   def addressFromInput(name: String): Option[Address] = {
