@@ -6,6 +6,15 @@
 </head>
 <body class="lift:content_id=main">
   <div id="main" class="lift:surround?with=default;at=content">
+    <script>
+					$(function() {
+						$("#tabs").tabs({
+							fx: {
+								opacity: 'toggle'
+							}
+						});
+					});
+				</script>
     <div class="lift:embed?what=/templates-hidden/_error_messages"></div>
     <div class="lift:display/DisplayCustomer?eager_eval=true">
       <div style="width: 98%" align="center"></div>
@@ -22,10 +31,31 @@
         <span id="paymentTermsEntry">Customer Payment Terms Entry Here</span> days
       </div>
       <div class="lift:embed?what=_contact_details_display">Display Contact Details Here</div>
-      <hr/>
+      <hr />
       <div id="transactionsDisplay">
-      Transactions...
-      <!-- Display transaction details here -->
+        <div class="column span-19 last plain" id="tabs">
+          <div id="documentTabs">Document Tab Titles</div>
+          <div id="quoteResults">
+            <div id="quotes">
+              <span class="lift:embed?what=_transaction_summary_display">Documents Here</span>
+            </div>
+          </div>
+          <div id="orderResults">
+            <div id="orders">
+              <span class="lift:embed?what=_transaction_summary_display">Documents Here</span>
+            </div>
+          </div>
+          <div id="invoiceResults">
+            <div id="invoices">
+              <span class="lift:embed?what=_transaction_summary_display">Documents Here</span>
+            </div>
+          </div>
+          <div id="completedResults">
+            <div id="completed">
+              <span class="lift:embed?what=_transaction_summary_display">Documents Here</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>

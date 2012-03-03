@@ -4,18 +4,19 @@
 package uk.co.randomcoding.partsdb.lift.snippet.display
 
 import scala.xml.Text
-
 import org.bson.types.ObjectId
-
 import uk.co.randomcoding.partsdb.core.address.Address
 import uk.co.randomcoding.partsdb.core.contact.ContactDetails
 import uk.co.randomcoding.partsdb.core.customer.Customer
 import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
 import uk.co.randomcoding.partsdb.lift.util.snippet._
-
 import net.liftweb.common.{ Logger, Full }
 import net.liftweb.http.S
 import net.liftweb.util.Helpers._
+import scala.xml.NodeSeq
+import uk.co.randomcoding.partsdb.lift.util.TransactionSummaryDisplay
+import uk.co.randomcoding.partsdb.core.transaction.Transaction
+import com.foursquare.rogue.Rogue._
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
@@ -54,11 +55,32 @@ class DisplayCustomer extends ErrorDisplay with AddressSnippet with ContactDetai
     case _ => ("", "", "", "")
   }
 
+  val transactions = initialCustomer match {
+    case Some(cust) => Transaction where (_.customer eqs cust.id.get) fetch
+    case _ => List.empty
+  }
+
   def render = {
     "#formTitle" #> Text("Display Customer") &
       "#nameEntry" #> styledText(name, name = _, readonly) &
       renderReadOnlyAddress() &
       "#paymentTermsEntry" #> styledText(paymentTermsText, paymentTermsText = _, List(readonly, ("style", "width: 2em"))) &
-      renderReadOnlyContactDetails()
+      renderReadOnlyContactDetails() &
+      "#documentTabs" #> generateTransactionTabs() &
+      "#quotes *" #> TransactionSummaryDisplay(transactions filter (_.transactionState == "Quoted")) &
+      "#orders *" #> TransactionSummaryDisplay(transactions filter (_.transactionState == "Ordered")) &
+      "#invoices *" #> TransactionSummaryDisplay(transactions filter (_.transactionState == "Invoiced")) &
+      "#completed *" #> TransactionSummaryDisplay(transactions filter (_.transactionState == "Completed"))
+  }
+
+  val anchorRef = (anchor: String) => "#" + anchor
+
+  def generateTransactionTabs(): NodeSeq = {
+    val titles = Seq(("quoteResults", "Quotes"), ("orderResults", "Orders"), ("invoiceResults", "Delivered / Invoiced"), ("completedResults", "Completed"))
+    val tabs = titles flatMap (title => {
+      <li><a href={ anchorRef(title._1) }>{ title._2 }</a></li>
+    })
+
+    <ul> { tabs } </ul>
   }
 }
