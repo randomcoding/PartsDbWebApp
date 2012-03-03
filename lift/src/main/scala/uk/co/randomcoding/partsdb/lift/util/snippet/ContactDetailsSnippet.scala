@@ -3,6 +3,8 @@
  */
 package uk.co.randomcoding.partsdb.lift.util.snippet
 
+import scala.xml.Text
+
 import uk.co.randomcoding.partsdb.core.contact.ContactDetails
 import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
 
@@ -28,7 +30,10 @@ trait ContactDetailsSnippet extends Logger {
   }
 
   val renderReadOnlyContactDetails = () => {
-
+    "#contactNameEntry" #> Text(contactName) &
+      "#phoneNumberEntry" #> Text(phoneNumber) &
+      "#mobileNumberEntry" #> Text(mobileNumber) &
+      "#emailEntry" #> Text(email)
   }
 
   /**

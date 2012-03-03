@@ -4,12 +4,14 @@
 package uk.co.randomcoding.partsdb.lift.util.snippet
 
 import scala.io.Source
+import scala.xml.Text
 
 import uk.co.randomcoding.partsdb.core.address.{ AddressParser, Address }
 import uk.co.randomcoding.partsdb.core.util.CountryCodes.countryCodes
 import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
 
 import net.liftweb.common.Logger
+import net.liftweb.http.SHtml._
 import net.liftweb.util.Helpers._
 
 /**
@@ -19,6 +21,7 @@ import net.liftweb.util.Helpers._
  */
 trait AddressSnippet extends Logger {
 
+  val readonly: ElemAttr = ("readonly", "readonly");
   var addressText: String
   var addressCountry: String
 
@@ -28,7 +31,8 @@ trait AddressSnippet extends Logger {
   }
 
   val renderReadOnlyAddress = () => {
-
+    "#billingAddressEntry" #> styledTextArea(addressText, addressText = _, readonly) &
+      "#billingAddressCountry" #> Text(addressCountry);
   }
 
   def addressFromInput(name: String): Option[Address] = {
