@@ -9,6 +9,7 @@ import com.foursquare.rogue.Rogue._
 import uk.co.randomcoding.partsdb.core.customer.Customer
 import uk.co.randomcoding.partsdb.core.document.Document
 import net.liftweb.mongodb.record.field._
+import net.liftweb.record.field._
 import net.liftweb.mongodb.record.{ MongoRecord, MongoMetaRecord }
 import uk.co.randomcoding.partsdb.core.document.DocumentType
 import org.joda.time.DateTime
@@ -20,6 +21,8 @@ import org.joda.time.DateTime
  */
 class Transaction private () extends MongoRecord[Transaction] with ObjectIdPk[Transaction] {
   def meta = Transaction
+
+  object shortName extends StringField(this, 50)
 
   /**
    * The customer that this transaction is with.
@@ -88,7 +91,7 @@ object Transaction extends Transaction with MongoMetaRecord[Transaction] {
   /**
    * Create a new transaction object, but '''do not''' save it in the database
    */
-  def create(customer: Customer, documents: Seq[Document]): Transaction = Transaction.createRecord.customer(customer.id.get).documents(documents.toList map (_.id.get))
+  def create(shortName: String, customer: Customer, documents: Seq[Document]): Transaction = Transaction.createRecord.shortName(shortName).customer(customer.id.get).documents(documents.toList map (_.id.get))
 
   /**
    * Add a new `Transaction` to the database.
@@ -116,7 +119,7 @@ object Transaction extends Transaction with MongoMetaRecord[Transaction] {
    * @see [[uk.co.randomcoding.partsdb.core.transaction.Transaction#findMatching(Transaction)]])
    * @return A populated `Option[Transaction]` with either the matched or newly added record, if the add operation succeeded. Otherwise 'none'
    */
-  def add(customer: Customer, documents: Seq[Document]): Option[Transaction] = add(create(customer, documents))
+  def add(shortName: String, customer: Customer, documents: Seq[Document]): Option[Transaction] = add(create(shortName, customer, documents))
 
   /**
    * Find a `Transaction` by its `oid`.

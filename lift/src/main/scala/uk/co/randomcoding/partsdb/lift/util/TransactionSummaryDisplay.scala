@@ -17,7 +17,7 @@ import net.liftweb.http.SHtml._
 object TransactionSummaryDisplay {
 
   def apply(transactions: Seq[Transaction]) = transactions map (transaction => {
-    "#transactionName" #> Text("Transaction Name TBD") &
+    "#transactionName" #> Text(transaction.shortName.get) &
       "#transactionStarted" #> Text(new DateTime(transaction.creationDate.get).toString("dd/MM/yyyy")) &
       "#display" #> link("/display/Transaction?id=%s".format(transaction.id.get), () => (), Text("Display"))
   })
