@@ -12,13 +12,11 @@ import net.liftweb.http.js.JE._
  */
 object JsScripts {
 
-  def tabDisplayScript = Script(JsRaw("""<script>
-	$(function() {
+  def tabDisplayScript = Script(JsRaw("""$(function() {
 	  $("#tabs").tabs({
 	    fx: {
 		  opacity: 'toggle'
 		}
       });
-    });
-  </script>"""))
+    });"""))
 }
