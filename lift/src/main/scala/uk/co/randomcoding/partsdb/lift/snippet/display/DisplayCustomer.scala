@@ -21,17 +21,17 @@ import com.foursquare.rogue.Rogue._
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
-class DisplayCustomer extends ErrorDisplay with AddressSnippet with ContactDetailsSnippet with Logger {
-  val terms = List(("30" -> "30"), ("45" -> "45"), ("60" -> "60"), ("90" -> "90"))
+object DisplayCustomer extends ErrorDisplay with AddressSnippet with ContactDetailsSnippet with TabDisplaySnippet with Logger {
+  override val tabTitles = Seq(("quoteResults", "Quotes"), ("orderResults", "Orders"), ("invoiceResults", "Delivered / Invoiced"), ("completedResults", "Completed"))
 
-  val cameFrom = S.referer openOr "/app/show?entityType=Customer"
+  private val cameFrom = S.referer openOr "/app/show?entityType=Customer"
 
-  val initialCustomer = S param "id" match {
+  private val initialCustomer = S param "id" match {
     case Full(id) => Customer findById new ObjectId(id)
     case _ => None
   }
 
-  var (name, paymentTermsText) = initialCustomer match {
+  private var (name, paymentTermsText) = initialCustomer match {
     case Some(cust) => (cust.customerName.get, "%d".format(cust.terms.get))
     case _ => ("", "30")
   }
@@ -44,7 +44,7 @@ class DisplayCustomer extends ErrorDisplay with AddressSnippet with ContactDetai
     case _ => ("", "United Kingdom")
   }
 
-  var (contactName, phoneNumber, mobileNumber, email) = initialCustomer match {
+  override var (contactName, phoneNumber, mobileNumber, email) = initialCustomer match {
     case Some(cust) => cust.contactDetails.get match {
       case Nil => ("", "", "", "")
       case contacts => contacts map (ContactDetails findById _) filter (_.isDefined) map (_.get) find (_.isPrimary.get == true) match {
@@ -55,7 +55,7 @@ class DisplayCustomer extends ErrorDisplay with AddressSnippet with ContactDetai
     case _ => ("", "", "", "")
   }
 
-  val transactions = initialCustomer match {
+  private val transactions = initialCustomer match {
     case Some(cust) => Transaction where (_.customer eqs cust.id.get) fetch
     case _ => List.empty
   }
@@ -66,21 +66,10 @@ class DisplayCustomer extends ErrorDisplay with AddressSnippet with ContactDetai
       renderReadOnlyAddress() &
       "#paymentTermsEntry" #> styledText(paymentTermsText, paymentTermsText = _, List(readonly, ("style", "width: 2em"))) &
       renderReadOnlyContactDetails() &
-      "#documentTabs" #> generateTransactionTabs() &
+      "#documentTabs" #> generateTabs() &
       "#quotes *" #> TransactionSummaryDisplay(transactions filter (_.transactionState == "Quoted")) &
       "#orders *" #> TransactionSummaryDisplay(transactions filter (_.transactionState == "Ordered")) &
       "#invoices *" #> TransactionSummaryDisplay(transactions filter (_.transactionState == "Invoiced")) &
       "#completed *" #> TransactionSummaryDisplay(transactions filter (_.transactionState == "Completed"))
-  }
-
-  val anchorRef = (anchor: String) => "#" + anchor
-
-  def generateTransactionTabs(): NodeSeq = {
-    val titles = Seq(("quoteResults", "Quotes"), ("orderResults", "Orders"), ("invoiceResults", "Delivered / Invoiced"), ("completedResults", "Completed"))
-    val tabs = titles flatMap (title => {
-      <li><a href={ anchorRef(title._1) }>{ title._2 }</a></li>
-    })
-
-    <ul> { tabs } </ul>
   }
 }
