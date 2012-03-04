@@ -73,7 +73,7 @@ class Boot extends Loggable {
     val addQuoteLoc = Menu(Loc("addQuote", new Link("app" :: "quote" :: Nil, false), "New Quote", userLoggedIn))
 
     // Display... locs hidden
-    val displayEntitiesLoc = Menu(Loc("displayEntities", new Link("display" :: Nil, true), "Display Entities", Hidden, userLoggedIn))
+    val displayEntitiesLoc = Menu(Loc("displayEntities", new Link("app" :: "display" :: Nil, true), "Display Entities", Hidden, userLoggedIn))
 
     // Provide access to the admin menu. This is hidden.
     val adminLoc = Menu(Loc("adminSection", new Link("admin" :: Nil, true), "Admin", Hidden, adminLoggedIn))
