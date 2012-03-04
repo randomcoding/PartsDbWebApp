@@ -17,6 +17,8 @@ import net.liftweb.util.Helpers._
 import uk.co.randomcoding.partsdb.lift.util.TransactionSummaryDisplay
 import uk.co.randomcoding.partsdb.lift.util.QuoteDisplay
 import uk.co.randomcoding.partsdb.core.document.Document
+import uk.co.randomcoding.partsdb.lift.util.snippet.display.QuoteDetailDisplay
+import uk.co.randomcoding.partsdb.core.customer.Customer
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
@@ -39,11 +41,13 @@ object DisplayTransaction extends TabDisplaySnippet with Logger {
       case Some(t) => t.shortName.get
       case _ => "No Transaction"
     }) &
-      "#quoteLink" #> styledAjaxButton("Quotes", () => displayDocuments(Some(Quote))) &
-      "#orderLink" #> styledAjaxButton("Orders", () => displayDocuments(Some(Order))) &
-      "#deliveryLink" #> styledAjaxButton("Deliveries", () => displayDocuments(Some(DeliveryNote))) &
-      "#invoiceLink" #> styledAjaxButton("Invoiced", () => displayDocuments(Some(Invoice))) &
-      "#completedLink" #> styledAjaxButton("Completed", () => displayDocuments(None)) &
+      "#customerName" #> Text(transaction match {
+        case Some(t) => Customer.findById(t.customer.get) match {
+          case Some(c) => c.customerName.get
+          case _ => "No Customer"
+        }
+        case _ => "No Transaction"
+      }) &
       generateDocumentDisplays()
   }
 
@@ -53,49 +57,10 @@ object DisplayTransaction extends TabDisplaySnippet with Logger {
       case Some(t) => {
         val documents = t.documents.get map (Document.findById(_)) filter (_ isDefined) map (_.get)
         "#documentTabs" #> generateTabs() &
-          "#quotes *" #> QuoteDetailDisplay(documents filter (_.documentType.get == Quote)) &
+          "#quotes *" #> QuoteDetailDisplay(documents filter (_.documentType.get == Quote)) /*&
           "#orders *" #> OrderDetailDisplay(documents filter (_.documentType.get == Order)) &
           "#deliveryNotes" #> DeliveryNoteDetailDisplay(documents filter (_.documentType.get == DeliveryNote)) &
-          "#invoices *" #> InvoiceDetailDisplay(documents filter (_.documentType.get == Invoice))
-      }
-    }
-  }
-
-  private val displayDocuments = (documentType: Option[DocType]) => {
-    currentDocumentType = documentType
-    SetHtml("documentDisplay", renderCurrentDocument())
-  }
-
-  private def renderCurrentDocument(): NodeSeq = currentDocumentType match {
-    case Some(docType) => {
-      val embedType = "_%s_display".format(docType.toString.toLowerCase)
-      <lift:embed/> % Attribute("what", Text(embedType), Null)
-    }
-    case None => {
-      transaction match {
-        case Some(t) if (t.transactionState == "Completed") => Text("Transaction completed on: %s".format(new DateTime(t.completionDate.get).toString("dd/MM/yyyy")))
-        case Some(t) => {
-          currentDocumentType = docTypeForTransactionStage()
-          renderCurrentDocument()
-        }
-        case _ => Text("No Transaction Loaded")
-      }
-    }
-  }
-
-  private def docTypeForTransactionStage() = transaction match {
-    case None => {
-      error("No Transaction")
-      None
-    }
-    case Some(t) => t.transactionState match {
-      case "Completed" => None
-      case "Quoted" => Some(Quote)
-      case "Ordered" => Some(Order)
-      case "Invoiced" => Some(Invoice)
-      case other => {
-        error("Unknown transaction state: %s".format(other))
-        None
+          "#invoices *" #> InvoiceDetailDisplay(documents filter (_.documentType.get == Invoice))*/
       }
     }
   }
