@@ -43,7 +43,7 @@ class AddEditQuote extends StatefulSnippet with ErrorDisplay with DataValidation
 
   def render = {
     "#formTitle" #> Text("Add Quote") &
-      "#transationName" #> styledText(transactionName, transactionName = _) &
+      "#transactionName" #> styledText(transactionName, transactionName = _) &
       "#customerSelect" #> styledObjectSelect[Option[Customer]](customersSelect, None, currentCustomer = _) &
       renderAddEditLineItem() &
       renderSubmitAndCancel() &
