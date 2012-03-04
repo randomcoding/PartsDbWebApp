@@ -19,7 +19,7 @@ import net.liftweb.common.Logger
  * @author Jane Rowe
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
-object PartDisplay extends EntityDisplay with Logger {
+object PartDisplay extends TabularEntityDisplay with Logger {
   type EntityType = Part
   /**
    * The headings to use for the display of the part data table

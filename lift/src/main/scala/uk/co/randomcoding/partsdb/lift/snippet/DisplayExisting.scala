@@ -58,7 +58,7 @@ class DisplayExisting extends ErrorDisplay with Logger {
       //case "lineitem" => DisplayLineItem.displayTable(entities map (_.asInstanceOf[LineItem]))
       case _ => {
         error("Unknown Type: %s".format(entityType))
-        EntityDisplay.emptyTable
+        TabularEntityDisplay.emptyTable
       }
     }
   }

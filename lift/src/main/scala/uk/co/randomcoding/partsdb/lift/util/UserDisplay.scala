@@ -11,7 +11,7 @@ import uk.co.randomcoding.partsdb.lift.util._
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
-object UserDisplay extends EntityDisplay {
+object UserDisplay extends TabularEntityDisplay {
   type EntityType = User
 
   override val rowHeadings = List("User Name", "User Role")

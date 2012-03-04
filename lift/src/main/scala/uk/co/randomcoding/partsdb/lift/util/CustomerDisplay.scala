@@ -19,7 +19,7 @@ import net.liftweb.common.Logger
  *
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
-object CustomerDisplay extends EntityDisplay with Logger {
+object CustomerDisplay extends TabularEntityDisplay with Logger {
   type EntityType = Customer
   /**
    * The headings to use for the display of the customer data table

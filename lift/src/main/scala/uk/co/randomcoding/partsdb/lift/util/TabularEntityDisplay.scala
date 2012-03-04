@@ -12,9 +12,12 @@ import scala.xml.Null
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
-trait EntityDisplay {
+trait TabularEntityDisplay {
 
   type EntityType
+
+  val addEditColumn = true
+  val addDisplayColumn = true
 
   final val emptyRow = <tr/>
 
@@ -69,7 +72,15 @@ trait EntityDisplay {
    *
    * This also adds an extra column for the edit button and the display button that are put on the end of each row
    */
-  private def headings(titles: List[String]) = (titles ::: "" :: "" :: Nil) map (title => <th>{ title }</th>)
+  private def headings(titles: List[String]) = {
+    val headings = List(addEditColumn, addDisplayColumn) count (_ == true) match {
+      case 2 => (titles ::: "" :: "" :: Nil)
+      case 1 => (titles ::: "" :: Nil)
+      case 0 => titles
+    }
+
+    headings map (title => <th>{ title }</th>)
+  }
 
   /**
    * Create the link to display the edit button for the entity
@@ -79,7 +90,7 @@ trait EntityDisplay {
   /**
    * Create the link to display the Display button for the entity
    */
-  val displayEntityLink = (entityType: String, entityId: ObjectId) => link("display/%s?id=%s".format(entityType toLowerCase, entityId toString), () => Unit, Text("Display"), "class" -> "btn")
+  val displayEntityLink = (entityType: String, entityId: ObjectId) => link("/app/display/%s?id=%s".format(entityType toLowerCase, entityId toString), () => Unit, Text("Display"), "class" -> "btn")
 
   /**
    * This is the list of heading to be displayed for the entity table
@@ -96,7 +107,7 @@ trait EntityDisplay {
   def displayEntity(entity: EntityType, editLink: Boolean, displayLink: Boolean): NodeSeq
 }
 
-object EntityDisplay {
+object TabularEntityDisplay {
   val emptyTable = <table>
                      <thead>
                        <tr></tr>
