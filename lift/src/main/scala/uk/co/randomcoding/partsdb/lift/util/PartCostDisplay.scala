@@ -13,7 +13,7 @@ import uk.co.randomcoding.partsdb.lift.util._
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
-object PartCostDisplay extends EntityDisplay {
+object PartCostDisplay extends TabularEntityDisplay {
 
   override type EntityType = PartCost
 

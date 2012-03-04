@@ -15,7 +15,7 @@ import SnippetDisplayHelpers.{ displayContactCell, displayAddressCell }
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
-object SupplierDisplay extends EntityDisplay {
+object SupplierDisplay extends TabularEntityDisplay {
 
   override type EntityType = Supplier
 
