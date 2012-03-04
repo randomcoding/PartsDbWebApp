@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html; charset=UTF-8" http-equiv="content-type" />
+<title>C.A.T.9 - Customers</title>
+</head>
+<body class="lift:content_id=main">
+    <script class="lift:js/JsScripts.tabDisplayScript"></script>
+  <div id="main" class="lift:surround?with=default;at=content">
+    <div class="lift:embed?what=/templates-hidden/_error_messages"></div>
+    <div class="lift:display/DisplayTransaction?eager_eval=true">
+      <div style="width: 98%" align="center"></div>
+      <div class="form-title column span-19 last">
+        <span id="formTitle">Title</span>
+      </div>
+      <div class="breadcrumb column span-19 last">
+        <span id="quoteLink">Quote Link</span>
+        <span id="orderLink">Order Link</span>
+        <span id="deliveryLink">Delivery Link</span>
+        <span id="invoiceLink">Invoice Link</span>
+        <span id="completedLink">Completed Link</span>
+      </div>
+      <hr />
+      <div class="column span-19 last">
+        <div id="documentDisplay">
+        <div class="column span-19 last plain" id="tabs">
+          <div id="documentTabs">Document Tab Titles</div>
+          <div id="quoteResults">
+            <div id="quotes">
+              <span class="lift:embed?what=_quote_detail_display">Documents Here</span>
+            </div>
+          </div>
+          <div id="orderResults">
+            <div id="orders">
+              <span class="lift:embed?what=_order_detail_display">Documents Here</span>
+            </div>
+          </div>
+          <div id="deliveryNoteResults">
+            <div id="deliveryNotes">
+              <span class="lift:embed?what=_delivery_note_detail_display">Documents Here</span>
+            </div>
+          </div>
+          <div id="invoiceResults">
+            <div id="invoices">
+              <span class="lift:embed?what=_invoice_detail_display">Documents Here</span>
+            </div>
+          </div>
+        </div>
+</div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+
