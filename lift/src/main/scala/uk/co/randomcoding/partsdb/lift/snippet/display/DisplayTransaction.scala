@@ -3,22 +3,21 @@
  */
 package uk.co.randomcoding.partsdb.lift.snippet.display
 
-import scala.xml.{ Text, Null, NodeSeq, Attribute }
+import scala.xml.Text
+
 import org.bson.types.ObjectId
-import org.joda.time.DateTime
-import uk.co.randomcoding.partsdb.core.document.DocumentType.{ Quote, Order, Invoice, DocType, DeliveryNote }
+
+import uk.co.randomcoding.partsdb.core.customer.Customer
+import uk.co.randomcoding.partsdb.core.document.DocumentType.{ Quote, DocType }
+import uk.co.randomcoding.partsdb.core.document.Document
 import uk.co.randomcoding.partsdb.core.transaction.Transaction
-import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
+import uk.co.randomcoding.partsdb.lift.util.snippet.display.QuoteDetailDisplay
 import uk.co.randomcoding.partsdb.lift.util.snippet._
+
 import net.liftweb.common.{ Logger, Full }
-import net.liftweb.http.js.JsCmds.SetHtml
+import net.liftweb.http.SHtml._
 import net.liftweb.http.S
 import net.liftweb.util.Helpers._
-import uk.co.randomcoding.partsdb.lift.util.TransactionSummaryDisplay
-import uk.co.randomcoding.partsdb.lift.util.QuoteDisplay
-import uk.co.randomcoding.partsdb.core.document.Document
-import uk.co.randomcoding.partsdb.lift.util.snippet.display.QuoteDetailDisplay
-import uk.co.randomcoding.partsdb.core.customer.Customer
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
@@ -41,6 +40,7 @@ object DisplayTransaction extends TabDisplaySnippet with Logger {
       case Some(t) => t.shortName.get
       case _ => "No Transaction"
     }) &
+      "#backLink" #> link(cameFrom, () => (), Text("Back...")) &
       "#customerName" #> Text(transaction match {
         case Some(t) => Customer.findById(t.customer.get) match {
           case Some(c) => c.customerName.get
