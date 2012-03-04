@@ -58,11 +58,11 @@ class Transaction private () extends MongoRecord[Transaction] with ObjectIdPk[Tr
    * contain the same documents (again, by `oid`)
    */
   override def equals(that: Any): Boolean = that match {
-    case other: Transaction => customer.get == other.customer.get && documents.get.toSet == other.documents.get.toSet
+    case other: Transaction => customer.get == other.customer.get && documents.get.toSet == other.documents.get.toSet && shortName.get == other.shortName.get
     case _ => false
   }
 
-  override def hashCode: Int = getClass.toString.hashCode + customer.get.hashCode + (documents.get map (_ hashCode) sum)
+  override def hashCode: Int = getClass.toString.hashCode + customer.get.hashCode + (documents.get map (_ hashCode) sum) + shortName.get.hashCode
 
   lazy val transactionState = {
     new DateTime(completionDate.get) isAfter new DateTime(creationDate.get) match {
