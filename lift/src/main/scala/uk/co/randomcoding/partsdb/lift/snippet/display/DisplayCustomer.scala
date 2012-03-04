@@ -55,21 +55,22 @@ object DisplayCustomer extends ErrorDisplay with AddressSnippet with ContactDeta
     case _ => ("", "", "", "")
   }
 
-  private val transactions = initialCustomer match {
+  private def transactions() = initialCustomer match {
     case Some(cust) => Transaction where (_.customer eqs cust.id.get) fetch
     case _ => List.empty
   }
 
   def render = {
+    val currentTransactions = transactions()
     "#formTitle" #> Text("Display Customer") &
       "#nameEntry" #> styledText(name, name = _, readonly) &
       renderReadOnlyAddress() &
       "#paymentTermsEntry" #> styledText(paymentTermsText, paymentTermsText = _, List(readonly, ("style", "width: 2em"))) &
       renderReadOnlyContactDetails() &
       "#documentTabs" #> generateTabs() &
-      "#quotes *" #> TransactionSummaryDisplay(transactions filter (_.transactionState == "Quoted")) &
-      "#orders *" #> TransactionSummaryDisplay(transactions filter (_.transactionState == "Ordered")) &
-      "#invoices *" #> TransactionSummaryDisplay(transactions filter (_.transactionState == "Invoiced")) &
-      "#completed *" #> TransactionSummaryDisplay(transactions filter (_.transactionState == "Completed"))
+      "#quotes" #> TransactionSummaryDisplay(currentTransactions filter (_.transactionState == "Quoted")) &
+      "#orders" #> TransactionSummaryDisplay(currentTransactions filter (_.transactionState == "Ordered")) &
+      "#invoices" #> TransactionSummaryDisplay(currentTransactions filter (_.transactionState == "Invoiced")) &
+      "#completed" #> TransactionSummaryDisplay(currentTransactions filter (_.transactionState == "Completed"))
   }
 }
