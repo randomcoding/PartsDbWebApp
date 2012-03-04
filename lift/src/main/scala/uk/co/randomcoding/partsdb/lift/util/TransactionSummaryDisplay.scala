@@ -19,6 +19,6 @@ object TransactionSummaryDisplay {
   def apply(transactions: Seq[Transaction]) = transactions map (transaction => {
     "#transactionName" #> Text(transaction.shortName.get) &
       "#transactionStarted" #> Text(new DateTime(transaction.creationDate.get).toString("dd/MM/yyyy")) &
-      "#display" #> link("/display/Transaction?id=%s".format(transaction.id.get), () => (), Text("Display"))
+      "#display" #> link("/app/display/transaction?id=%s".format(transaction.id.get), () => (), Text("Display"))
   })
 }
