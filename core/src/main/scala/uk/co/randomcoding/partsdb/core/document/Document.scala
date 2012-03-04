@@ -7,6 +7,8 @@ import net.liftweb.mongodb.record.{ MongoRecord, MongoMetaRecord }
 import net.liftweb.mongodb.record.field._
 import net.liftweb.record.field._
 
+import java.util.Date
+
 /**
  * `Document`s are the basic objects that make up a [[uk.co.randomcoding.partsdb.core.transaction.Transaction]].
  *
@@ -44,6 +46,10 @@ class Document private () extends MongoRecord[Document] with ObjectIdPk[Document
    */
   object lineItems extends BsonRecordListField(this, LineItem) {
     override def required_? = false
+  }
+
+  object createdOn extends DateField(this) {
+    override val defaultValue = new Date()
   }
 
   /**
@@ -85,7 +91,7 @@ object Document extends Document with MongoMetaRecord[Document] {
    */
   def create(items: Seq[LineItem], docType: DocumentType.DocType): Document = {
     require(items.nonEmpty, "Line Items Cannot be empty")
-    Document.createRecord.editable(true).documentType(docType).lineItems(items.toList)
+    Document.createRecord.editable(true).documentType(docType).lineItems(items.toList).createdOn(new Date)
   }
 
   /**
