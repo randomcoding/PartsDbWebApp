@@ -16,7 +16,7 @@ import net.liftweb.common.Logger
  * @author Jane Rowe
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
-object VehicleDisplay extends EntityDisplay with Logger {
+object VehicleDisplay extends TabularEntityDisplay with Logger {
   type EntityType = Vehicle
   /**
    * The headings to use for the display of the vehicle data table
