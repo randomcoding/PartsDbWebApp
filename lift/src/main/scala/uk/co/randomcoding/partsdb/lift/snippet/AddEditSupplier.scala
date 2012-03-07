@@ -108,7 +108,7 @@ class AddEditSupplier extends StatefulSnippet with AddressSnippet with ContactDe
           }
         }
       }
-      case errors => displayError(errors: _*)
+      case errors => displayErrors(errors map (_._2): _*)
     }
   }
 

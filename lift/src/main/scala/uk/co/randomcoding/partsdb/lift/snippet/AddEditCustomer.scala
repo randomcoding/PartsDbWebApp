@@ -100,7 +100,7 @@ class AddEditCustomer extends StatefulSnippet with ErrorDisplay with DataValidat
         }
       }
       case errors => {
-        errors foreach (error => displayError(error._1, error._2))
+        errors foreach (error => displayError(error._2))
         Noop
       }
     }
@@ -111,7 +111,7 @@ class AddEditCustomer extends StatefulSnippet with ErrorDisplay with DataValidat
       case Some(c) => S redirectTo cameFrom
       case _ => {
         error("Failed to add new customer, [name: %s, address: %s, terms: %s, contact: %s".format(name, billingAddress, paymentTerms, contact))
-        displayError("errorMessages", "Failed to add Customer")
+        displayError("Failed to add Customer")
         Noop
       }
     }

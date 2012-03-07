@@ -12,9 +12,9 @@ import uk.co.randomcoding.partsdb.core.vehicle.Vehicle
 import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
 import uk.co.randomcoding.partsdb.lift.util.snippet._
 
-import net.liftweb.common.{Logger, Full}
+import net.liftweb.common.{ Logger, Full }
 import net.liftweb.http.js.JsCmds.Noop
-import net.liftweb.http.{StatefulSnippet, S}
+import net.liftweb.http.{ StatefulSnippet, S }
 import net.liftweb.util.Helpers._
 
 /**
@@ -82,7 +82,7 @@ class AddEditPart extends StatefulSnippet with ErrorDisplay with DataValidation 
         S redirectTo "/app/show?entityType=Part"
       }
       case errors => {
-        errors foreach (error => displayError(error._1, error._2))
+        errors foreach (error => displayError(error._2))
         Noop
       }
     }

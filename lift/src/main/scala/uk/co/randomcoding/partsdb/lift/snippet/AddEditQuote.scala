@@ -55,7 +55,7 @@ class AddEditQuote extends StatefulSnippet with ErrorDisplay with DataValidation
 
   override def processSubmit(): JsCmd = currentCustomer match {
     case Some(cust) => addQuoteAndTransaction(cust)
-    case None => displayError("customerErrorId", "Please select a Customer")
+    case None => displayError("Please select a Customer")
   }
 
   private[this] def addQuoteAndTransaction(cust: Customer): JsCmd = {
@@ -79,7 +79,7 @@ class AddEditQuote extends StatefulSnippet with ErrorDisplay with DataValidation
         }
       }
       case errors => {
-        displayError(errors: _*)
+        displayErrors(errors map (_._2): _*)
         Noop
       }
     }

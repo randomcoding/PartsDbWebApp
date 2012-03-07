@@ -81,12 +81,9 @@ trait LineItemSnippet extends ErrorDisplay with Logger {
       case (Full(q), Some(part)) => {
         quoteHolder.addLineItem()
       }
-      case (Full(q), None) => displayError("partErrorId", "Please select a Part")
-      case (_, Some(part)) => displayError("quantityErrorId", "Please specify a valid quantity")
-      case (_, None) => {
-        displayError("quantityErrorId", "Please specify a valid quantity")
-        displayError("partErrorId", "Please select a Part")
-      }
+      case (Full(q), None) => displayError("Please select a Part")
+      case (_, Some(part)) => displayError("Please specify a valid quantity")
+      case (_, None) => displayErrors("Please specify a valid quantity", "Please select a Part")
     }
 
     refreshLineItemDisplay() & refreshPartName() & refreshSuppliers() & refreshQuantity()

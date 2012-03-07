@@ -63,7 +63,7 @@ class AddEditVehicle extends StatefulSnippet with ErrorDisplay with SubmitAndCan
         S redirectTo "/app/show?entityType=Vehicle"
       }
       case errors => {
-        errors foreach (error => displayError(error._1, error._2))
+        displayErrors(errors map (_._2): _*)
         Noop
       }
     }
