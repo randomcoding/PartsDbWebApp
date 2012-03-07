@@ -4,19 +4,18 @@
 package uk.co.randomcoding.partsdb.lift.util.snippet
 
 import com.foursquare.rogue.Rogue._
-
 import uk.co.randomcoding.partsdb.core.part.Part
 import uk.co.randomcoding.partsdb.core.supplier.Supplier
 import uk.co.randomcoding.partsdb.lift.model.document.QuoteHolder
 import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
 import uk.co.randomcoding.partsdb.lift.util.snippet._
 import uk.co.randomcoding.partsdb.lift.util._
-
 import net.liftweb.common.{ Logger, Full }
 import net.liftweb.http.js.JsCmds.{ SetHtml, Replace }
 import net.liftweb.http.js.JsCmd
 import net.liftweb.http.{ WiringUI, SHtml }
 import net.liftweb.util.Helpers._
+import net.liftweb.http.SHtml.ElemAttr
 
 /**
  * A snippet to process the display an update of [[uk.co.randomcoding.partsdb.core.document.LineItem]]s
@@ -24,7 +23,6 @@ import net.liftweb.util.Helpers._
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
 trait LineItemSnippet extends ErrorDisplay with Logger {
-
   val quoteHolder: QuoteHolder
 
   val parts = Part where (_.id exists true) orderDesc (_.partName) fetch
@@ -32,30 +30,44 @@ trait LineItemSnippet extends ErrorDisplay with Logger {
 
   def renderAddEditLineItem() = {
     "#addLineButton" #> styledAjaxButton("Add Line", addLine) &
-      "#partName" #> styledAjaxObjectSelect[Option[Part]](partsSelect, quoteHolder.currentPart, updateAjaxValue(part => {
-        debug("Setting current part as %s".format(part))
-        quoteHolder.currentPart(part)
-      }, refreshSuppliers)) &
+      "#partName" #> partNameContent() &
       "#supplierName" #> suppliersContent() &
-      "#partQuantity" #> styledAjaxText(quoteHolder.quantity, updateAjaxValue(quantity => quoteHolder.quantity(asInt(quantity) match {
-        case Full(q) => q
-        case _ => 0
-      }))) &
+      "#partQuantity" #> partQuantityContent() &
       "#basePartCost" #> WiringUI.asText(quoteHolder.currentPartBaseCostDisplay) &
       "#markup" #> styledAjaxText(quoteHolder.markup, updateAjaxValue(quoteHolder.markup(_)))
   }
 
   def renderAllLineItems() = "#currentLineItems" #> LineItemDisplay(quoteHolder.lineItems, false, false)
 
-  private[this] val suppliersContent = () => styledAjaxObjectSelect[Option[Supplier]](quoteHolder.suppliers, quoteHolder.supplier, updateAjaxValue(quoteHolder.supplier(_)))
+  private[this] def partNameContent() = styledAjaxObjectSelect[Option[Part]](partsSelect, quoteHolder.currentPart, updateAjaxValue(quoteHolder.currentPart(_), refreshSuppliers), List(("id" -> "partName")))
+
+  private[this] def partQuantityContent() = styledAjaxText(quoteHolder.quantity, updateAjaxValue(quantity => quoteHolder.quantity(asInt(quantity) match {
+    case Full(q) => q
+    case _ => 0
+  })), List(("id" -> "partQuantity")))
+
+  private[this] val suppliersContent = () => styledAjaxObjectSelect[Option[Supplier]](quoteHolder.suppliers, quoteHolder.supplier, updateAjaxValue(quoteHolder.supplier(_)), List(("id" -> "supplierName")))
+
+  private[this] def refreshQuantity(): JsCmd = SHtml.ajaxInvoke(() => {
+    val html = partQuantityContent()
+    Replace("partQuantity", html)
+  })._2.cmd
 
   /**
-   * Update the suppliers combo box based on the currently selected part
+   * Update the suppliers combo box based on the currently selected part (as stored in the Quote Holder
    */
   private[this] def refreshSuppliers(): JsCmd = SHtml.ajaxInvoke(() => {
     val html = suppliersContent()
     debug("Setting suppliers html to: %s".format(html))
     Replace("supplierName", html)
+  })._2.cmd
+
+  /**
+   * Update the part name combo based on the value in the Quote Holder
+   */
+  private[this] def refreshPartName(): JsCmd = SHtml.ajaxInvoke(() => {
+    val html = partNameContent()
+    Replace("partName", html)
   })._2.cmd
 
   /**
@@ -66,7 +78,9 @@ trait LineItemSnippet extends ErrorDisplay with Logger {
   private def addLine(): JsCmd = {
     clearErrors
     (asInt(quoteHolder.quantity), quoteHolder.currentPart) match {
-      case (Full(q), Some(part)) => quoteHolder.addLineItem()
+      case (Full(q), Some(part)) => {
+        quoteHolder.addLineItem()
+      }
       case (Full(q), None) => displayError("partErrorId", "Please select a Part")
       case (_, Some(part)) => displayError("quantityErrorId", "Please specify a valid quantity")
       case (_, None) => {
@@ -75,7 +89,7 @@ trait LineItemSnippet extends ErrorDisplay with Logger {
       }
     }
 
-    refreshLineItemDisplay()
+    refreshLineItemDisplay() & refreshPartName() & refreshSuppliers() & refreshQuantity()
   }
 
   private def refreshLineItemDisplay(): JsCmd = SetHtml("currentLineItems", LineItemDisplay(quoteHolder.lineItems, false, false))
