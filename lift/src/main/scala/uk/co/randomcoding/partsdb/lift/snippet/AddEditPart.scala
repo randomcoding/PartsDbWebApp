@@ -65,8 +65,8 @@ class AddEditPart extends StatefulSnippet with ErrorDisplay with DataValidation 
    */
   override def processSubmit() = {
     val validationChecks = Seq(
-      ValidationItem(partName, "errorMessages", "A part Name must be entered"),
-      ValidationItem(vehicle, "errorMessages", "A vehicle must be chosen from the list"))
+      ValidationItem(partName, "Part Name" /*, "A part Name must be entered"*/ ),
+      ValidationItem(vehicle, "Vehicle Name" /*, "A vehicle must be chosen from the list"*/ ))
 
     val modIdValue = () => modId.trim match {
       case "" => None
@@ -82,7 +82,7 @@ class AddEditPart extends StatefulSnippet with ErrorDisplay with DataValidation 
         S redirectTo "/app/show?entityType=Part"
       }
       case errors => {
-        errors foreach (error => displayError(error._2))
+        errors foreach (error => displayError(error))
         Noop
       }
     }

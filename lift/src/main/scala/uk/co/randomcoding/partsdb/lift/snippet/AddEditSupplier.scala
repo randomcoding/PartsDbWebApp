@@ -108,15 +108,15 @@ class AddEditSupplier extends StatefulSnippet with AddressSnippet with ContactDe
           }
         }
       }
-      case errors => displayErrors(errors map (_._2): _*)
+      case errors => displayErrors(errors: _*)
     }
   }
 
-  private[this] def performValidation(address: Option[Address], contacts: ContactDetails): List[(String, String)] = {
+  private[this] def performValidation(address: Option[Address], contacts: ContactDetails): Seq[String] = {
     val validationItems = Seq(
-      ValidationItem(address, "errorMessages", "Address Entry was invalid"),
-      ValidationItem(contacts, "errorMessages", "Contact Details entry was invalid"),
-      ValidationItem(supplierName, "errorMessages", "Supplier Name must be entered"))
+      ValidationItem(address, "Business Address"), //, "Address Entry was invalid"),
+      ValidationItem(contacts, "Contact Details"), //, "Contact Details entry was invalid"),
+      ValidationItem(supplierName, "Supplier Name")) //, "Supplier Name must be entered"))
 
     validate(validationItems: _*)
   }

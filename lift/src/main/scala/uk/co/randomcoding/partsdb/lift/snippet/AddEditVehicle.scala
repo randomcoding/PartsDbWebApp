@@ -52,7 +52,7 @@ class AddEditVehicle extends StatefulSnippet with ErrorDisplay with SubmitAndCan
   override def processSubmit() = {
 
     val validationChecks = Seq(
-      ValidationItem(vehicleName, "errorMessages", "Vehicle Name must be entered"))
+      ValidationItem(vehicleName, "Vehicle Name"))
 
     validate(validationChecks: _*) match {
       case Nil => {
@@ -63,7 +63,7 @@ class AddEditVehicle extends StatefulSnippet with ErrorDisplay with SubmitAndCan
         S redirectTo "/app/show?entityType=Vehicle"
       }
       case errors => {
-        displayErrors(errors map (_._2): _*)
+        displayErrors(errors: _*)
         Noop
       }
     }
