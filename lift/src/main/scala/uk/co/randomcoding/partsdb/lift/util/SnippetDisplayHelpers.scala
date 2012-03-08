@@ -35,6 +35,7 @@ object SnippetDisplayHelpers {
 
     details(contactDetails.phoneNumber.get, "Phone") ++
       details(contactDetails.mobileNumber.get, "Mobile") ++
+      details(contactDetails.faxNumber.get, "Fax") ++
       details(contactDetails.emailAddress.get, "EMail")
   }
 }

@@ -32,33 +32,49 @@ class DataValidationTest extends FunSuite with ShouldMatchers {
   }
 
   test("Valid Contact Details validate ok") {
-    val contactsItem = ValidationItem(ContactDetails.create("Contact", "678", "456", "e@m.l", true), "Contact-1")
+    val contactsItem = ValidationItem(ContactDetails.create("Contact", "678", "456", "e@m.l", "", true), "Contact-1")
     validate(contactsItem) should be('empty)
-    val contactsItem1 = ValidationItem(ContactDetails.create("Contact", "7890", "", "", true), "Contact-2")
+    val contactsItem1 = ValidationItem(ContactDetails.create("Contact", "7890", "", "", "", true), "Contact-2")
     validate(contactsItem1) should be('empty)
-    val contactsItem2 = ValidationItem(ContactDetails.create("Contact", "", "456", "", true), "Contact-3")
+    val contactsItem2 = ValidationItem(ContactDetails.create("Contact", "", "456", "", "", true), "Contact-3")
     validate(contactsItem2) should be('empty)
-    val contactsItem3 = ValidationItem(ContactDetails.create("Contact", "", "", "e@m.l", true), "Contact-4")
+    val contactsItem3 = ValidationItem(ContactDetails.create("Contact", "", "", "e@m.l", "", true), "Contact-4")
     validate(contactsItem3) should be('empty)
-    val contactsItem4 = ValidationItem(ContactDetails.create("Contact", "678", "456", "", true), "Contact-5")
+    val contactsItem4 = ValidationItem(ContactDetails.create("Contact", "678", "456", "", "", true), "Contact-5")
     validate(contactsItem4) should be('empty)
-    val contactsItem5 = ValidationItem(ContactDetails.create("Contact", "678", "", "e@m.l", true), "Contact-6")
+    val contactsItem5 = ValidationItem(ContactDetails.create("Contact", "678", "", "e@m.l", "", true), "Contact-6")
     validate(contactsItem5) should be('empty)
-    val contactsItem6 = ValidationItem(ContactDetails.create("Contact", "", "456", "e@m.l", true), "Contact-7")
+    val contactsItem6 = ValidationItem(ContactDetails.create("Contact", "", "456", "e@m.l", "", true), "Contact-7")
     validate(contactsItem6) should be('empty)
+    val contactsItem7 = ValidationItem(ContactDetails.create("Contact", "", "", "", "6543", true), "Contact-8")
+    validate(contactsItem7) should be('empty)
+    val contactsItem8 = ValidationItem(ContactDetails.create("Contact", "678", "", "", "6543", true), "Contact-9")
+    validate(contactsItem8) should be('empty)
+    val contactsItem9 = ValidationItem(ContactDetails.create("Contact", "", "456", "", "6543", true), "Contact-10")
+    validate(contactsItem9) should be('empty)
+    val contactsItem10 = ValidationItem(ContactDetails.create("Contact", "", "", "em@ai.l", "6543", true), "Contact-11")
+    validate(contactsItem10) should be('empty)
+    val contactsItem11 = ValidationItem(ContactDetails.create("Contact", "678", "456", "", "6543", true), "Contact-12")
+    validate(contactsItem11) should be('empty)
+    val contactsItem12 = ValidationItem(ContactDetails.create("Contact", "678", "", "em@ai.l", "6543", true), "Contact-13")
+    validate(contactsItem12) should be('empty)
+    val contactsItem13 = ValidationItem(ContactDetails.create("Contact", "", "456", "em@ai.l", "6543", true), "Contact-14")
+    validate(contactsItem13) should be('empty)
+    val contactsItem14 = ValidationItem(ContactDetails.create("Contact", "678", "456", "em@ai.l", "6543", true), "Contact-15")
+    validate(contactsItem14) should be('empty)
   }
 
   test("Contact Details with no name (or empty name) fail to validate") {
-    val contactsItem = ValidationItem(ContactDetails.create("", "678", "456", "e@m.l", true), "Contact-8")
+    val contactsItem = ValidationItem(ContactDetails.create("", "678", "456", "e@m.l", "6543", true), "Contact-8")
     validate(contactsItem) should be(Seq("Contact requires a name"))
-    val contactsItem2 = ValidationItem(ContactDetails.create("  ", "678", "456", "e@m.l", true), "Contact-9")
+    val contactsItem2 = ValidationItem(ContactDetails.create("  ", "678", "456", "e@m.l", "6543", true), "Contact-9")
     validate(contactsItem) should be(Seq("Contact requires a name"))
   }
 
   test("Contact Details with no phone, mobile or email fails to validate") {
-    val contactsItem = ValidationItem(ContactDetails.create("Contact", "", "", "", true), "Contacts-10")
+    val contactsItem = ValidationItem(ContactDetails.create("Contact", "", "", "", "", true), "Contacts-10")
     validate(contactsItem) should be(Seq("Contact Details requires at least one contact method to be entered"))
-    val contactsItem1 = ValidationItem(ContactDetails.create("Contact", "", "", "", false), "Contacts-11")
+    val contactsItem1 = ValidationItem(ContactDetails.create("Contact", "", "", "", "", false), "Contacts-11")
     validate(contactsItem1) should be(Seq("Contact Details requires at least one contact method to be entered"))
   }
 

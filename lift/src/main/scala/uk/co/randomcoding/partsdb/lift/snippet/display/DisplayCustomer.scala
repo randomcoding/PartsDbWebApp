@@ -44,15 +44,14 @@ object DisplayCustomer extends ErrorDisplay with AddressSnippet with ContactDeta
     case _ => ("", "United Kingdom")
   }
 
-  override var (contactName, phoneNumber, mobileNumber, email) = initialCustomer match {
+  override var (contactName, phoneNumber, mobileNumber, email, faxNumber) = initialCustomer match {
     case Some(cust) => cust.contactDetails.get match {
-      case Nil => ("", "", "", "")
       case contacts => contacts map (ContactDetails findById _) filter (_.isDefined) map (_.get) find (_.isPrimary.get == true) match {
-        case Some(c) => (c.contactName.get, c.phoneNumber.get, c.mobileNumber.get, c.emailAddress.get)
-        case _ => ("", "", "", "")
+        case Some(c) => (c.contactName.get, c.phoneNumber.get, c.mobileNumber.get, c.emailAddress.get, c.faxNumber.get)
+        case _ => ("", "", "", "", "")
       }
     }
-    case _ => ("", "", "", "")
+    case _ => ("", "", "", "", "")
   }
 
   private def transactions() = initialCustomer match {

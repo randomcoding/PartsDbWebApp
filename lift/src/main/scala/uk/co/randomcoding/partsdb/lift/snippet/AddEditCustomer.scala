@@ -45,15 +45,14 @@ class AddEditCustomer extends StatefulSnippet with ErrorDisplay with DataValidat
     case _ => ("", "United Kingdom")
   }
 
-  var (contactName, phoneNumber, mobileNumber, email) = initialCustomer match {
+  override var (contactName, phoneNumber, mobileNumber, email, faxNumber) = initialCustomer match {
     case Some(cust) => cust.contactDetails.get match {
-      case Nil => ("", "", "", "")
       case contacts => contacts map (ContactDetails findById _) filter (_.isDefined) map (_.get) find (_.isPrimary.get == true) match {
-        case Some(c) => (c.contactName.get, c.phoneNumber.get, c.mobileNumber.get, c.emailAddress.get)
-        case _ => ("", "", "", "")
+        case Some(c) => (c.contactName.get, c.phoneNumber.get, c.mobileNumber.get, c.emailAddress.get, c.faxNumber.get)
+        case _ => ("", "", "", "", "")
       }
     }
-    case _ => ("", "", "", "")
+    case _ => ("", "", "", "", "")
   }
 
   def dispatch = {
