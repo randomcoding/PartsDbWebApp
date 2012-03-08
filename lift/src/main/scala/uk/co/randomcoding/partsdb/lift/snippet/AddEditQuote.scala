@@ -55,11 +55,11 @@ class AddEditQuote extends StatefulSnippet with ErrorDisplay with DataValidation
 
   override def processSubmit(): JsCmd = currentCustomer match {
     case Some(cust) => addQuoteAndTransaction(cust)
-    case None => displayError("customerErrorId", "Please select a Customer")
+    case None => displayError("Please select a Customer")
   }
 
   private[this] def addQuoteAndTransaction(cust: Customer): JsCmd = {
-    validate(ValidationItem(transactionName, "errorMessages", "Please enter an Identifier for this Transaction")) match {
+    validate(ValidationItem(transactionName, "Transaction Short Name" /*, "Please enter an Identifier for this Transaction"*/ )) match {
       case Nil => {
         Quote.add(quoteHolder.lineItems) match {
           case Some(q) => Transaction.add(transactionName, cust, Seq(q)) match {
@@ -79,7 +79,7 @@ class AddEditQuote extends StatefulSnippet with ErrorDisplay with DataValidation
         }
       }
       case errors => {
-        displayError(errors: _*)
+        displayErrors(errors: _*)
         Noop
       }
     }

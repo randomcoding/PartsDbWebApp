@@ -16,6 +16,7 @@ import net.liftweb.common.Logger
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
 trait DataValidation extends Logger {
+
   /**
    * Validates the input items and returns a list of error tuples
    *
@@ -30,27 +31,33 @@ trait DataValidation extends Logger {
    * @return A list of `(String, String)` tuples if any item fails its validation. The tuples contain the `errorLocationId` and `errorMessage`
    * of the [[uk.co.randomcoding.partsdb.lift.util.snippet.ValidationItem]]s that failed.
    */
-  def validate(items: ValidationItem*): List[(String, String)] = {
-    items.toList filterNot (validateItem(_)) map (item => (item.errorLocationId, item.errorMessage))
-  }
+  def validate(items: ValidationItem*): Seq[String] = items map (validateItem(_)) filter (_.isDefined) map (_.get) flatten
 
-  private def validateItem(item: ValidationItem): Boolean = {
+  /**
+   * Perform the validation process.
+   *
+   * @return `None` if the item validates OK. Otherwise returns a populated `Option[String]`
+   */
+  private def validateItem(item: ValidationItem): Option[Seq[String]] = {
     debug("Validating: %s".format(item))
     item.toValidate match {
       // If we have a populated option value, recursively call this method with the item unwrapped
-      case Some(thing) => validateItem(ValidationItem(thing, item.errorLocationId, item.errorMessage))
+      case Some(thing) => validateItem(ValidationItem(thing, item.fieldName))
       case addr: Address => validateAddress(addr)
       case contact: ContactDetails => validateContactDetails(contact)
-      case string: String => string.trim nonEmpty
-      case double: Double => double >= 0.0
-      case int: Int => int >= 0
+      case string: String => string.trim nonEmpty match {
+        case false => Some(Seq("%s requires a non empty value".format(item.fieldName)))
+        case true => None
+      }
+      case double: Double => if (double >= 0.0) None else Some(Seq("%s requires a value of 0 or greater".format(item.fieldName)))
+      case int: Int => if (int >= 0.0) None else Some(Seq("%s requires a value of 0 or greater".format(item.fieldName)))
       case None => {
         debug("Received an empty Option in %s. Assuming validation is false".format(item))
-        false
+        Some(Seq("Received no value for %s".format(item.fieldName)))
       }
       case validationItem => {
         debug("Unhandled validation type %s. Assuming it is valid".format(validationItem))
-        true
+        None
       }
     }
   }
@@ -70,7 +77,14 @@ trait DataValidation extends Logger {
 
     val shortNameIsOk = (address: Address) => addressShortNameChecks map (_(address.shortName.get)) contains (false) == false
 
-    countryCodeIsOk(address) && shortNameIsOk(address)
+    val shortNameErrorMessage = "Address Short Name is not valid"
+    val countryCodeErrorMessage = "Country Code %s is not valid".format(address.country.get)
+    (countryCodeIsOk(address), shortNameIsOk(address)) match {
+      case (true, true) => None
+      case (true, false) => Some(Seq(shortNameErrorMessage))
+      case (false, true) => Some(Seq(countryCodeErrorMessage))
+      case (false, false) => Some(Seq(countryCodeErrorMessage, shortNameErrorMessage))
+    }
   }
 
   /**
@@ -88,15 +102,16 @@ trait DataValidation extends Logger {
    * @param contacts The contact details to validate
    * @return `true` If the contact details validate
    */
-  private def validateContactDetails(contacts: ContactDetails) = {
+  private def validateContactDetails(contacts: ContactDetails): Option[Seq[String]] = {
 
-    def areValid(details: String*): Boolean = details filter (_.trim.nonEmpty) nonEmpty
+    def areValid(details: Seq[String]): Boolean = details filter (_.trim.nonEmpty) nonEmpty
 
     contacts.contactName.get.trim match {
-      case "" => false
-      case _ => areValid(contacts.phoneNumber.get, contacts.mobileNumber.get, contacts.emailAddress.get)
+      case "" => Some(Seq("Contact requires a name"))
+      case _ => areValid(Seq(contacts.phoneNumber.get, contacts.mobileNumber.get, contacts.emailAddress.get)) match {
+        case true => None
+        case false => Some(Seq("Contact Details requires at least one contact method to be entered"))
+      }
     }
-
   }
 }
-

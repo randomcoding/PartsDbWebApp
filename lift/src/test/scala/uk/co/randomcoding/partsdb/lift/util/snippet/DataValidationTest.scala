@@ -16,76 +16,66 @@ class DataValidationTest extends FunSuite with ShouldMatchers {
 
   import validation.validate
 
-  /*test("Valid address validates ok") {
-    val addrItem = ValidationItem(Address(DefaultIdentifier, "Short", "Address Text", "UK"), "", "")
+  test("Valid address validates ok") {
+    val addrItem = ValidationItem(Address.create("Address Name", "An Address in a nice place", "UK"), "Address-1")
     validate(addrItem) should be('empty)
   }
 
-  test("NullAddress fails to validate") {
-    val addrItem = ValidationItem(NullAddress, "addressErrorId", "Address failed validation")
-    validate(addrItem) should be(List(("addressErrorId", "Address failed validation")))
-  }
-
   test("Address with invalid country code fails to validate") {
-    val addrItem = ValidationItem(Address(DefaultIdentifier, "Short", "Address Text", "ZZZ"), "addressErrorId", "Address failed validation")
-    validate(addrItem) should be(List(("addressErrorId", "Address failed validation")))
-  }*/
-
-  /* test("Valid Payment Terms validate") {
-    val termsItem = ValidationItem(PaymentTerms(30), "", "")
-    validate(termsItem) should be('empty)
+    val addrItem = ValidationItem(Address.create("Short", "Address Text", "ZZZ"), "Address-2")
+    validate(addrItem) should be(Seq(("Country Code ZZZ is not valid")))
   }
 
-  test("Invalid Payment Terms fail to validate") {
-    val termsItem = ValidationItem(PaymentTerms(-1), "termsErrorId", "Payment Terms failed validation")
-    validate(termsItem) should be(List(("termsErrorId", "Payment Terms failed validation")))
-  }*/
+  test("Address without short name fails to validate") {
+    val addrItem = ValidationItem(Address.create("", "Address Text", "UK"), "Address-3")
+    validate(addrItem) should be(Seq(("Address Short Name is not valid")))
+  }
 
   test("Valid Contact Details validate ok") {
-    /*val contactsItem = ValidationItem(ContactDetails("Contact", Some(List(Phone("678"))), Some(List(Mobile("456"))), Some(List(Email("e@m.l")))), "", "")
+    val contactsItem = ValidationItem(ContactDetails.create("Contact", "678", "456", "e@m.l", true), "Contact-1")
     validate(contactsItem) should be('empty)
-    val contactsItem1 = ValidationItem(ContactDetails("Contact", phoneNumbers = Some(List(Phone("678")))), "", "")
+    val contactsItem1 = ValidationItem(ContactDetails.create("Contact", "7890", "", "", true), "Contact-2")
     validate(contactsItem1) should be('empty)
-    val contactsItem2 = ValidationItem(ContactDetails("Contact", mobileNumbers = Some(List(Mobile("456")))), "", "")
+    val contactsItem2 = ValidationItem(ContactDetails.create("Contact", "", "456", "", true), "Contact-3")
     validate(contactsItem2) should be('empty)
-    val contactsItem3 = ValidationItem(ContactDetails("Contact", emailAddresses = Some(List(Email("e@m.l")))), "", "")
+    val contactsItem3 = ValidationItem(ContactDetails.create("Contact", "", "", "e@m.l", true), "Contact-4")
     validate(contactsItem3) should be('empty)
-    val contactsItem4 = ValidationItem(ContactDetails("Contact", Some(List(Phone("678"))), Some(List(Mobile("456")))), "", "")
+    val contactsItem4 = ValidationItem(ContactDetails.create("Contact", "678", "456", "", true), "Contact-5")
     validate(contactsItem4) should be('empty)
-    val contactsItem5 = ValidationItem(ContactDetails("Contact", Some(List(Phone("678"))), None, Some(List(Email("e@m.l")))), "", "")
+    val contactsItem5 = ValidationItem(ContactDetails.create("Contact", "678", "", "e@m.l", true), "Contact-6")
     validate(contactsItem5) should be('empty)
-    val contactsItem6 = ValidationItem(ContactDetails("Contact", None, Some(List(Mobile("456"))), Some(List(Email("e@m.l")))), "", "")
-    validate(contactsItem6) should be('empty)*/
+    val contactsItem6 = ValidationItem(ContactDetails.create("Contact", "", "456", "e@m.l", true), "Contact-7")
+    validate(contactsItem6) should be('empty)
   }
 
   test("Contact Details with no name (or empty name) fail to validate") {
-    /*val contactsItem = ValidationItem(ContactDetails("", Some(List(Phone("678"))), Some(List(Mobile("456"))), Some(List(Email("e@m.l")))), "contactsError", "Contacts failed validation")
-    validate(contactsItem) should be(List(("contactsError", "Contacts failed validation")))
-    val contactsItem2 = ValidationItem(ContactDetails("  ", Some(List(Phone("678"))), Some(List(Mobile("456"))), Some(List(Email("e@m.l")))), "contactsError", "Contacts failed validation")
-    validate(contactsItem) should be(List(("contactsError", "Contacts failed validation")))*/
+    val contactsItem = ValidationItem(ContactDetails.create("", "678", "456", "e@m.l", true), "Contact-8")
+    validate(contactsItem) should be(Seq("Contact requires a name"))
+    val contactsItem2 = ValidationItem(ContactDetails.create("  ", "678", "456", "e@m.l", true), "Contact-9")
+    validate(contactsItem) should be(Seq("Contact requires a name"))
   }
 
   test("Contact Details with no phone, mobile or email fails to validate") {
-    /*val contactsItem = ValidationItem(ContactDetails("Contact"), "contactsError", "Contacts failed validation")
-    validate(contactsItem) should be(List(("contactsError", "Contacts failed validation")))
-    val contactsItem1 = ValidationItem(ContactDetails("Contact", Some(List.empty[Phone]), Some(List.empty[Mobile]), Some(List.empty[Email])), "contactsError", "Contacts failed validation")
-    validate(contactsItem1) should be(List(("contactsError", "Contacts failed validation")))*/
+    val contactsItem = ValidationItem(ContactDetails.create("Contact", "", "", "", true), "Contacts-10")
+    validate(contactsItem) should be(Seq("Contact Details requires at least one contact method to be entered"))
+    val contactsItem1 = ValidationItem(ContactDetails.create("Contact", "", "", "", false), "Contacts-11")
+    validate(contactsItem1) should be(Seq("Contact Details requires at least one contact method to be entered"))
   }
 
   test("Non Empty String validates ok") {
-    val stringItem = ValidationItem("Valid String", "", "")
+    val stringItem = ValidationItem("Valid String", "")
     validate(stringItem) should be('empty)
   }
 
   test("Empty or padding only string fails validation") {
-    var stringItem = ValidationItem("", "stringError", "String failed validation")
-    validate(stringItem) should be(List(("stringError", "String failed validation")))
-    stringItem = ValidationItem("  ", "stringError", "String failed validation")
-    validate(stringItem) should be(List(("stringError", "String failed validation")))
-    stringItem = ValidationItem("\n", "stringError", "String failed validation")
-    validate(stringItem) should be(List(("stringError", "String failed validation")))
-    stringItem = ValidationItem("\t", "stringError", "String failed validation")
-    validate(stringItem) should be(List(("stringError", "String failed validation")))
+    var stringItem = ValidationItem("", "String Field 1")
+    validate(stringItem) should be(Seq(("String Field 1 requires a non empty value")))
+    stringItem = ValidationItem("  ", "String Field 2")
+    validate(stringItem) should be(Seq(("String Field 2 requires a non empty value")))
+    stringItem = ValidationItem("\n", "String Field 3")
+    validate(stringItem) should be(Seq(("String Field 3 requires a non empty value")))
+    stringItem = ValidationItem("\t", "String Field 4")
+    validate(stringItem) should be(Seq(("String Field 4 requires a non empty value")))
   }
 
 }

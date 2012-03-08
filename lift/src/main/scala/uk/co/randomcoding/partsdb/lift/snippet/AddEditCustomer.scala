@@ -87,10 +87,10 @@ class AddEditCustomer extends StatefulSnippet with ErrorDisplay with DataValidat
     }
 
     trace("About to validate")
-    val validationChecks = Seq(ValidationItem(billingAddress, "errorMessages", "Business Address is not valid.\n Please ensure there is a Customer Name and that the country is selected."),
-      ValidationItem(paymentTerms, "errorMessages", "Payment Terms are not valid"),
-      ValidationItem(contact, "errorMessages", "Contact Details are not valid"),
-      ValidationItem(name, "errorMessages", "Customer Name must be entered"))
+    val validationChecks = Seq(ValidationItem(billingAddress, "Biusiness Address" /*, "Business Address is not valid.\n Please ensure there is a Customer Name and that the country is selected."*/ ),
+      ValidationItem(paymentTerms, "Payment Terms" /*, "Payment Terms are not valid"*/ ),
+      ValidationItem(contact, "Contact Details" /*, "Contact Details are not valid"*/ ),
+      ValidationItem(name, "Customer Name" /*, "Customer Name must be entered"*/ ))
 
     validate(validationChecks: _*) match {
       case Nil => {
@@ -100,7 +100,7 @@ class AddEditCustomer extends StatefulSnippet with ErrorDisplay with DataValidat
         }
       }
       case errors => {
-        errors foreach (error => displayError(error._1, error._2))
+        errors foreach (error => displayError(error))
         Noop
       }
     }
@@ -111,7 +111,7 @@ class AddEditCustomer extends StatefulSnippet with ErrorDisplay with DataValidat
       case Some(c) => S redirectTo cameFrom
       case _ => {
         error("Failed to add new customer, [name: %s, address: %s, terms: %s, contact: %s".format(name, billingAddress, paymentTerms, contact))
-        displayError("errorMessages", "Failed to add Customer")
+        displayError("Failed to add Customer")
         Noop
       }
     }
