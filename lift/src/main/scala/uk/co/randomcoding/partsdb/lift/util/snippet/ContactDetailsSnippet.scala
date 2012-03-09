@@ -27,7 +27,7 @@ trait ContactDetailsSnippet extends Logger {
     "#contactNameEntry" #> styledText(contactName, contactName = _) &
       "#phoneNumberEntry" #> styledText(phoneNumber, phoneNumber = _) &
       "#mobileNumberEntry" #> styledText(mobileNumber, mobileNumber = _) &
-      "#faxNumberEntry" #> styledText(faxNumber, faxNumber = _, readonly) &
+      "#faxNumberEntry" #> styledText(faxNumber, faxNumber = _) &
       "#emailEntry" #> styledText(email, email = _)
   }
 
