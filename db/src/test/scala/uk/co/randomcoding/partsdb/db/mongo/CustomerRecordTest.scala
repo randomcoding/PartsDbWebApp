@@ -18,8 +18,8 @@ import uk.co.randomcoding.partsdb.core.customer.Customer
 class CustomerRecordTest extends MongoDbTestBase {
 
   override val dbName = "CustomerRecordTest"
-  val contactDave = ContactDetails.createRecord.contactName("Dave")
-  val contactSally = ContactDetails.createRecord.contactName("Sally")
+  val contactDave = ContactDetails.create("Dave", "4321", "", "", "", true)
+  val contactSally = ContactDetails.create("Sally", "9876", "", "", "", true)
 
   test("Equality and HashCode") {
     val addr = Address.createRecord.shortName("Addr1").addressText("Address").country("UK")
@@ -121,6 +121,7 @@ class CustomerRecordTest extends MongoDbTestBase {
 
     findNamed("cust1") should be(Nil)
     findById(origId) should be(Some(createRecord.customerName("Customer 1-1").businessAddress(addr2.id.get).terms(45).contactDetails(List(contactSally.id.get))))
+    (Customer where (_.id eqs origId) fetch) should be(List(create("Customer 1-1", addr2, 45, contactSally)))
   }
 
   test("Saving A Customer also saves the address and contact details") {
@@ -150,5 +151,15 @@ class CustomerRecordTest extends MongoDbTestBase {
     val otherCust = createRecord.customerName("cust1").businessAddress(addr2.id.get).terms(45).contactDetails(List(contactSally.id.get))
 
     findMatching(otherCust) should be(Some(cust1))
+  }
+
+  test("Modified contact details of a customer updates the correct instance of the contact details and does not duplicate it") {
+    val addr = Address.createRecord.shortName("Addr1").addressText("Address").country("UK")
+    val cust1 = add("cust1", addr, 30, contactDave).get
+    val contactsModified = ContactDetails.create("Dave", "4321", "321", "", "", true)
+    Customer.modify(cust1.id.get, "cust1", addr, 30, List(contactsModified))
+
+    (Customer where (_.id eqs cust1.id.get) fetch) should be(List(Customer.create("cust1", addr, 30, contactsModified).id(cust1.id.get)))
+    cust1.contactDetails.get should be(List(cust1.id.get))
   }
 }
