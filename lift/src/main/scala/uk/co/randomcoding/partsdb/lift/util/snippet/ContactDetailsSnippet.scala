@@ -20,12 +20,14 @@ trait ContactDetailsSnippet extends Logger {
   var phoneNumber: String
   var mobileNumber: String
   var email: String
+  var faxNumber: String
 
   val renderEditableContactDetails = () => {
     // TODO: Add a selector for isPrimary
     "#contactNameEntry" #> styledText(contactName, contactName = _) &
       "#phoneNumberEntry" #> styledText(phoneNumber, phoneNumber = _) &
       "#mobileNumberEntry" #> styledText(mobileNumber, mobileNumber = _) &
+      "#faxNumberEntry" #> styledText(faxNumber, faxNumber = _) &
       "#emailEntry" #> styledText(email, email = _)
   }
 
@@ -33,6 +35,7 @@ trait ContactDetailsSnippet extends Logger {
     "#contactNameEntry" #> styledText(contactName, contactName = _, readonly) &
       "#phoneNumberEntry" #> styledText(phoneNumber, phoneNumber = _, readonly) &
       "#mobileNumberEntry" #> styledText(mobileNumber, mobileNumber = _, readonly) &
+      "#faxNumberEntry" #> styledText(faxNumber, faxNumber = _, readonly) &
       "#emailEntry" #> styledText(email, email = _, readonly)
   }
 
@@ -45,8 +48,9 @@ trait ContactDetailsSnippet extends Logger {
     val ph = phoneNumber.trim
     val mo = mobileNumber.trim
     val em = email.trim
+    val fax = faxNumber.trim
 
-    ContactDetails.create(contactName, ph, mo, em, true)
+    ContactDetails.create(contactName, ph, mo, em, fax, true)
   }
 
   def updateContactDetails(contacts: ContactDetails): Option[ContactDetails] = ContactDetails findMatching contacts match {

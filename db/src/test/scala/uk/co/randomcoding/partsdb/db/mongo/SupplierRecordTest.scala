@@ -21,8 +21,8 @@ import org.joda.time.DateTime
 class SupplierRecordTest extends MongoDbTestBase {
   override val dbName = "SupplierRecordTest"
 
-  val contactDave = ContactDetails.create("Dave", "", "", "", true)
-  val contactSally = ContactDetails.create("Sally", "", "", "", true)
+  val contactDave = ContactDetails.create("Dave", "", "", "", "", true)
+  val contactSally = ContactDetails.create("Sally", "", "", "", "", true)
 
   val address1 = Address.create("Addr 1", "Address Text", "UK")
   val address2 = Address.create("Addr 2", "Other Address Text", "UK")

@@ -108,7 +108,7 @@ trait DataValidation extends Logger {
 
     contacts.contactName.get.trim match {
       case "" => Some(Seq("Contact requires a name"))
-      case _ => areValid(Seq(contacts.phoneNumber.get, contacts.mobileNumber.get, contacts.emailAddress.get)) match {
+      case _ => areValid(Seq(contacts.phoneNumber.get, contacts.mobileNumber.get, contacts.emailAddress.get, contacts.faxNumber.get)) match {
         case true => None
         case false => Some(Seq("Contact Details requires at least one contact method to be entered"))
       }

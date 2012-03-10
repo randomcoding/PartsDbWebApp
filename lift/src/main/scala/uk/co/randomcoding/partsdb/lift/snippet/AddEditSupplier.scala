@@ -49,12 +49,12 @@ class AddEditSupplier extends StatefulSnippet with AddressSnippet with ContactDe
   /*
    * Set the contact details fields of the contact details snippet based on the initial supplier
    */
-  override var (contactName, phoneNumber, mobileNumber, email) = initialSupplier match {
+  override var (contactName, phoneNumber, mobileNumber, email, faxNumber) = initialSupplier match {
     case Some(s) => ContactDetails findById s.contactDetails.get match {
-      case Some(c) => (c.contactName.get, c.phoneNumber.get, c.mobileNumber.get, c.emailAddress.get)
-      case _ => ("", "", "", "")
+      case Some(c) => (c.contactName.get, c.phoneNumber.get, c.mobileNumber.get, c.emailAddress.get, c.faxNumber.get)
+      case _ => ("", "", "", "", "")
     }
-    case _ => ("", "", "", "")
+    case _ => ("", "", "", "", "")
   }
 
   /*
