@@ -29,7 +29,7 @@ object SnippetDisplayHelpers {
   private[this] def numbersDetails(contactDetails: ContactDetails): NodeSeq = {
     val details = (detailString: String, heading: String) =>
       detailString.trim match {
-        case "" => <span>&nbsp;</span><br/>
+        case "" => Nil
         case other => <span>{ "%s: %s".format(heading, detailString) }</span><br/>
       }
 
