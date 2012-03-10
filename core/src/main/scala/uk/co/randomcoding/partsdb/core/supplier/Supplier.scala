@@ -28,7 +28,7 @@ class Supplier private () extends MongoRecord[Supplier] with ObjectIdPk[Supplier
   /**
    * The contact details for this supplier
    */
-  object contactDetails extends ObjectIdRefField(this, ContactDetails)
+  object contactDetails extends BsonRecordField(this, ContactDetails)
 
   /**
    * The parts this supplier provides as [[uk.co.randomcoding.partsdb.core.part.PartCost]] objects
@@ -70,7 +70,7 @@ object Supplier extends Supplier with MongoMetaRecord[Supplier] {
    * Create a new `Supplier` record but '''does not''' save it to the database
    */
   def create(name: String, contacts: ContactDetails, businessAddress: Address, partsSupplied: Seq[PartCost]): Supplier = {
-    Supplier.createRecord.supplierName(name).contactDetails(contacts.id.get).businessAddress(businessAddress.id.get).suppliedParts(partsSupplied.toList)
+    Supplier.createRecord.supplierName(name).contactDetails(contacts).businessAddress(businessAddress.id.get).suppliedParts(partsSupplied.toList)
   }
 
   /**
@@ -136,7 +136,7 @@ object Supplier extends Supplier with MongoMetaRecord[Supplier] {
    */
   def modify(oid: ObjectId, newName: String, newContacts: ContactDetails, newAddress: Address, newParts: Seq[PartCost], newNotes: String) = {
     Supplier.where(_.id eqs oid).modify(_.supplierName setTo newName).
-      and(_.contactDetails setTo newContacts.id.get).
+      and(_.contactDetails setTo newContacts).
       and(_.suppliedParts setTo newParts).
       and(_.businessAddress setTo newAddress.id.get).
       and(_.notes setTo newNotes) updateMulti

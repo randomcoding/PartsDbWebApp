@@ -50,13 +50,5 @@ object CustomerDisplay extends TabularEntityDisplay with Logger {
     }
   }
 
-  private[this] def displayContacts(customer: Customer): NodeSeq = {
-    (for {
-      contactId <- customer.contactDetails.get
-      val contact = ContactDetails.findById(contactId)
-      if contact isDefined
-    } yield {
-      displayContactCell(contact.get)
-    }) flatten
-  }
+  private[this] def displayContacts(customer: Customer): NodeSeq = customer.contactDetails.get flatMap (displayContactCell)
 }

@@ -70,46 +70,26 @@ object CustomerSearchProvider {
 
   private val contactNameMatches = (contactName: String) => (contactName.trim match {
     case "" => Nil
-    case name => {
-      val contactIds = ContactDetails.where(_.contactName matches regexValue(name)).fetch map (_.id.get)
-
-      Customer where (_.contactDetails in contactIds) fetch
-    }
+    case name => Customer where (_.contactDetails.subfield(_.contactName) matches regexValue(name)) fetch
   }) toSet
 
   private val contactPhoneMatches = (phone: String) => (phone.trim match {
     case "" => Nil
-    case p => {
-      val contactIds = ContactDetails.where(_.phoneNumber matches regexValue(p)).fetch map (_.id.get)
-
-      Customer where (_.contactDetails in contactIds) fetch
-    }
+    case p => Customer where (_.contactDetails.subfield(_.phoneNumber) matches regexValue(p)) fetch
   }) toSet
 
   private val contactMobileMatches = (mobile: String) => (mobile.trim match {
     case "" => Nil
-    case p => {
-      val contactIds = ContactDetails.where(_.mobileNumber matches regexValue(p)).fetch map (_.id.get)
-
-      Customer where (_.contactDetails in contactIds) fetch
-    }
+    case p => Customer where (_.contactDetails subfield (_.mobileNumber) matches regexValue(p)) fetch
   }) toSet
 
   private val contactEmailMatches = (email: String) => (email.trim match {
     case "" => Nil
-    case e => {
-      val contactIds = ContactDetails.where(_.emailAddress matches regexValue(e)).fetch map (_.id.get)
-
-      Customer where (_.contactDetails in contactIds) fetch
-    }
+    case e => Customer where (_.contactDetails subfield (_.emailAddress) matches regexValue(e)) fetch
   }) toSet
 
   private val contactFaxMatches = (fax: String) => (fax.trim match {
     case "" => Nil
-    case e => {
-      val contactIds = ContactDetails.where(_.faxNumber matches regexValue(e)).fetch map (_.id.get)
-
-      Customer where (_.contactDetails in contactIds) fetch
-    }
+    case e => Customer where (_.contactDetails subfield (_.faxNumber) matches regexValue(e)) fetch
   }) toSet
 }

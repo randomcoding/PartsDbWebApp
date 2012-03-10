@@ -53,11 +53,11 @@ trait ContactDetailsSnippet extends Logger {
     ContactDetails.create(contactName, ph, mo, em, fax, true)
   }
 
-  def updateContactDetails(contacts: ContactDetails): Option[ContactDetails] = ContactDetails findMatching contacts match {
+  /*def updateContactDetails(contacts: ContactDetails): Option[ContactDetails] = ContactDetails findMatching contacts match {
     case Some(c) => {
       ContactDetails.modify(c.id.get, contacts)
       ContactDetails findById c.id.get
     }
     case _ => ContactDetails add contacts
-  }
+  }*/
 }

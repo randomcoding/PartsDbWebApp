@@ -64,10 +64,9 @@ class SupplierRecordTest extends MongoDbTestBase {
     allSuppliers should be(List(s1))
   }
 
-  test("Find Matching returns the correct record if the Object Id matches") {
+  test("Find Matching returns the correct record if the only the Object Id matches") {
     val s1 = add("Supplier 1", contactDave, address1, Seq(partCost1)).get
-    val s2 = Supplier.createRecord.id(s1.id.get).supplierName("Another Supplier").contactDetails(new ObjectId)
-      .businessAddress(new ObjectId).suppliedParts(List(PartCost.create(part1, 10.0d, DateTime.now)))
+    val s2 = Supplier.create("Another Supplier", contactSally, address2, List(PartCost.create(part1, 10.0d, DateTime.now))).id(s1.id.get)
 
     findMatching(s2) should be(Some(s1))
   }

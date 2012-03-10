@@ -46,10 +46,8 @@ object DisplayCustomer extends ErrorDisplay with AddressSnippet with ContactDeta
 
   override var (contactName, phoneNumber, mobileNumber, email, faxNumber) = initialCustomer match {
     case Some(cust) => cust.contactDetails.get match {
-      case contacts => contacts map (ContactDetails findById _) filter (_.isDefined) map (_.get) find (_.isPrimary.get == true) match {
-        case Some(c) => (c.contactName.get, c.phoneNumber.get, c.mobileNumber.get, c.emailAddress.get, c.faxNumber.get)
-        case _ => ("", "", "", "", "")
-      }
+      case Nil => ("", "", "", "", "")
+      case head :: tail => (head.contactName.get, head.phoneNumber.get, head.mobileNumber.get, head.emailAddress.get, head.faxNumber.get)
     }
     case _ => ("", "", "", "", "")
   }

@@ -47,10 +47,8 @@ class AddEditCustomer extends StatefulSnippet with ErrorDisplay with DataValidat
 
   override var (contactName, phoneNumber, mobileNumber, email, faxNumber) = initialCustomer match {
     case Some(cust) => cust.contactDetails.get match {
-      case contacts => contacts map (ContactDetails findById _) filter (_.isDefined) map (_.get) find (_.isPrimary.get == true) match {
-        case Some(c) => (c.contactName.get, c.phoneNumber.get, c.mobileNumber.get, c.emailAddress.get, c.faxNumber.get)
-        case _ => ("", "", "", "", "")
-      }
+      case Nil => ("", "", "", "", "")
+      case head :: tail => (head.contactName.get, head.phoneNumber.get, head.mobileNumber.get, head.emailAddress.get, head.faxNumber.get)
     }
     case _ => ("", "", "", "", "")
   }
@@ -117,8 +115,8 @@ class AddEditCustomer extends StatefulSnippet with ErrorDisplay with DataValidat
   }
 
   private def modifyCustomer(cust: Customer, billingAddress: Address, paymentTerms: Int, contact: ContactDetails): JsCmd = {
-    val contacts = contact :: (cust.contactDetails.get map (ContactDetails findById _) filter (_ isDefined) map (_ get))
-    Customer.modify(cust.id.get, name, billingAddress, paymentTerms, contacts.distinct)
+    val contacts = contact :: cust.contactDetails.get filterNot (_ matches contact)
+    Customer.modify(cust.id.get, name, billingAddress, paymentTerms, contacts)
     S redirectTo cameFrom
   }
 }

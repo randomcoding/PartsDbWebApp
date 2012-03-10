@@ -26,7 +26,7 @@ class Customer private () extends MongoRecord[Customer] with ObjectIdPk[Customer
   object customerName extends StringField(this, 50)
   object businessAddress extends ObjectIdRefField(this, Address)
   object terms extends IntField(this)
-  object contactDetails extends ObjectIdRefListField(this, ContactDetails)
+  object contactDetails extends BsonRecordListField(this, ContactDetails)
 
   override def equals(that: Any): Boolean = that match {
     case other: Customer => customerName.get == other.customerName.get &&
@@ -89,7 +89,7 @@ object Customer extends Customer with MongoMetaRecord[Customer] with Logger {
    * Create a new `Customer` record, but '''do not''' add it to the database
    */
   def create(customerName: String, businessAddress: Address, termsDays: Int, contactDetails: ContactDetails): Customer = {
-    Customer.createRecord.customerName(customerName).businessAddress(businessAddress.id.get).terms(termsDays).contactDetails(contactDetails.id.get :: Nil)
+    Customer.createRecord.customerName(customerName).businessAddress(businessAddress.id.get).terms(termsDays).contactDetails(List(contactDetails))
   }
   /**
    * Add a new customer unless there is already a ''matching'' record. In which case the found entry is returned.
@@ -105,24 +105,10 @@ object Customer extends Customer with MongoMetaRecord[Customer] with Logger {
       case None => Address.add(businessAddress)
     }
 
-    val contacts = ContactDetails findMatching contactDetails match {
-      case Some(con) => Some(con)
-      case None => ContactDetails.add(contactDetails)
-    }
-
-    (address, contacts) match {
-      case (Some(addr), Some(cont)) => add(create(customerName, addr, termsDays, cont))
-      case (None, None) => {
-        error("Failed to add Contact Details %s".format(contactDetails))
+    address match {
+      case Some(addr) => add(create(customerName, addr, termsDays, contactDetails))
+      case None => {
         error("Failed to add Address %s".format(businessAddress))
-        None
-      }
-      case (None, _) => {
-        error("Failed to add Address %s".format(businessAddress))
-        None
-      }
-      case (_, None) => {
-        error("Failed to add Contact Details %s".format(contactDetails))
         None
       }
     }
@@ -168,16 +154,9 @@ object Customer extends Customer with MongoMetaRecord[Customer] with Logger {
 
     require(address isDefined, "Failed to get valid address from: %s".format(newAddress))
 
-    val contacts = newContacts map (newContact => ContactDetails findMatching newContact match {
-      case Some(c) => Some(c)
-      case _ => ContactDetails add (newContact)
-    }) filter (_ isDefined) map (_ get)
-
-    if (contacts.size != newContacts.size) error("Failed to add all new contacts the the database")
-
     Customer.where(_.id eqs oid).modify(_.customerName setTo newName) and
       (_.businessAddress setTo address.get.id.get) and
       (_.terms setTo newTerms) and
-      (_.contactDetails setTo (contacts map (_.id.get) distinct)) updateMulti
+      (_.contactDetails setTo newContacts) updateMulti
   }
 }

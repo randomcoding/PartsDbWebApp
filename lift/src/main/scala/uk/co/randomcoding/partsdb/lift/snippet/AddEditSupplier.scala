@@ -50,8 +50,8 @@ class AddEditSupplier extends StatefulSnippet with AddressSnippet with ContactDe
    * Set the contact details fields of the contact details snippet based on the initial supplier
    */
   override var (contactName, phoneNumber, mobileNumber, email, faxNumber) = initialSupplier match {
-    case Some(s) => ContactDetails findById s.contactDetails.get match {
-      case Some(c) => (c.contactName.get, c.phoneNumber.get, c.mobileNumber.get, c.emailAddress.get, c.faxNumber.get)
+    case Some(s) => s.contactDetails.get match {
+      case c: ContactDetails => (c.contactName.get, c.phoneNumber.get, c.mobileNumber.get, c.emailAddress.get, c.faxNumber.get)
       case _ => ("", "", "", "", "")
     }
     case _ => ("", "", "", "", "")
@@ -94,12 +94,11 @@ class AddEditSupplier extends StatefulSnippet with AddressSnippet with ContactDe
 
     performValidation(address, contacts) match {
       case Nil => {
-        val newContacts = updateContactDetails(contacts)
         val newAddress = updateAddress(address.get)
 
         initialSupplier match {
           case Some(s) => {
-            modifySupplier(s, supplierName, newContacts.get, newAddress.get, currentPartCosts)
+            modifySupplier(s, supplierName, contacts, newAddress.get, currentPartCosts)
             S redirectTo cameFrom
           }
           case _ => addSupplier(supplierName, contacts, address.get, currentPartCosts) match {
