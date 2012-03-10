@@ -21,8 +21,8 @@ class TransactionRecordTest extends MongoDbTestBase {
 
   val addr1 = Address.create("Addr1", "Addr1", "UK")
   val addr2 = Address.create("Addr2", "Addr2", "UK")
-  val contacts1 = ContactDetails.create("Dave", "", "", "", true)
-  val contacts2 = ContactDetails.create("Alan", "", "", "", true)
+  val contacts1 = ContactDetails.create("Dave", "", "", "", "", true)
+  val contacts2 = ContactDetails.create("Alan", "", "", "", "", true)
   val cust1 = Customer.create("Customer 1", addr1, 30, contacts1)
   val cust2 = Customer.create("Customer 2", addr2, 45, contacts2)
 

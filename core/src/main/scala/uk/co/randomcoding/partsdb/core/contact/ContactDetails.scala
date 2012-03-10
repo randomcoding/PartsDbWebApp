@@ -22,6 +22,7 @@ class ContactDetails private () extends MongoRecord[ContactDetails] with ObjectI
   object phoneNumber extends StringField(this, 50)
   object mobileNumber extends StringField(this, 50)
   object emailAddress extends StringField(this, 50)
+  object faxNumber extends StringField(this, 50)
   object isPrimary extends BooleanField(this)
 
   override def equals(that: Any): Boolean = {
@@ -32,13 +33,13 @@ class ContactDetails private () extends MongoRecord[ContactDetails] with ObjectI
         contactName.get == other.contactName.get &&
           phoneNumber.get == other.phoneNumber.get &&
           mobileNumber.get == other.mobileNumber.get &&
-          emailAddress.get == other.emailAddress.get
-
+          emailAddress.get == other.emailAddress.get &&
+          faxNumber.get == other.faxNumber.get
       }
     }
   }
 
-  private val hashCodeFields = List(contactName, phoneNumber, mobileNumber, emailAddress)
+  private val hashCodeFields = List(contactName, phoneNumber, mobileNumber, emailAddress, faxNumber)
 
   override def hashCode: Int = getClass.hashCode + (hashCodeFields map (_.get.hashCode) sum)
 }
@@ -50,8 +51,8 @@ object ContactDetails extends ContactDetails with MongoMetaRecord[ContactDetails
   /**
    * Create a new `ContactDetails` record, but '''does not''' add it to the database
    */
-  def create(contactName: String, phoneNumber: String, mobileNumber: String, emailAddress: String, isPrimary: Boolean): ContactDetails = {
-    ContactDetails.createRecord.contactName(contactName).phoneNumber(phoneNumber).mobileNumber(mobileNumber).emailAddress(emailAddress).isPrimary(isPrimary)
+  def create(contactName: String, phoneNumber: String, mobileNumber: String, emailAddress: String, faxNumber: String, isPrimary: Boolean): ContactDetails = {
+    ContactDetails.createRecord.contactName(contactName).phoneNumber(phoneNumber).mobileNumber(mobileNumber).emailAddress(emailAddress).faxNumber(faxNumber).isPrimary(isPrimary)
   }
 
   /**
@@ -79,8 +80,8 @@ object ContactDetails extends ContactDetails with MongoMetaRecord[ContactDetails
     case _ => ContactDetails.where(_.contactName eqs contactDetails.contactName.get).or(
       _.where(_.phoneNumber eqs contactDetails.phoneNumber.get),
       _.where(_.mobileNumber eqs contactDetails.mobileNumber.get),
-      _.where(_.emailAddress eqs contactDetails.emailAddress.get)).get
-
+      _.where(_.emailAddress eqs contactDetails.emailAddress.get),
+      _.where(_.faxNumber eqs contactDetails.faxNumber.get)).get
   }
 
   /**
@@ -109,8 +110,8 @@ object ContactDetails extends ContactDetails with MongoMetaRecord[ContactDetails
    * otherwise, the new record will be saved and if successful, will be returned as an `Option[ContactDetails]`.
    * If the save operation fails then `None` is returned
    */
-  def add(contactName: String, phoneNumber: String, mobileNumber: String, emailAddress: String, isPrimary: Boolean): Option[ContactDetails] = {
-    add(create(contactName, phoneNumber, mobileNumber, emailAddress, isPrimary))
+  def add(contactName: String, phoneNumber: String, mobileNumber: String, emailAddress: String, faxNumber: String, isPrimary: Boolean): Option[ContactDetails] = {
+    add(create(contactName, phoneNumber, mobileNumber, emailAddress, faxNumber, isPrimary))
   }
 
   /**
@@ -123,11 +124,12 @@ object ContactDetails extends ContactDetails with MongoMetaRecord[ContactDetails
    *
    * This will update '''ALL''' the fields so if you want to keep the same value for a field then pass it in as the new value
    */
-  def modify(oid: ObjectId, newName: String, newPhoneNumber: String, newMobileNumber: String, newEMailAddress: String, isPrimary: Boolean): Unit = {
+  def modify(oid: ObjectId, newName: String, newPhoneNumber: String, newMobileNumber: String, newEMailAddress: String, newFaxNumber: String, isPrimary: Boolean): Unit = {
     ContactDetails.where(_.id eqs oid).modify(_.contactName setTo newName) and
       (_.phoneNumber setTo newPhoneNumber) and
       (_.mobileNumber setTo newMobileNumber) and
       (_.emailAddress setTo newEMailAddress) and
+      (_.faxNumber setTo newFaxNumber) and
       (_.isPrimary setTo isPrimary) updateMulti
   }
 
@@ -135,6 +137,6 @@ object ContactDetails extends ContactDetails with MongoMetaRecord[ContactDetails
    * Modify a `ContactDetails` record by setting all its fields to match those of then `newDetails`
    */
   def modify(oid: ObjectId, newDetails: ContactDetails): Unit = {
-    modify(oid, newDetails.contactName.get, newDetails.phoneNumber.get, newDetails.mobileNumber.get, newDetails.emailAddress.get, newDetails.isPrimary.get)
+    modify(oid, newDetails.contactName.get, newDetails.phoneNumber.get, newDetails.mobileNumber.get, newDetails.faxNumber.get, newDetails.emailAddress.get, newDetails.isPrimary.get)
   }
 }
