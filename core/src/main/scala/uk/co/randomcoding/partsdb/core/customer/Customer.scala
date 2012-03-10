@@ -178,6 +178,6 @@ object Customer extends Customer with MongoMetaRecord[Customer] with Logger {
     Customer.where(_.id eqs oid).modify(_.customerName setTo newName) and
       (_.businessAddress setTo address.get.id.get) and
       (_.terms setTo newTerms) and
-      (_.contactDetails setTo (contacts map (_.id.get) distinct)) updateMulti
+      (_.contactDetails setTo (contacts map (_.id.get))) updateMulti
   }
 }
