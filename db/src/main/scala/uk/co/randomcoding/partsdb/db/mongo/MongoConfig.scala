@@ -46,14 +46,19 @@ object MongoConfig extends Logger {
   def init(dbName: String): Unit = {
     mongoConnectionDetails(dbName) match {
       case Some(x) => x match {
-        case config: MongoConnectionConfig => config match {
-          case MongoConnectionConfig(host, port, user, pass, db, true) => {
-            MongoDB.defineDbAuth(DefaultMongoIdentifier, (host, port), db, user, pass)
+        case config: MongoConnectionConfig => {
+          debug("Received config details: %s".format(config))
+          config match {
+            case MongoConnectionConfig(host, port, user, pass, db, true) => {
+              debug("Got Mongo Config for CloudFoundry")
+              MongoDB.defineDbAuth(DefaultMongoIdentifier, new Mongo(host, port), db, user, pass)
+            }
+            case MongoConnectionConfig(_, _, _, _, db, false) => {
+              debug("Unsing local Mongo Config")
+              MongoDB.defineDb(DefaultMongoIdentifier, new Mongo, db)
+            }
+            case _ => error("Failed To initialise mongo DB Connection!")
           }
-          case MongoConnectionConfig(_, _, _, _, db, false) => {
-            MongoDB.defineDb(DefaultMongoIdentifier, new Mongo, db)
-          }
-          case _ => error("Failed To initialise mongo DB Connection!")
         }
         case _ => error("Failed To initialise mongo DB Connection!")
       }
@@ -63,22 +68,19 @@ object MongoConfig extends Logger {
 
   private implicit def hostToMongo(host: (String, Int)): Mongo = new Mongo(host._1, host._2)
 
-  private def mongoConnectionDetails(dbName: String) = {
+  private def mongoConnectionDetails(dbName: String): Option[MongoConnectionConfig] = {
     debug("Env: VCAP_SERVICES: %s".format(Option(System.getenv("VCAP_SERVICES"))))
 
     try {
       Option(System.getenv("VCAP_SERVICES")) match {
         case Some(s) => {
-          try {
-            debug("We seems to be running on Cloud Foundry. Attempting to extract connection details")
-            parse(s) \\ "mongodb-1.8" match {
-              case JArray(ary) => ary foreach { mongoJson =>
-                val mongo = mongoJson.extract[CloudFoundryMongo]
-                val credentials = mongo.credentials
-                debug("Extracted CloudFoundry MongoDB: %s\nWith Credentials: %s".format(mongo, credentials))
-                Some(MongoConnectionConfig(credentials.hostname, credentials.port.toInt, credentials.username, credentials.password, credentials.db, true))
-              }
-              case x => warn("Json parse error: %s".format(x))
+          debug("We seems to be running on Cloud Foundry. Attempting to extract connection details")
+          debug("Received JSON: %s".format(s))
+          parse(s) \\ "mongodb-1.8" match {
+            case JArray(ary) => extractConfigFromCfJson(ary)
+            case x => {
+              warn("Json parse error: %s".format(x))
+              None
             }
           }
         }
@@ -98,6 +100,21 @@ object MongoConfig extends Logger {
         None
       }
     }
+  }
+
+  private[this] def extractConfigFromCfJson(ary: Seq[JValue]) = {
+    // TODO: This loop could/should be made to identify the element it wants and then use just that one 
+    var config: Option[MongoConnectionConfig] = None
+
+    ary foreach { mongoJson =>
+      val mongo = mongoJson.extract[CloudFoundryMongo]
+      val credentials = mongo.credentials
+      debug("Extracted CloudFoundry MongoDB: %s\nWith Credentials: %s".format(mongo, credentials))
+      config = Some(MongoConnectionConfig(credentials.hostname, credentials.port.toInt, credentials.username, credentials.password, credentials.db, true))
+    }
+
+    debug("Using mongodb cloudfoundry config: %s".format(config))
+    config
   }
 }
 

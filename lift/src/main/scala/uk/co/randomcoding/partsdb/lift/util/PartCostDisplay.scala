@@ -13,16 +13,16 @@ import uk.co.randomcoding.partsdb.lift.util._
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
-object PartCostDisplay extends EntityDisplay {
+object PartCostDisplay extends TabularEntityDisplay {
 
   override type EntityType = PartCost
 
   override val rowHeadings = List("Part", "Cost", "Last Updated")
 
-  def displayEntity(entity: PartCost): NodeSeq = {
+  def displayEntity(entity: PartCost, editLink: Boolean = false, displayLink: Boolean = false): NodeSeq = {
     <td>{ displayPartName(entity) }</td>
     <td>{ "£%.2f".format(entity.suppliedCost.get) }</td>
-    <td>{ displayDate(entity) }</td> ++ <td></td>
+    <td>{ displayDate(entity) }</td> ++ emptyEditAndDisplayCells
   }
 
   private def displayPartName(partCost: PartCost) = {

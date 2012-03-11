@@ -14,11 +14,11 @@ import uk.co.randomcoding.partsdb.core.supplier.Supplier
 import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
 import uk.co.randomcoding.partsdb.lift.util.snippet._
 
-import net.liftweb.common.{Logger, Full}
+import net.liftweb.common.{ Logger, Full }
 import net.liftweb.http.js.JsCmds.Noop
 import net.liftweb.http.js.JsCmd.unitToJsCmd
 import net.liftweb.http.js.JsCmd
-import net.liftweb.http.{StatefulSnippet, S}
+import net.liftweb.http.{ StatefulSnippet, S }
 import net.liftweb.util.Helpers._
 
 /**
@@ -49,12 +49,12 @@ class AddEditSupplier extends StatefulSnippet with AddressSnippet with ContactDe
   /*
    * Set the contact details fields of the contact details snippet based on the initial supplier
    */
-  override var (contactName, phoneNumber, mobileNumber, email) = initialSupplier match {
-    case Some(s) => ContactDetails findById s.contactDetails.get match {
-      case Some(c) => (c.contactName.get, c.phoneNumber.get, c.mobileNumber.get, c.emailAddress.get)
-      case _ => ("", "", "", "")
+  override var (contactName, phoneNumber, mobileNumber, email, faxNumber) = initialSupplier match {
+    case Some(s) => s.contactDetails.get match {
+      case c: ContactDetails => (c.contactName.get, c.phoneNumber.get, c.mobileNumber.get, c.emailAddress.get, c.faxNumber.get)
+      case _ => ("", "", "", "", "")
     }
-    case _ => ("", "", "", "")
+    case _ => ("", "", "", "", "")
   }
 
   /*
@@ -81,8 +81,8 @@ class AddEditSupplier extends StatefulSnippet with AddressSnippet with ContactDe
 
     "#formTitle" #> Text("Add Supplier") &
       "#nameEntry" #> styledText(supplierName, supplierName = _) &
-      renderAddress() &
-      renderContactDetails() &
+      renderEditableAddress() &
+      renderEditableContactDetails() &
       renderAddPartCost() &
       renderCurrentPartCosts() &
       renderSubmitAndCancel()
@@ -94,29 +94,28 @@ class AddEditSupplier extends StatefulSnippet with AddressSnippet with ContactDe
 
     performValidation(address, contacts) match {
       case Nil => {
-        val newContacts = updateContactDetails(contacts)
         val newAddress = updateAddress(address.get)
 
         initialSupplier match {
           case Some(s) => {
-            modifySupplier(s, supplierName, newContacts.get, newAddress.get, currentPartCosts)
+            modifySupplier(s, supplierName, contacts, newAddress.get, currentPartCosts)
             S redirectTo cameFrom
-        }
+          }
           case _ => addSupplier(supplierName, contacts, address.get, currentPartCosts) match {
             case Some(s) => S redirectTo cameFrom
             case _ => Noop
+          }
+        }
       }
-    }
-  }
-      case errors => displayError(errors: _*)
+      case errors => displayErrors(errors: _*)
     }
   }
 
-  private[this] def performValidation(address: Option[Address], contacts: ContactDetails): List[(String, String)] = {
+  private[this] def performValidation(address: Option[Address], contacts: ContactDetails): Seq[String] = {
     val validationItems = Seq(
-      ValidationItem(address, "errorMessages", "Address Entry was invalid"),
-      ValidationItem(contacts, "errorMessages", "Contact Details entry was invalid"),
-      ValidationItem(supplierName, "errorMessages", "Supplier Name must be entered"))
+      ValidationItem(address, "Business Address"), //, "Address Entry was invalid"),
+      ValidationItem(contacts, "Contact Details"), //, "Contact Details entry was invalid"),
+      ValidationItem(supplierName, "Supplier Name")) //, "Supplier Name must be entered"))
 
     validate(validationItems: _*)
   }

@@ -6,11 +6,15 @@
 </head>
 <body class="lift:content_id=main">
   <div id="main" class="lift:surround?with=default;at=content">
-    <div class="lift:embed?what=/templates-hidden/_error_messages"></div>
+    <!-- <div class="lift:embed?what=/templates-hidden/_error_messages"></div> -->
     <div class="lift:AddEditQuote?form=POST&eager_eval=true">
       <div style="width: 98%" align="center"></div>
       <div class="form-title">
         <span id="formTitle">Title</span>
+      </div>
+      <div class="column span-4 form-label">Transaction Name:</div>
+      <div class="column span-15 last">
+        <span id="transactionName">Transaction Name</span>
       </div>
       <div class="column span-4 form-label">Customer:</div>
       <div class="column span-15 last">

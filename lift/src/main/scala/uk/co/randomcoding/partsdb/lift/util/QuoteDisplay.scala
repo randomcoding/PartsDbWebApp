@@ -11,11 +11,11 @@ import uk.co.randomcoding.partsdb.lift.util._
 import net.liftweb.common.Logger
 
 /**
- * Helper functions for displaying customers in lift pages
+ * Helper functions for displaying quotes in lift pages
  *
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
-object QuoteDisplay extends EntityDisplay with Logger {
+object QuoteDisplay extends TabularEntityDisplay with Logger {
   type EntityType = Document
   /**
    * The headings to use for the display of the customer data table
@@ -30,8 +30,9 @@ object QuoteDisplay extends EntityDisplay with Logger {
    * @param customer The [[uk.co.randomcoding.partsdb.core.customer.Customer]] to display
    * @return A [[scala.xml.NodeSeq]] of `<td>` elements to display the customer details
    */
-  override def displayEntity(doc: Document): NodeSeq = {
-    <td>{ doc.documentNumber }</td> ++ <td></td>
+  override def displayEntity(doc: Document, editLink: Boolean = false, displayLink: Boolean = false): NodeSeq = {
+    <td>{ doc.documentNumber }</td> ++
+      emptyEditAndDisplayCells
     //editEntityCell(editEntityLink("Quote", doc.id))
   }
 }

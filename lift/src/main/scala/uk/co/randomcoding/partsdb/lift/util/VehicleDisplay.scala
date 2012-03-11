@@ -14,8 +14,9 @@ import net.liftweb.common.Logger
  * Helper functions for displaying vehicles in lift pages
  *
  * @author Jane Rowe
+ * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
-object VehicleDisplay extends EntityDisplay with Logger {
+object VehicleDisplay extends TabularEntityDisplay with Logger {
   type EntityType = Vehicle
   /**
    * The headings to use for the display of the vehicle data table
@@ -30,8 +31,8 @@ object VehicleDisplay extends EntityDisplay with Logger {
    * @param vehicle The [[uk.co.randomcoding.partsdb.core.vehicle.Vehicle]] to display
    * @return A [[scala.xml.NodeSeq]] of `<td>` elements to display the vehicle details
    */
-  override def displayEntity(vehicle: Vehicle): NodeSeq = {
+  override def displayEntity(vehicle: Vehicle, editLink: Boolean, displayLink: Boolean): NodeSeq = {
     <td>{ vehicle.vehicleName }</td> ++
-      editEntityCell(editEntityLink("Vehicle", vehicle.id.get))
+      editAndDisplayCells("Vehicle", vehicle.id.get, editLink, displayLink)
   }
 }

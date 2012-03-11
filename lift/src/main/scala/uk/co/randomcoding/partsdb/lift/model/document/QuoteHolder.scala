@@ -11,7 +11,7 @@ import uk.co.randomcoding.partsdb.core.document.LineItem
 import uk.co.randomcoding.partsdb.core.part.Part
 import uk.co.randomcoding.partsdb.core.supplier.Supplier
 
-import net.liftweb.common.{Logger, Full}
+import net.liftweb.common.{ Logger, Full }
 import net.liftweb.util.Helpers._
 import net.liftweb.util.ValueCell
 
@@ -179,7 +179,10 @@ class QuoteHolder extends Logger {
     debug("Adding %d of %s with a price of %.2f and a %d markup".format(quantityCell.get, currentPart, currentPartBaseCostCell.get, markupCell.get))
     (currentPart, quantityCell.get) match {
       case (None, _) => // do nothing
-      case (Some(part), q) if q <= 0 => removeItem(part)
+      case (Some(part), q) if q <= 0 => {
+        removeItem(part)
+        resetPartQuantityAndSupplier
+      }
       case (Some(part), q) => {
         val partCost = currentPartBaseCostCell.get
         val markupValue = markupCell.get.toDouble / 100.0
@@ -193,8 +196,15 @@ class QuoteHolder extends Logger {
           })
           case _ => items :+ LineItem.create(items.size, part, q, partCost, markupValue)
         })
+        resetPartQuantityAndSupplier
       }
     }
+  }
+
+  private def resetPartQuantityAndSupplier: Unit = {
+    currentSupplierCell set None
+    currentPartCell set None
+    quantityCell set 0
   }
 
   private val updateLineItem = (li: LineItem, quant: Int, cost: Double, markupValue: Double) => li.quantity(quant).basePrice(cost).markup(markupValue)

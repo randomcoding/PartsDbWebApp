@@ -12,131 +12,12 @@ import com.foursquare.rogue.Rogue._
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
-class ContactDetailsRecordTest extends MongoDbTestBase {
-  override val dbName = "ContactDetailsRecordTest"
+class ContactDetailsRecordTest extends FunSuite with ShouldMatchers {
 
-  test("Add new Contact Details") {
-    val contacts = add("Dave", "01234 567890", "", "", true)
-
-    val expected = createRecord.contactName("Dave").phoneNumber("01234 567890")
-
-    contacts should be(Some(expected))
-
-    findNamed("Dave") should be(List(expected))
-    findById(contacts.get.id.get) should be(Some(expected))
-  }
-
-  test("Adding the same ContactDetails more than once does not result in a duplication, or a change of underlying id") {
-    val contacts = add("Dave", "01234 567890", "", "", true)
-    val contactsId = contacts.get.id.get
-    contacts should be('defined)
-    add("Dave", "01234 567890", "", "", true) should be(contacts)
-    add("Dave", "01234 567890", "", "", true).get.id.get should be(contactsId)
-
-    findNamed("Dave")(0).id.get should be(contactsId)
-
-    findById(contactsId) should be(contacts)
-  }
-
-  test("Find Matching can find similar records by object id") {
-    val contacts = add("Dave", "01234 567890", "", "", true)
-
-    val otherContacts = createRecord.id(contacts.get.id.get).contactName("Sally").mobileNumber("7867868745")
-
-    findMatching(otherContacts) should be(contacts)
-  }
-
-  test("Find Matching can find similar records by contact name and one contact detail") {
-    val dave = add("Dave", "01234 567890", "", "", true)
-    val otherDave = createRecord.contactName("Dave").phoneNumber("01234 567890").emailAddress("em@ai.l").mobileNumber("07777888999")
-    findMatching(otherDave) should be(dave)
-    val dave1 = add("Dave1", "", "07777888999", "", false)
-    val otherDave1 = createRecord.contactName("Dave1").phoneNumber("01234 567890").emailAddress("em@ai.l").mobileNumber("07777888999")
-    findMatching(otherDave1) should be(dave1)
-    val dave2 = add("Dave2", "", "", "em@ai.l", true)
-    val otherDave2 = createRecord.contactName("Dave2").phoneNumber("01234 567890").emailAddress("em@ai.l").mobileNumber("07777888999")
-    findMatching(otherDave2) should be(dave2)
-  }
-
-  test("Adding contact details with the same contact name and at least one contact number the same returns the original record") {
-    val dave = add("Dave", "01234 567890", "", "", true)
-    val otherDave = createRecord.contactName("Dave").phoneNumber("01234 567890").emailAddress("em@ai.l").mobileNumber("07777888999")
-
-    add(otherDave) should be(dave)
-  }
-
-  test("Removing a Contact Details that exists in the database") {
-    val contacts = add("Dave", "01234 567890", "", "", true)
-    val contactsId = contacts.get.id.get
-    val contacts2 = add("Sally", "01234 678901", "", "", false)
-    contacts2 should be('defined)
-
-    remove(contactsId)
-
-    findById(contactsId) should be(None)
-    findNamed("Dave") should be(Nil)
-    (ContactDetails where (_.id exists true) fetch) should be(List(contacts2.get))
-  }
-
-  test("Removing a Contact Details from an empty database does not cause an error or exception") {
-    import org.bson.types.ObjectId
-
-    remove(new ObjectId)
-  }
-
-  test("Removing a Contact Details that does not exist from a populated database does not cause an error or exception") {
-    import org.bson.types.ObjectId
-
-    add("Dave", "01234 567890", "", "", true) should be('defined)
-    add("Sally", "01234 678901", "", "", true) should be('defined)
-
-    remove(new ObjectId)
-  }
-
-  test("Find a Contact Details that is present in the database") {
-    val contacts1 = add("Dave", "01234 567890", "", "", true).get
-    val contacts2 = add("Sally", "01234 678901", "", "", true).get
-    // Find by oid, & name
-    findById(contacts1.id.get) should be(Some(contacts1))
-    findById(contacts2.id.get) should be(Some(contacts2))
-
-    findNamed("Dave") should be(List(contacts1))
-    findNamed("Sally") should be(List(contacts2))
-  }
-
-  test("Find a Contact Details that is not present in the database") {
-    import org.bson.types.ObjectId
-    add("Dave", "01234 567890", "", "", true)
-    add("Sally", "01234 678901", "", "", true)
-    // Find by oid & name
-    findNamed("Garry") should be(Nil)
-    findById(new ObjectId) should be(None)
-  }
-
-  test("Modify a Contact Details") {
-    val contacts1 = add("Dave", "01234 567890", "", "", true).get
-    val contactId = contacts1.id.get
-    modify(contactId, "Fred", "", "07777888999", "an@em.ail", true)
-
-    val expected = ContactDetails.createRecord.contactName("Fred").mobileNumber("07777888999").emailAddress("an@em.ail").isPrimary(true)
-    findNamed("Dave") should be(Nil)
-    findNamed("Fred") should be(List(expected))
-  }
-
-  test("Modify a Contact Details does not modify its object id") {
-    val contacts1 = add("Dave", "01234 567890", "", "", true).get
-    val contactId = contacts1.id.get
-    modify(contactId, "Fred", "", "07777888999", "an@em.ail", false)
-
-    val expected = ContactDetails.createRecord.contactName("Fred").mobileNumber("07777888999").emailAddress("an@em.ail").isPrimary(false)
-
-    findById(contactId) should be(Some(expected))
-  }
-
-  test("Equality and HashCode") {
-    val contact1 = createRecord contactName "Dave" phoneNumber "123" mobileNumber "456" emailAddress "one@two.three"
-    val contact2 = createRecord contactName "Dave" phoneNumber "123" mobileNumber "456" emailAddress "one@two.three"
-    val contact3 = createRecord contactName "Dave" phoneNumber "123" mobileNumber "456" emailAddress "one@two.three"
+  test("Equals objects are equals and have the same hashcode") {
+    val contact1 = create("Dave", "123", "456", "one@two.three", "4455667788", true)
+    val contact2 = create("Dave", "123", "456", "one@two.three", "4455667788", true)
+    val contact3 = create("Dave", "123", "456", "one@two.three", "4455667788", true)
 
     contact1 should (be(contact2) and be(contact3))
     contact2 should (be(contact1) and be(contact3))
@@ -145,4 +26,52 @@ class ContactDetailsRecordTest extends MongoDbTestBase {
     contact1.hashCode should (be(contact2.hashCode) and be(contact3.hashCode))
   }
 
+  test("Contact Details are not equals if only the contact name field is different") {
+    pending
+  }
+
+  test("Contact Details are not equals if only the phone number field is different") {
+    pending
+  }
+
+  test("Contact Details are not equals if only the mobile number field is different") {
+    pending
+  }
+
+  test("Contact Details are not equals if only the fax number field is different") {
+    pending
+  }
+
+  test("Contact Details are not equals if only the email address field is different") {
+    pending
+  }
+
+  test("Not equals contact details have different hashcodes") {
+    pending
+  }
+
+  test("Matches does match similar records by contact name and one contact detail") {
+    val dave = create("Dave", "01234 567890", "", "", "", true)
+    val otherDave = create("Dave", "01234 567890", "em@ai.l", "07777888999", "44556677", true)
+    dave matches otherDave should be(true)
+
+    val dave1 = create("Dave1", "", "07777888999", "", "", false)
+    val otherDave1 = create("Dave1", "01234 567890", "07777888999", "em@ai.l", "44556677", true)
+    dave1 matches otherDave1 should be(true)
+
+    val dave2 = create("Dave2", "", "", "em@ai.l", "", true)
+    val otherDave2 = create("Dave2", "01234 567890", "07777888999", "em@ai.l", "44556677", true)
+    val differentOtherDave2 = create("Dave2", "01234 567890", "07777888999", "em@ai.l", "44556677", false)
+    dave2 matches otherDave2 should be(true)
+    dave2 matches differentOtherDave2 should be(true)
+
+    val dave3 = create("Dave3", "", "", "", "44556677", true)
+    val otherDave3 = create("Dave3", "01234 567890", "em@ai.l", "07777888999", "44556677", true)
+    dave3 matches otherDave3 should be(true)
+    otherDave3 matches dave3 should be(true)
+  }
+
+  test("Matches does not match details that should not match") {
+    pending
+  }
 }

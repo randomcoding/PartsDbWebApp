@@ -13,10 +13,10 @@ import uk.co.randomcoding.partsdb.core.customer.Customer
 import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
 import uk.co.randomcoding.partsdb.lift.util.snippet._
 
-import net.liftweb.common.{Logger, Full}
+import net.liftweb.common.{ Logger, Full }
 import net.liftweb.http.js.JsCmds.Noop
 import net.liftweb.http.js.JsCmd
-import net.liftweb.http.{StatefulSnippet, S}
+import net.liftweb.http.{ StatefulSnippet, S }
 import net.liftweb.util.Helpers._
 
 /**
@@ -45,15 +45,12 @@ class AddEditCustomer extends StatefulSnippet with ErrorDisplay with DataValidat
     case _ => ("", "United Kingdom")
   }
 
-  var (contactName, phoneNumber, mobileNumber, email) = initialCustomer match {
+  override var (contactName, phoneNumber, mobileNumber, email, faxNumber) = initialCustomer match {
     case Some(cust) => cust.contactDetails.get match {
-      case Nil => ("", "", "", "")
-      case contacts => contacts map (ContactDetails findById _) filter (_.isDefined) map (_.get) find (_.isPrimary.get == true) match {
-        case Some(c) => (c.contactName.get, c.phoneNumber.get, c.mobileNumber.get, c.emailAddress.get)
-        case _ => ("", "", "", "")
-      }
+      case Nil => ("", "", "", "", "")
+      case head :: tail => (head.contactName.get, head.phoneNumber.get, head.mobileNumber.get, head.emailAddress.get, head.faxNumber.get)
     }
-    case _ => ("", "", "", "")
+    case _ => ("", "", "", "", "")
   }
 
   def dispatch = {
@@ -63,9 +60,9 @@ class AddEditCustomer extends StatefulSnippet with ErrorDisplay with DataValidat
   def render = {
     "#formTitle" #> Text("Add Customer") &
       "#nameEntry" #> styledText(name, name = _) &
-      renderAddress() &
+      renderEditableAddress() &
       "#paymentTermsEntry" #> styledSelect(terms, paymentTermsText, paymentTermsText = _) &
-      renderContactDetails() &
+      renderEditableContactDetails() &
       renderSubmitAndCancel()
   }
 
@@ -87,10 +84,10 @@ class AddEditCustomer extends StatefulSnippet with ErrorDisplay with DataValidat
     }
 
     trace("About to validate")
-    val validationChecks = Seq(ValidationItem(billingAddress, "errorMessages", "Business Address is not valid.\n Please ensure there is a Customer Name and that the country is selected."),
-      ValidationItem(paymentTerms, "errorMessages", "Payment Terms are not valid"),
-      ValidationItem(contact, "errorMessages", "Contact Details are not valid"),
-      ValidationItem(name, "errorMessages", "Customer Name must be entered"))
+    val validationChecks = Seq(ValidationItem(billingAddress, "Biusiness Address" /*, "Business Address is not valid.\n Please ensure there is a Customer Name and that the country is selected."*/ ),
+      ValidationItem(paymentTerms, "Payment Terms" /*, "Payment Terms are not valid"*/ ),
+      ValidationItem(contact, "Contact Details" /*, "Contact Details are not valid"*/ ),
+      ValidationItem(name, "Customer Name" /*, "Customer Name must be entered"*/ ))
 
     validate(validationChecks: _*) match {
       case Nil => {
@@ -100,7 +97,7 @@ class AddEditCustomer extends StatefulSnippet with ErrorDisplay with DataValidat
         }
       }
       case errors => {
-        errors foreach (error => displayError(error._1, error._2))
+        errors foreach (error => displayError(error))
         Noop
       }
     }
@@ -111,15 +108,15 @@ class AddEditCustomer extends StatefulSnippet with ErrorDisplay with DataValidat
       case Some(c) => S redirectTo cameFrom
       case _ => {
         error("Failed to add new customer, [name: %s, address: %s, terms: %s, contact: %s".format(name, billingAddress, paymentTerms, contact))
-        displayError("errorMessages", "Failed to add Customer")
+        displayError("Failed to add Customer")
         Noop
       }
     }
   }
 
   private def modifyCustomer(cust: Customer, billingAddress: Address, paymentTerms: Int, contact: ContactDetails): JsCmd = {
-    val contacts = contact :: (cust.contactDetails.get map (ContactDetails findById _) filter (_ isDefined) map (_ get))
-    Customer.modify(cust.id.get, name, billingAddress, paymentTerms, contacts.distinct)
+    val contacts = contact :: cust.contactDetails.get filterNot (_ matches contact)
+    Customer.modify(cust.id.get, name, billingAddress, paymentTerms, contacts)
     S redirectTo cameFrom
   }
 }

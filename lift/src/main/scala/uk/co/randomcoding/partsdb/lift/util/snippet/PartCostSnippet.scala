@@ -18,7 +18,7 @@ import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
 import uk.co.randomcoding.partsdb.lift.util.snippet._
 import uk.co.randomcoding.partsdb.lift.util._
 
-import net.liftweb.common.{Logger, Full}
+import net.liftweb.common.{ Logger, Full }
 import net.liftweb.http.js.JsCmds.SetHtml
 import net.liftweb.http.js.JsCmd.unitToJsCmd
 import net.liftweb.http.js.JsCmd
@@ -26,7 +26,7 @@ import net.liftweb.util.Helpers._
 
 /**
  * Snippet to handle the processing of adding, removing and displaying [[uk.co.randomcoding.partsdb.core.part.PartCost]]s for a
- * [[import uk.co.randomcoding.partsdb.core.supplier.Supplier]]
+ * [[uk.co.randomcoding.partsdb.core.supplier.Supplier]]
  *
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
@@ -54,16 +54,9 @@ trait PartCostSnippet extends ErrorDisplay with Logger {
       "#removePartCost" #> styledAjaxButton("Remove", removePartCost)
   }
 
-  def renderCurrentPartCosts() = {
-    "#currentPartCosts" #> PartCostDisplay.displayTable(currentPartCosts)
-  }
+  def renderCurrentPartCosts() = "#currentPartCosts" #> PartCostDisplay(currentPartCosts, false, false)
 
   def addSupplier(name: String, contacts: ContactDetails, address: Address, currentPartCosts: List[PartCost]): Option[Supplier] = {
-    /*currentPartCosts map (PartCost add _) contains (None) match {
-      case true => error("Did not add all part costs to the database. Please check")
-      case false => // all ok
-    }*/
-
     Supplier.add(name, contacts, address, currentPartCosts)
   }
 
@@ -81,7 +74,7 @@ trait PartCostSnippet extends ErrorDisplay with Logger {
     currentPartLastSuppliedDate = {
       val dateParts = dateString split ("/") map (asInt(_) openOr -1)
       if (dateParts contains -1) {
-        displayError("Error Location", "Cannot create Date from: %s".format(dateString))
+        displayError("Cannot create Date from: %s".format(dateString))
         defaultDate
       }
       else {
@@ -93,19 +86,19 @@ trait PartCostSnippet extends ErrorDisplay with Logger {
 
   private[this] def refreshPartCostDisplay(): JsCmd = {
     debug("Updating current parts to: %s".format(currentPartCosts.mkString("\n")))
-    SetHtml("currentPartCosts", PartCostDisplay.displayTable(currentPartCosts sortBy (partCost => Part.findById(partCost.part.get) match {
+    SetHtml("currentPartCosts", PartCostDisplay(currentPartCosts sortBy (partCost => Part.findById(partCost.part.get) match {
       case Some(p) => p.partName.get
       case _ => "zzzzzzz"
-    })))
+    }), false, false))
   }
 
   private[this] def addPartCost(): JsCmd = {
     clearErrors
     debug("Adding a part cost")
     (currentPart, currentPartCost, currentPartLastSuppliedDate) match {
-      case (_, cost: Double, _) if (cost <= 0.0d) => displayError("costErrorId", "Please enter a cost")
-      case (_, _, date: DateTime) if (date.equals(defaultDate) || date.isAfter(DateTime.now)) => displayError("dateErrorId", "Date is not valid")
-      case (None, _, _) => displayError("partErrorId", "Please select a part")
+      case (_, cost: Double, _) if (cost <= 0.0d) => displayError("Please enter a cost")
+      case (_, _, date: DateTime) if (date.equals(defaultDate) || date.isAfter(DateTime.now)) => displayError("Date is not valid")
+      case (None, _, _) => displayError("Please select a part")
       case (Some(p), cost: Double, date: DateTime) if (cost > 0.0 && date != defaultDate) => updatePartCosts(PartCost.create(p, cost, date))
       case (opt, cost, date) => error("Unhandled options supplied (%s, %.2f, %s)".format(opt, cost, dateString(date)))
     }
@@ -123,14 +116,13 @@ trait PartCostSnippet extends ErrorDisplay with Logger {
         currentPartCosts = currentPartCosts filterNot (_.part.get == currentPart.get.id.get)
         debug("Current Parts after removal: %s".format(currentPartCosts.mkString(", ")))
       }
-      case false => displayError("ErrorMessages", "Please select a Part to remove")
+      case false => displayError("Please select a Part to remove")
     }
 
     clearErrorsAndRefresh
   }
 
   private[this] def clearErrorsAndRefresh(): JsCmd = {
-    //resetCurrentPartCost &
     clearErrors &
       refreshPartCostDisplay
   }
@@ -159,21 +151,4 @@ trait PartCostSnippet extends ErrorDisplay with Logger {
 
     debug("Current Part costs are now: %s".format(currentPartCosts.mkString("\n")))
   }
-
-  /*private[this] def updatePartCosts(partCosts: List[PartCost]): List[PartCost] = {
-    val updatedCosts = partCosts map { pc =>
-      PartCost findById pc.id.get match {
-        case Some(partCost) => {
-          PartCost modify (partCost.id.get, partCost)
-          // this will return the option soon enough
-          PartCost findById partCost.id.get
-        }
-        case _ => PartCost add pc
-      }
-    }
-
-    if (updatedCosts contains (None)) error("Failed to update all part costs. Please Check")
-
-    updatedCosts filter (_ isDefined) map (_ get)
-  }*/
 }

@@ -21,8 +21,8 @@ class TransactionRecordTest extends MongoDbTestBase {
 
   val addr1 = Address.create("Addr1", "Addr1", "UK")
   val addr2 = Address.create("Addr2", "Addr2", "UK")
-  val contacts1 = ContactDetails.create("Dave", "", "", "", true)
-  val contacts2 = ContactDetails.create("Alan", "", "", "", true)
+  val contacts1 = ContactDetails.create("Dave", "", "", "", "", true)
+  val contacts2 = ContactDetails.create("Alan", "", "", "", "", true)
   val cust1 = Customer.create("Customer 1", addr1, 30, contacts1)
   val cust2 = Customer.create("Customer 2", addr2, 45, contacts2)
 
@@ -47,9 +47,9 @@ class TransactionRecordTest extends MongoDbTestBase {
   val doc2 = Document.create(lines, DocumentType.Order).docNumber(2002)
 
   test("Equality and HashCode") {
-    val t1 = Transaction.create(cust1, Seq(doc1))
-    val t2 = Transaction.create(cust1, Seq(doc1))
-    val t3 = Transaction.create(cust1, Seq(doc1))
+    val t1 = Transaction.create("t1", cust1, Seq(doc1))
+    val t2 = Transaction.create("t1", cust1, Seq(doc1))
+    val t3 = Transaction.create("t1", cust1, Seq(doc1))
 
     t1 should (equal(t2) and equal(t3))
     t2 should (equal(t1) and equal(t3))
@@ -57,111 +57,114 @@ class TransactionRecordTest extends MongoDbTestBase {
 
     t1.hashCode should (be(t2.hashCode) and be(t3.hashCode))
 
-    val t4 = Transaction.create(cust2, Seq(doc1))
-    val t5 = Transaction.create(cust1, Seq(doc2))
+    val t4 = Transaction.create("t4", cust2, Seq(doc1))
+    val t5 = Transaction.create("t5", cust1, Seq(doc2))
+    val t6 = Transaction.create("t6", cust1, Seq(doc1))
 
-    t1 should (not equal (t4) and not equal (t5))
-    t4 should (not equal (t1) and not equal (t5))
-    t5 should (not equal (t1) and not equal (t4))
+    t1 should (not equal (t4) and not equal (t5) and not equal (t6))
+    t4 should (not equal (t1) and not equal (t5) and not equal (t6))
+    t5 should (not equal (t1) and not equal (t4) and not equal (t6))
+    t6 should (not equal (t1) and not equal (t4) and not equal (t5))
 
-    t1.hashCode should (not be (t4.hashCode) and not be (t5.hashCode))
-    t4.hashCode should not be (t5.hashCode)
+    t1.hashCode should (not be (t4.hashCode) and not be (t5.hashCode) and not be (t6.hashCode))
+    t4.hashCode should (not be (t5.hashCode) and not be (t6.hashCode))
+    t5.hashCode should not be (t6.hashCode)
   }
 
   test("Adding a new Record generates a new record if there is no matching record") {
-    val t1 = Transaction.add(cust1, Seq(doc1)).get
+    val t1 = Transaction.add("t1", cust1, Seq(doc1)).get
     (Transaction where (_.id exists true) fetch) should be(List(t1))
 
-    val t2 = Transaction.add(cust2, Seq(doc2)).get
+    val t2 = Transaction.add("t2", cust2, Seq(doc2)).get
     (Transaction where (_.id exists true) fetch) should (have size (2) and
       contain(t1) and
       contain(t2))
   }
 
   test("Adding a new Record that matches an existing Record returns the matched record and does not add a new record to the database") {
-    val t1 = Transaction.add(cust1, Seq(doc1)).get
-    val t2 = Transaction.add(cust1, Seq(doc1)).get
+    val t1 = Transaction.add("t1", cust1, Seq(doc1)).get
+    val t2 = Transaction.add("t1", cust1, Seq(doc1)).get
 
     t2 should be(t1)
     (Transaction where (_.id exists true) fetch) should be(List(t1))
   }
 
   test("Find Matching returns the correct record if the Object Id matches") {
-    val t1 = Transaction.add(cust1, Seq(doc1)).get
-    val t2 = Transaction.create(cust2, Seq(doc2)).id(t1.id.get)
+    val t1 = Transaction.add("t1", cust1, Seq(doc1)).get
+    val t2 = Transaction.create("t2", cust2, Seq(doc2)).id(t1.id.get)
 
     Transaction.findMatching(t2) should be(Some(t1))
 
-    val t3 = Transaction.create(cust2, Seq(doc2))
+    val t3 = Transaction.create("t3", cust2, Seq(doc2))
     Transaction.findMatching(t3) should be(None)
   }
 
   test("Find Matching correctly identifies matches based on object content") {
-    val t1 = Transaction.add(cust1, Seq(doc1)).get
+    val t1 = Transaction.add("t1", cust1, Seq(doc1)).get
 
-    val t1matching1 = Transaction.create(cust1, Seq(doc1))
+    val t1matching1 = Transaction.create("t1", cust1, Seq(doc1))
     Transaction.findMatching(t1matching1) should be(Some(t1))
 
-    val t1NotMatching1 = Transaction.create(cust2, Seq(doc1))
+    val t1NotMatching1 = Transaction.create("t1", cust2, Seq(doc1))
     Transaction.findMatching(t1NotMatching1) should be(None)
 
-    val t1NotMatching2 = Transaction.create(cust1, Seq(doc2))
+    val t1NotMatching2 = Transaction.create("t1", cust1, Seq(doc2))
     Transaction.findMatching(t1NotMatching1) should be(None)
 
-    val t1NotMatching3 = Transaction.create(cust1, Nil)
+    val t1NotMatching3 = Transaction.create("t1", cust1, Nil)
     Transaction.findMatching(t1NotMatching1) should be(None)
 
-    val t2 = Transaction.add(cust2, Seq(doc1, doc2, doc3)).get
+    val t2 = Transaction.add("t2", cust2, Seq(doc1, doc2, doc3)).get
 
-    val t2matching1 = Transaction.create(cust2, Seq(doc1, doc2, doc3))
+    val t2matching1 = Transaction.create("t2", cust2, Seq(doc1, doc2, doc3))
     Transaction.findMatching(t2matching1) should be(Some(t2))
 
-    val t2matching2 = Transaction.create(cust2, Seq(doc2, doc1, doc3))
+    val t2matching2 = Transaction.create("t2", cust2, Seq(doc2, doc1, doc3))
     Transaction.findMatching(t2matching2) should be(Some(t2))
 
-    val t2notMatching1 = Transaction.create(cust1, Seq(doc1, doc3, doc2))
+    val t2notMatching1 = Transaction.create("t2", cust1, Seq(doc1, doc3, doc2))
     Transaction.findMatching(t2notMatching1) should be(None)
 
-    val t2notMatching2 = Transaction.create(cust1, Seq(doc3, doc2, doc1))
+    val t2notMatching2 = Transaction.create("t2", cust1, Seq(doc3, doc2, doc1))
     Transaction.findMatching(t2notMatching2) should be(None)
   }
 
   test("Find Matching correctly matches database records that contain a superset of the documents of the match request") {
-    val t2 = Transaction.add(cust2, Seq(doc1, doc2, doc3)).get
+    val t2 = Transaction.add("t2", cust2, Seq(doc1, doc2, doc3)).get
 
-    val t2subsetMatching1 = Transaction.create(cust2, Seq(doc1, doc2))
+    val t2subsetMatching1 = Transaction.create("t2", cust2, Seq(doc1, doc2))
     Transaction.findMatching(t2subsetMatching1) should be(Some(t2))
 
-    val t2subsetMatching2 = Transaction.create(cust2, Seq(doc2, doc1))
+    val t2subsetMatching2 = Transaction.create("t2", cust2, Seq(doc2, doc1))
     Transaction.findMatching(t2subsetMatching2) should be(Some(t2))
 
-    val t2subsetMatching3 = Transaction.create(cust2, Seq(doc3, doc2))
+    val t2subsetMatching3 = Transaction.create("t2", cust2, Seq(doc3, doc2))
     Transaction.findMatching(t2subsetMatching3) should be(Some(t2))
 
-    val t2subsetMatching4 = Transaction.create(cust2, Seq(doc3, doc1))
+    val t2subsetMatching4 = Transaction.create("t2", cust2, Seq(doc3, doc1))
     Transaction.findMatching(t2subsetMatching4) should be(Some(t2))
 
-    val t2subsetMatching5 = Transaction.create(cust2, Seq(doc1))
+    val t2subsetMatching5 = Transaction.create("t2", cust2, Seq(doc1))
     Transaction.findMatching(t2subsetMatching5) should be(Some(t2))
 
-    val t2subsetMatching6 = Transaction.create(cust2, Seq(doc2))
+    val t2subsetMatching6 = Transaction.create("t2", cust2, Seq(doc2))
     Transaction.findMatching(t2subsetMatching6) should be(Some(t2))
 
-    val t2subsetMatching7 = Transaction.create(cust2, Seq(doc3))
+    val t2subsetMatching7 = Transaction.create("t2", cust2, Seq(doc3))
     Transaction.findMatching(t2subsetMatching7) should be(Some(t2))
   }
 
   test("Find Matching correctly does not match database records that contain only a subset of the documents of the match request") {
-    val t1 = Transaction.add(cust1, Seq(doc1)).get
-    val t2 = Transaction.add(cust2, Seq(doc1, doc2)).get
+    val t1 = Transaction.add("t1", cust1, Seq(doc1)).get
+    val t2 = Transaction.add("t2", cust2, Seq(doc1, doc2)).get
 
-    val t1matching1 = Transaction.create(cust1, Seq(doc1, doc2))
+    val t1matching1 = Transaction.create("t1", cust1, Seq(doc1, doc2))
     Transaction.findMatching(t1matching1) should be(None)
 
-    val t1matching2 = Transaction.create(cust1, Seq(doc2, doc1))
+    val t1matching2 = Transaction.create("t1", cust1, Seq(doc2, doc1))
     Transaction.findMatching(t1matching2) should be(None)
 
-    val t2supersetNotMatching1 = Transaction.create(cust2, Seq(doc1, doc2, doc3))
+    val t2supersetNotMatching1 = Transaction.create("t2", cust2, Seq(doc1, doc2, doc3))
     Transaction.findMatching(t2supersetNotMatching1) should be(None)
   }
 

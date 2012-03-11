@@ -15,7 +15,8 @@
 .sidebar ul li a {
 	display: block;
 	float: left;
-	font-size: medium;
+	font-size: 1.3em;
+	font-weight: bold;
 	margin-bottom: 5px;
 }
 
@@ -32,6 +33,16 @@ input {
 textarea {
   width: 93%;
   height: 5em;
+}
+
+a {
+	font-size: 1.1em;
+	font-weight: bold;
+}
+
+a .ui-button {
+	font-size: 1.1em;
+  font-weight: bold;
 }
 
 .form-label {

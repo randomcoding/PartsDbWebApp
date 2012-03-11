@@ -19,8 +19,8 @@ class CustomerSearchProviderTest extends MongoDbTestBase {
   val daveAddress = Address.create("Dave Address", "12 The Road, The Town, A County. GH7 6TF", "UK")
   val sallyAddress = Address.create("Sally Address", "15 The Road, The Other Town, A Different County. DC7 5HG", "UK")
 
-  val contactDave = ContactDetails.create("Dave", "01234 567890", "07890 123456", "dave@email.com", true)
-  val contactSally = ContactDetails.create("Sally", "01987 654321", "07654 321098", "sally@snailmail.com", true)
+  val contactDave = ContactDetails.create("Dave", "01234 567890", "07890 123456", "dave@email.com", "4455667788", true)
+  val contactSally = ContactDetails.create("Sally", "01987 654321", "07654 321098", "sally@snailmail.com", "4455667788", true)
 
   val customerDave = Customer.create("Dave's Places", daveAddress, 30, contactDave)
   val customerSally = Customer.create("Sally's Scouting", sallyAddress, 30, contactSally)
@@ -28,7 +28,7 @@ class CustomerSearchProviderTest extends MongoDbTestBase {
   override def beforeEach(): Unit = {
     super.beforeEach()
 
-    Seq(daveAddress, sallyAddress, contactDave, contactSally) foreach (_ save)
+    Seq(daveAddress, sallyAddress) foreach (_ save)
   }
 
   test("Search for a customer in empty database returns no results") {
@@ -54,6 +54,9 @@ class CustomerSearchProviderTest extends MongoDbTestBase {
     findMatching(contactPhoneNumber = "01987") should be(List(customerSally))
     findMatching(contactMobileNumber = "12345") should be(List(customerDave))
     findMatching(contactEmail = "dave@email") should be(List(customerDave))
+    findMatching(contactFax = "4455667788") should (have size (2) and
+      contain(customerDave) and
+      contain(customerSally))
   }
 
   test("Search using multiple terms return expected results") {

@@ -1,5 +1,7 @@
 package bootstrap.liftweb
 
+import com.mongodb.MongoException
+
 import uk.co.randomcoding.partsdb.core.user.Role.{ USER, Role, NO_ROLE, ADMIN }
 import uk.co.randomcoding.partsdb.core.user.User.addUser
 import uk.co.randomcoding.partsdb.db.mongo.MongoConfig
@@ -30,12 +32,7 @@ class Boot extends Loggable {
 
     // Uncomment this to add new users required for user access initialisation
     //addBootstrapUsers
-    /*
-     * Create the various menus here.
-     * 
-     * To create a link to the show page use ExtLink to form the link with the '?entityType=...'
-     * as the Link form incorrectly escapes the ? and = characters in the address bar.
-     */
+
     val userLoggedIn = If(() => Session.currentUser.get match {
       case (s: String, r: Role) => r == USER
       case _ => false
@@ -55,6 +52,12 @@ class Boot extends Loggable {
       case _ => "/"
     }))
 
+    /*
+     * Create the various menus here.
+     * 
+     * To create a link to the show page use ExtLink to form the link with the '?entityType=...'
+     * as the Link form incorrectly escapes the ? and = characters in the address bar.
+     */
     val mainAppLoc = Menu(Loc("mainApp", new Link("app" :: Nil, true), "Home", userLoggedIn))
 
     // Create links for the show... parts here
@@ -69,6 +72,9 @@ class Boot extends Loggable {
     // Add Quote Button
     val addQuoteLoc = Menu(Loc("addQuote", new Link("app" :: "quote" :: Nil, false), "New Quote", userLoggedIn))
 
+    // Display... locs hidden
+    val displayEntitiesLoc = Menu(Loc("displayEntities", new Link("app" :: "display" :: Nil, true), "Display Entities", Hidden, userLoggedIn))
+
     // Provide access to the admin menu. This is hidden.
     val adminLoc = Menu(Loc("adminSection", new Link("admin" :: Nil, true), "Admin", Hidden, adminLoggedIn))
 
@@ -76,7 +82,7 @@ class Boot extends Loggable {
     val rootLoc = Menu(Loc("login", new Link("index" :: Nil, false), "Login", Hidden))
 
     // Construct the menu list to use
-    val menus = mainAppLoc :: showCustomers :: showParts :: showVehicles :: showSuppliers :: searchLoc :: addQuoteLoc :: adminLoc :: rootLoc :: Nil
+    val menus = mainAppLoc :: showCustomers :: showParts :: showVehicles :: showSuppliers :: searchLoc :: addQuoteLoc :: displayEntitiesLoc :: adminLoc :: rootLoc :: Nil
 
     LiftRules.setSiteMap(SiteMap(menus: _*))
 
@@ -113,8 +119,18 @@ class Boot extends Loggable {
 
   // Default users to add to the DB to bootstrap the login process
   private[this] def addBootstrapUsers: Unit = {
-    import uk.co.randomcoding.partsdb.core.user.User._
-    addUser("Dave", hash("dave123"), USER)
-    addUser("Adam", hash("adam123"), ADMIN)
+    import uk.co.randomcoding.partsdb.core.user.User
+    try {
+      User.addUser("Dave", hash("dave123"), USER)
+      User.addUser("Adam", hash("adam123"), ADMIN)
+    }
+    catch {
+      case e: MongoException => {
+        if (e.getMessage startsWith "Collection not found") {
+          User.createRecord.username("Adam").password(hash("adam123")).role(ADMIN).save
+          //User.createRecord.username("Dave").password(hash("dave123")).role(USER).save
+        }
+      }
+    }
   }
 }

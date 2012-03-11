@@ -16,7 +16,7 @@ import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
 import uk.co.randomcoding.partsdb.lift.util.snippet._
 import uk.co.randomcoding.partsdb.lift.util._
 
-import net.liftweb.common.{Logger, Full}
+import net.liftweb.common.{ Logger, Full }
 import net.liftweb.http.S
 import net.liftweb.util.Helpers._
 
@@ -50,15 +50,15 @@ class DisplayExisting extends ErrorDisplay with Logger {
 
   private[this] def displayTable(entityType: String) = {
     entityType.toLowerCase match {
-      case "customer" => CustomerDisplay.displayTable(Customer where (_.id exists true) orderDesc (_.customerName) fetch)
-      case "user" => UserDisplay.displayTable(User where (_.id exists true) orderDesc (_.username) fetch)
-      case "part" => PartDisplay.displayTable(Part where (_.id exists true) orderDesc (_.partName) fetch)
-      case "vehicle" => VehicleDisplay.displayTable(Vehicle where (_.id exists true) orderDesc (_.vehicleName) fetch)
-      case "supplier" => SupplierDisplay.displayTable(Supplier where (_.id exists true) orderDesc (_.supplierName) fetch)
+      case "customer" => CustomerDisplay(Customer where (_.id exists true) orderDesc (_.customerName) fetch)
+      case "user" => UserDisplay(User where (_.id exists true) orderDesc (_.username) fetch)
+      case "part" => PartDisplay(Part where (_.id exists true) orderDesc (_.partName) fetch)
+      case "vehicle" => VehicleDisplay(Vehicle where (_.id exists true) orderDesc (_.vehicleName) fetch)
+      case "supplier" => SupplierDisplay(Supplier where (_.id exists true) orderDesc (_.supplierName) fetch)
       //case "lineitem" => DisplayLineItem.displayTable(entities map (_.asInstanceOf[LineItem]))
       case _ => {
         error("Unknown Type: %s".format(entityType))
-        EntityDisplay.emptyTable
+        TabularEntityDisplay.emptyTable
       }
     }
   }

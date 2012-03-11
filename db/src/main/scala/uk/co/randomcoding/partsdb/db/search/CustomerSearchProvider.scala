@@ -30,12 +30,13 @@ object CustomerSearchProvider {
    * @param contactName Finds any customers that have this value in the  `customerName` field of their `contactDetails`
    * @param contactPhoneNumber Finds any customers that have this value in the  `phoneNumber` field of their `contactDetails`
    * @param contactMobileNumber Finds any customers that have this value in the  `mobileNumber` field of their `contactDetails`
+   * @param contactFaxNumber Finds any customers that have this value in the  `faxNumber` field of their `contactDetails`
    * @param contactEmail Finds any customers that have this value in the  `emailAddress` field of their `contactDetails`
    */
-  def findMatching(customerName: String = "", addressContains: String = "", contactName: String = "", contactPhoneNumber: String = "", contactMobileNumber: String = "", contactEmail: String = ""): Seq[Customer] = {
+  def findMatching(customerName: String = "", addressContains: String = "", contactName: String = "", contactPhoneNumber: String = "", contactMobileNumber: String = "", contactFax: String = "", contactEmail: String = ""): Seq[Customer] = {
     val allCustomers = (Customer where (_.id exists true) fetch) toSet
 
-    val allEmpty = Seq(customerName, addressContains, contactName, contactPhoneNumber, contactMobileNumber, contactEmail) filter (_ nonEmpty) isEmpty
+    val allEmpty = Seq(customerName, addressContains, contactName, contactPhoneNumber, contactMobileNumber, contactEmail, contactFax) filter (_ nonEmpty) isEmpty
 
     val matches = if (allEmpty) Map("All" -> allCustomers) else {
       Map(customerName -> customerNameMatches(customerName),
@@ -43,7 +44,8 @@ object CustomerSearchProvider {
         contactName -> contactNameMatches(contactName),
         contactPhoneNumber -> contactPhoneMatches(contactPhoneNumber),
         contactMobileNumber -> contactMobileMatches(contactMobileNumber),
-        contactEmail -> contactEmailMatches(contactEmail))
+        contactEmail -> contactEmailMatches(contactEmail),
+        contactFax -> contactFaxMatches(contactFax))
     }
 
     matches.filter(_._1 nonEmpty) map (_._2) match {
@@ -68,37 +70,26 @@ object CustomerSearchProvider {
 
   private val contactNameMatches = (contactName: String) => (contactName.trim match {
     case "" => Nil
-    case name => {
-      val contactIds = ContactDetails.where(_.contactName matches regexValue(name)).fetch map (_.id.get)
-
-      Customer where (_.contactDetails in contactIds) fetch
-    }
+    case name => Customer where (_.contactDetails.subfield(_.contactName) matches regexValue(name)) fetch
   }) toSet
 
   private val contactPhoneMatches = (phone: String) => (phone.trim match {
     case "" => Nil
-    case p => {
-      val contactIds = ContactDetails.where(_.phoneNumber matches regexValue(p)).fetch map (_.id.get)
-
-      Customer where (_.contactDetails in contactIds) fetch
-    }
+    case p => Customer where (_.contactDetails.subfield(_.phoneNumber) matches regexValue(p)) fetch
   }) toSet
 
   private val contactMobileMatches = (mobile: String) => (mobile.trim match {
     case "" => Nil
-    case p => {
-      val contactIds = ContactDetails.where(_.mobileNumber matches regexValue(p)).fetch map (_.id.get)
-
-      Customer where (_.contactDetails in contactIds) fetch
-    }
+    case p => Customer where (_.contactDetails subfield (_.mobileNumber) matches regexValue(p)) fetch
   }) toSet
 
   private val contactEmailMatches = (email: String) => (email.trim match {
     case "" => Nil
-    case e => {
-      val contactIds = ContactDetails.where(_.emailAddress matches regexValue(e)).fetch map (_.id.get)
+    case e => Customer where (_.contactDetails subfield (_.emailAddress) matches regexValue(e)) fetch
+  }) toSet
 
-      Customer where (_.contactDetails in contactIds) fetch
-    }
+  private val contactFaxMatches = (fax: String) => (fax.trim match {
+    case "" => Nil
+    case e => Customer where (_.contactDetails subfield (_.faxNumber) matches regexValue(e)) fetch
   }) toSet
 }
