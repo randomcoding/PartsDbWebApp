@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html; charset=UTF-8" http-equiv="content-type" />
+<title>C.A.T.9 - Add Quote</title>
+</head>
+<body class="lift:content_id=main">
+  <div id="main" class="lift:surround?with=default;at=content">
+    <div class="lift:AddEditOrder?form=POST&eager_eval=true">
+      <div style="width: 98%" align="center"></div>
+      <div class="form-title">
+        <span id="formTitle">Title</span>
+      </div>
+      <div class="column span-4 form-label">Transaction Name:</div>
+      <div class="column span-15 last">
+        <span id="transactionName">Transaction Name</span>
+      </div>
+      <div class="column span-4 form-label">Customer:</div>
+      <div class="column span-15 last">
+        <span id="customerDisplay">Customer Name Here</span>
+      </div>
+      <div class="column span-4 form-label">Carriage</div>
+      <div class="column span-1 form-label" align="left" style="width: 0.4em; margin-top: 5px">&pound;</div>
+      <div class="column span-14 last" style="width: 4em">
+        <span id="carriageEntry">Carriage Entry</span>
+      </div>
+      <div class="column span-5 form-label">Customer P/O Reference:</div>
+      <div class="column span-14 last">
+        <span id="customerPoRefEntry">Customer P/O Ref Entry</span>
+      </div>
+      <!-- Display available line items and checkboxes to allow adding/removing to/from the order -->
+      <div class="column span-19 last form-label">Available Line Items:</div>
+      <div class="column span-19 last">
+        <div id="availableLineItems">
+          <div class="column span-1">
+            <span id="selected">Checkbox for Selected or Not</span>
+          </div>
+          <div class="column span-4">
+            <span class="form-label">Part:&nbsp;&nbsp;</span><span id="partName">Part Name Display</span>
+          </div>
+          <div class="column span-4">
+            <span class="form-label">Quantity:&nbsp;&nbsp;</span><span id="partQuantity">Part Quantity Display</span>
+          </div>
+          <div class="column span-4">
+            <span class="form-label">Cost:&nbsp;&nbsp;</span><span id="lineTotalCost">Line Total Cost Display</span>
+          </div>
+        </div>
+      </div>
+      <!-- <div class="column span-19 last" align="right">
+        <span id="updateOrderedItems">Update Items Button Here</span>
+      </div> -->
+      <hr class="space" />
+      <div class="column span-19"><span id="selectedItems">Selected Line Items</span></div>
+      <hr />
+      <div class="lift:embed?what=_line_items_and_summary">Line Items and Total Summary Here</div>
+      <div class="column span-9 form-label" align="right"><span id="confirmCloseQuote">Checkbox to confirm closing of quote on submit</span></div>
+      <div class="lift:embed?what=_submit_cancel">Submit and Cancel Buttons Here</div>
+    </div>
+  </div>
+</body>
+</html>
+

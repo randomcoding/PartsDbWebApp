@@ -27,7 +27,7 @@ object DisplayTransaction extends TabDisplaySnippet with Logger {
   override val tabTitles = Seq(("quoteResults", "Quoted"), ("orderResults", "Ordered"), ("invoiceResults", "Invoiced"), ("deliveryNoteResults", "Delivered"))
 
   /*
-   * Form a closure over passed in data to enable the rendering of the correect info
+   * Form a closure over passed in data to enable the rendering of the correct info
    */
   def render = {
     val cameFrom = S.referer openOr "/app/show?entityType=Customer"
