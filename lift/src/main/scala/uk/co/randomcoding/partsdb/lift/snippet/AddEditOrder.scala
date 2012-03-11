@@ -3,30 +3,31 @@
  */
 package uk.co.randomcoding.partsdb.lift.snippet
 
-import uk.co.randomcoding.partsdb.lift.util.snippet._
-import net.liftweb.http.StatefulSnippet
-import net.liftweb.http.js.JsCmds.Noop
+import scala.xml.Text
+import org.bson.types.ObjectId
+import uk.co.randomcoding.partsdb.core.customer.Customer
+import uk.co.randomcoding.partsdb.core.document.{ LineItem, DocumentType, Document }
+import uk.co.randomcoding.partsdb.core.part.Part
+import uk.co.randomcoding.partsdb.core.transaction.Transaction
 import uk.co.randomcoding.partsdb.lift.model.document.QuoteHolder
 import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
-import net.liftweb.http.js.JsCmd
-import net.liftweb.http.S
-import net.liftweb.util.Helpers._
+import uk.co.randomcoding.partsdb.lift.util.snippet._
+import uk.co.randomcoding.partsdb.lift.util.SnippetDisplayHelpers._
+import uk.co.randomcoding.partsdb.lift.util._
 import net.liftweb.common.Full
-import uk.co.randomcoding.partsdb.core.transaction.Transaction
-import org.bson.types.ObjectId
-import scala.xml.Text
-import uk.co.randomcoding.partsdb.core.customer.Customer
-import uk.co.randomcoding.partsdb.core.document.Document
-import uk.co.randomcoding.partsdb.core.document.DocumentType
-import uk.co.randomcoding.partsdb.core.document.LineItem
-import uk.co.randomcoding.partsdb.lift.util.LineItemDisplay
-import net.liftweb.http.js.JsCmds.SetHtml
-import uk.co.randomcoding.partsdb.core.part.Part
+import net.liftweb.http.js.JsCmds.{ SetHtml, Noop }
+import net.liftweb.http.js.JsCmd.unitToJsCmd
+import net.liftweb.http.js.JsCmd
+import net.liftweb.http.{ StatefulSnippet, S }
+import net.liftweb.util.Helpers._
+import net.liftweb.util.IterableConst.itNodeSeqFunc
+import uk.co.randomcoding.partsdb.lift.util.snippet.display.DocumentTotalsDisplay
+import uk.co.randomcoding.partsdb.core.document.Order
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
-class AddEditOrder extends StatefulSnippet with ErrorDisplay with DataValidation with SubmitAndCancelSnippet with LineItemSnippet {
+class AddEditOrder extends StatefulSnippet with ErrorDisplay with DataValidation with DocumentTotalsDisplay with SubmitAndCancelSnippet with LineItemSnippet {
 
   override val cameFrom = S.referer openOr "/app/"
 
@@ -51,12 +52,12 @@ class AddEditOrder extends StatefulSnippet with ErrorDisplay with DataValidation
     case _ => (None, Seq.empty)
   }
 
-  private[this] val (carriageText, lineItems) = quote match {
+  private[this] val (carriage, lineItems, quoteId) = quote match {
     case Some(q) => {
       val orderedItems = orders flatMap (_.lineItems.get)
-      ("£%.2f".format(q.carriage.get), q.lineItems.get filterNot (orderedItems contains _) sortBy (_.lineNumber.get))
+      (q.carriage.get, q.lineItems.get filterNot (orderedItems contains _) sortBy (_.lineNumber.get), q.documentNumber)
     }
-    case _ => ("No Quote", List.empty)
+    case _ => (0.0d, List.empty, "No Quote")
   }
 
   private[this] val (transactionName, customerName) = transaction match {
@@ -69,16 +70,25 @@ class AddEditOrder extends StatefulSnippet with ErrorDisplay with DataValidation
     case _ => "No Customer for id %s in transaction %s".format(t.customer.get, t.shortName.get)
   }
 
+  private[this] def validateQuoteCloseConfirmation = if (confirmCloseQuote) Nil else Seq("Please confirm it is ok to close the Quote before generating this Order")
+
+  private[this] def performValidation: Seq[String] = validate(validationItems: _*) ++ validateQuoteCloseConfirmation
+
   override def processSubmit(): JsCmd = {
-    validate(validationItems: _*) match {
+    performValidation match {
       case Nil => {
-        confirmCloseQuote match {
-          case false => {
-            displayError("Please confirm it is ok to close the Quote before generating this Order")
-            Noop
+        // create order
+        val order = Document.add(Order(selectedItems, carriage))
+        order match {
+          case Some(o) => {
+            Transaction.addDocument(transaction.get.id.get, o.id.get)
+            // 	close quote
+            Document.close(quote.get.id.get)
+            S redirectTo "/app/display/customer?id=%s".format(transaction.get.customer.get.toString)
           }
-          case true => {
-            // create order
+          case _ => {
+            displayError("Failed to create Order. Please send an error report.")
+            Noop
           }
         }
       }
@@ -97,17 +107,19 @@ class AddEditOrder extends StatefulSnippet with ErrorDisplay with DataValidation
     "#formTitle" #> Text("Create Order") &
       "#transactionName" #> Text(transactionName) &
       "#customerName" #> Text(customerName) &
-      "#carriage" #> Text(carriageText) &
+      renderDocumentTotals(selectedItems, carriage) &
       "#customerPoRefEntry" #> styledText(customerPoRef, customerPoRef = _) &
-      "#availableLineItems *" #> renderLineItems(lineItems) &
-      "#selectedItems" #> LineItemDisplay(selectedItems, false, false) &
-      "#confirmCloseQuote" #> (Text("Confirm you wish to close Quote: %s") ++ styledCheckbox(false, confirmCloseQuote = _))
+      "#availableLineItems *" #> renderAvailableLineItems(lineItems) &
+      "#lineItems" #> LineItemDisplay(selectedItems, false, false) &
+      "#quoteId" #> Text(quoteId) &
+      "#confirmCloseQuote" #> styledCheckbox(false, confirmCloseQuote = _) &
+      renderSubmitAndCancel()
   }
 
   private[this] def validationItems: Seq[ValidationItem] = Seq(ValidationItem(customerPoRef, "Customer P/O Reference"),
     ValidationItem(selectedItems, "Selected Line Items"))
 
-  private[this] def renderLineItems(lines: Seq[LineItem]) = lines map (line => {
+  private[this] def renderAvailableLineItems(lines: Seq[LineItem]) = lines map (line => {
     val partName = Part findById line.partId.get match {
       case Some(p) => p.partName.get
       case _ => "No Part"
@@ -121,11 +133,11 @@ class AddEditOrder extends StatefulSnippet with ErrorDisplay with DataValidation
 
   private[this] def checkBoxSelected(selected: Boolean, line: LineItem) = {
     selected match {
-      case true => selectedItems = line :: lineItems
-      case false => selectedItems = lineItems filterNot (_.lineNumber.get == line.lineNumber.get)
+      case true => selectedItems = line :: selectedItems
+      case false => selectedItems = selectedItems filterNot (_.lineNumber.get == line.lineNumber.get)
     }
-    updateSelectedItems()
+    updateSelectedItems() & refreshTotals(selectedItems, carriage)
   }
 
-  private[this] def updateSelectedItems(): JsCmd = SetHtml("selectedItems", LineItemDisplay(selectedItems, false, false))
+  private[this] def updateSelectedItems(): JsCmd = SetHtml("lineItems", LineItemDisplay(selectedItems, false, false))
 }

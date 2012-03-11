@@ -11,30 +11,18 @@
       <div class="form-title">
         <span id="formTitle">Title</span>
       </div>
-      <div class="column span-19 last"><span class="form-label">Transaction Name:&nbsp;&nbsp;</span>
-        <span id="transactionName">Transaction Name Here</span>
-      </div>
-      <!-- <div class="column span-4 form-label">Transaction Name:</div>
+      <div class="column span-4 form-label">Transaction Name:</div>
       <div class="column span-15 last">
         <span id="transactionName">Transaction Name</span>
-      </div> -->
+      </div>
       <div class="column span-19 last">
         <span class="form-label">Customer:&nbsp;&nbsp;</span>
         <span id="customerName">Customer Name Here</span>
       </div>
-      <!-- <div class="column span-4 form-label">Customer:</div>
-      <div class="column span-15 last">
-        <span id="customerName">Customer Name Here</span>
-      </div> -->
       <div class="column span-19">
         <span class="form-label">Carriage:&nbsp;&nbsp;</span>
         <span id="carriage">Carriage Display</span>
       </div>
-      <!-- <div class="column span-4 form-label">Carriage</div>
-      <div class="column span-1 form-label" align="left" style="width: 0.4em; margin-top: 5px">&pound;</div>
-      <div class="column span-14 last" style="width: 4em">
-        <span id="carriage">Carriage Display</span>
-      </div> -->
       <div class="column span-5 form-label">Customer P/O Reference:</div>
       <div class="column span-14 last">
         <span id="customerPoRefEntry">Customer P/O Ref Entry</span>
@@ -53,18 +41,14 @@
             <span class="form-label">Quantity:&nbsp;&nbsp;</span><span id="partQuantity">Part Quantity Display</span>
           </div>
           <div class="column span-4">
-            <span class="form-label">Cost:&nbsp;&nbsp;</span><span id="lineTotalCost">Line Total Cost Display</span>
+            <span class="form-label">Cost:&nbsp;&nbsp;</span><span id="totalLineCost">Line Total Cost Display</span>
           </div>
         </div>
       </div>
-      <!-- <div class="column span-19 last" align="right">
-        <span id="updateOrderedItems">Update Items Button Here</span>
-      </div> -->
       <hr class="space" />
-      <div class="column span-19"><span id="selectedItems">Selected Line Items</span></div>
-      <hr />
+      <div class="column span-19 last form-label">Selected Line Items</div>
       <div class="lift:embed?what=_line_items_and_summary">Line Items and Total Summary Here</div>
-      <div class="column span-9 form-label" align="right"><span id="confirmCloseQuote">Checkbox to confirm closing of quote on submit</span></div>
+      <div class="column span-19 last form-label" align="right"><table><tr><td style="text-align: right;" class="form-label">Confirm you wish to close Quote: <span id="quoteId">Quote Id</span></td><td><span id="confirmCloseQuote">Checkbox to confirm closing of quote on submit</span></td><td>&nbsp;</td></tr></table></div>
       <div class="lift:embed?what=_submit_cancel">Submit and Cancel Buttons Here</div>
     </div>
   </div>

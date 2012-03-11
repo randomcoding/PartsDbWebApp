@@ -38,4 +38,6 @@ object SnippetDisplayHelpers {
       details(contactDetails.faxNumber.get, "Fax") ++
       details(contactDetails.emailAddress.get, "EMail")
   }
+
+  def currencyFormat(value: Double): String = "£%02.2f".format(value)
 }
