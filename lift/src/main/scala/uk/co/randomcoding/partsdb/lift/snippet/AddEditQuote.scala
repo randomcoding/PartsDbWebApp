@@ -19,12 +19,12 @@ import net.liftweb.http.js.JsCmd
 import net.liftweb.http.{ WiringUI, StatefulSnippet, S }
 import net.liftweb.util.Helpers._
 import net.liftweb.common.Full
-import uk.co.randomcoding.partsdb.lift.util.snippet.display.DocumentTotalsDisplay
+import uk.co.randomcoding.partsdb.lift.util.snippet.display.QuoteHolderDocumentTotalsDisplay
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
-class AddEditQuote extends StatefulSnippet with ErrorDisplay with DataValidation with LineItemSnippet with SubmitAndCancelSnippet with DocumentTotalsDisplay with Logger {
+class AddEditQuote extends StatefulSnippet with ErrorDisplay with DataValidation with LineItemSnippet with SubmitAndCancelSnippet with QuoteHolderDocumentTotalsDisplay with Logger {
 
   override val cameFrom = S.referer openOr "/app"
 

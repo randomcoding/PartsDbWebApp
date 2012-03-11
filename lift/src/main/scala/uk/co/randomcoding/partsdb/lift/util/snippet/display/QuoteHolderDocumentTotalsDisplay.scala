@@ -4,14 +4,15 @@
 package uk.co.randomcoding.partsdb.lift.util.snippet.display
 
 import uk.co.randomcoding.partsdb.lift.model.document.QuoteHolder
-import net.liftweb.util.Helpers._
-import net.liftweb.http.WiringUI
+
 import net.liftweb.http.js.jquery.JqWiringSupport
+import net.liftweb.http.WiringUI
+import net.liftweb.util.Helpers._
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
-trait DocumentTotalsDisplay {
+trait QuoteHolderDocumentTotalsDisplay {
   val quoteHolder: QuoteHolder
 
   def renderDocumentTotals() = {
