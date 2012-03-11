@@ -42,9 +42,9 @@ class TransactionRecordTest extends MongoDbTestBase {
    * 
    * As only the last two digits change, and the two pairs add to the same then they will collide on hash code - GRR
    */
-  val doc1 = Document.create(lines, DocumentType.Invoice).docNumber(1001).id(new ObjectId)
-  val doc3 = Document.create(lines, DocumentType.Quote).docNumber(3003)
-  val doc2 = Document.create(lines, DocumentType.Order).docNumber(2002)
+  val doc1 = Document.create(lines, DocumentType.Invoice, 0.0).docNumber(1001).id(new ObjectId)
+  val doc3 = Document.create(lines, DocumentType.Quote, 0.0).docNumber(3003)
+  val doc2 = Document.create(lines, DocumentType.Order, 0.0).docNumber(2002)
 
   test("Equality and HashCode") {
     val t1 = Transaction.create("t1", cust1, Seq(doc1))

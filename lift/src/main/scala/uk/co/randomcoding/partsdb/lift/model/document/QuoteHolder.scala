@@ -32,6 +32,7 @@ class QuoteHolder extends Logger {
    * The default markup rate for new lines
    */
   val DEFAULT_MARKUP = 25;
+  val DEFAULT_CARRIAGE = 0.0d
 
   // Cells to maintain values for current new line values
 
@@ -39,6 +40,8 @@ class QuoteHolder extends Logger {
    * The currently selected part for the line
    */
   private val currentPartCell = ValueCell[Option[Part]](None)
+
+  private val carriageCell = ValueCell[Double](DEFAULT_CARRIAGE)
 
   /**
    * Calculated value of the suppliers of a part
@@ -106,7 +109,7 @@ class QuoteHolder extends Logger {
   /**
    * The total computed base cost of the line items, before tax
    */
-  private val preTaxTotal = lineItemsCell.lift(_.foldLeft(0.0d)(_ + _.lineCost))
+  private val preTaxTotal = lineItemsCell.lift(carriageCell)((items, carriage) => items.foldLeft(0.0d)(_ + _.lineCost) + carriage)
 
   /**
    * The tax rate. Set to 0.2 (20%)
@@ -270,8 +273,25 @@ class QuoteHolder extends Logger {
       case _ => DEFAULT_MARKUP
     })
 
-    debug("Manual cost is now: %d".format(markupCell.get.toInt))
+    debug("Markup is now: %d".format(markupCell.get.toInt))
   }
+
+  def carriage(carriageString: String) = {
+    debug("Setting carriage to: %s".format(carriageString))
+    carriageCell.set(asDouble(carriageString) match {
+      case Full(value) => value
+      case _ => DEFAULT_CARRIAGE
+    })
+  }
+
+  /**
+   * The value of the carriage rendered as a currency string
+   */
+  val carriage = carriageCell.lift("£%.2f".format(_))
+
+  def carriageText = "%.2f".format(carriageCell.get)
+
+  def carriageValue = carriageCell.get
 
   def quantity = "%d".format(quantityCell.get)
 

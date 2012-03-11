@@ -101,7 +101,7 @@ class AddEditSupplier extends StatefulSnippet with AddressSnippet with ContactDe
             modifySupplier(s, supplierName, contacts, newAddress.get, currentPartCosts)
             S redirectTo cameFrom
           }
-          case _ => addSupplier(supplierName, contacts, address.get, currentPartCosts) match {
+          case _ => addSupplier(supplierName, contacts, newAddress.get, currentPartCosts) match {
             case Some(s) => S redirectTo cameFrom
             case _ => Noop
           }

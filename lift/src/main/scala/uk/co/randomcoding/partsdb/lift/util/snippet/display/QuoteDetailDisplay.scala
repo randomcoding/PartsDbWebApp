@@ -27,9 +27,9 @@ object QuoteDetailDisplay {
         "#quotedOn" #> new DateTime(quote.createdOn.get).toString("dd/MM/yyyy") &
         "#lineItems" #> LineItemDisplay(lineItems) &
         "#subtotal" #> currencyFormat(subTotal(lineItems)) &
-        "#carriage" #> Text("TDB") &
+        "#carriage" #> Text(currencyFormat(quote.carriage.get)) &
         "#vat" #> currencyFormat(vatAmount(lineItems)) &
-        "#total" #> currencyFormat(subTotal(lineItems) + vatAmount(lineItems) /* + quote.carriage*/ )
+        "#total" #> currencyFormat(subTotal(lineItems) + vatAmount(lineItems) + quote.carriage.get)
     })
   }
 

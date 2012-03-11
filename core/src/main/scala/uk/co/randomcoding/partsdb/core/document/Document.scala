@@ -53,6 +53,11 @@ class Document private () extends MongoRecord[Document] with ObjectIdPk[Document
   }
 
   /**
+   * The carriage for the items in the document
+   */
+  object carriage extends DoubleField(this)
+
+  /**
    * Is this `Document` editable?
    */
   object editable extends BooleanField(this)
@@ -89,9 +94,9 @@ object Document extends Document with MongoMetaRecord[Document] {
    *
    * The `editable` field is set to true
    */
-  def create(items: Seq[LineItem], docType: DocumentType.DocType): Document = {
+  def create(items: Seq[LineItem], docType: DocumentType.DocType, carriage: Double): Document = {
     require(items.nonEmpty, "Line Items Cannot be empty")
-    Document.createRecord.editable(true).documentType(docType).lineItems(items.toList).createdOn(new Date)
+    Document.createRecord.editable(true).documentType(docType).lineItems(items.toList).createdOn(new Date).carriage(carriage)
   }
 
   /**
@@ -103,8 +108,8 @@ object Document extends Document with MongoMetaRecord[Document] {
    *
    * @return An optional `Document` object. This will be filled if the add succeeded or `None` if not
    */
-  def add(items: Seq[LineItem], docType: DocumentType.DocType): Option[Document] = {
-    add(create(items, docType))
+  def add(items: Seq[LineItem], docType: DocumentType.DocType, carriage: Double): Option[Document] = {
+    add(create(items, docType, carriage))
   }
 
   /**
@@ -161,9 +166,9 @@ object Document extends Document with MongoMetaRecord[Document] {
  * Factory object for creating instances of `Document`s with a fixed `DocumentType`
  */
 sealed abstract class DocumentInstance(docType: DocumentType.DocType) {
-  def create(items: List[LineItem]): Document = Document.create(items, docType)
+  def create(items: List[LineItem], carriage: Double): Document = Document.create(items, docType, carriage)
 
-  def add(items: List[LineItem]): Option[Document] = Document.add(create(items))
+  def add(items: List[LineItem], carriage: Double): Option[Document] = Document.add(create(items, carriage))
 }
 
 /**
