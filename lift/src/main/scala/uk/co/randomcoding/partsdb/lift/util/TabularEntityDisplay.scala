@@ -62,7 +62,7 @@ trait TabularEntityDisplay {
    * @param rowspan The number of rows this table cell should span. Defaults to 1
    */
   def tableCell(content: NodeSeq, colspan: Int = 1, rowspan: Int = 1) = {
-    <td style="align: right; width: 3em">{ content }</td> %
+    <td style="align: right;">{ content }</td> %
       Attribute("colspan", Text("%d".format(colspan)), Null) %
       Attribute("rowspan", Text("%d".format(rowspan)), Null)
   }
@@ -85,12 +85,12 @@ trait TabularEntityDisplay {
   /**
    * Create the link to display the edit button for the entity
    */
-  val editEntityLink = (entityType: String, entityId: ObjectId) => link("%s?id=%s".format(entityType toLowerCase, entityId.toString), () => Unit, Text("Edit"), "class" -> "btn")
+  val editEntityLink = (entityType: String, entityId: ObjectId) => link("%s?id=%s".format(entityType toLowerCase, entityId.toString), () => Unit, Text("Edit"), "class" -> "btn", "style" -> "width: 3em")
 
   /**
    * Create the link to display the Display button for the entity
    */
-  val displayEntityLink = (entityType: String, entityId: ObjectId) => link("/app/display/%s?id=%s".format(entityType toLowerCase, entityId toString), () => Unit, Text("Display"), "class" -> "btn")
+  val displayEntityLink = (entityType: String, entityId: ObjectId) => link("/app/display/%s?id=%s".format(entityType toLowerCase, entityId toString), () => Unit, Text("Display"), "class" -> "btn", "style" -> "width: 5em")
 
   /**
    * This is the list of heading to be displayed for the entity table
