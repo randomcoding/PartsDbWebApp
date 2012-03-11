@@ -168,6 +168,18 @@ class TransactionRecordTest extends MongoDbTestBase {
     Transaction.findMatching(t2supersetNotMatching1) should be(None)
   }
 
+  test("Add a single document") {
+    pending
+  }
+
+  test("Adding a document that is already present does not result in duplicate entries") {
+    pending
+  }
+
+  test("Adding multiple documents") {
+    pending
+  }
+
   test("Removing a Record that exists in the database successfully removes the entry from the database") {
     pending
   }

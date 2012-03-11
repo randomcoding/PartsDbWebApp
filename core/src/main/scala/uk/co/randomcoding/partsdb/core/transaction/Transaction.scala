@@ -152,5 +152,19 @@ object Transaction extends Transaction with MongoMetaRecord[Transaction] {
     case Some(t) => Some(t)
     case _ => Transaction where (_.customer eqs transaction.customer.get) and (_.documents all transaction.documents.get) get
   }
+
+  /**
+   * Adds document(s) by Id to a transaction
+   *
+   * @param transactionId The oid of the `Transaction` to add the document(s) to
+   * @param documentId The id(s) of the document(s) to add to the transaction
+   */
+  def addDocument(transactionId: ObjectId, documentId: ObjectId*) = {
+    val docIds = findById(transactionId) match {
+      case Some(t) => (t.documents.get ++ documentId) distinct
+      case _ => Nil // If this is the case then the update operation will do nothing so Nil is safe
+    }
+    Transaction.where(_.id eqs transactionId).modify(_.documents setTo docIds).updateMulti
+  }
 }
 
