@@ -85,13 +85,34 @@ class DataValidationTest extends FunSuite with ShouldMatchers {
 
   test("Empty or padding only string fails validation") {
     var stringItem = ValidationItem("", "String Field 1")
-    validate(stringItem) should be(Seq(("String Field 1 requires a non empty value")))
+    validate(stringItem) should be(Seq("String Field 1 requires a non empty value"))
     stringItem = ValidationItem("  ", "String Field 2")
-    validate(stringItem) should be(Seq(("String Field 2 requires a non empty value")))
+    validate(stringItem) should be(Seq("String Field 2 requires a non empty value"))
     stringItem = ValidationItem("\n", "String Field 3")
-    validate(stringItem) should be(Seq(("String Field 3 requires a non empty value")))
+    validate(stringItem) should be(Seq("String Field 3 requires a non empty value"))
     stringItem = ValidationItem("\t", "String Field 4")
-    validate(stringItem) should be(Seq(("String Field 4 requires a non empty value")))
+    validate(stringItem) should be(Seq("String Field 4 requires a non empty value"))
   }
 
+  test("Empty collections fail validation") {
+    val listItem = ValidationItem(List.empty[String], "list field")
+    validate(listItem) should be(Seq("list field requires a non empty set of items"))
+    val setItem = ValidationItem(Set.empty[String], "set field")
+    validate(setItem) should be(Seq("set field requires a non empty set of items"))
+    val vectorItem = ValidationItem(Vector.empty[String], "vector field")
+    validate(vectorItem) should be(Seq("vector field requires a non empty set of items"))
+    val mapItem = ValidationItem(Map.empty[String, String], "map field")
+    validate(mapItem) should be(Seq("map field requires a non empty set of items"))
+  }
+
+  test("Non Empty collections pass validation") {
+    val listItem = ValidationItem(List("string"), "list field")
+    validate(listItem) should be(Nil)
+    val setItem = ValidationItem(Set("string"), "set field")
+    validate(setItem) should be(Nil)
+    val vectorItem = ValidationItem(Vector("string"), "vector field")
+    validate(vectorItem) should be(Nil)
+    val mapItem = ValidationItem(Map("string1" -> "string2"), "map field")
+    validate(mapItem) should be(Nil)
+  }
 }
