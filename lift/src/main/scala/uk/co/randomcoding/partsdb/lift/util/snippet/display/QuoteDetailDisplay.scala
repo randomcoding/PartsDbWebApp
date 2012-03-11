@@ -3,22 +3,23 @@
  */
 package uk.co.randomcoding.partsdb.lift.util.snippet.display
 
-import uk.co.randomcoding.partsdb.core.document.Document
-import scala.xml.NodeSeq
-import net.liftweb.util._
-import net.liftweb.util.Helpers._
-import org.joda.time.DateTime
-import uk.co.randomcoding.partsdb.lift.util.LineItemDisplay
-import uk.co.randomcoding.partsdb.core.document.LineItem
 import scala.xml.Text
+
+import org.joda.time.DateTime
+
+import uk.co.randomcoding.partsdb.core.document.Document
+import uk.co.randomcoding.partsdb.lift.util._
+
+import net.liftweb.http.SHtml._
+import net.liftweb.util.Helpers._
+import net.liftweb.util.CssSel
 
 /**
  * Displays a series of quotes using the template `_quote_detail_display.html`
  *
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
-object QuoteDetailDisplay {
-  private val vatRate = 0.2d;
+object QuoteDetailDisplay extends DocumentTotalsDisplay {
 
   def apply(quotes: List[Document]): Seq[CssSel] = {
     quotes map (quote => {
@@ -26,16 +27,8 @@ object QuoteDetailDisplay {
       "#quoteId" #> quote.documentNumber &
         "#quotedOn" #> new DateTime(quote.createdOn.get).toString("dd/MM/yyyy") &
         "#lineItems" #> LineItemDisplay(lineItems) &
-        "#subtotal" #> currencyFormat(subTotal(lineItems)) &
-        "#carriage" #> Text(currencyFormat(quote.carriage.get)) &
-        "#vat" #> currencyFormat(vatAmount(lineItems)) &
-        "#total" #> currencyFormat(subTotal(lineItems) + vatAmount(lineItems) + quote.carriage.get)
+        renderDocumentTotals(quote) &
+        "#raiseOrder" #> link("/app/order", () => (), Text("Raise Order"))
     })
   }
-
-  private def currencyFormat(value: Double): String = "£%02.2f".format(value)
-
-  private def subTotal(lineItems: Seq[LineItem]) = lineItems map (_.lineCost) sum
-
-  private def vatAmount(lineItems: Seq[LineItem]) = subTotal(lineItems) * vatRate
 }
