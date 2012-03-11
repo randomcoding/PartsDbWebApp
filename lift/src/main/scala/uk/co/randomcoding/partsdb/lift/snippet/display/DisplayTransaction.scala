@@ -44,7 +44,7 @@ object DisplayTransaction extends TabDisplaySnippet with Logger {
       case Some(t) => {
         val documents = t.documents.get map (Document.findById(_)) filter (_ isDefined) map (_.get)
         "#documentTabs" #> generateTabs() &
-          "#quotes *" #> QuoteDetailDisplay(documents filter (_.documentType.get == Quote)) /*&
+          "#quotes *" #> QuoteDetailDisplay(documents filter (_.documentType.get == Quote), t.id.get.toString) /*&
           "#orders *" #> OrderDetailDisplay(documents filter (_.documentType.get == Order)) &
           "#deliveryNotes" #> DeliveryNoteDetailDisplay(documents filter (_.documentType.get == DeliveryNote)) &
           "#invoices *" #> InvoiceDetailDisplay(documents filter (_.documentType.get == Invoice))*/

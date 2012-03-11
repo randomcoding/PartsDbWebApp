@@ -21,14 +21,14 @@ import net.liftweb.util.CssSel
  */
 object QuoteDetailDisplay extends DocumentTotalsDisplay {
 
-  def apply(quotes: List[Document]): Seq[CssSel] = {
+  def apply(quotes: List[Document], transactionId: String): Seq[CssSel] = {
     quotes map (quote => {
       val lineItems = quote.lineItems.get
       "#quoteId" #> quote.documentNumber &
         "#quotedOn" #> new DateTime(quote.createdOn.get).toString("dd/MM/yyyy") &
         "#lineItems" #> LineItemDisplay(lineItems) &
         renderDocumentTotals(quote) &
-        "#raiseOrder" #> link("/app/order", () => (), Text("Raise Order"))
+        "#raiseOrder" #> link("/app/order?transactionId=%s".format(transactionId), () => (), Text("Raise Order"))
     })
   }
 }
