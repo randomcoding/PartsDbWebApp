@@ -8,7 +8,7 @@ import com.foursquare.rogue.Rogue._
 import uk.co.randomcoding.partsdb.core.customer.Customer
 import uk.co.randomcoding.partsdb.core.document.Quote
 import uk.co.randomcoding.partsdb.core.transaction.Transaction
-import uk.co.randomcoding.partsdb.lift.model.document.QuoteHolder
+import uk.co.randomcoding.partsdb.lift.model.document.DocumentDataHolder
 import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
 import uk.co.randomcoding.partsdb.lift.util.snippet._
 import net.liftweb.common.Logger
@@ -30,7 +30,7 @@ class AddEditQuote extends StatefulSnippet with ErrorDisplay with DataValidation
 
   var transactionName = ""
   var customerName = ""
-  override val quoteHolder = new QuoteHolder
+  override val quoteHolder = new DocumentDataHolder
 
   val customers = Customer where (_.id exists true) orderDesc (_.customerName) fetch
   val customersSelect = (None, "Select Customer") :: (customers map ((c: Customer) => (Some(c), c.customerName.get)))

@@ -6,7 +6,7 @@ package uk.co.randomcoding.partsdb.lift.util.snippet
 import com.foursquare.rogue.Rogue._
 import uk.co.randomcoding.partsdb.core.part.Part
 import uk.co.randomcoding.partsdb.core.supplier.Supplier
-import uk.co.randomcoding.partsdb.lift.model.document.QuoteHolder
+import uk.co.randomcoding.partsdb.lift.model.document.DocumentDataHolder
 import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
 import uk.co.randomcoding.partsdb.lift.util.snippet._
 import uk.co.randomcoding.partsdb.lift.util._
@@ -23,7 +23,7 @@ import net.liftweb.http.SHtml.ElemAttr
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
 trait LineItemSnippet extends ErrorDisplay with Logger {
-  val quoteHolder: QuoteHolder
+  val quoteHolder: DocumentDataHolder
 
   val parts = Part where (_.id exists true) orderDesc (_.partName) fetch
   val partsSelect = (None, "Select Part") :: (parts map ((p: Part) => (Some(p), p.partName.get)))
@@ -89,5 +89,5 @@ trait LineItemSnippet extends ErrorDisplay with Logger {
     refreshLineItemDisplay() & refreshPartName() & refreshSuppliers() & refreshQuantity()
   }
 
-  private def refreshLineItemDisplay(): JsCmd = SetHtml("lineItems", LineItemDisplay(quoteHolder.lineItems, false, false))
+  def refreshLineItemDisplay(): JsCmd = SetHtml("lineItems", LineItemDisplay(quoteHolder.lineItems, false, false))
 }
