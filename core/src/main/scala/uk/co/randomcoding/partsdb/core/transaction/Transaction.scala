@@ -4,15 +4,20 @@
 package uk.co.randomcoding.partsdb.core.transaction
 
 import java.util.Date
+
+import scala.math.Ordering.String
+
 import org.bson.types.ObjectId
-import com.foursquare.rogue.Rogue._
-import uk.co.randomcoding.partsdb.core.customer.Customer
-import uk.co.randomcoding.partsdb.core.document.Document
-import net.liftweb.mongodb.record.field._
-import net.liftweb.record.field._
-import net.liftweb.mongodb.record.{ MongoRecord, MongoMetaRecord }
-import uk.co.randomcoding.partsdb.core.document.DocumentType
 import org.joda.time.DateTime
+
+import com.foursquare.rogue.Rogue._
+
+import uk.co.randomcoding.partsdb.core.customer.Customer
+import uk.co.randomcoding.partsdb.core.document.{ DocumentType, Document }
+
+import net.liftweb.record.field._
+import net.liftweb.mongodb.record.field._
+import net.liftweb.mongodb.record.{ MongoRecord, MongoMetaRecord }
 
 /**
  * Encapsulates all the data for a transaction between the company and a customer.
@@ -161,7 +166,7 @@ object Transaction extends Transaction with MongoMetaRecord[Transaction] {
    */
   def addDocument(transactionId: ObjectId, documentId: ObjectId*) = {
     val docIds = findById(transactionId) match {
-      case Some(t) => (t.documents.get ++ documentId) distinct
+      case Some(t) => (t.documents.get ++ documentId).distinct
       case _ => Nil // If this is the case then the update operation will do nothing so Nil is safe
     }
     Transaction.where(_.id eqs transactionId).modify(_.documents setTo docIds).updateMulti
