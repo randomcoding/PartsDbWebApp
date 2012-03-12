@@ -16,18 +16,17 @@ import net.liftweb.util.Helpers._
 import net.liftweb.util.ValueCell
 
 /**
- * Encapsulates the data required to generate a `Quote` document.
+ * Encapsulates the data required to generate a range of [[uk.co.randomcoding.partsdb.core.document.Document]]s.
  *
- * To add/update line items set the current part (with [[uk.co.randomcoding.partsdb.lift.model.document.QuoteHolder#currentPart(Option[Part])]]
- * and then call [[uk.co.randomcoding.partsdb.lift.model.document.QuoteHolder#setPartQuantity(Int)]].
+ * To add/update line items set the current part (with [[uk.co.randomcoding.partsdb.lift.model.document.DocumentDataHolder#currentPart(Option[Part])]]
+ * and then call [[uk.co.randomcoding.partsdb.lift.model.document.DocumentDataHolder#setPartQuantity(Int)]].
  *
- * To modify the markup used for the line item, call [[uk.co.randomcoding.partsdb.lift.model.document.QuoteHolder#markup(String)]] before
- * [[uk.co.randomcoding.partsdb.lift.model.document.QuoteHolder#updateCurrent(Int)]]
+ * To modify the markup used for the line item, call [[uk.co.randomcoding.partsdb.lift.model.document.DocumentDataHolder#markup(String)]] before
+ * [[uk.co.randomcoding.partsdb.lift.model.document.DocumentDataHolder#updateCurrent(Int)]]
  *
- * This is used by the [[uk.co.randomcoding.partsdb.lift.snippet.AddQuote]] class as a cell.
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
-class QuoteHolder extends Logger {
+class DocumentDataHolder extends Logger {
   /**
    * The default markup rate for new lines
    */
@@ -204,6 +203,17 @@ class QuoteHolder extends Logger {
     }
   }
 
+  def addLineItem(lineItem: LineItem): Unit = {
+    lineItemsCell.atomicUpdate(items => items.find(_.partId.get == lineItem.partId.get) match {
+      case None => items :+ lineItem
+      case Some(item) => items
+    })
+
+    resetPartQuantityAndSupplier
+  }
+
+  def removeLineItem(lineItem: LineItem): Unit = lineItemsCell.atomicUpdate(_.filterNot(_ == lineItem))
+
   private def resetPartQuantityAndSupplier: Unit = {
     currentSupplierCell set None
     currentPartCell set None
@@ -283,6 +293,8 @@ class QuoteHolder extends Logger {
       case _ => DEFAULT_CARRIAGE
     })
   }
+
+  def carriage(amount: Double) = carriageCell.set(amount)
 
   /**
    * The value of the carriage rendered as a currency string
