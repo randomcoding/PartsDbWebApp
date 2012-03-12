@@ -9,7 +9,7 @@ import uk.co.randomcoding.partsdb.core.customer.Customer
 import uk.co.randomcoding.partsdb.core.document.{ LineItem, DocumentType, Document }
 import uk.co.randomcoding.partsdb.core.part.Part
 import uk.co.randomcoding.partsdb.core.transaction.Transaction
-import uk.co.randomcoding.partsdb.lift.model.document.QuoteHolder
+import uk.co.randomcoding.partsdb.lift.model.document.DocumentDataHolder
 import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
 import uk.co.randomcoding.partsdb.lift.util.snippet._
 import uk.co.randomcoding.partsdb.lift.util.SnippetDisplayHelpers._
@@ -23,20 +23,21 @@ import net.liftweb.util.Helpers._
 import net.liftweb.util.IterableConst.itNodeSeqFunc
 import uk.co.randomcoding.partsdb.lift.util.snippet.display.DocumentTotalsDisplay
 import uk.co.randomcoding.partsdb.core.document.Order
+import uk.co.randomcoding.partsdb.lift.util.snippet.display.QuoteHolderDocumentTotalsDisplay
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
-class AddEditOrder extends StatefulSnippet with ErrorDisplay with DataValidation with DocumentTotalsDisplay with SubmitAndCancelSnippet with LineItemSnippet {
+class AddEditOrder extends StatefulSnippet with ErrorDisplay with DataValidation with QuoteHolderDocumentTotalsDisplay with SubmitAndCancelSnippet with LineItemSnippet {
 
   override val cameFrom = S.referer openOr "/app/"
 
-  override val quoteHolder = new QuoteHolder
+  override val quoteHolder = new DocumentDataHolder
 
   private var customerPoRef = ""
   private var confirmCloseQuote = false
 
-  private var selectedItems = List.empty[LineItem]
+  //private var selectedItems = List.empty[LineItem]
 
   private[this] val transaction = S.param("transactionId") match {
     case Full(id) => Transaction findById new ObjectId(id)
@@ -55,6 +56,7 @@ class AddEditOrder extends StatefulSnippet with ErrorDisplay with DataValidation
   private[this] val (carriage, lineItems, quoteId) = quote match {
     case Some(q) => {
       val orderedItems = orders flatMap (_.lineItems.get)
+      quoteHolder.carriage(q.carriage.get)
       (q.carriage.get, q.lineItems.get filterNot (orderedItems contains _) sortBy (_.lineNumber.get), q.documentNumber)
     }
     case _ => (0.0d, List.empty, "No Quote")
@@ -78,7 +80,7 @@ class AddEditOrder extends StatefulSnippet with ErrorDisplay with DataValidation
     performValidation match {
       case Nil => {
         // create order
-        val order = Document.add(Order(selectedItems, carriage))
+        val order = Document.add(Order(quoteHolder.lineItems, quoteHolder.carriageValue))
         order match {
           case Some(o) => {
             Transaction.addDocument(transaction.get.id.get, o.id.get)
@@ -107,17 +109,18 @@ class AddEditOrder extends StatefulSnippet with ErrorDisplay with DataValidation
     "#formTitle" #> Text("Create Order") &
       "#transactionName" #> Text(transactionName) &
       "#customerName" #> Text(customerName) &
-      renderDocumentTotals(selectedItems, carriage) &
+      renderDocumentTotals() &
       "#customerPoRefEntry" #> styledText(customerPoRef, customerPoRef = _) &
       "#availableLineItems *" #> renderAvailableLineItems(lineItems) &
-      "#lineItems" #> LineItemDisplay(selectedItems, false, false) &
+      renderAllLineItems() &
+      //"#lineItems" #> LineItemDisplay(selectedItems, false, false) &
       "#quoteId" #> Text(quoteId) &
       "#confirmCloseQuote" #> styledCheckbox(false, confirmCloseQuote = _) &
       renderSubmitAndCancel()
   }
 
   private[this] def validationItems: Seq[ValidationItem] = Seq(ValidationItem(customerPoRef, "Customer P/O Reference"),
-    ValidationItem(selectedItems, "Selected Line Items"))
+    ValidationItem(quoteHolder.lineItems, "Selected Line Items"))
 
   private[this] def renderAvailableLineItems(lines: Seq[LineItem]) = lines map (line => {
     val partName = Part findById line.partId.get match {
@@ -133,11 +136,18 @@ class AddEditOrder extends StatefulSnippet with ErrorDisplay with DataValidation
 
   private[this] def checkBoxSelected(selected: Boolean, line: LineItem) = {
     selected match {
-      case true => selectedItems = line :: selectedItems
-      case false => selectedItems = selectedItems filterNot (_.lineNumber.get == line.lineNumber.get)
+      case true => {
+        quoteHolder.carriage(carriage)
+        quoteHolder.addLineItem(line)
+      }
+      case false => {
+        quoteHolder.carriage(0)
+        quoteHolder.removeLineItem(line)
+      }
     }
-    updateSelectedItems() & refreshTotals(selectedItems, carriage)
+    refreshLineItemDisplay()
+    //updateSelectedItems()// & refreshTotals()
   }
 
-  private[this] def updateSelectedItems(): JsCmd = SetHtml("lineItems", LineItemDisplay(selectedItems, false, false))
+  //private[this] def updateSelectedItems(): JsCmd = SetHtml("lineItems", LineItemDisplay(selectedItems, false, false))
 }
