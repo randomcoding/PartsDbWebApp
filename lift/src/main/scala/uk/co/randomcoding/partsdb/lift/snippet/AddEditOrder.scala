@@ -24,15 +24,16 @@ import net.liftweb.util.IterableConst.itNodeSeqFunc
 import uk.co.randomcoding.partsdb.lift.util.snippet.display.DocumentTotalsDisplay
 import uk.co.randomcoding.partsdb.core.document.Order
 import uk.co.randomcoding.partsdb.lift.util.snippet.display.DocumentDataHolderTotalsDisplay
+import uk.co.randomcoding.partsdb.lift.model.document.OrderDocumentDataHolder
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
-class AddEditOrder extends StatefulSnippet with ErrorDisplay with DataValidation with DocumentDataHolderTotalsDisplay with SubmitAndCancelSnippet with LineItemSnippet {
+class AddEditOrder extends StatefulSnippet with ErrorDisplay with DataValidation with DocumentDataHolderTotalsDisplay with SubmitAndCancelSnippet with AllLineItemsSnippet {
 
   override val cameFrom = S.referer openOr "/app/"
 
-  override val quoteHolder = new DocumentDataHolder
+  override val dataHolder = new OrderDocumentDataHolder
 
   private var customerPoRef = ""
   private var confirmCloseQuote = false
@@ -54,7 +55,7 @@ class AddEditOrder extends StatefulSnippet with ErrorDisplay with DataValidation
   private[this] val (carriage, lineItems, quoteId) = quote match {
     case Some(q) => {
       val orderedItems = orders flatMap (_.lineItems.get)
-      quoteHolder.carriage(q.carriage.get)
+      dataHolder.carriage(q.carriage.get)
       (q.carriage.get, q.lineItems.get filterNot (orderedItems contains _) sortBy (_.lineNumber.get), q.documentNumber)
     }
     case _ => (0.0d, List.empty, "No Quote")
@@ -78,7 +79,7 @@ class AddEditOrder extends StatefulSnippet with ErrorDisplay with DataValidation
     performValidation match {
       case Nil => {
         // create order
-        val order = Document.add(Order(quoteHolder.lineItems, quoteHolder.carriageValue))
+        val order = Document.add(Order(dataHolder.lineItems, dataHolder.carriageValue))
         order match {
           case Some(o) => {
             Transaction.addDocument(transaction.get.id.get, o.id.get)
@@ -117,7 +118,7 @@ class AddEditOrder extends StatefulSnippet with ErrorDisplay with DataValidation
   }
 
   private[this] def validationItems: Seq[ValidationItem] = Seq(ValidationItem(customerPoRef, "Customer P/O Reference"),
-    ValidationItem(quoteHolder.lineItems, "Selected Line Items"))
+    ValidationItem(dataHolder.lineItems, "Selected Line Items"))
 
   private[this] def renderAvailableLineItems(lines: Seq[LineItem]) = lines map (line => {
     val partName = Part findById line.partId.get match {
@@ -134,12 +135,12 @@ class AddEditOrder extends StatefulSnippet with ErrorDisplay with DataValidation
   private[this] def checkBoxSelected(selected: Boolean, line: LineItem) = {
     selected match {
       case true => {
-        quoteHolder.carriage(carriage)
-        quoteHolder.addLineItem(line)
+        dataHolder.carriage(carriage)
+        dataHolder.addLineItem(line)
       }
       case false => {
-        quoteHolder.carriage(0)
-        quoteHolder.removeLineItem(line)
+        dataHolder.carriage(0)
+        dataHolder.removeLineItem(line)
       }
     }
     refreshLineItemDisplay()
