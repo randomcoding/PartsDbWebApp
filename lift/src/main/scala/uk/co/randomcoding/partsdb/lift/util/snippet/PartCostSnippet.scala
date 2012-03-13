@@ -4,11 +4,8 @@
 package uk.co.randomcoding.partsdb.lift.util.snippet
 
 import scala.Array.canBuildFrom
-
 import org.joda.time.DateTime
-
 import com.foursquare.rogue.Rogue._
-
 import uk.co.randomcoding.partsdb.core.address.Address
 import uk.co.randomcoding.partsdb.core.contact.ContactDetails
 import uk.co.randomcoding.partsdb.core.part.PartCost
@@ -17,12 +14,16 @@ import uk.co.randomcoding.partsdb.core.supplier.Supplier
 import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
 import uk.co.randomcoding.partsdb.lift.util.snippet._
 import uk.co.randomcoding.partsdb.lift.util._
-
 import net.liftweb.common.{ Logger, Full }
-import net.liftweb.http.js.JsCmds.SetHtml
+import net.liftweb.http.js.JsCmds.{ SetHtml, Replace, Noop }
 import net.liftweb.http.js.JsCmd.unitToJsCmd
 import net.liftweb.http.js.JsCmd
 import net.liftweb.util.Helpers._
+import scala.xml.NodeSeq
+import scala.xml.Attribute
+import scala.xml.Text
+import scala.xml.Null
+import net.liftweb.http.SHtml
 
 /**
  * Snippet to handle the processing of adding, removing and displaying [[uk.co.randomcoding.partsdb.core.part.PartCost]]s for a
@@ -30,7 +31,7 @@ import net.liftweb.util.Helpers._
  *
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
-trait PartCostSnippet extends ErrorDisplay with Logger {
+trait PartCostSnippet extends ErrorDisplay with DataValidation with Logger {
 
   var currentPartCosts: List[PartCost]
 
@@ -44,14 +45,38 @@ trait PartCostSnippet extends ErrorDisplay with Logger {
 
   private var currentPartLastSuppliedDate: DateTime = defaultDate
   private val dateFormat = "dd/MM/yyyy"
-  private def dateString(date: DateTime) = date.toString("dd/MM/yyyy")
+  private def dateString(date: DateTime) = date.toString(dateFormat)
+  private var supplierPartNumber = ""
 
   def renderAddPartCost() = {
-    "#partSelect" #> styledAjaxObjectSelect(partsSelect, currentPart, updateAjaxValue[Option[Part]](currentPart = _)) &
-      "#costEntry" #> styledAjaxText("%.2f".format(currentPartCost), updateAjaxValue(updateCurrentPartCost(_))) &
-      "#lastSuppliedEntry" #> styledAjaxText(dateString(currentPartLastSuppliedDate), updateAjaxValue(updateCurrentPartLastSuppliedDate(_))) &
+    "#partSelect" #> styledAjaxObjectSelect(partsSelect, currentPart, updateAjaxValue[Option[Part]](currentPart = _, currentPartUpdated())) &
+      "#costEntry" #> costEntryContent() &
+      "#lastSuppliedEntry" #> lastSuppliedDateContent() &
       "#addPartCost" #> styledAjaxButton("Add / Update", addPartCost) &
+      "#supplierPartNumber" #> supplierPartNumberContent() &
       "#removePartCost" #> styledAjaxButton("Remove", removePartCost)
+  }
+
+  private[this] def currentPartUpdated() = {
+    currentPart match {
+      case Some(pt) => {
+        currentPartCosts find (_.part.get == pt.id.get) match {
+          case Some(p) => {
+            updateCurrentPartCost("%.2f".format(p.suppliedCost.get))
+            updateCurrentPartLastSuppliedDate(dateString(new DateTime(p.lastSuppliedDate.get)))
+            updateSupplierPartNumber(p.supplierPartNumber.get)
+          }
+          case _ => {
+            updateCurrentPartCost("0.00")
+            updateCurrentPartLastSuppliedDate(dateString(defaultDate))
+            updateSupplierPartNumber("")
+
+          }
+        }
+        SHtml.ajaxInvoke(() => refreshCostEntry() & refreshLastSuppliedDate() & refreshSupplierPartNumber())._2.cmd
+      }
+      case _ => Noop
+    }
   }
 
   def renderCurrentPartCosts() = "#currentPartCosts" #> PartCostDisplay(currentPartCosts, false, false)
@@ -64,12 +89,12 @@ trait PartCostSnippet extends ErrorDisplay with Logger {
     Supplier.modify(supplier.id.get, newName, contacts, address, currentPartCosts, supplier.notes.get)
   }
 
-  private def updateCurrentPartCost(cost: String) = currentPartCost = asDouble(cost) match {
+  private[this] def updateCurrentPartCost(cost: String) = currentPartCost = asDouble(cost) match {
     case Full(d) => d
     case _ => 0.0d
   }
 
-  private def updateCurrentPartLastSuppliedDate(dateString: String) = {
+  private[this] def updateCurrentPartLastSuppliedDate(dateString: String) = {
     debug("Updating last supplied date to string %s".format(dateString))
     currentPartLastSuppliedDate = {
       val dateParts = dateString split ("/") map (asInt(_) openOr -1)
@@ -84,6 +109,8 @@ trait PartCostSnippet extends ErrorDisplay with Logger {
     }
   }
 
+  private[this] def updateSupplierPartNumber(partNumber: String) = supplierPartNumber = partNumber
+
   private[this] def refreshPartCostDisplay(): JsCmd = {
     debug("Updating current parts to: %s".format(currentPartCosts.mkString("\n")))
     SetHtml("currentPartCosts", PartCostDisplay(currentPartCosts sortBy (partCost => Part.findById(partCost.part.get) match {
@@ -95,15 +122,21 @@ trait PartCostSnippet extends ErrorDisplay with Logger {
   private[this] def addPartCost(): JsCmd = {
     clearErrors
     debug("Adding a part cost")
-    (currentPart, currentPartCost, currentPartLastSuppliedDate) match {
-      case (_, cost: Double, _) if (cost <= 0.0d) => displayError("Please enter a cost")
-      case (_, _, date: DateTime) if (date.equals(defaultDate) || date.isAfter(DateTime.now)) => displayError("Date is not valid")
-      case (None, _, _) => displayError("Please select a part")
-      case (Some(p), cost: Double, date: DateTime) if (cost > 0.0 && date != defaultDate) => updatePartCosts(PartCost.create(p, cost, date))
-      case (opt, cost, date) => error("Unhandled options supplied (%s, %.2f, %s)".format(opt, cost, dateString(date)))
-    }
+    val validationItems = Seq(ValidationItem(currentPart, "Current Part"),
+      ValidationItem(currentPartCost, "Current Part Cost"),
+      ValidationItem(currentPartLastSuppliedDate, "Last Supplied Date"),
+      ValidationItem(supplierPartNumber, "Supplier Part Number"))
 
-    clearErrorsAndRefresh
+    validate(validationItems: _*) match {
+      case Nil => {
+        updatePartCosts(PartCost.create(currentPart.get, currentPartCost, currentPartLastSuppliedDate, supplierPartNumber))
+        clearErrorsAndRefresh
+      }
+      case errors => {
+        displayErrors(errors: _*)
+        Noop
+      }
+    }
   }
 
   private[this] def removePartCost(): JsCmd = {
@@ -140,7 +173,7 @@ trait PartCostSnippet extends ErrorDisplay with Logger {
       case Some(pc) => {
         debug("Found part id %s in current part costs".format(pc.part.get))
         // create copy of part with same id and replace entry in list
-        val newPartCost = PartCost.create(Part.findById(partCost.part.get).get, partCost.suppliedCost.get, new DateTime(partCost.lastSuppliedDate.get))
+        val newPartCost = PartCost.create(Part.findById(partCost.part.get).get, partCost.suppliedCost.get, new DateTime(partCost.lastSuppliedDate.get), partCost.supplierPartNumber.get)
         currentPartCosts = newPartCost :: currentPartCosts.filterNot(_.part.get == pc.part.get)
       }
       case _ => {
@@ -151,4 +184,16 @@ trait PartCostSnippet extends ErrorDisplay with Logger {
 
     debug("Current Part costs are now: %s".format(currentPartCosts.mkString("\n")))
   }
+
+  private[this] def costEntryContent(): NodeSeq = styledAjaxText("%.2f".format(currentPartCost), updateAjaxValue(updateCurrentPartCost(_)))
+
+  private[this] def refreshCostEntry(): JsCmd = Replace("costEntry", <span>{ costEntryContent }</span> % Attribute(None, "id", Text("costEntry"), Null))
+
+  private[this] def lastSuppliedDateContent(): NodeSeq = styledAjaxText(dateString(currentPartLastSuppliedDate), updateAjaxValue(updateCurrentPartLastSuppliedDate(_)))
+
+  private[this] def refreshLastSuppliedDate(): JsCmd = Replace("lastSuppliedEntry", <span>{ lastSuppliedDateContent }</span> % Attribute(None, "id", Text("lastSuppliedEntry"), Null))
+
+  private[this] def supplierPartNumberContent(): NodeSeq = styledAjaxText(supplierPartNumber, updateAjaxValue(supplierPartNumber = _))
+
+  private[this] def refreshSupplierPartNumber(): JsCmd = Replace("supplierPartNumber", <span>{ supplierPartNumberContent }</span> % Attribute(None, "id", Text("supplierPartNumber"), Null))
 }
