@@ -37,8 +37,6 @@ class AddEditOrder extends StatefulSnippet with ErrorDisplay with DataValidation
   private var customerPoRef = ""
   private var confirmCloseQuote = false
 
-  //private var selectedItems = List.empty[LineItem]
-
   private[this] val transaction = S.param("transactionId") match {
     case Full(id) => Transaction findById new ObjectId(id)
     case _ => None
@@ -113,7 +111,6 @@ class AddEditOrder extends StatefulSnippet with ErrorDisplay with DataValidation
       "#customerPoRefEntry" #> styledText(customerPoRef, customerPoRef = _) &
       "#availableLineItems *" #> renderAvailableLineItems(lineItems) &
       renderAllLineItems() &
-      //"#lineItems" #> LineItemDisplay(selectedItems, false, false) &
       "#quoteId" #> Text(quoteId) &
       "#confirmCloseQuote" #> styledCheckbox(false, confirmCloseQuote = _) &
       renderSubmitAndCancel()
