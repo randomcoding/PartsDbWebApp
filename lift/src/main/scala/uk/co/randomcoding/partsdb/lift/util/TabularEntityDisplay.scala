@@ -24,9 +24,9 @@ trait TabularEntityDisplay {
   /**
    * Convenience apply method that generates the html table for the entities
    */
-  def apply(entities: List[EntityType], editLink: Boolean = true, displayLink: Boolean = true): NodeSeq = displayTable(entities, editLink, displayLink)
+  def apply(entities: Seq[EntityType], editLink: Boolean = true, displayLink: Boolean = true): NodeSeq = displayTable(entities, editLink, displayLink)
 
-  private def displayTable(entities: List[EntityType], editLink: Boolean = true, displayLink: Boolean = true): NodeSeq = {
+  private def displayTable(entities: Seq[EntityType], editLink: Boolean = true, displayLink: Boolean = true): NodeSeq = {
     <table class="btn">
       <thead>
         <tr>{ headings(rowHeadings) }</tr>

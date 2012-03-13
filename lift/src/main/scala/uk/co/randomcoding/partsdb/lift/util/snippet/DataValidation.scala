@@ -3,6 +3,8 @@
  */
 package uk.co.randomcoding.partsdb.lift.util.snippet
 
+import scala.collection.Traversable
+
 import uk.co.randomcoding.partsdb.core.address.Address
 import uk.co.randomcoding.partsdb.core.contact.ContactDetails
 import uk.co.randomcoding.partsdb.core.util.CountryCodes.matchToCountryCode
@@ -43,12 +45,10 @@ trait DataValidation extends Logger {
     item.toValidate match {
       // If we have a populated option value, recursively call this method with the item unwrapped
       case Some(thing) => validateItem(ValidationItem(thing, item.fieldName))
+      case collection: Traversable[_] => if (collection.size == 0) Some(Seq("%s requires a non empty set of items".format(item.fieldName))) else None
       case addr: Address => validateAddress(addr)
       case contact: ContactDetails => validateContactDetails(contact)
-      case string: String => string.trim nonEmpty match {
-        case false => Some(Seq("%s requires a non empty value".format(item.fieldName)))
-        case true => None
-      }
+      case string: String => validateString(string, item.fieldName)
       case double: Double => if (double >= 0.0) None else Some(Seq("%s requires a value of 0 or greater".format(item.fieldName)))
       case int: Int => if (int >= 0.0) None else Some(Seq("%s requires a value of 0 or greater".format(item.fieldName)))
       case None => {
@@ -60,6 +60,14 @@ trait DataValidation extends Logger {
         None
       }
     }
+  }
+
+  /**
+   * Validate a string value is not empty
+   */
+  private[this] def validateString(string: String, fieldName: String) = string.trim nonEmpty match {
+    case false => Some(Seq("%s requires a non empty value".format(fieldName)))
+    case true => None
   }
 
   /**

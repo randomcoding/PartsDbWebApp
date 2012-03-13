@@ -160,12 +160,19 @@ object Document extends Document with MongoMetaRecord[Document] {
    * Remove the Document with the given id from the database
    */
   def remove(oid: ObjectId): Unit = Document where (_.id eqs oid) bulkDelete_!!
+
+  /**
+   * Set the docuemnt with the given `oid` to not editable
+   */
+  def close(oid: ObjectId): Unit = Document.where(_.id eqs oid).modify(_.editable setTo false)
 }
 
 /**
  * Factory object for creating instances of `Document`s with a fixed `DocumentType`
  */
 sealed abstract class DocumentInstance(docType: DocumentType.DocType) {
+  def apply(items: List[LineItem], carriage: Double): Document = Document.create(items, docType, carriage)
+
   def create(items: List[LineItem], carriage: Double): Document = Document.create(items, docType, carriage)
 
   def add(items: List[LineItem], carriage: Double): Option[Document] = Document.add(create(items, carriage))

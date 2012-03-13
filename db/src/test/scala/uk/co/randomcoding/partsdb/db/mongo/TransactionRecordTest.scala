@@ -168,6 +168,45 @@ class TransactionRecordTest extends MongoDbTestBase {
     Transaction.findMatching(t2supersetNotMatching1) should be(None)
   }
 
+  test("Add a single document") {
+    val t1 = Transaction.add("t1", cust1, Seq(doc1)).get
+
+    Transaction.addDocument(t1.id.get, doc2.id.get)
+
+    Transaction.findById(t1.id.get).get.documents.get should (have size (2) and
+      contain(doc1.id.get) and
+      contain(doc2.id.get))
+  }
+
+  test("Adding a document that is already present does not result in duplicate entries") {
+    val t1 = Transaction.add("t1", cust1, Seq(doc1)).get
+
+    Transaction.addDocument(t1.id.get, doc1.id.get)
+
+    Transaction.findById(t1.id.get).get.documents.get should be(Seq(doc1.id.get))
+  }
+
+  test("Adding multiple new documents") {
+    val t1 = Transaction.add("t1", cust1, Seq(doc1)).get
+
+    Transaction.addDocument(t1.id.get, doc2.id.get, doc3.id.get)
+
+    Transaction.findById(t1.id.get).get.documents.get should (have size (3) and
+      contain(doc1.id.get) and
+      contain(doc2.id.get) and
+      contain(doc3.id.get))
+  }
+
+  test("Adding multiple documents, some new and somw duplicates") {
+    val t1 = Transaction.add("t1", cust1, Seq(doc1)).get
+
+    Transaction.addDocument(t1.id.get, doc1.id.get, doc2.id.get)
+
+    Transaction.findById(t1.id.get).get.documents.get should (have size (2) and
+      contain(doc1.id.get) and
+      contain(doc2.id.get))
+  }
+
   test("Removing a Record that exists in the database successfully removes the entry from the database") {
     pending
   }

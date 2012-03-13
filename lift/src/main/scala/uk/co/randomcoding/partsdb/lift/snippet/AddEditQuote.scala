@@ -8,7 +8,7 @@ import com.foursquare.rogue.Rogue._
 import uk.co.randomcoding.partsdb.core.customer.Customer
 import uk.co.randomcoding.partsdb.core.document.Quote
 import uk.co.randomcoding.partsdb.core.transaction.Transaction
-import uk.co.randomcoding.partsdb.lift.model.document.QuoteHolder
+import uk.co.randomcoding.partsdb.lift.model.document.DocumentDataHolder
 import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
 import uk.co.randomcoding.partsdb.lift.util.snippet._
 import net.liftweb.common.Logger
@@ -19,18 +19,19 @@ import net.liftweb.http.js.JsCmd
 import net.liftweb.http.{ WiringUI, StatefulSnippet, S }
 import net.liftweb.util.Helpers._
 import net.liftweb.common.Full
-import uk.co.randomcoding.partsdb.lift.util.snippet.display.DocumentTotalsDisplay
+import uk.co.randomcoding.partsdb.lift.util.snippet.display.DocumentDataHolderTotalsDisplay
+import uk.co.randomcoding.partsdb.lift.model.document.QuoteDocumentDataHolder
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
-class AddEditQuote extends StatefulSnippet with ErrorDisplay with DataValidation with LineItemSnippet with SubmitAndCancelSnippet with DocumentTotalsDisplay with Logger {
+class AddEditQuote extends StatefulSnippet with ErrorDisplay with DataValidation with LineItemSnippet with SubmitAndCancelSnippet with DocumentDataHolderTotalsDisplay with Logger {
 
   override val cameFrom = S.referer openOr "/app"
 
   var transactionName = ""
   var customerName = ""
-  override val quoteHolder = new QuoteHolder
+  override val dataHolder = new QuoteDocumentDataHolder
 
   val customers = Customer where (_.id exists true) orderDesc (_.customerName) fetch
   val customersSelect = (None, "Select Customer") :: (customers map ((c: Customer) => (Some(c), c.customerName.get)))
@@ -44,7 +45,7 @@ class AddEditQuote extends StatefulSnippet with ErrorDisplay with DataValidation
     "#formTitle" #> Text("Add Quote") &
       "#transactionName" #> styledText(transactionName, transactionName = _) &
       "#customerSelect" #> styledObjectSelect[Option[Customer]](customersSelect, None, currentCustomer = _) &
-      "#carriageEntry" #> styledAjaxText(quoteHolder.carriageText, updateAjaxValue(quoteHolder.carriage(_))) &
+      "#carriageEntry" #> styledAjaxText(dataHolder.carriageText, updateAjaxValue(dataHolder.carriage(_))) &
       renderAddEditLineItem() &
       renderSubmitAndCancel() &
       renderAllLineItems() &
@@ -68,7 +69,7 @@ class AddEditQuote extends StatefulSnippet with ErrorDisplay with DataValidation
   private[this] def isTransactionNameUnique: Boolean = (Transaction where (_.shortName eqs transactionName) get) isDefined
 
   private[this] def validationItems = Seq(ValidationItem(transactionName, "Transaction Short Name"),
-    ValidationItem(quoteHolder.carriageValue, "Carriage"))
+    ValidationItem(dataHolder.carriageValue, "Carriage"))
 
   private[this] def addQuoteAndTransaction(cust: Customer): JsCmd = validate(validationItems: _*) match {
     case Nil => addQuote(cust)
@@ -78,7 +79,7 @@ class AddEditQuote extends StatefulSnippet with ErrorDisplay with DataValidation
     }
   }
 
-  private[this] def addQuote(cust: Customer) = Quote.add(quoteHolder.lineItems, quoteHolder.carriageValue) match {
+  private[this] def addQuote(cust: Customer) = Quote.add(dataHolder.lineItems, dataHolder.carriageValue) match {
     case Some(q) => Transaction.add(transactionName, cust, Seq(q)) match {
       case Some(t) => {
         info("Successfully added quote %s to transaction %s".format(q, t))
@@ -90,7 +91,7 @@ class AddEditQuote extends StatefulSnippet with ErrorDisplay with DataValidation
       }
     }
     case _ => {
-      error("Failed to add quote  with items %s".format(quoteHolder.lineItems.mkString("[", "\n", "]")))
+      error("Failed to add quote  with items %s".format(dataHolder.lineItems.mkString("[", "\n", "]")))
       Noop
     }
   }
