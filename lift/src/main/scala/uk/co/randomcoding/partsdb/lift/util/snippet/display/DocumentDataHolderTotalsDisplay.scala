@@ -12,7 +12,7 @@ import net.liftweb.util.Helpers._
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
-trait QuoteHolderDocumentTotalsDisplay {
+trait DocumentDataHolderTotalsDisplay {
   val quoteHolder: DocumentDataHolder
 
   def renderDocumentTotals() = {

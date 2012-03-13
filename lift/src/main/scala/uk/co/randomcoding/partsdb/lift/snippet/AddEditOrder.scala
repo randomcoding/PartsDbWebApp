@@ -23,12 +23,12 @@ import net.liftweb.util.Helpers._
 import net.liftweb.util.IterableConst.itNodeSeqFunc
 import uk.co.randomcoding.partsdb.lift.util.snippet.display.DocumentTotalsDisplay
 import uk.co.randomcoding.partsdb.core.document.Order
-import uk.co.randomcoding.partsdb.lift.util.snippet.display.QuoteHolderDocumentTotalsDisplay
+import uk.co.randomcoding.partsdb.lift.util.snippet.display.DocumentDataHolderTotalsDisplay
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
-class AddEditOrder extends StatefulSnippet with ErrorDisplay with DataValidation with QuoteHolderDocumentTotalsDisplay with SubmitAndCancelSnippet with LineItemSnippet {
+class AddEditOrder extends StatefulSnippet with ErrorDisplay with DataValidation with DocumentDataHolderTotalsDisplay with SubmitAndCancelSnippet with LineItemSnippet {
 
   override val cameFrom = S.referer openOr "/app/"
 
