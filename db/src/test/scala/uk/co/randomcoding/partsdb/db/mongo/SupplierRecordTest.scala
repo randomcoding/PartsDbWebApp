@@ -29,8 +29,8 @@ class SupplierRecordTest extends MongoDbTestBase {
 
   val part1 = Part.create("Part 1", Vehicle.create("Vehicle 1"), None)
 
-  val partCost1 = PartCost.create(part1, 10.0, now)
-  val partCost2 = PartCost.create(part1, 12.0, now)
+  val partCost1 = PartCost.create(part1, 10.0, now, "part1-1")
+  val partCost2 = PartCost.create(part1, 12.0, now, "part1-2")
 
   def allSuppliers = Supplier where (_.id exists true) fetch
 
@@ -66,7 +66,7 @@ class SupplierRecordTest extends MongoDbTestBase {
 
   test("Find Matching returns the correct record if the only the Object Id matches") {
     val s1 = add("Supplier 1", contactDave, address1, Seq(partCost1)).get
-    val s2 = Supplier.create("Another Supplier", contactSally, address2, List(PartCost.create(part1, 10.0d, DateTime.now))).id(s1.id.get)
+    val s2 = Supplier.create("Another Supplier", contactSally, address2, List(PartCost.create(part1, 10.0d, DateTime.now, "part1-1"))).id(s1.id.get)
 
     findMatching(s2) should be(Some(s1))
   }
