@@ -13,12 +13,12 @@ import net.liftweb.util.Helpers._
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
 trait DocumentDataHolderTotalsDisplay {
-  val quoteHolder: DocumentDataHolder
+  val dataHolder: DocumentDataHolder
 
   def renderDocumentTotals() = {
-    "#subtotal *" #> WiringUI.asText(quoteHolder.subTotal) &
-      "#carriage *" #> WiringUI.asText(quoteHolder.carriage) &
-      "#vat *" #> WiringUI.asText(quoteHolder.vatAmount) &
-      "#total *" #> WiringUI.asText(quoteHolder.totalCost, JqWiringSupport.fade)
+    "#subtotal *" #> WiringUI.asText(dataHolder.subTotal) &
+      "#carriage *" #> WiringUI.asText(dataHolder.carriage) &
+      "#vat *" #> WiringUI.asText(dataHolder.vatAmount) &
+      "#total *" #> WiringUI.asText(dataHolder.totalCost, JqWiringSupport.fade)
   }
 }
