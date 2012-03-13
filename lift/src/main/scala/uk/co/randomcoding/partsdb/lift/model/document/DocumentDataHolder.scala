@@ -106,9 +106,14 @@ class DocumentDataHolder extends Logger {
   private val lineItemsCell = ValueCell[List[LineItem]](Nil)
 
   /**
+   * The pre-tax total of the line items' values without carriage
+   */
+  private val itemsPreTaxSubTotal = lineItemsCell.lift(_.foldLeft(0.0d)(_ + _.lineCost))
+
+  /**
    * The total computed base cost of the line items, before tax
    */
-  private val preTaxTotal = lineItemsCell.lift(carriageCell)((items, carriage) => items.foldLeft(0.0d)(_ + _.lineCost) + carriage)
+  private val preTaxTotal = itemsPreTaxSubTotal.lift(carriageCell)(_ + _)
 
   /**
    * The tax rate. Set to 0.2 (20%)
@@ -128,14 +133,15 @@ class DocumentDataHolder extends Logger {
   // Values for display in the GUI
 
   /**
-   * Display the pre-tax total in £0.00 format.
+   * Display the pre-tax total for the line items only in £0.00 format.
+   * Does not include the carriage cost
    *
    * Suitable for use as:
    * {{{
    * WiringUI.asText(holder.subTotal)
    * }}}
    */
-  val subTotal = preTaxTotal.lift("£%.2f".format(_))
+  val subTotal = itemsPreTaxSubTotal.lift("£%.2f".format(_))
 
   /**
    * The amount of vat for all the current line items
