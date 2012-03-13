@@ -16,9 +16,9 @@ trait DocumentDataHolderTotalsDisplay {
   val quoteHolder: DocumentDataHolder
 
   def renderDocumentTotals() = {
-    "#subtotal" #> WiringUI.asText(quoteHolder.subTotal) &
-      "#carriage" #> WiringUI.asText(quoteHolder.carriage) &
-      "#vat" #> WiringUI.asText(quoteHolder.vatAmount) &
-      "#total" #> WiringUI.asText(quoteHolder.totalCost, JqWiringSupport.fade)
+    "#subtotal *" #> WiringUI.asText(quoteHolder.subTotal) &
+      "#carriage *" #> WiringUI.asText(quoteHolder.carriage) &
+      "#vat *" #> WiringUI.asText(quoteHolder.vatAmount) &
+      "#total *" #> WiringUI.asText(quoteHolder.totalCost, JqWiringSupport.fade)
   }
 }

@@ -44,10 +44,10 @@ trait DocumentTotalsDisplay {
    *   - ''total'' The total of the ''subtotal'', ''carriage'' and ''vat'' fields. This is calculated
    */
   def renderDocumentTotals(lineItems: Seq[LineItem], carriage: Double): CssSel = {
-    "#subtotal" #> renderSubtotal(lineItems) &
-      "#carriage" #> Text(currencyFormat(carriage)) &
-      "#vat" #> renderVat(lineItems) &
-      "#total" #> renderTotal(lineItems, carriage)
+    "#subtotal *" #> renderSubtotal(lineItems) &
+      "#carriage *" #> Text(currencyFormat(carriage)) &
+      "#vat *" #> renderVat(lineItems) &
+      "#total *" #> renderTotal(lineItems, carriage)
   }
 
   private[this] def renderSubtotal(lineItems: Seq[LineItem]) = renderIdSpan(Text(currencyFormat(subTotal(lineItems))), "subtotal")
