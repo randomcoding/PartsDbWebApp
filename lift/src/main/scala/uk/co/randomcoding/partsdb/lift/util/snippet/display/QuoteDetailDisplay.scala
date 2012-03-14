@@ -23,10 +23,9 @@ object QuoteDetailDisplay extends DocumentTotalsDisplay {
 
   def apply(quotes: List[Document], transactionId: String): Seq[CssSel] = {
     quotes map (quote => {
-      val lineItems = quote.lineItems.get
       "#quoteId" #> quote.documentNumber &
         "#quotedOn" #> new DateTime(quote.createdOn.get).toString("dd/MM/yyyy") &
-        "#lineItems" #> LineItemDisplay(lineItems) &
+        "#lineItems" #> LineItemDisplay(quote.lineItems.get) &
         renderDocumentTotals(quote) &
         "#raiseOrder" #> link("/app/order?transactionId=%s".format(transactionId), () => (), Text("Raise Order"))
     })
