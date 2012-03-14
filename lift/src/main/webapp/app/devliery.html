@@ -6,7 +6,8 @@
 </head>
 <body class="lift:content_id=main">
   <div id="main" class="lift:surround?with=default;at=content">
-    <div class="lift:AddEditOrder?form=POST&eager_eval=true">
+    <div class="lift:AddEditDelivery?form=POST&eager_eval=true">
+    <div id="scripts">JS Scripts here</div>
       <div style="width: 98%" align="center"></div>
       <div class="form-title">
         <span id="formTitle">Title</span>
@@ -25,6 +26,14 @@
       <div class="column span-14 last">
         <span id="customerPoRefEntry">Customer P/O Ref Entry</span>
       </div>
+      <div class="column span-5 form-label">Deliver To</div>
+      <div class="column span-14 last">
+      <span id="addressSelect">Address Selection Here</span>
+      </div>
+      <div id="accordion">
+        <h3><a href="#">Create New Address</a></h3>
+        <div><span id="newAddressContent" class="Lift:embed?what=_address_display">Display Address Widgets here</span></div>
+      </div>
       <div class="lift:embed?what=_available_line_items">Available line items get displayed here</div>
       <hr class="space" />
       <div class="column span-19 last form-label">Selected Line Items</div>
@@ -32,9 +41,9 @@
       <div class="column span-19 last form-label" align="right">
         <table>
           <tr>
-            <td style="text-align: right;" class="form-label">Confirm you wish to close Quote: <span id="quoteId">Quote
+            <td style="text-align: right;" class="form-label">Confirm you wish to close Order: <span id="orderId">Order
                 Id</span></td>
-            <td><span id="confirmCloseQuote">Checkbox to confirm closing of quote on submit</span></td>
+            <td><span id="confirmCloseOrder">Checkbox to confirm closing of order on submit</span></td>
             <td>&nbsp;</td>
           </tr>
         </table>
