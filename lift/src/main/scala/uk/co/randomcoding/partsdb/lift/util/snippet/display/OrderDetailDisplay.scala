@@ -3,11 +3,16 @@
  */
 package uk.co.randomcoding.partsdb.lift.util.snippet.display
 
-import uk.co.randomcoding.partsdb.core.document.Document
-import net.liftweb.util.CssSel
-import net.liftweb.util.Helpers._
+import scala.xml.Text
+
 import org.joda.time.DateTime
-import uk.co.randomcoding.partsdb.lift.util.LineItemDisplay
+
+import uk.co.randomcoding.partsdb.core.document.Document
+import uk.co.randomcoding.partsdb.lift.util._
+
+import net.liftweb.http.SHtml._
+import net.liftweb.util.Helpers._
+import net.liftweb.util.CssSel
 
 /**
  * Displays a series of orders using the template `_order_detail_display.html`
@@ -19,7 +24,7 @@ object OrderDetailDisplay extends DocumentTotalsDisplay {
     "#orderId" #> order.documentNumber &
       "#orderedOn" #> new DateTime(order.createdOn.get).toString("dd/MM/yyyy") &
       "#lineItems" #> LineItemDisplay(order.lineItems.get) &
-      renderDocumentTotals(order)
-    // TODO: Add next stage button
+      renderDocumentTotals(order) &
+      "#raiseDelivery" #> link("/app/delivery?transactionId=%s".format(transactionId), () => (), Text("Raise Delivery Note"))
   })
 }
