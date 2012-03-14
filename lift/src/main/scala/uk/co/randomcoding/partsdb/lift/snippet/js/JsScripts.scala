@@ -12,11 +12,19 @@ import net.liftweb.http.js.JE._
  */
 object JsScripts {
 
-  def tabDisplayScript = Script(JsRaw("""$(function() {
+  val tabDisplayScript = Script(JsRaw("""$(function() {
 	  $("#tabs").tabs({
 	    fx: {
 		  opacity: 'toggle'
 		}
+      });
+    });"""))
+
+  val accordionScript = Script(JsRaw("""$function() {
+      $("#accordion").accordion({
+        autoHeight: false;
+        collapsible: true;
+        active: false;
       });
     });"""))
 }
