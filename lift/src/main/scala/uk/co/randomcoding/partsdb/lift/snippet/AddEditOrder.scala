@@ -4,32 +4,28 @@
 package uk.co.randomcoding.partsdb.lift.snippet
 
 import scala.xml.Text
+
 import org.bson.types.ObjectId
+
 import uk.co.randomcoding.partsdb.core.customer.Customer
-import uk.co.randomcoding.partsdb.core.document.{ LineItem, DocumentType, Document }
+import uk.co.randomcoding.partsdb.core.document.{ Order, LineItem, DocumentType, Document }
 import uk.co.randomcoding.partsdb.core.part.Part
 import uk.co.randomcoding.partsdb.core.transaction.Transaction
-import uk.co.randomcoding.partsdb.lift.model.document.DocumentDataHolder
+import uk.co.randomcoding.partsdb.lift.model.document.OrderDocumentDataHolder
 import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
+import uk.co.randomcoding.partsdb.lift.util.snippet.display.DocumentDataHolderTotalsDisplay
 import uk.co.randomcoding.partsdb.lift.util.snippet._
-import uk.co.randomcoding.partsdb.lift.util.SnippetDisplayHelpers._
-import uk.co.randomcoding.partsdb.lift.util._
+
 import net.liftweb.common.Full
-import net.liftweb.http.js.JsCmds.{ SetHtml, Noop }
-import net.liftweb.http.js.JsCmd.unitToJsCmd
+import net.liftweb.http.js.JsCmds.Noop
 import net.liftweb.http.js.JsCmd
 import net.liftweb.http.{ StatefulSnippet, S }
 import net.liftweb.util.Helpers._
-import net.liftweb.util.IterableConst.itNodeSeqFunc
-import uk.co.randomcoding.partsdb.lift.util.snippet.display.DocumentTotalsDisplay
-import uk.co.randomcoding.partsdb.core.document.Order
-import uk.co.randomcoding.partsdb.lift.util.snippet.display.DocumentDataHolderTotalsDisplay
-import uk.co.randomcoding.partsdb.lift.model.document.OrderDocumentDataHolder
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
-class AddEditOrder extends StatefulSnippet with ErrorDisplay with DataValidation with DocumentDataHolderTotalsDisplay with SubmitAndCancelSnippet with AllLineItemsSnippet {
+class AddEditOrder extends StatefulSnippet with ErrorDisplay with DataValidation with DocumentDataHolderTotalsDisplay with SubmitAndCancelSnippet with AllLineItemsSnippet with AvailableLineItemsDisplay {
 
   override val cameFrom = S.referer openOr "/app/"
 
@@ -110,7 +106,7 @@ class AddEditOrder extends StatefulSnippet with ErrorDisplay with DataValidation
       "#customerName" #> Text(customerName) &
       renderDocumentTotals() &
       "#customerPoRefEntry" #> styledText(customerPoRef, customerPoRef = _) &
-      "#availableLineItems *" #> renderAvailableLineItems(lineItems) &
+      renderAvailableLineItems(lineItems) &
       renderAllLineItems() &
       "#quoteId" #> Text(quoteId) &
       "#confirmCloseQuote" #> styledCheckbox(false, confirmCloseQuote = _) &
@@ -120,19 +116,7 @@ class AddEditOrder extends StatefulSnippet with ErrorDisplay with DataValidation
   private[this] def validationItems: Seq[ValidationItem] = Seq(ValidationItem(customerPoRef, "Customer P/O Reference"),
     ValidationItem(dataHolder.lineItems, "Selected Line Items"))
 
-  private[this] def renderAvailableLineItems(lines: Seq[LineItem]) = lines map (line => {
-    val partName = Part findById line.partId.get match {
-      case Some(p) => p.partName.get
-      case _ => "No Part"
-    }
-
-    "#selected" #> styledAjaxCheckbox(false, checkBoxSelected(_, line)) &
-      "#partName" #> Text(partName) &
-      "#partQuantity" #> Text("%d".format(line.quantity.get)) &
-      "#totalLineCost" #> Text("£%.2f".format(line.lineCost))
-  })
-
-  private[this] def checkBoxSelected(selected: Boolean, line: LineItem) = {
+  override def checkBoxSelected(selected: Boolean, line: LineItem) = {
     selected match {
       case true => {
         dataHolder.carriage(carriage)
@@ -144,8 +128,5 @@ class AddEditOrder extends StatefulSnippet with ErrorDisplay with DataValidation
       }
     }
     refreshLineItemDisplay()
-    //updateSelectedItems()// & refreshTotals()
   }
-
-  //private[this] def updateSelectedItems(): JsCmd = SetHtml("lineItems", LineItemDisplay(selectedItems, false, false))
 }
