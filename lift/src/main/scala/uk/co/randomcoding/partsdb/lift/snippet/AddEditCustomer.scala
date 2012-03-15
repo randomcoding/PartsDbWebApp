@@ -66,6 +66,20 @@ class AddEditCustomer extends StatefulSnippet with ErrorDisplay with DataValidat
       renderSubmitAndCancel()
   }
 
+  /*
+   * These are used to populate the validation
+   */
+  private[this] var billingAddress: Option[Address] = None
+  private[this] var paymentTerms: Int = 0
+  private[this] var contact: Option[ContactDetails] = None
+
+  override lazy val validationItems = genValidationItems
+
+  private[this] def genValidationItems = Seq(ValidationItem(billingAddress, "Business Address"),
+    ValidationItem(paymentTerms, "Payment Terms"),
+    ValidationItem(contact, "Contact Details"),
+    ValidationItem(name, "Customer Name"))
+
   /**
    * Method called when the submit button is pressed.
    *
@@ -74,26 +88,22 @@ class AddEditCustomer extends StatefulSnippet with ErrorDisplay with DataValidat
    * On successful addition, this will (possibly display a dialogue and then) redirect to the main customers page
    */
   override def processSubmit(): JsCmd = {
-    val billingAddress = addressFromInput("%s Business Address".format(name))
+    billingAddress = addressFromInput("%s Business Address".format(name))
     debug("Generated Address: %s".format(billingAddress))
-    val contact = contactDetailsFromInput()
+    contact = Some(contactDetailsFromInput())
 
-    val paymentTerms = asInt(paymentTermsText) match {
+    paymentTerms = asInt(paymentTermsText) match {
       case Full(terms) => terms
       case _ => -1
     }
 
     trace("About to validate")
-    val validationChecks = Seq(ValidationItem(billingAddress, "Biusiness Address" /*, "Business Address is not valid.\n Please ensure there is a Customer Name and that the country is selected."*/ ),
-      ValidationItem(paymentTerms, "Payment Terms" /*, "Payment Terms are not valid"*/ ),
-      ValidationItem(contact, "Contact Details" /*, "Contact Details are not valid"*/ ),
-      ValidationItem(name, "Customer Name" /*, "Customer Name must be entered"*/ ))
 
-    validate(validationChecks: _*) match {
+    performValidation() match {
       case Nil => {
         initialCustomer match {
-          case None => addCustomer(billingAddress.get, paymentTerms, contact)
-          case Some(c) => modifyCustomer(c, billingAddress.get, paymentTerms, contact)
+          case None => addCustomer(billingAddress.get, paymentTerms, contact.get)
+          case Some(c) => modifyCustomer(c, billingAddress.get, paymentTerms, contact.get)
         }
       }
       case errors => {

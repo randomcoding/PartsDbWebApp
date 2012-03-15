@@ -119,15 +119,16 @@ trait PartCostSnippet extends ErrorDisplay with DataValidation with Logger {
     }), false, false))
   }
 
+  override val validationItems = Seq(ValidationItem(currentPart, "Current Part"),
+    ValidationItem(currentPartCost, "Current Part Cost"),
+    ValidationItem(currentPartLastSuppliedDate, "Last Supplied Date"),
+    ValidationItem(supplierPartNumber, "Supplier Part Number"))
+
   private[this] def addPartCost(): JsCmd = {
     clearErrors
     debug("Adding a part cost")
-    val validationItems = Seq(ValidationItem(currentPart, "Current Part"),
-      ValidationItem(currentPartCost, "Current Part Cost"),
-      ValidationItem(currentPartLastSuppliedDate, "Last Supplied Date"),
-      ValidationItem(supplierPartNumber, "Supplier Part Number"))
 
-    validate(validationItems: _*) match {
+    performValidation() match {
       case Nil => {
         updatePartCosts(PartCost.create(currentPart.get, currentPartCost, currentPartLastSuppliedDate, supplierPartNumber))
         clearErrorsAndRefresh

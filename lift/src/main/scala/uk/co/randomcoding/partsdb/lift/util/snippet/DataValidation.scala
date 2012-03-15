@@ -20,6 +20,24 @@ import net.liftweb.common.Logger
 trait DataValidation extends Logger {
 
   /**
+   * Method to perform actual validation.
+   *
+   * This will validate the [[uk.co.randomcoding.partsdb.lift.util.snippet.DataValidation#validationItems]] and then execute
+   * each of the validation functions provided.
+   *
+   *  @param validationFuncs Functions `() => Seq[String]` that perform additional validation not covered by the
+   *  [[uk.co.randomcoding.partsdb.lift.util.snippet.DataValidation#validationItems]]. These functions should return error message(s)
+   *  contained in a `Seq[String]` if they fail or `Nil` if they pass validation.
+   *  @return A `Seq` or error messages, or `Nil` if all items validated OK
+   */
+  def performValidation(validationFuncs: () => Seq[String]*) = validate(validationItems: _*) ++ (validationFuncs flatMap (_()))
+
+  /**
+   * Sequence of [[uk.co.randomcoding.partsdb.lift.util.snippet.ValidationItem]]s to validate on the given page
+   */
+  val validationItems: Seq[ValidationItem]
+
+  /**
    * Validates the input items and returns a list of error tuples
    *
    * Will return false for:
@@ -33,7 +51,7 @@ trait DataValidation extends Logger {
    * @return A list of `(String, String)` tuples if any item fails its validation. The tuples contain the `errorLocationId` and `errorMessage`
    * of the [[uk.co.randomcoding.partsdb.lift.util.snippet.ValidationItem]]s that failed.
    */
-  def validate(items: ValidationItem*): Seq[String] = items map (validateItem(_)) filter (_.isDefined) map (_.get) flatten
+  private[this] def validate(items: ValidationItem*): Seq[String] = items map (validateItem(_)) filter (_.isDefined) map (_.get) flatten
 
   /**
    * Perform the validation process.
