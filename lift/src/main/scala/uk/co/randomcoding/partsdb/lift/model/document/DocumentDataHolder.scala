@@ -94,9 +94,9 @@ trait DocumentDataHolder extends Logger {
   /**
    * Setter for the carriage call that parses a String input.
    *
-   * If the input fails to parse as a double then the cariage is not updated
+   * If the input fails to parse as a double then the carriage is not updated
    */
-  def carriage(carriageString: String) = {
+  def carriage_=(carriageString: String) = {
     debug("Setting carriage to: %s".format(carriageString))
     asDouble(carriageString) match {
       case Full(value) => carriageCell.set(value)
@@ -107,12 +107,12 @@ trait DocumentDataHolder extends Logger {
   /**
    * Setter for the carriage call
    */
-  def carriage(amount: Double) = carriageCell.set(amount)
+  def carriage_=(amount: Double) = carriageCell.set(amount)
 
   /**
    * @return The value of the carriage rendered as a currency string
    */
-  val carriage = carriageCell.lift("£%.2f".format(_))
+  def carriage = carriageCell.lift("£%.2f".format(_))
 
   /**
    * @return The value of the `carriage` cell as a formatted string without currency
