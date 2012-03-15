@@ -7,7 +7,7 @@
 <body class="lift:content_id=main">
   <div id="main" class="lift:surround?with=default;at=content">
     <div class="lift:AddEditDelivery?form=POST&eager_eval=true">
-    <div id="scripts">JS Scripts here</div>
+      <div id="scripts">JS Scripts here</div>
       <div style="width: 98%" align="center"></div>
       <div class="form-title">
         <span id="formTitle">Title</span>
@@ -22,17 +22,26 @@
       <div class="column span-19">
         <span class="form-label">Carriage:&nbsp;&nbsp;</span> <span id="carriage">Carriage Display</span>
       </div>
+      <div class="form-label column span-19 last">Order Details:</div>
+      <div class="column span-5 form-label">Delivery for Order</div>
+      <div class="column span-5">
+        <span id="selectOrder">Selection of order to raise delivery against</span>
+      </div>
       <div class="column span-5 form-label">Customer P/O Reference:</div>
-      <div class="column span-14 last">
+      <div class="column span-4 last">
         <span id="customerPoRefEntry">Customer P/O Ref Entry</span>
       </div>
       <div class="column span-5 form-label">Deliver To</div>
       <div class="column span-14 last">
-      <span id="addressSelect">Address Selection Here</span>
+        <span id="addressSelect">Address Selection Here</span>
       </div>
       <div id="accordion">
-        <h3><a href="#">Create New Address</a></h3>
-        <div><span id="newAddressContent" class="Lift:embed?what=_address_display">Display Address Widgets here</span></div>
+        <h3>
+          <a href="#">Create New Address</a>
+        </h3>
+        <div>
+          <span id="newAddressContent" class="Lift:embed?what=_address_display">Display Address Widgets here</span>
+        </div>
       </div>
       <div class="lift:embed?what=_available_line_items">Available line items get displayed here</div>
       <hr class="space" />
