@@ -23,22 +23,22 @@ import net.liftweb.util.Helpers._
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
 class AddEditUser extends StatefulSnippet with ErrorDisplay with DataValidation with SubmitAndCancelSnippet with Logger {
-  val roles = List(("User" -> "User"), ("Admin" -> "Admin"))
+  private[this] val roles = List(("User" -> "User"), ("Admin" -> "Admin"))
 
-  val initialUser = S param ("id") match {
+  private[this] val initialUser = S param ("id") match {
     case Full(id) => User findById (new ObjectId(id))
     case _ => None
   }
 
   override val cameFrom = S.referer openOr "/admin/"
 
-  var (userName, userRole) = initialUser match {
+  private[this] var (userName, userRole) = initialUser match {
     case Some(u) => (u.username.get, u.role.get.toString)
     case _ => ("", "")
   }
 
-  var password = ""
-  var confirmPassword = ""
+  private[this] var password = ""
+  private[this] var confirmPassword = ""
 
   def dispatch = {
     case "render" => render
