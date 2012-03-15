@@ -43,7 +43,7 @@ class AddEditOrder extends StatefulValidatingErrorDisplaySnippet with Transactio
   private[this] val (carriage, lineItems, quoteId) = quote match {
     case Some(q) => {
       val orderedItems = orders flatMap (_.lineItems.get)
-      dataHolder.carriage(q.carriage.get)
+      dataHolder.carriage = q.carriage.get
       (q.carriage.get, q.lineItems.get filterNot (orderedItems contains _) sortBy (_.lineNumber.get), q.documentNumber)
     }
     case _ => (0.0d, List.empty, "No Quote")
@@ -99,12 +99,12 @@ class AddEditOrder extends StatefulValidatingErrorDisplaySnippet with Transactio
   override def checkBoxSelected(selected: Boolean, line: LineItem) = {
     selected match {
       case true => {
-        dataHolder.carriage(carriage)
+        if (dataHolder.lineItems isEmpty) dataHolder.carriage = carriage
         dataHolder.addLineItem(line)
       }
       case false => {
-        dataHolder.carriage(0)
         dataHolder.removeLineItem(line)
+        if (dataHolder.lineItems isEmpty) dataHolder.carriage = 0
       }
     }
     refreshLineItemDisplay()
