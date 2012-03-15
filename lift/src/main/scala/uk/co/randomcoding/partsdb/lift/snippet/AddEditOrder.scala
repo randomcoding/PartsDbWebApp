@@ -7,6 +7,8 @@ import scala.xml.Text
 
 import org.bson.types.ObjectId
 
+import com.foursquare.rogue.Rogue._
+
 import uk.co.randomcoding.partsdb.core.customer.Customer
 import uk.co.randomcoding.partsdb.core.document.{ Order, LineItem, DocumentType, Document }
 import uk.co.randomcoding.partsdb.core.part.Part
@@ -34,14 +36,16 @@ class AddEditOrder extends StatefulValidatingErrorDisplaySnippet with Transactio
   private var customerPoRef = ""
   private var confirmCloseQuote = false
 
-  private[this] val (quote, orders) = transaction match {
-    case Some(t) => {
-      val docs = t.documents.get map (Document findById _) filter (_ isDefined) map (_.get)
+  // Each transaction should only have a single Quote
+  private[this] val quote = documentsOfType(DocumentType.Quote) headOption
+  private[this] val orders = documentsOfType(DocumentType.Order)
+  /*private[this] val (quote, orders) = transactionDocs match {
+    case Nil => (None, Seq.empty)
+    case docs => {
       val order = docs find (_.documentType.get == DocumentType.Quote)
       (order, docs filter (_.documentType.get == DocumentType.Order))
     }
-    case _ => (None, Seq.empty)
-  }
+  }*/
 
   private[this] val (carriage, lineItems, quoteId) = quote match {
     case Some(q) => {
@@ -52,12 +56,10 @@ class AddEditOrder extends StatefulValidatingErrorDisplaySnippet with Transactio
     case _ => (0.0d, List.empty, "No Quote")
   }
 
-  private[this] def validateQuoteCloseConfirmation = if (confirmCloseQuote) Nil else Seq("Please confirm it is ok to close the Quote before generating this Order")
-
-  private[this] def performValidation: Seq[String] = validate(validationItems: _*) ++ validateQuoteCloseConfirmation
+  private[this] val validateQuoteCloseConfirmation = () => if (confirmCloseQuote) Nil else Seq("Please confirm it is ok to close the Quote before generating this Order")
 
   override def processSubmit(): JsCmd = {
-    performValidation match {
+    performValidation(validateQuoteCloseConfirmation) match {
       case Nil => {
         // create order
         val order = Document.add(Order(dataHolder.lineItems, dataHolder.carriageValue))
