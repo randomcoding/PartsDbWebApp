@@ -25,7 +25,7 @@ import net.liftweb.util.Helpers._
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
-class AddEditOrder extends StatefulSnippet with ErrorDisplay with DataValidation with DocumentDataHolderTotalsDisplay with SubmitAndCancelSnippet with AllLineItemsSnippet with AvailableLineItemsDisplay {
+class AddEditOrder extends StatefulValidatingErrorDisplaySnippet with TransactionSnippet with DocumentDataHolderTotalsDisplay with SubmitAndCancelSnippet with AllLineItemsSnippet with AvailableLineItemsDisplay {
 
   override val cameFrom = S.referer openOr "/app/"
 
@@ -33,11 +33,6 @@ class AddEditOrder extends StatefulSnippet with ErrorDisplay with DataValidation
 
   private var customerPoRef = ""
   private var confirmCloseQuote = false
-
-  private[this] val transaction = S.param("transactionId") match {
-    case Full(id) => Transaction findById new ObjectId(id)
-    case _ => None
-  }
 
   private[this] val (quote, orders) = transaction match {
     case Some(t) => {
@@ -55,16 +50,6 @@ class AddEditOrder extends StatefulSnippet with ErrorDisplay with DataValidation
       (q.carriage.get, q.lineItems.get filterNot (orderedItems contains _) sortBy (_.lineNumber.get), q.documentNumber)
     }
     case _ => (0.0d, List.empty, "No Quote")
-  }
-
-  private[this] val (transactionName, customerName) = transaction match {
-    case Some(t) => (t.shortName.get, customerNameFromTransaction(t))
-    case _ => ("No Transaction", "No Transaction")
-  }
-
-  private[this] def customerNameFromTransaction(t: Transaction) = Customer findById t.customer.get match {
-    case Some(c) => c.customerName.get
-    case _ => "No Customer for id %s in transaction %s".format(t.customer.get, t.shortName.get)
   }
 
   private[this] def validateQuoteCloseConfirmation = if (confirmCloseQuote) Nil else Seq("Please confirm it is ok to close the Quote before generating this Order")
