@@ -45,7 +45,7 @@ class AddEditQuote extends StatefulSnippet with ErrorDisplay with DataValidation
     "#formTitle" #> Text("Add Quote") &
       "#transactionName" #> styledText(transactionName, transactionName = _) &
       "#customerSelect" #> styledObjectSelect[Option[Customer]](customersSelect, None, currentCustomer = _) &
-      "#carriageEntry" #> styledAjaxText(dataHolder.carriageText, updateAjaxValue(dataHolder.carriage(_))) &
+      "#carriageEntry" #> styledAjaxText(dataHolder.carriageText, updateAjaxValue(dataHolder.carriage = _)) &
       renderAddEditLineItem() &
       renderSubmitAndCancel() &
       renderAllLineItems() &
