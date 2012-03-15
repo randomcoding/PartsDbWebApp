@@ -39,13 +39,6 @@ class AddEditOrder extends StatefulValidatingErrorDisplaySnippet with Transactio
   // Each transaction should only have a single Quote
   private[this] val quote = documentsOfType(DocumentType.Quote) headOption
   private[this] val orders = documentsOfType(DocumentType.Order)
-  /*private[this] val (quote, orders) = transactionDocs match {
-    case Nil => (None, Seq.empty)
-    case docs => {
-      val order = docs find (_.documentType.get == DocumentType.Quote)
-      (order, docs filter (_.documentType.get == DocumentType.Order))
-    }
-  }*/
 
   private[this] val (carriage, lineItems, quoteId) = quote match {
     case Some(q) => {
@@ -100,7 +93,7 @@ class AddEditOrder extends StatefulValidatingErrorDisplaySnippet with Transactio
       renderSubmitAndCancel()
   }
 
-  private[this] def validationItems: Seq[ValidationItem] = Seq(ValidationItem(customerPoRef, "Customer P/O Reference"),
+  override val validationItems: Seq[ValidationItem] = Seq(ValidationItem(customerPoRef, "Customer P/O Reference"),
     ValidationItem(dataHolder.lineItems, "Selected Line Items"))
 
   override def checkBoxSelected(selected: Boolean, line: LineItem) = {
