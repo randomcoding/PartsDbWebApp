@@ -7,6 +7,8 @@ import net.liftweb.mongodb.record.{ MongoRecord, MongoMetaRecord }
 import net.liftweb.mongodb.record.field._
 import net.liftweb.record.field._
 
+import uk.co.randomcoding.partsdb.core.address.Address
+
 import java.util.Date
 
 /**
@@ -66,6 +68,13 @@ class Document private () extends MongoRecord[Document] with ObjectIdPk[Document
    * The customer's P/O number if known
    */
   object customerPoReference extends StringField(this, 50)
+
+  /**
+   * The [[import uk.co.randomcoding.partsdb.core.address.Address]] to which delivery is to be made.
+   *
+   * This will be set in the Delivery Note stage
+   */
+  object deliveryAddress extends BsonRecordField(this, Address)
 
   /**
    * The printable identifier for this document.
