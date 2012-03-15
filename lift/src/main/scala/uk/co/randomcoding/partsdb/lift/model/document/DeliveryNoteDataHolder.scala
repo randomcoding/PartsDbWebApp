@@ -8,7 +8,7 @@ import net.liftweb.util.Cell
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
-class OrderDocumentDataHolder extends DocumentDataHolder with LineItemsDataHolder {
+class DeliveryNoteDataHolder extends DocumentDataHolder with LineItemsDataHolder {
   /**
    * The total computed base cost of the line items, before tax
    */

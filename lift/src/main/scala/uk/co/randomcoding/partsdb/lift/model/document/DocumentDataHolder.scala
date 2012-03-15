@@ -53,6 +53,11 @@ trait DocumentDataHolder extends Logger {
    */
   private lazy val total = preTaxTotal.lift(tax)(_ + _)
 
+  /**
+   * This contains the total value of all the line items before tax and without carriage
+   */
+  val lineItemsSubTotalCell: Cell[Double]
+
   // Values for display in the GUI
 
   /**
@@ -64,7 +69,7 @@ trait DocumentDataHolder extends Logger {
    * WiringUI.asText(holder.subTotal)
    * }}}
    */
-  def subTotal: Cell[String] // = itemsPreTaxSubTotal.lift("£%.2f".format(_))
+  final def subTotal = lineItemsSubTotalCell.lift("£%.2f".format(_))
 
   /**
    * The amount of vat for all the current line items
