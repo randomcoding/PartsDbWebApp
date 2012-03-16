@@ -6,8 +6,8 @@
 </head>
 <body class="lift:content_id=main">
   <div id="main" class="lift:surround?with=default;at=content">
+    <script class="lift:js/JsScripts.accordionScript?eager_eval=true"></script>
     <div class="lift:AddEditDelivery?form=POST&eager_eval=true">
-      <div id="scripts">JS Scripts here</div>
       <div style="width: 98%" align="center"></div>
       <div class="form-title">
         <span id="formTitle">Title</span>
@@ -35,12 +35,14 @@
       <div class="column span-14 last">
         <span id="addressSelect">Address Selection Here</span>
       </div>
-      <div id="accordion">
-        <h3>
-          <a href="#">Create New Address</a>
-        </h3>
-        <div>
-          <span id="newAddressContent" class="Lift:embed?what=_address_display">Display Address Widgets here</span>
+      <div class="column span-19 last">
+        <div id="accordion">
+          <h3>
+            <a href="#">Create New Address</a>
+          </h3>
+          <div>
+            <span id="newAddressContent" class="lift:embed?what=_address_display">Display Address Widgets here</span>
+          </div>
         </div>
       </div>
       <div class="lift:embed?what=_available_line_items">Available line items get displayed here</div>

@@ -32,6 +32,7 @@ class AddEditDelivery extends StatefulValidatingErrorDisplaySnippet with Transac
 
   override var addressText: String = ""
   override var addressCountry: String = ""
+  override val addressLabel = "Delivery Address"
 
   private[this] lazy val previousDeliveryNotes = documentsOfType(DocumentType.DeliveryNote)
   private[this] lazy val orders = documentsOfType(DocumentType.Order).toList
@@ -59,6 +60,8 @@ class AddEditDelivery extends StatefulValidatingErrorDisplaySnippet with Transac
 
   private[this] lazy val addressSelection = (None, "Select Delivery Address") :: (availableAddresses map (addr => (Some(addr), addr.shortName.get)))
 
+  private[this] var confirmCloseOrder = false
+
   override def dispatch = {
     case "render" => render
   }
@@ -74,6 +77,8 @@ class AddEditDelivery extends StatefulValidatingErrorDisplaySnippet with Transac
       "#carriage" #> WiringUI.asText(dataHolder.carriage) &
       "#addressSelect" #> styledAjaxObjectSelect(addressSelection, None, updateAjaxValue((value: Option[Address]) => dataHolder deliveryAddress = value)) &
       renderEditableAddress()
+    // TODO: Add Submit/Cancel functionality
+    // TODO: Add close order checkbox
   }
 
   override val validationItems = Nil
