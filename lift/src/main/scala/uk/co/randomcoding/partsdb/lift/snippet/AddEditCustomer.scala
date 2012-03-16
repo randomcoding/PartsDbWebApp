@@ -73,9 +73,9 @@ class AddEditCustomer extends StatefulSnippet with ErrorDisplay with DataValidat
   private[this] var paymentTerms: Int = 0
   private[this] var contact: Option[ContactDetails] = None
 
-  override lazy val validationItems = genValidationItems
+  override def validationItems() = genValidationItems()
 
-  private[this] def genValidationItems = Seq(ValidationItem(billingAddress, "Business Address"),
+  private[this] def genValidationItems() = Seq(ValidationItem(billingAddress, "Business Address"),
     ValidationItem(paymentTerms, "Payment Terms"),
     ValidationItem(contact, "Contact Details"),
     ValidationItem(name, "Customer Name"))

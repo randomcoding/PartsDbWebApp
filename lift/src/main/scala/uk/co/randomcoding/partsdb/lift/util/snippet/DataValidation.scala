@@ -35,7 +35,7 @@ trait DataValidation extends Logger {
   /**
    * Sequence of [[uk.co.randomcoding.partsdb.lift.util.snippet.ValidationItem]]s to validate on the given page
    */
-  val validationItems: Seq[ValidationItem]
+  def validationItems: Seq[ValidationItem]
 
   /**
    * Validates the input items and returns a list of error tuples
