@@ -20,11 +20,11 @@ object JsScripts {
       });
     });"""))
 
-  val accordionScript = Script(JsRaw("""$function() {
+  val accordionScript = Script(JsRaw("""$(function() {
       $("#accordion").accordion({
-        autoHeight: false;
-        collapsible: true;
-        active: false;
+        autoHeight: false,
+        collapsible: true,
+        active: false
       });
     });"""))
 }
