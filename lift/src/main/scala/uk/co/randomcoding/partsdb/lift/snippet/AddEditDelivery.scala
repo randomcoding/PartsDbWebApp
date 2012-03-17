@@ -84,20 +84,21 @@ class AddEditDelivery extends StatefulValidatingErrorDisplaySnippet with Transac
       renderSubmitAndCancel()
   }
 
-  override def processSubmit(): JsCmd = {
-    // validate
-    performValidation() match {
-      case Nil => {
-        // generate delivery note
+  private[this] val itemsToBeDelivered = () => dataHolder.lineItems match {
+    case Nil => Seq("Please Select at least one item to be delivered")
+    case _ => Nil
+  }
 
-        // close order
-      }
-      case errors => {
-        displayErrors(errors: _*)
-        Noop
-      }
+  override def processSubmit(): JsCmd = performValidation(itemsToBeDelivered) match {
+    case Nil => {
+      // generate delivery note
+
+      // close order
     }
-
+    case errors => {
+      displayErrors(errors: _*)
+      Noop
+    }
   }
 
   private[this] val updateOrderValue = (value: Option[Document]) => {
