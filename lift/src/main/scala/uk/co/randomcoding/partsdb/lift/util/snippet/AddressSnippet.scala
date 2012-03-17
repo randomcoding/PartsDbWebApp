@@ -23,14 +23,17 @@ trait AddressSnippet extends Logger {
 
   var addressText: String
   var addressCountry: String
+  val addressLabel = "Business Address"
 
   val renderEditableAddress = () => {
-    "#billingAddressEntry" #> styledTextArea(addressText, addressText = _) &
+    "#addressLabel" #> Text(addressLabel) &
+      "#billingAddressEntry" #> styledTextArea(addressText, addressText = _) &
       "#billingAddressCountry" #> styledSelect(countryCodes, addressCountry, addressCountry = _)
   }
 
   val renderReadOnlyAddress = () => {
-    "#billingAddressEntry" #> styledTextArea(addressText, addressText = _, readonly) &
+    "#addressLabel" #> Text(addressLabel) &
+      "#billingAddressEntry" #> styledTextArea(addressText, addressText = _, readonly) &
       "#billingAddressCountry" #> styledText(addressCountry, addressCountry = _, readonly)
   }
 

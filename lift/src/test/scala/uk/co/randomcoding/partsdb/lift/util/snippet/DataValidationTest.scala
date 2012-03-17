@@ -12,9 +12,13 @@ import uk.co.randomcoding.partsdb.core.contact._
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
 class DataValidationTest extends FunSuite with ShouldMatchers {
-  private val validation = new DataValidation {}
+  private val validation = (items: Seq[ValidationItem]) => new DataValidation {
+    override val validationItems = items
+  }
 
-  import validation.validate
+  private def validate(items: Seq[ValidationItem]) = validation(items).performValidation()
+
+  private implicit def itemToSeq(item: ValidationItem): Seq[ValidationItem] = Seq(item)
 
   test("Valid address validates ok") {
     val addrItem = ValidationItem(Address.create("Address Name", "An Address in a nice place", "UK"), "Address-1")

@@ -45,7 +45,7 @@ class AddEditQuote extends StatefulSnippet with ErrorDisplay with DataValidation
     "#formTitle" #> Text("Add Quote") &
       "#transactionName" #> styledText(transactionName, transactionName = _) &
       "#customerSelect" #> styledObjectSelect[Option[Customer]](customersSelect, None, currentCustomer = _) &
-      "#carriageEntry" #> styledAjaxText(dataHolder.carriageText, updateAjaxValue(dataHolder.carriage(_))) &
+      "#carriageEntry" #> styledAjaxText(dataHolder.carriageText, updateAjaxValue(dataHolder.carriage = _)) &
       renderAddEditLineItem() &
       renderSubmitAndCancel() &
       renderAllLineItems() &
@@ -68,10 +68,10 @@ class AddEditQuote extends StatefulSnippet with ErrorDisplay with DataValidation
 
   private[this] def isTransactionNameUnique: Boolean = (Transaction where (_.shortName eqs transactionName) get) isDefined
 
-  private[this] def validationItems = Seq(ValidationItem(transactionName, "Transaction Short Name"),
+  override val validationItems = Seq(ValidationItem(transactionName, "Transaction Short Name"),
     ValidationItem(dataHolder.carriageValue, "Carriage"))
 
-  private[this] def addQuoteAndTransaction(cust: Customer): JsCmd = validate(validationItems: _*) match {
+  private[this] def addQuoteAndTransaction(cust: Customer): JsCmd = performValidation() match {
     case Nil => addQuote(cust)
     case errors => {
       displayErrors(errors: _*)

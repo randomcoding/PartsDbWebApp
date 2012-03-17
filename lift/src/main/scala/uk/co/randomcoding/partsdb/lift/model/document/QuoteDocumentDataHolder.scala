@@ -13,6 +13,6 @@ class QuoteDocumentDataHolder extends DocumentDataHolder with NewLineItemDataHol
    */
   override val preTaxTotal: Cell[Double] = itemsPreTaxSubTotal.lift(carriageCell)(_ + _)
 
-  val subTotal: Cell[String] = itemsPreTaxSubTotal.lift("£%.2f".format(_))
+  val lineItemsSubTotalCell: Cell[Double] = itemsPreTaxSubTotal.lift(_ + 0.0d)
 
 }

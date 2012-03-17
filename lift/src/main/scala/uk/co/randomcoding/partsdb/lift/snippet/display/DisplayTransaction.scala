@@ -4,25 +4,27 @@
 package uk.co.randomcoding.partsdb.lift.snippet.display
 
 import scala.xml.Text
+
 import org.bson.types.ObjectId
+
 import uk.co.randomcoding.partsdb.core.customer.Customer
-import uk.co.randomcoding.partsdb.core.document.DocumentType.{ Quote, DocType, Order }
+import uk.co.randomcoding.partsdb.core.document.DocumentType.{ Quote, Order, DocType, DeliveryNote }
 import uk.co.randomcoding.partsdb.core.document.Document
 import uk.co.randomcoding.partsdb.core.transaction.Transaction
-import uk.co.randomcoding.partsdb.lift.util.snippet.display.QuoteDetailDisplay
+import uk.co.randomcoding.partsdb.lift.util.snippet.display.{ QuoteDetailDisplay, OrderDetailDisplay, DeliveryNoteDetailDisplay }
 import uk.co.randomcoding.partsdb.lift.util.snippet._
+
 import net.liftweb.common.{ Logger, Full }
 import net.liftweb.http.SHtml._
 import net.liftweb.http.S
 import net.liftweb.util.Helpers._
-import uk.co.randomcoding.partsdb.lift.util.snippet.display.OrderDetailDisplay
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
 object DisplayTransaction extends TabDisplaySnippet with Logger {
 
-  override val tabTitles = Seq(("quoteResults", "Quoted"), ("orderResults", "Ordered"), ("invoiceResults", "Invoiced"), ("deliveryNoteResults", "Delivered"))
+  override val tabTitles = Seq(("quoteResults", "Quoted"), ("orderResults", "Ordered"), ("deliveryNoteResults", "Delivered"), ("invoiceResults", "Invoiced"))
 
   /*
    * Form a closure over passed in data to enable the rendering of the correct info
@@ -45,9 +47,9 @@ object DisplayTransaction extends TabDisplaySnippet with Logger {
         val transactionId = t.id.get.toString
         "#documentTabs" #> generateTabs() &
           "#quotes *" #> QuoteDetailDisplay(documents filter (_.documentType.get == Quote), transactionId) &
-          "#orders *" #> OrderDetailDisplay(documents filter (_.documentType.get == Order), transactionId) /*&
-          "#deliveryNotes" #> DeliveryNoteDetailDisplay(documents filter (_.documentType.get == DeliveryNote)) &
-          "#invoices *" #> InvoiceDetailDisplay(documents filter (_.documentType.get == Invoice))*/
+          "#orders *" #> OrderDetailDisplay(documents filter (_.documentType.get == Order), transactionId) &
+          "#deliveryNotes" #> DeliveryNoteDetailDisplay(documents filter (_.documentType.get == DeliveryNote), transactionId) /*&
+          "#invoices *" #> InvoiceDetailDisplay(documents filter (_.documentType.get == Invoice), transactionId)*/
       }
     }
 

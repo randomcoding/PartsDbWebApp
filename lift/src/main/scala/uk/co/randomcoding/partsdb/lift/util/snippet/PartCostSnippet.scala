@@ -4,26 +4,27 @@
 package uk.co.randomcoding.partsdb.lift.util.snippet
 
 import scala.Array.canBuildFrom
+import scala.xml.{Text, Null, NodeSeq, Attribute}
+
 import org.joda.time.DateTime
+
 import com.foursquare.rogue.Rogue._
+
 import uk.co.randomcoding.partsdb.core.address.Address
 import uk.co.randomcoding.partsdb.core.contact.ContactDetails
-import uk.co.randomcoding.partsdb.core.part.PartCost
-import uk.co.randomcoding.partsdb.core.part.Part
+import uk.co.randomcoding.partsdb.core.part.{PartCost, Part}
 import uk.co.randomcoding.partsdb.core.supplier.Supplier
+import uk.co.randomcoding.partsdb.lift.util.DateHelpers.dateString
 import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
 import uk.co.randomcoding.partsdb.lift.util.snippet._
 import uk.co.randomcoding.partsdb.lift.util._
-import net.liftweb.common.{ Logger, Full }
-import net.liftweb.http.js.JsCmds.{ SetHtml, Replace, Noop }
+
+import net.liftweb.common.{Logger, Full}
+import net.liftweb.http.js.JsCmds.{SetHtml, Replace, Noop}
 import net.liftweb.http.js.JsCmd.unitToJsCmd
 import net.liftweb.http.js.JsCmd
-import net.liftweb.util.Helpers._
-import scala.xml.NodeSeq
-import scala.xml.Attribute
-import scala.xml.Text
-import scala.xml.Null
 import net.liftweb.http.SHtml
+import net.liftweb.util.Helpers._
 
 /**
  * Snippet to handle the processing of adding, removing and displaying [[uk.co.randomcoding.partsdb.core.part.PartCost]]s for a
@@ -44,8 +45,6 @@ trait PartCostSnippet extends ErrorDisplay with DataValidation with Logger {
   val defaultDate = new DateTime(1970, 1, 1, 12, 00)
 
   private var currentPartLastSuppliedDate: DateTime = defaultDate
-  private val dateFormat = "dd/MM/yyyy"
-  private def dateString(date: DateTime) = date.toString(dateFormat)
   private var supplierPartNumber = ""
 
   def renderAddPartCost() = {
@@ -119,15 +118,16 @@ trait PartCostSnippet extends ErrorDisplay with DataValidation with Logger {
     }), false, false))
   }
 
+  override val validationItems = Seq(ValidationItem(currentPart, "Current Part"),
+    ValidationItem(currentPartCost, "Current Part Cost"),
+    ValidationItem(currentPartLastSuppliedDate, "Last Supplied Date"),
+    ValidationItem(supplierPartNumber, "Supplier Part Number"))
+
   private[this] def addPartCost(): JsCmd = {
     clearErrors
     debug("Adding a part cost")
-    val validationItems = Seq(ValidationItem(currentPart, "Current Part"),
-      ValidationItem(currentPartCost, "Current Part Cost"),
-      ValidationItem(currentPartLastSuppliedDate, "Last Supplied Date"),
-      ValidationItem(supplierPartNumber, "Supplier Part Number"))
 
-    validate(validationItems: _*) match {
+    performValidation() match {
       case Nil => {
         updatePartCosts(PartCost.create(currentPart.get, currentPartCost, currentPartLastSuppliedDate, supplierPartNumber))
         clearErrorsAndRefresh

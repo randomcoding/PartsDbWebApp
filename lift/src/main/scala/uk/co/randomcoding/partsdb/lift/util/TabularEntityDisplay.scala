@@ -8,11 +8,12 @@ import org.bson.types.ObjectId
 import net.liftweb.http.SHtml._
 import scala.xml.Attribute
 import scala.xml.Null
+import net.liftweb.common.Logger
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
-trait TabularEntityDisplay {
+trait TabularEntityDisplay extends Logger {
 
   type EntityType
 
@@ -27,6 +28,7 @@ trait TabularEntityDisplay {
   def apply(entities: Seq[EntityType], editLink: Boolean = true, displayLink: Boolean = true): NodeSeq = displayTable(entities, editLink, displayLink)
 
   private def displayTable(entities: Seq[EntityType], editLink: Boolean = true, displayLink: Boolean = true): NodeSeq = {
+    debug("Rendering Table for %s".format(entities.mkString("[", ", ", "]")))
     <table class="btn">
       <thead>
         <tr>{ headings(rowHeadings) }</tr>

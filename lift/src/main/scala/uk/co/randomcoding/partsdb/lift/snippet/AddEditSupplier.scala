@@ -88,20 +88,23 @@ class AddEditSupplier extends StatefulSnippet with AddressSnippet with ContactDe
       renderSubmitAndCancel()
   }
 
-  override def processSubmit(): JsCmd = {
-    val address = addressFromInput(supplierName)
-    val contacts = contactDetailsFromInput
+  private[this] var address: Option[Address] = None
+  private[this] var contacts: Option[ContactDetails] = None
 
-    performValidation(address, contacts) match {
+  override def processSubmit(): JsCmd = {
+    address = addressFromInput(supplierName)
+    contacts = Some(contactDetailsFromInput)
+
+    performValidation() match {
       case Nil => {
         val newAddress = updateAddress(address.get)
 
         initialSupplier match {
           case Some(s) => {
-            modifySupplier(s, supplierName, contacts, newAddress.get, currentPartCosts)
+            modifySupplier(s, supplierName, contacts.get, newAddress.get, currentPartCosts)
             S redirectTo cameFrom
           }
-          case _ => addSupplier(supplierName, contacts, newAddress.get, currentPartCosts) match {
+          case _ => addSupplier(supplierName, contacts.get, newAddress.get, currentPartCosts) match {
             case Some(s) => S redirectTo cameFrom
             case _ => Noop
           }
@@ -111,12 +114,10 @@ class AddEditSupplier extends StatefulSnippet with AddressSnippet with ContactDe
     }
   }
 
-  private[this] def performValidation(address: Option[Address], contacts: ContactDetails): Seq[String] = {
-    val validationItems = Seq(
-      ValidationItem(address, "Business Address"), //, "Address Entry was invalid"),
-      ValidationItem(contacts, "Contact Details"), //, "Contact Details entry was invalid"),
-      ValidationItem(supplierName, "Supplier Name")) //, "Supplier Name must be entered"))
+  override val validationItems = genValidationItems
 
-    validate(validationItems: _*)
-  }
+  private[this] def genValidationItems = Seq(ValidationItem(address, "Business Address"),
+    ValidationItem(contacts, "Contact Details"),
+    ValidationItem(supplierName, "Supplier Name"))
+
 }

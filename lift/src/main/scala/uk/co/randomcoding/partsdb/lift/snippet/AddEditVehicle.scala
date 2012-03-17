@@ -42,6 +42,7 @@ class AddEditVehicle extends StatefulSnippet with ErrorDisplay with SubmitAndCan
       renderSubmitAndCancel()
   }
 
+  override val validationItems = Seq(ValidationItem(vehicleName, "Vehicle Name"))
   /**
    * Method called when the submit button is pressed.
    *
@@ -49,23 +50,17 @@ class AddEditVehicle extends StatefulSnippet with ErrorDisplay with SubmitAndCan
    *
    * On successful addition, this will (possibly display a dialogue and then) redirect to the main customers page
    */
-  override def processSubmit() = {
-
-    val validationChecks = Seq(
-      ValidationItem(vehicleName, "Vehicle Name"))
-
-    validate(validationChecks: _*) match {
-      case Nil => {
-        initialVehicle match {
-          case Some(v) => Vehicle.modify(v.vehicleName.get, vehicleName)
-          case _ => add(vehicleName)
-        }
-        S redirectTo "/app/show?entityType=Vehicle"
+  override def processSubmit() = performValidation() match {
+    case Nil => {
+      initialVehicle match {
+        case Some(v) => Vehicle.modify(v.vehicleName.get, vehicleName)
+        case _ => add(vehicleName)
       }
-      case errors => {
-        displayErrors(errors: _*)
-        Noop
-      }
+      S redirectTo "/app/show?entityType=Vehicle"
+    }
+    case errors => {
+      displayErrors(errors: _*)
+      Noop
     }
   }
 
