@@ -39,6 +39,9 @@ trait AvailableLineItemsDisplay extends Logger {
 
   def refreshAvailableLineItems(availableLineItems: Seq[LineItem]): JsCmd = SetHtml("availableLineItems", refreshItems(availableLineItems))
 
+  /*
+   * TODO: This is a nasty, nasty hack and a proper way of doing this needs to be found.
+   */
   private[this] def refreshItems(items: Seq[LineItem]): NodeSeq = {
     val elements = items flatMap (item => {
       val checkbox = <div>{ styledAjaxCheckbox(false, checkBoxSelected(_, item)) }</div> % idAttribute("selected") % classAttribute("column span-1")
