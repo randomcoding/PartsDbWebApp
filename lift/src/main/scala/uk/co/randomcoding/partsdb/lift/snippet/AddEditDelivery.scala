@@ -89,6 +89,7 @@ class AddEditDelivery extends StatefulValidatingErrorDisplaySnippet with Transac
       case true => dataHolder.addLineItem(line)
       case false => dataHolder.removeLineItem(line)
     }
+    debug("Selected Line Items: %s".format(dataHolder.lineItems.mkString(", ")))
     refreshLineItemDisplay()
   }
 
