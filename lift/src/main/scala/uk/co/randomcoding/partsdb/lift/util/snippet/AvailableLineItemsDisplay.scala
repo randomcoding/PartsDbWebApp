@@ -10,6 +10,11 @@ import uk.co.randomcoding.partsdb.core.part.Part
 import scala.xml.NodeSeq
 import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
 import scala.xml.Text
+import net.liftweb.http.js.JsCmd
+import net.liftweb.http.js.JsCmds.SetHtml
+import scala.xml.Attribute
+import scala.xml.Null
+import net.liftweb.common.Logger
 
 /**
  * Renders a collection of [[uk.co.randomcoding.partsdb.core.document.LineItem]]s with checkboxes that can be used
@@ -22,7 +27,7 @@ import scala.xml.Text
  *
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
-trait AvailableLineItemsDisplay {
+trait AvailableLineItemsDisplay extends Logger {
   /**
    * Perform actual rendering of the available line items
    *
@@ -32,6 +37,37 @@ trait AvailableLineItemsDisplay {
    */
   def renderAvailableLineItems(availableLineItems: Seq[LineItem]): CssSel = "#availableLineItems *" #> renderAvailableItems(availableLineItems)
 
+  def refreshAvailableLineItems(availableLineItems: Seq[LineItem]): JsCmd = SetHtml("availableLineItems", refreshItems(availableLineItems))
+
+  private[this] def refreshItems(items: Seq[LineItem]): NodeSeq = {
+    val elements = items flatMap (item => {
+      val checkbox = <div>{ styledAjaxCheckbox(false, checkBoxSelected(_, item)) }</div> % idAttribute("selected") % classAttribute("column span-1")
+      val partNameDisplay = <div class="column span-4">
+                              <span class="form-label">{ Text("Part:  ") }</span>
+                              <span id="partName">{ Text(partName(item)) }</span>
+                            </div>
+
+      val quantityDisplay = <div class="column span-4">
+                              <span class="form-label">{ Text("Quantity:  ") }</span>
+                              <span id="partQuantity">{ Text("%d".format(item.quantity.get)) }</span>
+                            </div>
+
+      val costDisplay = <div class="column span-4">
+                          <span class="form-label">{ Text("Cost:  ") }</span>
+                          <span id="totalLineCost">{ Text("%.2f".format(item.lineCost)) }</span>
+                        </div>
+
+      checkbox ++ partNameDisplay ++ quantityDisplay ++ costDisplay
+    })
+
+    debug("Generated elements: %s".format(elements.mkString("[", ", ", "]")))
+    <div>{ elements }</div> % idAttribute("availableLineItems")
+  }
+
+  private[this] def partName(item: LineItem): String = Part findById item.partId.get match {
+    case Some(p) => p.partName.get
+    case _ => "No Part"
+  }
   /**
    * Abstract function called when a checkbox for a line item is selected.
    *
@@ -40,7 +76,7 @@ trait AvailableLineItemsDisplay {
    * @param selected The ''selected'' state of the checkbox. true => selected and false => not selected
    * @param line The [[uk.co.randomcoding.partsdb.core.document.LineItem]] that is associated with this checkbox
    */
-  def checkBoxSelected(selected: Boolean, line: LineItem)
+  def checkBoxSelected(selected: Boolean, line: LineItem): JsCmd
 
   private[this] def renderAvailableItems(availableLineItems: Seq[LineItem]) = availableLineItems map (line => {
     val partName = Part findById line.partId.get match {
@@ -53,4 +89,8 @@ trait AvailableLineItemsDisplay {
       "#partQuantity" #> Text("%d".format(line.quantity.get)) &
       "#totalLineCost" #> Text("£%.2f".format(line.lineCost))
   })
+
+  private[this] def idAttribute(id: String) = Attribute(None, "id", Text(id), Null)
+
+  private[this] def classAttribute(attr: String) = Attribute(None, "class", Text(attr), Null)
 }
