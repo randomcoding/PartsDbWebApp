@@ -28,6 +28,17 @@ import net.liftweb.common.Logger
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
 trait AvailableLineItemsDisplay extends Logger {
+
+  /**
+   * Abstract function called when a checkbox for a line item is selected.
+   *
+   * This allows update of other items on the selection event
+   *
+   * @param selected The ''selected'' state of the checkbox. true => selected and false => not selected
+   * @param line The [[uk.co.randomcoding.partsdb.core.document.LineItem]] that is associated with this checkbox
+   */
+  def checkBoxSelected(selected: Boolean, line: LineItem): JsCmd
+
   /**
    * Perform actual rendering of the available line items
    *
@@ -37,6 +48,13 @@ trait AvailableLineItemsDisplay extends Logger {
    */
   def renderAvailableLineItems(availableLineItems: Seq[LineItem]): CssSel = "#availableLineItems *" #> renderAvailableItems(availableLineItems)
 
+  /**
+   * Refresh the contents of the `availableLineItems` elements. Replacing it with the provided items
+   *
+   * @param availableLineItems The line items that are to be rendered as currently available
+   *
+   * @return The `JsCmd` that will re-render the html
+   */
   def refreshAvailableLineItems(availableLineItems: Seq[LineItem]): JsCmd = SetHtml("availableLineItems", refreshItems(availableLineItems))
 
   /*
@@ -71,15 +89,6 @@ trait AvailableLineItemsDisplay extends Logger {
     case Some(p) => p.partName.get
     case _ => "No Part"
   }
-  /**
-   * Abstract function called when a checkbox for a line item is selected.
-   *
-   * This allows update of other items on the selection event
-   *
-   * @param selected The ''selected'' state of the checkbox. true => selected and false => not selected
-   * @param line The [[uk.co.randomcoding.partsdb.core.document.LineItem]] that is associated with this checkbox
-   */
-  def checkBoxSelected(selected: Boolean, line: LineItem): JsCmd
 
   private[this] def renderAvailableItems(availableLineItems: Seq[LineItem]) = availableLineItems map (line => {
     val partName = Part findById line.partId.get match {
