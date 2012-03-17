@@ -42,6 +42,14 @@ class DeliveryNoteDataHolder extends DocumentDataHolder with LineItemsDataHolder
     carriage = if (order isDefined) order.get.carriage.get else 0.0d
   }
 
+  /**
+   * Calculated value of the current order id (document number)
+   */
+  def orderId = selectedOrderCell.lift(_ match {
+    case Some(o) => o.documentNumber
+    case _ => ""
+  })
+
   def deliveryAddress = deliveryAddressCell.get
 
   def deliveryAddress_=(addr: Option[Address]) = deliveryAddressCell set addr

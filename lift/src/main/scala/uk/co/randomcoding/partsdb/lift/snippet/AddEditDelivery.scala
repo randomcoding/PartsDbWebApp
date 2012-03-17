@@ -67,18 +67,19 @@ class AddEditDelivery extends StatefulValidatingErrorDisplaySnippet with Transac
   }
 
   def render = {
-    "#title" #> Text("Create Delivery Note") &
-      "#scripts" #> JsScripts.accordionScript &
+    "#formTitle" #> Text("Create Delivery Note") &
       renderTransactionDetails() &
-      renderAvailableLineItems(availableLineItems) &
-      renderDocumentTotals() &
+      "#carriage" #> WiringUI.asText(dataHolder.carriage) &
       "#selectOrder" #> styledAjaxObjectSelect(ordersSelection, None, updateAjaxValue((value: Option[Document]) => dataHolder selectedOrder = value)) &
       "#customerPoRefEntry" #> WiringUI.asText(dataHolder.poReferenceCell) &
-      "#carriage" #> WiringUI.asText(dataHolder.carriage) &
       "#addressSelect" #> styledAjaxObjectSelect(addressSelection, None, updateAjaxValue((value: Option[Address]) => dataHolder deliveryAddress = value)) &
-      renderEditableAddress()
+      renderEditableAddress() &
+      renderAvailableLineItems(availableLineItems) &
+      renderAllLineItems() &
+      renderDocumentTotals() &
+      "#orderId" #> WiringUI.asText(dataHolder.orderId) &
+      "#confirmCloseOrder" #> styledCheckbox(false, confirmCloseOrder = _)
     // TODO: Add Submit/Cancel functionality
-    // TODO: Add close order checkbox
   }
 
   override val validationItems = Nil
