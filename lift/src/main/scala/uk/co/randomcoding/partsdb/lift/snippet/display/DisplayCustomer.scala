@@ -22,7 +22,7 @@ import com.foursquare.rogue.Rogue._
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
 object DisplayCustomer extends ErrorDisplay with AddressSnippet with ContactDetailsSnippet with TabDisplaySnippet with Logger {
-  override val tabTitles = Seq(("quoteResults", "Quotes"), ("orderResults", "Orders"), ("invoiceResults", "Delivered / Invoiced"), ("completedResults", "Completed"))
+  override val tabTitles = Seq(("quoteResults", "Quoted"), ("orderResults", "Ordered"), ("invoiceResults", "Delivered / Invoiced"), ("completedResults", "Completed"))
 
   private val cameFrom = S.referer openOr "/app/show?entityType=Customer"
 

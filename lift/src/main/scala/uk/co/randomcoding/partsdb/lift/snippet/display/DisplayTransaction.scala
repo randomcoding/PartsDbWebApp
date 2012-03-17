@@ -22,7 +22,7 @@ import uk.co.randomcoding.partsdb.lift.util.snippet.display.OrderDetailDisplay
  */
 object DisplayTransaction extends TabDisplaySnippet with Logger {
 
-  override val tabTitles = Seq(("quoteResults", "Quoted"), ("orderResults", "Ordered"), ("invoiceResults", "Invoiced"), ("deliveryNoteResults", "Delivered"))
+  override val tabTitles = Seq(("quoteResults", "Quoted"), ("orderResults", "Ordered"), ("deliveryNoteResults", "Delivered"), ("invoiceResults", "Invoiced"))
 
   /*
    * Form a closure over passed in data to enable the rendering of the correct info

@@ -11,9 +11,11 @@ import static ch.qos.logback.classic.Level.ALL
 
 appender("STDOUT", ConsoleAppender) {
   encoder(PatternLayoutEncoder) {
-	pattern = "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+	pattern = "%d{HH:mm:ss.SSS}  %-5level %logger{10} - %msg%n"
   }
 }
+
+scan()
 
 logger("com", WARN)
 logger("org", WARN)
