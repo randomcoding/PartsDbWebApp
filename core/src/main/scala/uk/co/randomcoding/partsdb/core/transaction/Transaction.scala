@@ -78,10 +78,11 @@ class Transaction private () extends MongoRecord[Transaction] with ObjectIdPk[Tr
         val orderCount = docs.filter(_.documentType.get == DocumentType.Order).size
         val invoiceCount = docs.filter(_.documentType.get == DocumentType.Invoice).size
         val deliveryCount = docs.filter(_.documentType.get == DocumentType.DeliveryNote).size
-        (quoteCount, orderCount, (invoiceCount + deliveryCount)) match {
-          case (quote, 0, 0) => "Quoted"
-          case (_, order, 0) if order > 0 => "Ordered"
-          case (_, _, invoice) if invoice > 0 => "Invoiced"
+        (quoteCount, orderCount, deliveryCount, invoiceCount) match {
+          case (quote, 0, 0, 0) => "Quoted"
+          case (_, order, 0, 0) if order > 0 => "Ordered"
+          case (_, _, deliver, 0) if deliver > 0 => "Delivered"
+          case (_, _, _, invoice) if invoice > 0 => "Invoiced"
         }
       }
     }
