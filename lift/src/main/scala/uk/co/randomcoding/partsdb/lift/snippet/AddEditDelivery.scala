@@ -4,24 +4,24 @@
 package uk.co.randomcoding.partsdb.lift.snippet
 
 import scala.xml.Text
+
 import com.foursquare.rogue.Rogue._
+
 import uk.co.randomcoding.partsdb.core.address.Address
-import uk.co.randomcoding.partsdb.core.document.{ LineItem, DocumentType, Document }
+import uk.co.randomcoding.partsdb.core.document.{LineItem, DocumentType, Document, DeliveryNote}
 import uk.co.randomcoding.partsdb.core.transaction.Transaction
 import uk.co.randomcoding.partsdb.lift.model.document.DeliveryNoteDataHolder
-import uk.co.randomcoding.partsdb.lift.util.DateHelpers.{ dateToJoda, dateString }
+import uk.co.randomcoding.partsdb.lift.util.DateHelpers._
 import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
 import uk.co.randomcoding.partsdb.lift.util.snippet.display.DocumentDataHolderTotalsDisplay
 import uk.co.randomcoding.partsdb.lift.util.snippet._
-import net.liftweb.http.SHtml._
-import net.liftweb.http.js.JsCmd
-import net.liftweb.http.js.JsCmds.Noop
-import net.liftweb.http.WiringUI
-import net.liftweb.util.Helpers._
-import net.liftweb.http.S
-import uk.co.randomcoding.partsdb.core.document.DeliveryNote
-import org.bson.types.ObjectId
+
 import net.liftweb.common.Full
+import net.liftweb.http.SHtml._
+import net.liftweb.http.js.JsCmds.Noop
+import net.liftweb.http.js.JsCmd
+import net.liftweb.http.{WiringUI, S}
+import net.liftweb.util.Helpers._
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>

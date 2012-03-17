@@ -6,7 +6,7 @@ package uk.co.randomcoding.partsdb.lift.util.snippet.display
 import scala.xml.Text
 
 import uk.co.randomcoding.partsdb.core.document.Document
-import uk.co.randomcoding.partsdb.lift.util.DateHelpers.{ dateToJoda, dateString }
+import uk.co.randomcoding.partsdb.lift.util.DateHelpers._
 import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
 import uk.co.randomcoding.partsdb.lift.util._
 
