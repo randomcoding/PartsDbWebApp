@@ -4,9 +4,7 @@
 package uk.co.randomcoding.partsdb.lift.snippet
 
 import scala.xml.Text
-
 import com.foursquare.rogue.Rogue._
-
 import uk.co.randomcoding.partsdb.core.address.Address
 import uk.co.randomcoding.partsdb.core.document.{ LineItem, DocumentType, Document }
 import uk.co.randomcoding.partsdb.core.transaction.Transaction
@@ -15,16 +13,17 @@ import uk.co.randomcoding.partsdb.lift.util.DateHelpers.{ dateToJoda, dateString
 import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
 import uk.co.randomcoding.partsdb.lift.util.snippet.display.DocumentDataHolderTotalsDisplay
 import uk.co.randomcoding.partsdb.lift.util.snippet._
-
 import net.liftweb.http.SHtml._
 import net.liftweb.http.js.JsCmd
+import net.liftweb.http.js.JsCmds.Noop
 import net.liftweb.http.WiringUI
 import net.liftweb.util.Helpers._
+import net.liftweb.http.S
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
-class AddEditDelivery extends StatefulValidatingErrorDisplaySnippet with TransactionSnippet with AvailableLineItemsDisplay with AllLineItemsSnippet with DocumentDataHolderTotalsDisplay with AddressSnippet {
+class AddEditDelivery extends StatefulValidatingErrorDisplaySnippet with TransactionSnippet with AvailableLineItemsDisplay with AllLineItemsSnippet with DocumentDataHolderTotalsDisplay with AddressSnippet with SubmitAndCancelSnippet {
 
   override val dataHolder = new DeliveryNoteDataHolder
 
@@ -58,6 +57,11 @@ class AddEditDelivery extends StatefulValidatingErrorDisplaySnippet with Transac
 
   private[this] var confirmCloseOrder = false
 
+  override lazy val cameFrom = S.referer openOr (customer match {
+    case Some(c) => "/app/display/customer?id=%s".format(c.id.get.toString)
+    case _ => "/app/show?entityType=Customer"
+  })
+
   override def dispatch = {
     case "render" => render
   }
@@ -76,8 +80,24 @@ class AddEditDelivery extends StatefulValidatingErrorDisplaySnippet with Transac
       renderAllLineItems() &
       renderDocumentTotals() &
       "#orderId" #> WiringUI.asText(dataHolder.orderId) &
-      "#confirmCloseOrder" #> styledCheckbox(false, confirmCloseOrder = _)
-    // TODO: Add Submit/Cancel functionality
+      "#confirmCloseOrder" #> styledCheckbox(false, confirmCloseOrder = _) &
+      renderSubmitAndCancel()
+  }
+
+  override def processSubmit(): JsCmd = {
+    // validate
+    performValidation() match {
+      case Nil => {
+        // generate delivery note
+
+        // close order
+      }
+      case errors => {
+        displayErrors(errors: _*)
+        Noop
+      }
+    }
+
   }
 
   private[this] val updateOrderValue = (value: Option[Document]) => {
