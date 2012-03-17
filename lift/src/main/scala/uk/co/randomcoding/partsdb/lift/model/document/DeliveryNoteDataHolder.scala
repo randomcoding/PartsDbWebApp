@@ -66,7 +66,7 @@ class DeliveryNoteDataHolder extends DocumentDataHolder with LineItemsDataHolder
   /**
    * Set the delivery address cell value
    */
-  def deliveryAddress_=(addr: Option[Address]) = deliveryAddressCell set addr
+  def deliveryAddress_=(addr: Option[Address]) = deliveryAddressCell.set(addr)
 
   /**
    * Get the line items that are available to be delivered

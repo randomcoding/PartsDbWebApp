@@ -19,6 +19,8 @@ import net.liftweb.http.js.JsCmds.Noop
 import net.liftweb.http.WiringUI
 import net.liftweb.util.Helpers._
 import net.liftweb.http.S
+import uk.co.randomcoding.partsdb.core.document.DeliveryNote
+import org.bson.types.ObjectId
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
@@ -74,7 +76,7 @@ class AddEditDelivery extends StatefulValidatingErrorDisplaySnippet with Transac
       "#carriage" #> WiringUI.asText(dataHolder.carriage) &
       "#selectOrder" #> styledAjaxObjectSelect(ordersSelection, None, updateAjaxValue[Option[Document]](updateOrderValue(_), refreshLineItemEntries())) &
       "#customerPoRefEntry" #> WiringUI.asText(dataHolder.poReference) &
-      "#addressSelect" #> styledAjaxObjectSelect(addressSelection, None, updateAjaxValue((value: Option[Address]) => dataHolder deliveryAddress = value)) &
+      "#addressSelect" #> styledAjaxObjectSelect(addressSelection, None, updateAjaxValue[Option[Address]](dataHolder.deliveryAddress = _)) &
       renderEditableAddress() &
       renderAvailableLineItems(dataHolder.availableLineItems) &
       renderAllLineItems() &
@@ -89,14 +91,23 @@ class AddEditDelivery extends StatefulValidatingErrorDisplaySnippet with Transac
     case _ => Nil
   }
 
-  override def processSubmit(): JsCmd = performValidation(itemsToBeDelivered) match {
-    case Nil => {
-      // generate delivery note
+  private[this] val confirmOrderClose = () => if (confirmCloseOrder) Nil else Seq("Please confirm it is ok to close the Order before generating this Delivery Note")
 
-      // close order
-    }
+  override def processSubmit(): JsCmd = performValidation(itemsToBeDelivered, confirmOrderClose) match {
+    case Nil => generateDeliveryNote()
     case errors => {
       displayErrors(errors: _*)
+      Noop
+    }
+  }
+
+  private[this] def generateDeliveryNote() = DeliveryNote.add(dataHolder.lineItems, dataHolder.carriageValue, dataHolder.poReference.get) match {
+    case Some(dn) => {
+      Document.close(dataHolder.selectedOrder.get.id.get)
+      S redirectTo "/app/display/customer?id=%s".format(transaction.get.customer.get.toString)
+    }
+    case _ => {
+      displayError("Failed To create Delivery Note. Please send an Error Report")
       Noop
     }
   }
@@ -109,7 +120,7 @@ class AddEditDelivery extends StatefulValidatingErrorDisplaySnippet with Transac
   private[this] def refreshLineItemEntries(): JsCmd = ajaxInvoke(() => refreshAvailableLineItems(dataHolder.availableLineItems) &
     refreshLineItemDisplay())._2.cmd
 
-  override val validationItems = Seq(ValidationItem(dataHolder.deliveryAddress, "Delivery Address"), ValidationItem(dataHolder.selectedOrder, "Selected Order"))
+  override def validationItems = Seq(ValidationItem(dataHolder.deliveryAddress, "Delivery Address"), ValidationItem(dataHolder.selectedOrder, "Selected Order"))
 
   override def checkBoxSelected(selected: Boolean, line: LineItem): JsCmd = {
     selected match {
