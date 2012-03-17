@@ -22,7 +22,7 @@ import com.foursquare.rogue.Rogue._
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
 object DisplayCustomer extends ErrorDisplay with AddressSnippet with ContactDetailsSnippet with TabDisplaySnippet with Logger {
-  override val tabTitles = Seq(("quoteResults", "Quoted"), ("orderResults", "Ordered"), ("invoiceResults", "Delivered / Invoiced"), ("completedResults", "Completed"))
+  override val tabTitles = Seq(("quoteResults", "Quoted"), ("orderResults", "Ordered"), ("deliveryNoteResults", "Delivered"), ("invoiceResults", "Invoiced"), ("completedResults", "Completed"))
 
   private val cameFrom = S.referer openOr "/app/show?entityType=Customer"
 
@@ -67,6 +67,7 @@ object DisplayCustomer extends ErrorDisplay with AddressSnippet with ContactDeta
       "#documentTabs" #> generateTabs() &
       "#quotes" #> TransactionSummaryDisplay(currentTransactions filter (_.transactionState == "Quoted")) &
       "#orders" #> TransactionSummaryDisplay(currentTransactions filter (_.transactionState == "Ordered")) &
+      "#deliveryNotes" #> TransactionSummaryDisplay(currentTransactions filter (_.transactionState == "Delivered")) &
       "#invoices" #> TransactionSummaryDisplay(currentTransactions filter (_.transactionState == "Invoiced")) &
       "#completed" #> TransactionSummaryDisplay(currentTransactions filter (_.transactionState == "Completed"))
   }
