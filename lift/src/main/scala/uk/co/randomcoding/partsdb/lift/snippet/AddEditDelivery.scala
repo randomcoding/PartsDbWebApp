@@ -3,25 +3,23 @@
  */
 package uk.co.randomcoding.partsdb.lift.snippet
 
-import uk.co.randomcoding.partsdb.lift.util.snippet.StatefulValidatingErrorDisplaySnippet
-import net.liftweb.http.S
-import net.liftweb.util.Helpers._
-import net.liftweb.common.Full
-import uk.co.randomcoding.partsdb.core.document.Document
-import org.bson.types.ObjectId
-import uk.co.randomcoding.partsdb.lift.util.snippet._
-import uk.co.randomcoding.partsdb.lift.util.DateHelpers._
 import scala.xml.Text
-import uk.co.randomcoding.partsdb.core.document.DocumentType
-import uk.co.randomcoding.partsdb.lift.snippet.js.JsScripts
-import uk.co.randomcoding.partsdb.lift.util.snippet.display.DocumentDataHolderTotalsDisplay
-import uk.co.randomcoding.partsdb.lift.model.document.DeliveryNoteDataHolder
-import uk.co.randomcoding.partsdb.core.document.LineItem
-import net.liftweb.http.WiringUI
-import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
-import uk.co.randomcoding.partsdb.core.transaction.Transaction
+
 import com.foursquare.rogue.Rogue._
+
 import uk.co.randomcoding.partsdb.core.address.Address
+import uk.co.randomcoding.partsdb.core.document.{ LineItem, DocumentType, Document }
+import uk.co.randomcoding.partsdb.core.transaction.Transaction
+import uk.co.randomcoding.partsdb.lift.model.document.DeliveryNoteDataHolder
+import uk.co.randomcoding.partsdb.lift.util.DateHelpers.{ dateToJoda, dateString }
+import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
+import uk.co.randomcoding.partsdb.lift.util.snippet.display.DocumentDataHolderTotalsDisplay
+import uk.co.randomcoding.partsdb.lift.util.snippet._
+
+import net.liftweb.http.SHtml._
+import net.liftweb.http.js.JsCmd
+import net.liftweb.http.WiringUI
+import net.liftweb.util.Helpers._
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
@@ -40,8 +38,6 @@ class AddEditDelivery extends StatefulValidatingErrorDisplaySnippet with Transac
   private[this] lazy val ordersSelection = (None, "Select Order") :: (orders map (order => (Some(order), textForOrder(order))))
 
   private[this] val itemsOrdered = orders flatMap (_.lineItems.get)
-  private[this] val alreadyDeliveredItems = previousDeliveryNotes flatMap (_.lineItems.get)
-  private[this] lazy val availableLineItems = itemsOrdered filterNot (alreadyDeliveredItems contains _)
 
   private[this] var selectedLineItems: Seq[LineItem] = Seq.empty
 
@@ -67,14 +63,16 @@ class AddEditDelivery extends StatefulValidatingErrorDisplaySnippet with Transac
   }
 
   def render = {
+    dataHolder.deliveredItems = previousDeliveryNotes flatMap (_.lineItems.get)
+
     "#formTitle" #> Text("Create Delivery Note") &
       renderTransactionDetails() &
       "#carriage" #> WiringUI.asText(dataHolder.carriage) &
-      "#selectOrder" #> styledAjaxObjectSelect(ordersSelection, None, updateAjaxValue((value: Option[Document]) => dataHolder selectedOrder = value)) &
-      "#customerPoRefEntry" #> WiringUI.asText(dataHolder.poReferenceCell) &
+      "#selectOrder" #> styledAjaxObjectSelect(ordersSelection, None, updateAjaxValue[Option[Document]](updateOrderValue(_), refreshLineItemEntries())) &
+      "#customerPoRefEntry" #> WiringUI.asText(dataHolder.poReference) &
       "#addressSelect" #> styledAjaxObjectSelect(addressSelection, None, updateAjaxValue((value: Option[Address]) => dataHolder deliveryAddress = value)) &
       renderEditableAddress() &
-      renderAvailableLineItems(availableLineItems) &
+      renderAvailableLineItems(dataHolder.availableLineItems) &
       renderAllLineItems() &
       renderDocumentTotals() &
       "#orderId" #> WiringUI.asText(dataHolder.orderId) &
@@ -82,14 +80,22 @@ class AddEditDelivery extends StatefulValidatingErrorDisplaySnippet with Transac
     // TODO: Add Submit/Cancel functionality
   }
 
-  override val validationItems = Nil
+  private[this] val updateOrderValue = (value: Option[Document]) => {
+    dataHolder selectedOrder = value
+    dataHolder.lineItemsCell.set(Nil)
+  }
 
-  override def checkBoxSelected(selected: Boolean, line: LineItem) = {
+  private[this] def refreshLineItemEntries(): JsCmd = ajaxInvoke(() => refreshAvailableLineItems(dataHolder.availableLineItems) &
+    refreshLineItemDisplay())._2.cmd
+
+  override val validationItems = Seq(ValidationItem(dataHolder.deliveryAddress, "Delivery Address"), ValidationItem(dataHolder.selectedOrder, "Selected Order"))
+
+  override def checkBoxSelected(selected: Boolean, line: LineItem): JsCmd = {
     selected match {
       case true => dataHolder.addLineItem(line)
       case false => dataHolder.removeLineItem(line)
     }
-    debug("Selected Line Items: %s".format(dataHolder.lineItems.mkString(", ")))
+    debug("Selected Line Items: %s".format(dataHolder.lineItems.mkString("[", ", ", "]")))
     refreshLineItemDisplay()
   }
 

@@ -7,6 +7,7 @@ import net.liftweb.util.Cell
 import net.liftweb.util.ValueCell
 import uk.co.randomcoding.partsdb.core.document.Document
 import uk.co.randomcoding.partsdb.core.address.Address
+import uk.co.randomcoding.partsdb.core.document.LineItem
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
@@ -19,14 +20,21 @@ class DeliveryNoteDataHolder extends DocumentDataHolder with LineItemsDataHolder
 
   override val lineItemsSubTotalCell: Cell[Double] = itemsPreTaxSubTotal.lift(_ + 0.0d)
 
-  val selectedOrderCell = ValueCell[Option[Document]](None)
+  private[this] val deliveredItemsCell = ValueCell[Seq[LineItem]](Nil)
 
-  val poReferenceCell = selectedOrderCell.lift(_ match {
+  private[this] val selectedOrderCell = ValueCell[Option[Document]](None)
+
+  private[this] val poReferenceCell = selectedOrderCell.lift(_ match {
     case Some(d) => d.customerPoReference.get
     case _ => ""
   })
 
-  private val deliveryAddressCell = ValueCell[Option[Address]](None)
+  private[this] val deliveryAddressCell = ValueCell[Option[Address]](None)
+
+  private[this] val lineItemsFromOrder = selectedOrderCell.lift(_ match {
+    case Some(o) => o.lineItems.get
+    case _ => Nil
+  })
 
   // Accessor functions
 
@@ -50,7 +58,35 @@ class DeliveryNoteDataHolder extends DocumentDataHolder with LineItemsDataHolder
     case _ => ""
   })
 
+  /**
+   * Get the Delivery Address
+   */
   def deliveryAddress = deliveryAddressCell.get
 
+  /**
+   * Set the delivery address cell value
+   */
   def deliveryAddress_=(addr: Option[Address]) = deliveryAddressCell set addr
+
+  /**
+   * Get the line items that are available to be delivered
+   *
+   * @return The line items from the current order that are not already present in the `deliveredItems`
+   */
+  def availableLineItems = lineItemsFromOrder.get filterNot (deliveredItems contains _)
+
+  /**
+   * Set the items that have already been delivered
+   */
+  def deliveredItems_=(items: Seq[LineItem]) = deliveredItemsCell.set(items)
+
+  /**
+   * Get the items that have already been delivered
+   */
+  def deliveredItems = deliveredItemsCell.get
+
+  /**
+   * Calculated value of the Customer's PO reference number
+   */
+  val poReference = poReferenceCell.lift("%s".format(_))
 }
