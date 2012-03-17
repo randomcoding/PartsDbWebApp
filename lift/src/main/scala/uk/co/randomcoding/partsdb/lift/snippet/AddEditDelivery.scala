@@ -103,6 +103,7 @@ class AddEditDelivery extends StatefulValidatingErrorDisplaySnippet with Transac
 
   private[this] def generateDeliveryNote() = DeliveryNote.add(dataHolder.lineItems, dataHolder.carriageValue, dataHolder.poReference.get) match {
     case Some(dn) => {
+      Transaction.addDocument(transaction.get.id.get, dn.id.get)
       Document.close(dataHolder.selectedOrder.get.id.get)
       S redirectTo "/app/display/customer?id=%s".format(transaction.get.customer.get.toString)
     }

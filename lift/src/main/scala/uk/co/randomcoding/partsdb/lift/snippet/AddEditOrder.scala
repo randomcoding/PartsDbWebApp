@@ -53,26 +53,23 @@ class AddEditOrder extends StatefulValidatingErrorDisplaySnippet with Transactio
 
   override def processSubmit(): JsCmd = {
     performValidation(validateQuoteCloseConfirmation) match {
-      case Nil => {
-        // create order
-        val order = Document.add(Order(dataHolder.lineItems, dataHolder.carriageValue))
-        order match {
-          case Some(o) => {
-            Transaction.addDocument(transaction.get.id.get, o.id.get)
-            // 	close quote
-            Document.close(quote.get.id.get)
-            S redirectTo "/app/display/customer?id=%s".format(transaction.get.customer.get.toString)
-          }
-          case _ => {
-            displayError("Failed to create Order. Please send an error report.")
-            Noop
-          }
-        }
-      }
+      case Nil => generateOrder()
       case errors => {
         displayErrors(errors: _*)
         Noop
       }
+    }
+  }
+
+  private[this] def generateOrder(): JsCmd = Order.add(dataHolder.lineItems, dataHolder.carriageValue, customerPoRef) match {
+    case Some(o) => {
+      Transaction.addDocument(transaction.get.id.get, o.id.get)
+      Document.close(quote.get.id.get)
+      S redirectTo "/app/display/customer?id=%s".format(transaction.get.customer.get.toString)
+    }
+    case _ => {
+      displayError("Failed to create Order. Please send an error report.")
+      Noop
     }
   }
 
