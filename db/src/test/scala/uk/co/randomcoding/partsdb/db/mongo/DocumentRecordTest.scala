@@ -169,6 +169,13 @@ class DocumentRecordTest extends MongoDbTestBase {
     Document.findByDocumentNumber(100) should be(None)
   }
 
+  test("Close Document correctly sets the editable field") {
+    val document1 = Document.add(Seq(line2), DocumentType.Invoice, 0.0).get
+    Document.close(document1.id.get)
+
+    (Document where (_.editable eqs false) get) should be(Some(Document.create(Seq(line2), DocumentType.Invoice, 0.0).docNumber(document1.docNumber.get)))
+  }
+
   test("Modify a Record with all new values correctly updates the database") {
     pending
   }

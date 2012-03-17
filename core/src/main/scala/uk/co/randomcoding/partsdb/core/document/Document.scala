@@ -186,7 +186,7 @@ object Document extends Document with MongoMetaRecord[Document] {
   /**
    * Set the docuemnt with the given `oid` to not editable
    */
-  def close(oid: ObjectId): Unit = Document.where(_.id eqs oid).modify(_.editable setTo false)
+  def close(oid: ObjectId): Unit = Document.where(_.id eqs oid).modify(_.editable setTo false) updateMulti
 }
 
 /**
