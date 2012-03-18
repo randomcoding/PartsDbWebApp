@@ -30,12 +30,12 @@ trait DataValidation extends Logger {
    *  contained in a `Seq[String]` if they fail or `Nil` if they pass validation.
    *  @return A `Seq` or error messages, or `Nil` if all items validated OK
    */
-  def performValidation(validationFuncs: () => Seq[String]*) = validate(validationItems: _*) ++ (validationFuncs flatMap (_()))
+  def performValidation(validationFuncs: () => Seq[String]*) = validate(validationItems(): _*) ++ (validationFuncs flatMap (_()))
 
   /**
    * Sequence of [[uk.co.randomcoding.partsdb.lift.util.snippet.ValidationItem]]s to validate on the given page
    */
-  def validationItems: Seq[ValidationItem]
+  def validationItems(): Seq[ValidationItem]
 
   /**
    * Validates the input items and returns a list of error tuples
@@ -51,7 +51,7 @@ trait DataValidation extends Logger {
    * @return A list of `(String, String)` tuples if any item fails its validation. The tuples contain the `errorLocationId` and `errorMessage`
    * of the [[uk.co.randomcoding.partsdb.lift.util.snippet.ValidationItem]]s that failed.
    */
-  private[this] def validate(items: ValidationItem*): Seq[String] = items map (validateItem(_)) filter (_.isDefined) map (_.get) flatten
+  def validate(items: ValidationItem*): Seq[String] = items map (validateItem(_)) filter (_.isDefined) map (_.get) flatten
 
   /**
    * Perform the validation process.

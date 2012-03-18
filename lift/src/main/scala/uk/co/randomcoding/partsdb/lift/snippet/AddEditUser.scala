@@ -86,7 +86,7 @@ class AddEditUser extends StatefulSnippet with ErrorDisplay with DataValidation 
     }
   }
 
-  override val validationItems: Seq[ValidationItem] = Seq(ValidationItem(userName, "User Name"))
+  override def validationItems(): Seq[ValidationItem] = Seq(ValidationItem(userName, "User Name"))
 
   private[this] val passwordMinLength = 6
   private[this] val passwordValidates = () => passwordErrors(password, confirmPassword, passwordMinLength)

@@ -66,9 +66,9 @@ class AddEditQuote extends StatefulSnippet with ErrorDisplay with DataValidation
     }
   }
 
-  private[this] def isTransactionNameUnique: Boolean = (Transaction where (_.shortName eqs transactionName) get) isDefined
+  private[this] def isTransactionNameUnique: Boolean = (Transaction where (_.shortName eqs transactionName) get) isEmpty
 
-  override val validationItems = Seq(ValidationItem(transactionName, "Transaction Short Name"),
+  override def validationItems() = Seq(ValidationItem(transactionName, "Transaction Short Name"),
     ValidationItem(dataHolder.carriageValue, "Carriage"))
 
   private[this] def addQuoteAndTransaction(cust: Customer): JsCmd = performValidation() match {
