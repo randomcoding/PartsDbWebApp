@@ -21,7 +21,7 @@ import net.liftweb.common.Logger
  * to indicate whether or not the item is ''selected'' or not.
  *
  * The operation performed on selection change is defined by the abstract function
- * [[uk.co.randomcoding.partsdb.lift.util.snippet.AvailableLineItemsDisplay#checkBoxSelected(Boolean, LineItem)]].
+ * [[uk.co.randomcoding.partsdb.lift.util.snippet.AvailableLineItemsDisplay#checkBoxSelected(Boolean,LineItem)]].
  *
  * This snippet expects the html template ''_available_line_items.html'' to be used.
  *
