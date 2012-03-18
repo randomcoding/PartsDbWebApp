@@ -5,7 +5,7 @@ package uk.co.randomcoding.partsdb.core.part
 
 import net.liftweb.mongodb.record.field._
 import net.liftweb.mongodb.record.{ MongoRecord, MongoMetaRecord }
-import net.liftweb.record.field.DoubleField
+import net.liftweb.record.field._
 import org.joda.time.DateTime
 import org.bson.types.ObjectId
 import com.foursquare.rogue.Rogue._
@@ -27,15 +27,16 @@ class PartCost private () extends BsonRecord[PartCost] { // with ObjectIdPk[Part
   object part extends ObjectIdRefField(this, Part)
   object suppliedCost extends DoubleField(this)
   object lastSuppliedDate extends DateField(this)
+  object supplierPartNumber extends StringField(this, 50)
 
   override def equals(that: Any): Boolean = {
     that match {
-      case pc: PartCost => part.get == pc.part.get && suppliedCost.get == pc.suppliedCost.get
+      case pc: PartCost => part.get == pc.part.get && suppliedCost.get == pc.suppliedCost.get && supplierPartNumber.get == pc.supplierPartNumber.get
       case _ => false
     }
   }
 
-  override def hashCode: Int = getClass.hashCode + part.get.hashCode + suppliedCost.get.hashCode
+  override def hashCode: Int = getClass.hashCode + part.get.hashCode + suppliedCost.get.hashCode + supplierPartNumber.get.hashCode
 }
 
 object PartCost extends PartCost with BsonMetaRecord[PartCost] {
@@ -43,8 +44,8 @@ object PartCost extends PartCost with BsonMetaRecord[PartCost] {
   /**
    * Creates a new `PartCost` record but '''does not''' commit it to the database
    */
-  def create(part: Part, cost: Double, lastSupplied: DateTime): PartCost = {
-    PartCost.createRecord.part(part.id.get).suppliedCost(cost).lastSuppliedDate(lastSupplied.toDate)
+  def create(part: Part, cost: Double, lastSupplied: DateTime, supplierPartNumber: String): PartCost = {
+    PartCost.createRecord.part(part.id.get).suppliedCost(cost).lastSuppliedDate(lastSupplied.toDate).supplierPartNumber(supplierPartNumber)
   }
   /*
   */

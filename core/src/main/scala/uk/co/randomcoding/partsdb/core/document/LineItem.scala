@@ -39,6 +39,21 @@ class LineItem private () extends BsonRecord[LineItem] {
    */
   final def lineCost: Double = (basePrice + (basePrice * markup)) * quantity
 
+  override def equals(that: Any): Boolean = that match {
+    case other: LineItem => {
+      lineNumber.get == other.lineNumber.get &&
+        partId.get == other.partId.get &&
+        quantity.get == other.quantity.get &&
+        basePrice.get == other.basePrice.get &&
+        markup.get == other.markup.get
+    }
+    case _ => false
+  }
+
+  private[this] val hashCodeFields = Seq(lineNumber, partId, quantity, basePrice, markup)
+
+  override def hashCode: Int = getClass.hashCode() + hashCodeFields.foldLeft(0)(_ + _.get.hashCode)
+
 }
 
 object LineItem extends LineItem with BsonMetaRecord[LineItem] {

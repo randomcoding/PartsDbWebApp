@@ -4,15 +4,20 @@
 package uk.co.randomcoding.partsdb.core.transaction
 
 import java.util.Date
+
+import scala.math.Ordering.String
+
 import org.bson.types.ObjectId
-import com.foursquare.rogue.Rogue._
-import uk.co.randomcoding.partsdb.core.customer.Customer
-import uk.co.randomcoding.partsdb.core.document.Document
-import net.liftweb.mongodb.record.field._
-import net.liftweb.record.field._
-import net.liftweb.mongodb.record.{ MongoRecord, MongoMetaRecord }
-import uk.co.randomcoding.partsdb.core.document.DocumentType
 import org.joda.time.DateTime
+
+import com.foursquare.rogue.Rogue._
+
+import uk.co.randomcoding.partsdb.core.customer.Customer
+import uk.co.randomcoding.partsdb.core.document.{ DocumentType, Document }
+
+import net.liftweb.record.field._
+import net.liftweb.mongodb.record.field._
+import net.liftweb.mongodb.record.{ MongoRecord, MongoMetaRecord }
 
 /**
  * Encapsulates all the data for a transaction between the company and a customer.
@@ -73,10 +78,11 @@ class Transaction private () extends MongoRecord[Transaction] with ObjectIdPk[Tr
         val orderCount = docs.filter(_.documentType.get == DocumentType.Order).size
         val invoiceCount = docs.filter(_.documentType.get == DocumentType.Invoice).size
         val deliveryCount = docs.filter(_.documentType.get == DocumentType.DeliveryNote).size
-        (quoteCount, orderCount, (invoiceCount + deliveryCount)) match {
-          case (quote, 0, 0) => "Quoted"
-          case (_, order, 0) if order > 0 => "Ordered"
-          case (_, _, invoice) if invoice > 0 => "Invoiced"
+        (quoteCount, orderCount, deliveryCount, invoiceCount) match {
+          case (quote, 0, 0, 0) => "Quoted"
+          case (_, order, 0, 0) if order > 0 => "Ordered"
+          case (_, _, deliver, 0) if deliver > 0 => "Delivered"
+          case (_, _, _, invoice) if invoice > 0 => "Invoiced"
         }
       }
     }
@@ -151,6 +157,20 @@ object Transaction extends Transaction with MongoMetaRecord[Transaction] {
   def findMatching(transaction: Transaction): Option[Transaction] = findById(transaction.id.get) match {
     case Some(t) => Some(t)
     case _ => Transaction where (_.customer eqs transaction.customer.get) and (_.documents all transaction.documents.get) get
+  }
+
+  /**
+   * Adds document(s) by Id to a transaction
+   *
+   * @param transactionId The oid of the `Transaction` to add the document(s) to
+   * @param documentId The id(s) of the document(s) to add to the transaction
+   */
+  def addDocument(transactionId: ObjectId, documentId: ObjectId*) = {
+    val docIds = findById(transactionId) match {
+      case Some(t) => (t.documents.get ++ documentId).distinct
+      case _ => Nil // If this is the case then the update operation will do nothing so Nil is safe
+    }
+    Transaction.where(_.id eqs transactionId).modify(_.documents setTo docIds).updateMulti
   }
 }
 

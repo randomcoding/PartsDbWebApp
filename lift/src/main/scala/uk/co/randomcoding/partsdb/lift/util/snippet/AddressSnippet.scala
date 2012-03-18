@@ -23,14 +23,17 @@ trait AddressSnippet extends Logger {
 
   var addressText: String
   var addressCountry: String
+  val addressLabel = "Business Address"
 
   val renderEditableAddress = () => {
-    "#billingAddressEntry" #> styledTextArea(addressText, addressText = _) &
+    "#addressLabel" #> Text(addressLabel) &
+      "#billingAddressEntry" #> styledTextArea(addressText, addressText = _) &
       "#billingAddressCountry" #> styledSelect(countryCodes, addressCountry, addressCountry = _)
   }
 
   val renderReadOnlyAddress = () => {
-    "#billingAddressEntry" #> styledTextArea(addressText, addressText = _, readonly) &
+    "#addressLabel" #> Text(addressLabel) &
+      "#billingAddressEntry" #> styledTextArea(addressText, addressText = _, readonly) &
       "#billingAddressCountry" #> styledText(addressCountry, addressCountry = _, readonly)
   }
 
@@ -39,7 +42,7 @@ trait AddressSnippet extends Logger {
     val lines = Source.fromString(addressText).getLines toList
     val addressLines = lines.map(_ replaceAll (",", "") trim)
     trace("Generated Address Lines: %s".format(addressLines))
-    val shortName = "%s Business Address".format(name)
+    val shortName = name
     val address = addressLines mkString ("", ",", "")
     debug("Generating Address (%s) from: %s".format(shortName, address))
 

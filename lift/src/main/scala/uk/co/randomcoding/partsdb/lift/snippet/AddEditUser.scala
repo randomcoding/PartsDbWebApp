@@ -23,22 +23,22 @@ import net.liftweb.util.Helpers._
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
 class AddEditUser extends StatefulSnippet with ErrorDisplay with DataValidation with SubmitAndCancelSnippet with Logger {
-  val roles = List(("User" -> "User"), ("Admin" -> "Admin"))
+  private[this] val roles = List(("User" -> "User"), ("Admin" -> "Admin"))
 
-  val initialUser = S param ("id") match {
+  private[this] val initialUser = S param ("id") match {
     case Full(id) => User findById (new ObjectId(id))
     case _ => None
   }
 
   override val cameFrom = S.referer openOr "/admin/"
 
-  var (userName, userRole) = initialUser match {
+  private[this] var (userName, userRole) = initialUser match {
     case Some(u) => (u.username.get, u.role.get.toString)
     case _ => ("", "")
   }
 
-  var password = ""
-  var confirmPassword = ""
+  private[this] var password = ""
+  private[this] var confirmPassword = ""
 
   def dispatch = {
     case "render" => render
@@ -60,37 +60,34 @@ class AddEditUser extends StatefulSnippet with ErrorDisplay with DataValidation 
    * (not all same case and longer than 6 characters)
    */
   override def processSubmit() = {
-    validate match {
-      case Nil => initialUser match {
-        case Some(u) => {
-          User.modify(u.username.get, userName, password match {
-            case "" => u.password.get
-            case p => hash(p)
-          }, userRole)
-          S.redirectTo("/admin/")
-        }
-        case _ => addNewUser(userName, password, userRole) match {
-          case None => S.redirectTo("/admin/")
-          case Some(message) => {
-            displayError(message)
-            Noop
-          }
-        }
-      }
+    performValidation(passwordValidates) match {
+      case Nil => addOrUpdateUser
       case errors => {
-        displayErrors(errors map (_._2): _*)
+        displayErrors(errors: _*)
         Noop
       }
     }
   }
 
-  private[this] def validate = {
-    var errors = List.empty[(String, String)]
-
-    if (userName.trim.isEmpty) errors = ("errorMessages", "User Name cannot be empty") :: errors
-
-    val pwErrorId = "errorMessages"
-    val validationErrors = passwordErrors(password, confirmPassword, 6) map ((pwErrorId, _))
-    validationErrors ::: errors
+  private[this] def addOrUpdateUser = initialUser match {
+    case Some(u) => {
+      User.modify(u.username.get, userName, password match {
+        case "" => u.password.get
+        case p => hash(p)
+      }, userRole)
+      S.redirectTo("/admin/")
+    }
+    case _ => addNewUser(userName, password, userRole) match {
+      case None => S.redirectTo("/admin/")
+      case Some(message) => {
+        displayError(message)
+        Noop
+      }
+    }
   }
+
+  override val validationItems: Seq[ValidationItem] = Seq(ValidationItem(userName, "User Name"))
+
+  private[this] val passwordMinLength = 6
+  private[this] val passwordValidates = () => passwordErrors(password, confirmPassword, passwordMinLength)
 }

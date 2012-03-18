@@ -8,11 +8,12 @@ import org.bson.types.ObjectId
 import net.liftweb.http.SHtml._
 import scala.xml.Attribute
 import scala.xml.Null
+import net.liftweb.common.Logger
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
-trait TabularEntityDisplay {
+trait TabularEntityDisplay extends Logger {
 
   type EntityType
 
@@ -24,9 +25,10 @@ trait TabularEntityDisplay {
   /**
    * Convenience apply method that generates the html table for the entities
    */
-  def apply(entities: List[EntityType], editLink: Boolean = true, displayLink: Boolean = true): NodeSeq = displayTable(entities, editLink, displayLink)
+  def apply(entities: Seq[EntityType], editLink: Boolean = true, displayLink: Boolean = true): NodeSeq = displayTable(entities, editLink, displayLink)
 
-  private def displayTable(entities: List[EntityType], editLink: Boolean = true, displayLink: Boolean = true): NodeSeq = {
+  private def displayTable(entities: Seq[EntityType], editLink: Boolean = true, displayLink: Boolean = true): NodeSeq = {
+    debug("Rendering Table for %s".format(entities.mkString("[", ", ", "]")))
     <table class="btn">
       <thead>
         <tr>{ headings(rowHeadings) }</tr>
@@ -62,7 +64,7 @@ trait TabularEntityDisplay {
    * @param rowspan The number of rows this table cell should span. Defaults to 1
    */
   def tableCell(content: NodeSeq, colspan: Int = 1, rowspan: Int = 1) = {
-    <td style="align: right; width: 3em">{ content }</td> %
+    <td style="align: right;">{ content }</td> %
       Attribute("colspan", Text("%d".format(colspan)), Null) %
       Attribute("rowspan", Text("%d".format(rowspan)), Null)
   }
@@ -85,12 +87,12 @@ trait TabularEntityDisplay {
   /**
    * Create the link to display the edit button for the entity
    */
-  val editEntityLink = (entityType: String, entityId: ObjectId) => link("%s?id=%s".format(entityType toLowerCase, entityId.toString), () => Unit, Text("Edit"), "class" -> "btn")
+  val editEntityLink = (entityType: String, entityId: ObjectId) => link("%s?id=%s".format(entityType toLowerCase, entityId.toString), () => Unit, Text("Edit"), "class" -> "btn", "style" -> "width: 3em")
 
   /**
    * Create the link to display the Display button for the entity
    */
-  val displayEntityLink = (entityType: String, entityId: ObjectId) => link("/app/display/%s?id=%s".format(entityType toLowerCase, entityId toString), () => Unit, Text("Display"), "class" -> "btn")
+  val displayEntityLink = (entityType: String, entityId: ObjectId) => link("/app/display/%s?id=%s".format(entityType toLowerCase, entityId toString), () => Unit, Text("Display"), "class" -> "btn", "style" -> "width: 5em")
 
   /**
    * This is the list of heading to be displayed for the entity table

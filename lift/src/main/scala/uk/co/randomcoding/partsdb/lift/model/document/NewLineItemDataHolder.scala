@@ -3,31 +3,26 @@
  */
 package uk.co.randomcoding.partsdb.lift.model.document
 
-import org.bson.types.ObjectId
-
-import com.foursquare.rogue.Rogue._
-
-import uk.co.randomcoding.partsdb.core.document.LineItem
-import uk.co.randomcoding.partsdb.core.part.Part
 import uk.co.randomcoding.partsdb.core.supplier.Supplier
-
-import net.liftweb.common.{ Logger, Full }
-import net.liftweb.util.Helpers._
+import org.bson.types.ObjectId
 import net.liftweb.util.ValueCell
+import uk.co.randomcoding.partsdb.core.part.Part
+import com.foursquare.rogue.Rogue._
+import net.liftweb.common.Logger
+import net.liftweb.util.Helpers._
+import net.liftweb.common.Full
 
 /**
- * Encapsulates the data required to generate a `Quote` document.
+ * A data container for adding new line items via a page.
  *
- * To add/update line items set the current part (with [[uk.co.randomcoding.partsdb.lift.model.document.QuoteHolder#currentPart(Option[Part])]]
- * and then call [[uk.co.randomcoding.partsdb.lift.model.document.QuoteHolder#setPartQuantity(Int)]].
+ * To add/update line items set the current part (with [[uk.co.randomcoding.partsdb.lift.model.document.DocumentDataHolder#currentPart(Option[Part])]]
+ * and then call [[uk.co.randomcoding.partsdb.lift.model.document.DocumentDataHolder#setPartQuantity(Int)]].
  *
- * To modify the markup used for the line item, call [[uk.co.randomcoding.partsdb.lift.model.document.QuoteHolder#markup(String)]] before
- * [[uk.co.randomcoding.partsdb.lift.model.document.QuoteHolder#updateCurrent(Int)]]
- *
- * This is used by the [[uk.co.randomcoding.partsdb.lift.snippet.AddQuote]] class as a cell.
+ * To modify the markup used for the line item, call [[uk.co.randomcoding.partsdb.lift.model.document.DocumentDataHolder#markup(String)]] before
+ * [[uk.co.randomcoding.partsdb.lift.model.document.DocumentDataHolder#updateCurrent(Int)]]
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
-class QuoteHolder extends Logger {
+trait NewLineItemDataHolder extends LineItemsDataHolder with Logger {
   /**
    * The default markup rate for new lines
    */
@@ -97,64 +92,6 @@ class QuoteHolder extends Logger {
    */
   private val currentLinePartCost = currentPartBaseCostCell.lift(markupCell)((partBaseCost, markupPercentage) => partBaseCost + (partBaseCost * (markupPercentage / 100.0)))
 
-  // TODO: These line item & totals cells can be moved into a common trait, as we will want to use the same functionality for other documents 
-  /**
-   * Holder for the current line items
-   */
-  private val lineItemsCell = ValueCell[List[LineItem]](Nil)
-
-  /**
-   * The total computed base cost of the line items, before tax
-   */
-  private val preTaxTotal = lineItemsCell.lift(_.foldLeft(0.0d)(_ + _.lineCost))
-
-  /**
-   * The tax rate. Set to 0.2 (20%)
-   */
-  val taxRate = ValueCell(0.2d)
-
-  /**
-   * The computed value of the amount of tax for the quote
-   */
-  private val tax = preTaxTotal.lift(taxRate)(_ * _)
-
-  /**
-   * Calculated total cost of all line items
-   */
-  private val total = preTaxTotal.lift(tax)(_ + _)
-
-  // Values for display in the GUI
-
-  /**
-   * Display the pre-tax total in £0.00 format.
-   *
-   * Suitable for use as:
-   * {{{
-   * WiringUI.asText(holder.subTotal)
-   * }}}
-   */
-  val subTotal = preTaxTotal.lift("£%.2f".format(_))
-
-  /**
-   * The amount of vat for all the current line items
-   *
-   * Suitable for use as:
-   * {{{
-   * WiringUI.asText(holder.vatAmount)
-   * }}}
-   */
-  val vatAmount = tax.lift("£%.2f".format(_))
-
-  /**
-   * The computed total of the line items plus tax in £0.00 format
-   *
-   * Suitable for use as:
-   * {{{
-   * WiringUI.asText(holder.totalCost)
-   * }}}
-   */
-  val totalCost = total.lift("£%.2f".format(_))
-
   /**
    * Text representation of the current supplier's name
    */
@@ -186,16 +123,7 @@ class QuoteHolder extends Logger {
       case (Some(part), q) => {
         val partCost = currentPartBaseCostCell.get
         val markupValue = markupCell.get.toDouble / 100.0
-
-        lineItemsCell.atomicUpdate(items => items.find(_.partId.get == part.id.get) match {
-          case Some(lineItem) => items.map(li => {
-            li.partId.get == part.id.get match {
-              case true => updateLineItem(li, q, partCost, markupValue)
-              case false => li
-            }
-          })
-          case _ => items :+ LineItem.create(items.size, part, q, partCost, markupValue)
-        })
+        addOrUpdateLineItem(partCost, markupValue, part, q)
         resetPartQuantityAndSupplier
       }
     }
@@ -206,26 +134,6 @@ class QuoteHolder extends Logger {
     currentPartCell set None
     quantityCell set 0
   }
-
-  private val updateLineItem = (li: LineItem, quant: Int, cost: Double, markupValue: Double) => li.quantity(quant).basePrice(cost).markup(markupValue)
-
-  private def zero = BigDecimal(0)
-
-  private def removeItem(part: Part) = {
-    lineItemsCell.atomicUpdate(_.filterNot(_.partId.get == part.id.get))
-    renumberLines
-  }
-
-  private def renumberLines = lineItemsCell.atomicUpdate(items => {
-    var index = 0
-    items sortBy (_.lineNumber.get) map (item => {
-      val newItem = item.lineNumber(index)
-      index += 1
-      newItem
-    })
-  })
-
-  // Accessors & Mutators for the state of the holder
 
   /**
    * Get the value of the current part from the holder
@@ -270,7 +178,7 @@ class QuoteHolder extends Logger {
       case _ => DEFAULT_MARKUP
     })
 
-    debug("Manual cost is now: %d".format(markupCell.get.toInt))
+    debug("Markup is now: %d".format(markupCell.get.toInt))
   }
 
   def quantity = "%d".format(quantityCell.get)
@@ -290,9 +198,4 @@ class QuoteHolder extends Logger {
     debug("Supplier is %s".format(s))
     s
   }
-
-  /**
-   * Gets the current line items, sorted by line number
-   */
-  def lineItems = lineItemsCell.get.sortBy(_.lineNumber.get)
 }

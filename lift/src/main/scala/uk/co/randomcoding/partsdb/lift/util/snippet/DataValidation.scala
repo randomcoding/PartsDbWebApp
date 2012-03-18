@@ -3,6 +3,8 @@
  */
 package uk.co.randomcoding.partsdb.lift.util.snippet
 
+import scala.collection.Traversable
+
 import uk.co.randomcoding.partsdb.core.address.Address
 import uk.co.randomcoding.partsdb.core.contact.ContactDetails
 import uk.co.randomcoding.partsdb.core.util.CountryCodes.matchToCountryCode
@@ -18,6 +20,24 @@ import net.liftweb.common.Logger
 trait DataValidation extends Logger {
 
   /**
+   * Method to perform actual validation.
+   *
+   * This will validate the [[uk.co.randomcoding.partsdb.lift.util.snippet.DataValidation#validationItems]] and then execute
+   * each of the validation functions provided.
+   *
+   *  @param validationFuncs Functions `() => Seq[String]` that perform additional validation not covered by the
+   *  [[uk.co.randomcoding.partsdb.lift.util.snippet.DataValidation#validationItems]]. These functions should return error message(s)
+   *  contained in a `Seq[String]` if they fail or `Nil` if they pass validation.
+   *  @return A `Seq` or error messages, or `Nil` if all items validated OK
+   */
+  def performValidation(validationFuncs: () => Seq[String]*) = validate(validationItems: _*) ++ (validationFuncs flatMap (_()))
+
+  /**
+   * Sequence of [[uk.co.randomcoding.partsdb.lift.util.snippet.ValidationItem]]s to validate on the given page
+   */
+  def validationItems: Seq[ValidationItem]
+
+  /**
    * Validates the input items and returns a list of error tuples
    *
    * Will return false for:
@@ -31,7 +51,7 @@ trait DataValidation extends Logger {
    * @return A list of `(String, String)` tuples if any item fails its validation. The tuples contain the `errorLocationId` and `errorMessage`
    * of the [[uk.co.randomcoding.partsdb.lift.util.snippet.ValidationItem]]s that failed.
    */
-  def validate(items: ValidationItem*): Seq[String] = items map (validateItem(_)) filter (_.isDefined) map (_.get) flatten
+  private[this] def validate(items: ValidationItem*): Seq[String] = items map (validateItem(_)) filter (_.isDefined) map (_.get) flatten
 
   /**
    * Perform the validation process.
@@ -43,12 +63,10 @@ trait DataValidation extends Logger {
     item.toValidate match {
       // If we have a populated option value, recursively call this method with the item unwrapped
       case Some(thing) => validateItem(ValidationItem(thing, item.fieldName))
+      case collection: Traversable[_] => if (collection.size == 0) Some(Seq("%s requires a non empty set of items".format(item.fieldName))) else None
       case addr: Address => validateAddress(addr)
       case contact: ContactDetails => validateContactDetails(contact)
-      case string: String => string.trim nonEmpty match {
-        case false => Some(Seq("%s requires a non empty value".format(item.fieldName)))
-        case true => None
-      }
+      case string: String => validateString(string, item.fieldName)
       case double: Double => if (double >= 0.0) None else Some(Seq("%s requires a value of 0 or greater".format(item.fieldName)))
       case int: Int => if (int >= 0.0) None else Some(Seq("%s requires a value of 0 or greater".format(item.fieldName)))
       case None => {
@@ -60,6 +78,14 @@ trait DataValidation extends Logger {
         None
       }
     }
+  }
+
+  /**
+   * Validate a string value is not empty
+   */
+  private[this] def validateString(string: String, fieldName: String) = string.trim nonEmpty match {
+    case false => Some(Seq("%s requires a non empty value".format(fieldName)))
+    case true => None
   }
 
   /**

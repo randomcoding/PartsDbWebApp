@@ -7,6 +7,8 @@ import net.liftweb.mongodb.record.{ MongoRecord, MongoMetaRecord }
 import net.liftweb.mongodb.record.field._
 import net.liftweb.record.field._
 
+import uk.co.randomcoding.partsdb.core.address.Address
+
 import java.util.Date
 
 /**
@@ -53,9 +55,26 @@ class Document private () extends MongoRecord[Document] with ObjectIdPk[Document
   }
 
   /**
+   * The carriage for the items in the document
+   */
+  object carriage extends DoubleField(this)
+
+  /**
    * Is this `Document` editable?
    */
   object editable extends BooleanField(this)
+
+  /**
+   * The customer's P/O number if known
+   */
+  object customerPoReference extends StringField(this, 50)
+
+  /**
+   * The [[import uk.co.randomcoding.partsdb.core.address.Address]] to which delivery is to be made.
+   *
+   * This will be set in the Delivery Note stage
+   */
+  object deliveryAddress extends BsonRecordField(this, Address)
 
   /**
    * The printable identifier for this document.
@@ -69,7 +88,9 @@ class Document private () extends MongoRecord[Document] with ObjectIdPk[Document
    * Documents are `equals` if they have the same `documentType`, `docNumber`
    */
   override def equals(that: Any): Boolean = that match {
-    case other: Document => documentType.get == other.documentType.get && docNumber.get == other.docNumber.get
+    case other: Document => documentType.get == other.documentType.get &&
+      docNumber.get == other.docNumber.get &&
+      customerPoReference.get == other.customerPoReference.get
     case _ => false
   }
 
@@ -87,11 +108,17 @@ object Document extends Document with MongoMetaRecord[Document] {
    *
    * This also '''does not''' assign a document number as this is done in the `add` method.
    *
+   * @param items The [[uk.co.randomcoding.partsdb.core.document.LineItem]]s to create the document with
+   * @param docType The type of document. This is on of the [[uk.co.randomcoding.partsdb.core.document.DocumentType]]s
+   * @param carriage The cost of carriage for the document
+   * @param customerPoRef The customer's Purchase Order Reference number. This will be assigned to the document in the Order stage.
+   * Defaults to an empty string so it is not required to be entered for Quotes
+   *
    * The `editable` field is set to true
    */
-  def create(items: Seq[LineItem], docType: DocumentType.DocType): Document = {
+  def create(items: Seq[LineItem], docType: DocumentType.DocType, carriage: Double, customerPoRef: String = ""): Document = {
     require(items.nonEmpty, "Line Items Cannot be empty")
-    Document.createRecord.editable(true).documentType(docType).lineItems(items.toList).createdOn(new Date)
+    Document.createRecord.editable(true).documentType(docType).lineItems(items.toList).createdOn(new Date).carriage(carriage).customerPoReference(customerPoRef)
   }
 
   /**
@@ -103,8 +130,8 @@ object Document extends Document with MongoMetaRecord[Document] {
    *
    * @return An optional `Document` object. This will be filled if the add succeeded or `None` if not
    */
-  def add(items: Seq[LineItem], docType: DocumentType.DocType): Option[Document] = {
-    add(create(items, docType))
+  def add(items: Seq[LineItem], docType: DocumentType.DocType, carriage: Double): Option[Document] = {
+    add(create(items, docType, carriage))
   }
 
   /**
@@ -155,15 +182,37 @@ object Document extends Document with MongoMetaRecord[Document] {
    * Remove the Document with the given id from the database
    */
   def remove(oid: ObjectId): Unit = Document where (_.id eqs oid) bulkDelete_!!
+
+  /**
+   * Set the docuemnt with the given `oid` to not editable
+   */
+  def close(oid: ObjectId): Unit = Document.where(_.id eqs oid).modify(_.editable setTo false) updateMulti
 }
 
 /**
  * Factory object for creating instances of `Document`s with a fixed `DocumentType`
  */
 sealed abstract class DocumentInstance(docType: DocumentType.DocType) {
-  def create(items: List[LineItem]): Document = Document.create(items, docType)
+  /**
+   * Convenience method to create a new document instance.
+   *
+   * This delegates to [[uk.co.randomcoding.partsdb.core.document.DocumentInstance#create(Seq[LineItem], Double, String)]]
+   */
+  def apply(items: Seq[LineItem], carriage: Double, customerPoRef: String = ""): Document = create(items, carriage, customerPoRef)
 
-  def add(items: List[LineItem]): Option[Document] = Document.add(create(items))
+  /**
+   * Convenience method to create a new document instance.
+   *
+   * This delegates to [[uk.co.randomcoding.partsdb.core.document.Document#create(Seq[LineItem], DocumentType.DocType, Double, String)]]
+   */
+  def create(items: Seq[LineItem], carriage: Double, customerPoRef: String = ""): Document = Document.create(items, docType, carriage, customerPoRef)
+
+  /**
+   * Convenience method to create a new document instance and add it to the database
+   *
+   * This delegates to [[uk.co.randomcoding.partsdb.core.document.Document#add(Seq[LineItem], DocumentType.DocType, Double, String)]]
+   */
+  def add(items: Seq[LineItem], carriage: Double, customerPoRef: String = ""): Option[Document] = Document.add(create(items, carriage, customerPoRef))
 }
 
 /**

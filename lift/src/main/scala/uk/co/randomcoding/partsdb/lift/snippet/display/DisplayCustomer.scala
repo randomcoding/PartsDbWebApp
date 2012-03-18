@@ -4,25 +4,28 @@
 package uk.co.randomcoding.partsdb.lift.snippet.display
 
 import scala.xml.Text
+
 import org.bson.types.ObjectId
+
+import com.foursquare.rogue.Rogue._
+
 import uk.co.randomcoding.partsdb.core.address.Address
-import uk.co.randomcoding.partsdb.core.contact.ContactDetails
 import uk.co.randomcoding.partsdb.core.customer.Customer
+import uk.co.randomcoding.partsdb.core.transaction.Transaction
 import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
 import uk.co.randomcoding.partsdb.lift.util.snippet._
-import net.liftweb.common.{ Logger, Full }
+import uk.co.randomcoding.partsdb.lift.util._
+
+import net.liftweb.common.{Logger, Full}
+import net.liftweb.http.SHtml.ElemAttr.pairToBasic
 import net.liftweb.http.S
 import net.liftweb.util.Helpers._
-import scala.xml.NodeSeq
-import uk.co.randomcoding.partsdb.lift.util.TransactionSummaryDisplay
-import uk.co.randomcoding.partsdb.core.transaction.Transaction
-import com.foursquare.rogue.Rogue._
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
 object DisplayCustomer extends ErrorDisplay with AddressSnippet with ContactDetailsSnippet with TabDisplaySnippet with Logger {
-  override val tabTitles = Seq(("quoteResults", "Quotes"), ("orderResults", "Orders"), ("invoiceResults", "Delivered / Invoiced"), ("completedResults", "Completed"))
+  override val tabTitles = Seq(("quoteResults", "Quoted"), ("orderResults", "Ordered"), ("deliveryNoteResults", "Delivered"), ("invoiceResults", "Invoiced"), ("completedResults", "Completed"))
 
   private val cameFrom = S.referer openOr "/app/show?entityType=Customer"
 
@@ -46,10 +49,8 @@ object DisplayCustomer extends ErrorDisplay with AddressSnippet with ContactDeta
 
   override var (contactName, phoneNumber, mobileNumber, email, faxNumber) = initialCustomer match {
     case Some(cust) => cust.contactDetails.get match {
-      case contacts => contacts map (ContactDetails findById _) filter (_.isDefined) map (_.get) find (_.isPrimary.get == true) match {
-        case Some(c) => (c.contactName.get, c.phoneNumber.get, c.mobileNumber.get, c.emailAddress.get, c.faxNumber.get)
-        case _ => ("", "", "", "", "")
-      }
+      case Nil => ("", "", "", "", "")
+      case head :: tail => (head.contactName.get, head.phoneNumber.get, head.mobileNumber.get, head.emailAddress.get, head.faxNumber.get)
     }
     case _ => ("", "", "", "", "")
   }
@@ -69,6 +70,7 @@ object DisplayCustomer extends ErrorDisplay with AddressSnippet with ContactDeta
       "#documentTabs" #> generateTabs() &
       "#quotes" #> TransactionSummaryDisplay(currentTransactions filter (_.transactionState == "Quoted")) &
       "#orders" #> TransactionSummaryDisplay(currentTransactions filter (_.transactionState == "Ordered")) &
+      "#deliveryNotes" #> TransactionSummaryDisplay(currentTransactions filter (_.transactionState == "Delivered")) &
       "#invoices" #> TransactionSummaryDisplay(currentTransactions filter (_.transactionState == "Invoiced")) &
       "#completed" #> TransactionSummaryDisplay(currentTransactions filter (_.transactionState == "Completed"))
   }

@@ -189,6 +189,21 @@ object TransformHelpers {
   }
 
   /**
+   * Create a checkbox with the default app styling
+   *
+   * @param initialValue The initial selected state of the checkbox. true = checked
+   * @param func The function to invoke on change
+   * @param attrs Any additional attributes to apply to this widget
+   */
+  def styledAjaxCheckbox(initialValue: Boolean, func: ajaxWidgetCallback[Boolean], attrs: List[ElemAttr] = Nil): NodeSeq = {
+    ajaxCheckbox(initialValue, func, styledAttributes(attrs): _*)
+  }
+
+  def styledCheckbox(initialValue: Boolean, func: Boolean => Any, attrs: List[ElemAttr] = Nil): NodeSeq = {
+    checkbox(initialValue, func, styledAttributes(attrs): _*)
+  }
+
+  /**
    * Function that generates an ajax wrapper around setting a value for a variable.
    *
    * By default (without the JsCmd parameter) will perform a `Noop` after updating the value

@@ -6,7 +6,6 @@
 </head>
 <body class="lift:content_id=main">
   <div id="main" class="lift:surround?with=default;at=content">
-    <!-- <div class="lift:embed?what=/templates-hidden/_error_messages"></div> -->
     <div class="lift:AddEditSupplier?form=POST&eager_eval=true">
       <div style="width: 98%" align="center"></div>
       <div class="form-title">
@@ -23,7 +22,8 @@
       <div class="column span-4 form-label">Part</div>
       <div class="coumn span-4 form-label">Cost (&pound;)</div>
       <div class="coumn span-4 form-label">Last Supplied</div>
-      <div class="column span-7 last form-label">&nbsp;</div>
+      <div class="coumn span-4 form-label">Supplier Part No.</div>
+      <div class="column span-3 last form-label">&nbsp;</div>
       <div class="column span-4">
         <span id="partSelect">Part Selection</span>
       </div>
@@ -35,7 +35,10 @@
       <div class="coumn span-4">
         <span id="lastSuppliedEntry">Last Supplied Date</span>
       </div>
-      <div class="column span-7 last" align="right">
+      <div class="coumn span-4">
+        <span id="supplierPartNumber">Supplier Part Number</span>
+      </div>
+      <div class="column span-3 last" align="right">
         <span id="addPartCost">Add Part Cost Button</span>&nbsp;&nbsp;<span id="removePartCost">Add Part Cost
           Button</span>
       </div>

@@ -33,8 +33,8 @@ object SupplierDisplay extends TabularEntityDisplay {
     case _ => Text("Unknown Address. Identifier: %s".format(supplier.businessAddress.get))
   }
 
-  private[this] def displayContacts(supplier: Supplier): NodeSeq = ContactDetails findById supplier.contactDetails.get match {
-    case Some(c) => displayContactCell(c)
+  private[this] def displayContacts(supplier: Supplier): NodeSeq = supplier.contactDetails.get match {
+    case c: ContactDetails => displayContactCell(c)
     case _ => Text("Unknown Contact. Identifier: %s".format(supplier.contactDetails.get))
   }
 
