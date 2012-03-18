@@ -70,7 +70,7 @@ class Document private () extends MongoRecord[Document] with ObjectIdPk[Document
   object customerPoReference extends StringField(this, 50)
 
   /**
-   * The [[import uk.co.randomcoding.partsdb.core.address.Address]] to which delivery is to be made.
+   * The [[uk.co.randomcoding.partsdb.core.address.Address]] to which delivery is to be made.
    *
    * This will be set in the Delivery Note stage
    */
@@ -196,21 +196,21 @@ sealed abstract class DocumentInstance(docType: DocumentType.DocType) {
   /**
    * Convenience method to create a new document instance.
    *
-   * This delegates to [[uk.co.randomcoding.partsdb.core.document.DocumentInstance#create(Seq[LineItem], Double, String)]]
+   * This delegates to [[uk.co.randomcoding.partsdb.core.document.DocumentInstance#create(Seq[LineItem],Double,String)]]
    */
   def apply(items: Seq[LineItem], carriage: Double, customerPoRef: String = ""): Document = create(items, carriage, customerPoRef)
 
   /**
    * Convenience method to create a new document instance.
    *
-   * This delegates to [[uk.co.randomcoding.partsdb.core.document.Document#create(Seq[LineItem], DocumentType.DocType, Double, String)]]
+   * This delegates to [[uk.co.randomcoding.partsdb.core.document.Document#create(Seq[LineItem],DocumentType.DocType,Double,String)]]
    */
   def create(items: Seq[LineItem], carriage: Double, customerPoRef: String = ""): Document = Document.create(items, docType, carriage, customerPoRef)
 
   /**
    * Convenience method to create a new document instance and add it to the database
    *
-   * This delegates to [[uk.co.randomcoding.partsdb.core.document.Document#add(Seq[LineItem], DocumentType.DocType, Double, String)]]
+   * This delegates to [[uk.co.randomcoding.partsdb.core.document.Document#add(Seq[LineItem],DocumentType.DocType,Double,String)]]
    */
   def add(items: Seq[LineItem], carriage: Double, customerPoRef: String = ""): Option[Document] = Document.add(create(items, carriage, customerPoRef))
 }

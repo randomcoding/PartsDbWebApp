@@ -4,7 +4,7 @@
 package uk.co.randomcoding.partsdb.lift.util.snippet
 
 import scala.Array.canBuildFrom
-import scala.xml.{Text, Null, NodeSeq, Attribute}
+import scala.xml.{ Text, Null, NodeSeq, Attribute }
 
 import org.joda.time.DateTime
 
@@ -12,15 +12,15 @@ import com.foursquare.rogue.Rogue._
 
 import uk.co.randomcoding.partsdb.core.address.Address
 import uk.co.randomcoding.partsdb.core.contact.ContactDetails
-import uk.co.randomcoding.partsdb.core.part.{PartCost, Part}
+import uk.co.randomcoding.partsdb.core.part.{ PartCost, Part }
 import uk.co.randomcoding.partsdb.core.supplier.Supplier
 import uk.co.randomcoding.partsdb.lift.util.DateHelpers.dateString
 import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
 import uk.co.randomcoding.partsdb.lift.util.snippet._
 import uk.co.randomcoding.partsdb.lift.util._
 
-import net.liftweb.common.{Logger, Full}
-import net.liftweb.http.js.JsCmds.{SetHtml, Replace, Noop}
+import net.liftweb.common.{ Logger, Full }
+import net.liftweb.http.js.JsCmds.{ SetHtml, Replace, Noop }
 import net.liftweb.http.js.JsCmd.unitToJsCmd
 import net.liftweb.http.js.JsCmd
 import net.liftweb.http.SHtml
@@ -118,7 +118,7 @@ trait PartCostSnippet extends ErrorDisplay with DataValidation with Logger {
     }), false, false))
   }
 
-  override val validationItems = Seq(ValidationItem(currentPart, "Current Part"),
+  private[this] def validations() = Seq(ValidationItem(currentPart, "Current Part"),
     ValidationItem(currentPartCost, "Current Part Cost"),
     ValidationItem(currentPartLastSuppliedDate, "Last Supplied Date"),
     ValidationItem(supplierPartNumber, "Supplier Part Number"))
@@ -127,7 +127,7 @@ trait PartCostSnippet extends ErrorDisplay with DataValidation with Logger {
     clearErrors
     debug("Adding a part cost")
 
-    performValidation() match {
+    validate(validations(): _*) match {
       case Nil => {
         updatePartCosts(PartCost.create(currentPart.get, currentPartCost, currentPartLastSuppliedDate, supplierPartNumber))
         clearErrorsAndRefresh
