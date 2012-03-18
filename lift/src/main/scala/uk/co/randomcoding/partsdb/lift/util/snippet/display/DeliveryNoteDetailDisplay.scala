@@ -36,5 +36,6 @@ object DeliveryNoteDetailDisplay extends DocumentTotalsDisplay {
       "#lineItems" #> LineItemDisplay(deliveryNote.lineItems.get) &
       renderDocumentTotals(deliveryNote) &
       "#raiseDelivery" #> link("/app/delivery?transactionId=%s".format(transactionId), () => (), Text("Raise Delivery Note"))
+    // THis should be the invoice link
   })
 }
