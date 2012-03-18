@@ -6,12 +6,8 @@
     </encoder>
   </appender>
 
-  <logger name="botstrap.liftweb.Boot" level="INFO"/>
+  <logger name="bootstrap.liftweb.Boot" level="INFO"/>
   <logger name="uk.co.randomcoding" level="INFO"/>
-  <!-- <logger name="uk.co.randomcoding.partsdb.lift.snippet.AddEditDelivery" level="DEBUG"/>
-  <logger name="uk.co.randomcoding.partsdb.lift.util.snippet.AvailableLineItemsDisplay" level="DEBUG"/>
-  <logger name="uk.co.randomcoding.partsdb.lift.util" level="DEBUG"/> -->
-  
 
   <root level="warn">
     <appender-ref ref="STDOUT" />
