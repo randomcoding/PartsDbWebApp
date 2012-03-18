@@ -1,14 +1,12 @@
 package bootstrap.liftweb
 
 import com.mongodb.MongoException
-
 import uk.co.randomcoding.partsdb.core.user.Role.{ USER, Role, NO_ROLE, ADMIN }
 import uk.co.randomcoding.partsdb.core.user.User.addUser
 import uk.co.randomcoding.partsdb.db.mongo.MongoConfig
 import uk.co.randomcoding.partsdb.db.util.Helpers._
 import uk.co.randomcoding.partsdb.lift.model.Session
 import uk.co.randomcoding.partsdb.lift.util.search._
-
 import net.liftweb.common.{ Loggable, Full }
 import net.liftweb.http.LiftRulesMocker.toLiftRules
 import net.liftweb.http.{ S, ResourceServer, Req, RedirectResponse, LiftRules, Html5Properties, GetRequest }
@@ -17,6 +15,10 @@ import net.liftweb.sitemap.Loc.{ Link, If, Hidden, ExtLink }
 import net.liftweb.sitemap.{ SiteMap, Menu, Loc }
 import net.liftweb.util.Vendor.valToVender
 import net.liftweb.util.Props
+import com.mongodb.Mongo
+import net.liftweb.mongodb.MongoDB
+import net.liftweb.mongodb.DefaultMongoIdentifier
+import scala.collection.JavaConversions._
 
 /**
  * A class that's instantiated early and run.  It allows the application
@@ -32,6 +34,16 @@ class Boot extends Loggable {
 
     // Uncomment this to add new users required for user access initialisation
     //addBootstrapUsers
+
+    /* 
+     * Uncomment this line to drop all data except the user data
+     * 
+     * If you want to exclude any collection from being dropped simply add its name to the parameter list
+     * 
+     * Available collections are:
+     * addresss, contactdetailss, customers, documentids, documents, parts, suppliers, transactions, users, vehicles
+     */
+    resetCollections("users")
 
     val userLoggedIn = If(() => Session.currentUser.get match {
       case (s: String, r: Role) => r == USER
@@ -132,5 +144,20 @@ class Boot extends Loggable {
         }
       }
     }
+  }
+
+  private[this] def resetCollections(excludedCollections: String*) = {
+    val dontDrop = "system.indexes" :: excludedCollections.toList
+    MongoDB.getDb(DefaultMongoIdentifier) match {
+      case Some(db) => {
+        db.getCollectionNames() filterNot (dontDrop contains _) foreach (collection => {
+          logger.info("Dropping Collection: %s".format(collection))
+          db.getCollection(collection).drop()
+          if (db.getCollectionNames() contains collection) logger.error("Failed to drop collection: %s".format(collection))
+        })
+      }
+      case _ => logger.error("Unable to load Default Mongo Database!")
+    }
+
   }
 }

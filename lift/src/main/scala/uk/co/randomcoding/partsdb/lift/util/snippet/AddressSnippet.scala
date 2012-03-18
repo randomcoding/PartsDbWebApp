@@ -42,7 +42,7 @@ trait AddressSnippet extends Logger {
     val lines = Source.fromString(addressText).getLines toList
     val addressLines = lines.map(_ replaceAll (",", "") trim)
     trace("Generated Address Lines: %s".format(addressLines))
-    val shortName = "%s Business Address".format(name)
+    val shortName = name
     val address = addressLines mkString ("", ",", "")
     debug("Generating Address (%s) from: %s".format(shortName, address))
 
