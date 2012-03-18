@@ -90,7 +90,7 @@ class AddEditOrder extends StatefulValidatingErrorDisplaySnippet with Transactio
       renderSubmitAndCancel()
   }
 
-  override val validationItems: Seq[ValidationItem] = Seq(ValidationItem(customerPoRef, "Customer P/O Reference"),
+  override def validationItems(): Seq[ValidationItem] = Seq(ValidationItem(customerPoRef, "Customer P/O Reference"),
     ValidationItem(dataHolder.lineItems, "Selected Line Items"))
 
   override def checkBoxSelected(selected: Boolean, line: LineItem) = {

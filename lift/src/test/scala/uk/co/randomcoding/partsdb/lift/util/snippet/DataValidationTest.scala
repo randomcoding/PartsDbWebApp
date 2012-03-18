@@ -13,7 +13,7 @@ import uk.co.randomcoding.partsdb.core.contact._
  */
 class DataValidationTest extends FunSuite with ShouldMatchers {
   private val validation = (items: Seq[ValidationItem]) => new DataValidation {
-    override val validationItems = items
+    override def validationItems() = items
   }
 
   private def validate(items: Seq[ValidationItem]) = validation(items).performValidation()

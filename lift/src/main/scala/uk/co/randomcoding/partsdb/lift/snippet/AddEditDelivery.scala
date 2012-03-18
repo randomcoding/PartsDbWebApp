@@ -8,7 +8,7 @@ import scala.xml.Text
 import com.foursquare.rogue.Rogue._
 
 import uk.co.randomcoding.partsdb.core.address.Address
-import uk.co.randomcoding.partsdb.core.document.{LineItem, DocumentType, Document, DeliveryNote}
+import uk.co.randomcoding.partsdb.core.document.{ LineItem, DocumentType, Document, DeliveryNote }
 import uk.co.randomcoding.partsdb.core.transaction.Transaction
 import uk.co.randomcoding.partsdb.lift.model.document.DeliveryNoteDataHolder
 import uk.co.randomcoding.partsdb.lift.util.DateHelpers._
@@ -20,7 +20,7 @@ import net.liftweb.common.Full
 import net.liftweb.http.SHtml._
 import net.liftweb.http.js.JsCmds.Noop
 import net.liftweb.http.js.JsCmd
-import net.liftweb.http.{WiringUI, S}
+import net.liftweb.http.{ WiringUI, S }
 import net.liftweb.util.Helpers._
 
 /**
@@ -53,7 +53,7 @@ class AddEditDelivery extends StatefulValidatingErrorDisplaySnippet with Transac
 
     val deliveredToAddresses = deliveryNotesForCustomer map (_.deliveryAddress.get) sortBy (_.shortName.get)
 
-    if (customerAddress isDefined) customerAddress.get :: deliveredToAddresses else deliveredToAddresses
+    if (customerAddress isDefined) (customerAddress.get :: deliveredToAddresses).distinct else deliveredToAddresses
   }
 
   private[this] lazy val addressSelection = (None, "Select Delivery Address") :: (availableAddresses map (addr => (Some(addr), addr.shortName.get)))

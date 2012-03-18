@@ -42,7 +42,8 @@ class AddEditVehicle extends StatefulSnippet with ErrorDisplay with SubmitAndCan
       renderSubmitAndCancel()
   }
 
-  override val validationItems = Seq(ValidationItem(vehicleName, "Vehicle Name"))
+  override def validationItems() = Seq(ValidationItem(vehicleName, "Vehicle Name"))
+
   /**
    * Method called when the submit button is pressed.
    *

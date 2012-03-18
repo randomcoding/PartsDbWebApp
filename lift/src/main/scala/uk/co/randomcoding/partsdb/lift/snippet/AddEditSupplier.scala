@@ -78,7 +78,6 @@ class AddEditSupplier extends StatefulSnippet with AddressSnippet with ContactDe
   }
 
   def render = {
-
     "#formTitle" #> Text("Add Supplier") &
       "#nameEntry" #> styledText(supplierName, supplierName = _) &
       renderEditableAddress() &
@@ -92,7 +91,7 @@ class AddEditSupplier extends StatefulSnippet with AddressSnippet with ContactDe
   private[this] var contacts: Option[ContactDetails] = None
 
   override def processSubmit(): JsCmd = {
-    address = addressFromInput(supplierName)
+    address = addressFromInput("%s Business Address".format(supplierName))
     contacts = Some(contactDetailsFromInput)
 
     performValidation() match {
@@ -114,9 +113,10 @@ class AddEditSupplier extends StatefulSnippet with AddressSnippet with ContactDe
     }
   }
 
-  override val validationItems = genValidationItems
-
-  private[this] def genValidationItems = Seq(ValidationItem(address, "Business Address"),
+  /**
+   * Provides validation for the Supplier details only
+   */
+  override def validationItems() = Seq(ValidationItem(address, "Business Address"),
     ValidationItem(contacts, "Contact Details"),
     ValidationItem(supplierName, "Supplier Name"))
 

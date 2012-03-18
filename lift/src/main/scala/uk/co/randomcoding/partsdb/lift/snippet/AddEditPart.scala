@@ -64,7 +64,7 @@ class AddEditPart extends StatefulSnippet with ErrorDisplay with DataValidation 
    * On successful addition, this will (possibly display a dialogue and then) redirect to the main customers page
    */
 
-  override val validationItems = Seq(ValidationItem(partName, "Part Name"),
+  override def validationItems() = Seq(ValidationItem(partName, "Part Name"),
     ValidationItem(vehicle, "Vehicle Name"))
 
   override def processSubmit() = {
