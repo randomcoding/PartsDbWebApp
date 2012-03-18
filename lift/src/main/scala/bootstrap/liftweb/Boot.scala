@@ -35,15 +35,24 @@ class Boot extends Loggable {
     // Uncomment this to add new users required for user access initialisation
     //addBootstrapUsers
 
-    /* 
-     * Uncomment this line to drop all data except the user data
-     * 
-     * If you want to exclude any collection from being dropped simply add its name to the parameter list
-     * 
-     * Available collections are:
-     * addresss, contactdetailss, customers, documentids, documents, parts, suppliers, transactions, users, vehicles
+    /*
+     * The names of the collections in use by the database
      */
-    resetCollections("users")
+    val appCollections = Seq("addresss", "contactdetailss", "customers", "documentids", "documents", "parts", "suppliers", "transactions", "users", "vehicles")
+
+    /*
+     * Name of collections not to drop during a call to resetCollections(String*)
+     */
+    val dontDrop = Seq("users")
+
+    /* 
+     * Uncomment this line to drop all data from the named collections
+     * 
+     * If you want to exclude any collection from being dropped simply add its name to the dontDtop Seq
+     * 
+     * Available collections are shown in the appCollections Seq
+     */
+    //resetCollections((appCollections filterNot (dontDrop contains _): _*))
 
     val userLoggedIn = If(() => Session.currentUser.get match {
       case (s: String, r: Role) => r == USER
@@ -146,12 +155,13 @@ class Boot extends Loggable {
     }
   }
 
-  private[this] def resetCollections(excludedCollections: String*) = {
-    val dontDrop = "system.indexes" :: excludedCollections.toList
+  private[this] def resetCollections(collections: String*) = {
     MongoDB.getDb(DefaultMongoIdentifier) match {
       case Some(db) => {
-        db.getCollectionNames() filterNot (dontDrop contains _) foreach (collection => {
+        val dbCollections: Set[String] = db.getCollectionNames().toSet
+        collections filter (dbCollections contains _) foreach (collection => {
           logger.info("Dropping Collection: %s".format(collection))
+          db.getCollection(collection).getFullName()
           db.getCollection(collection).drop()
           if (db.getCollectionNames() contains collection) logger.error("Failed to drop collection: %s".format(collection))
         })
