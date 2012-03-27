@@ -21,6 +21,9 @@ trait LineItemsDataHolder {
    */
   val itemsPreTaxSubTotal = lineItemsCell.lift(_.foldLeft(0.0d)(_ + _.lineCost))
 
+  /**
+   * Add a new [[uk.co.randomcoding.partsdb.core.document.LineItem]] to the currently stored [[uk.co.randomcoding.partsdb.core.document.LineItem]]s
+   */
   def addLineItem(lineItem: LineItem): Unit = {
     lineItemsCell.atomicUpdate(items => items.find(_.partId.get == lineItem.partId.get) match {
       case None => items :+ lineItem
@@ -28,25 +31,50 @@ trait LineItemsDataHolder {
     })
   }
 
+  /**
+   * Remove a [[uk.co.randomcoding.partsdb.core.document.LineItem]] from the currently stored [[uk.co.randomcoding.partsdb.core.document.LineItem]]s
+   *
+   * @param lineItem The [[uk.co.randomcoding.partsdb.core.document.LineItem]] to remove
+   */
   def removeLineItem(lineItem: LineItem): Unit = lineItemsCell.atomicUpdate(_.filterNot(_ == lineItem))
 
+  /**
+   * Remove a [[uk.co.randomcoding.partsdb.core.document.LineItem]] from the currently stored [[uk.co.randomcoding.partsdb.core.document.LineItem]]s identified by
+   * the [[uk.co.randomcoding.partsdb.core.part.Part]] that the line item is for.
+   *
+   * @param part The [[uk.co.randomcoding.partsdb.core.part.Part]] that identifies the [[uk.co.randomcoding.partsdb.core.document.LineItem]]s to remove
+   */
   def removeItem(part: Part) = {
     lineItemsCell.atomicUpdate(_.filterNot(_.partId.get == part.id.get))
     renumberLines
   }
 
-  def addOrUpdateLineItem(partCost: Double, markup: Double, part: Part, q: Int) {
+  /**
+   * Add a new [[uk.co.randomcoding.partsdb.core.document.LineItem]]. Alternatively, if there is already a [[uk.co.randomcoding.partsdb.core.document.LineItem]] for the
+   * specified [[uk.co.randomcoding.partsdb.core.part.Part]] then that item will be updated instead.
+   *
+   * @param partCost The cost of the part in the line
+   * @param markup The percentage (as a Double, 0.0 - 1.0)
+   * @param part The [[uk.co.randomcoding.partsdb.core.part.Part]] for the line
+   * @param quantity The number of parts in this line.
+   */
+  def addOrUpdateLineItem(partCost: Double, markup: Double, part: Part, quantity: Int) {
     lineItemsCell.atomicUpdate(items => items.find(_.partId.get == part.id.get) match {
       case Some(lineItem) => items.map(li => {
         li.partId.get == part.id.get match {
-          case true => updateLineItem(li, q, partCost, markup)
+          case true => updateLineItem(li, quantity, partCost, markup)
           case false => li
         }
       })
-      case _ => items :+ LineItem.create(items.size, part, q, partCost, markup)
+      case _ => items :+ LineItem.create(items.size, part, quantity, partCost, markup)
     })
   }
 
+  /**
+   * Renumbers the line items, starting from 0.
+   *
+   * This preserves the current order, only the line numbers are changed.
+   */
   private def renumberLines = lineItemsCell.atomicUpdate(items => {
     var index = 0
     items sortBy (_.lineNumber.get) map (item => {
@@ -56,7 +84,10 @@ trait LineItemsDataHolder {
     })
   })
 
-  private val updateLineItem = (li: LineItem, quant: Int, cost: Double, markupValue: Double) => li.quantity(quant).basePrice(cost).markup(markupValue)
+  /**
+   * Update the quantity, cost and markup of a line item
+   */
+  private[this] val updateLineItem = (li: LineItem, quant: Int, cost: Double, markupValue: Double) => li.quantity(quant).basePrice(cost).markup(markupValue)
 
   /**
    * Gets the current line items, sorted by line number
