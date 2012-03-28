@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html; charset=UTF-8" http-equiv="content-type" />
+<title>C.A.T.9 - Add Delivery Note</title>
+</head>
+<body class="lift:content_id=main">
+  <div id="main" class="lift:surround?with=default;at=content">
+    <script class="lift:js/JsScripts.accordionScript?eager_eval=true"></script>
+    <div class="lift:AddEditInvoice?form=POST&eager_eval=true">
+      <div style="width: 98%" align="center"></div>
+      <div class="form-title">
+        <span id="formTitle">Title</span>
+      </div>
+      <div class="column span-5 form-label">Transaction Name:</div>
+      <div class="column span-14 last">
+        <span id="transactionName">Transaction Name</span>
+      </div>
+      <div class="column span-19 last"></div>
+      <div class="column span-5 form-label">Customer:</div>
+      <div class="column span-14 last">
+        <span id="customerName">Customer Name Here</span>
+      </div>
+      <div class="column span-19 last"></div>
+      <div class="form-label column span-19 last">Invoice Details:</div>
+      <div class="column span-19 last form-label">Invoice To</div>
+      <div class="lift:embed?what=_select_or_add_address">Invoice Address Selection</div>
+      <div class="column span-19 last form-label">Select Deliveries to Invoice</div>
+      <div class="column span-19 last">
+        <div class="column span-19 last">
+          <div id="availableDelivery Notes">
+            <div class="column span-1">
+              <span id="selected">Checkbox for Selected or Not</span>
+            </div>
+            <div class="column span-4">
+              <span class="form-label">Delivery Id:&nbsp;&nbsp;</span><span id="deliveryNoteId">Delivery Note Id Display</span>
+            </div>
+            <div class="column span-4">
+              <span class="form-label">Raised On:&nbsp;&nbsp;</span><span id="raisedOn">Raised on Display</span>
+            </div>
+            <div class="column span-4">
+              <span class="form-label">Value:&nbsp;&nbsp;</span><span id="totalDeliveryValue">Delivery Total Value Display</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <hr class="space" />
+      <div class="column span-19 last form-label">Invoiced Items</div>
+      <div class="lift:embed?what=_line_items_and_summary">Line Items and Total Summary Here</div>
+      <div class="column span-19 last form-label" align="right">
+        <table>
+          <tr>
+            <td style="text-align: right;" class="form-label">Confirm you wish to close Delivery Notes: <span
+              id="deliveryNoteIds">Delivery Note Ids</span></td>
+            <td><span id="confirmCloseOrder">Checkbox to confirm closing of invoiced delivery notes on
+                submit</span></td>
+            <td>&nbsp;</td>
+          </tr>
+        </table>
+      </div>
+      <div class="lift:embed?what=_submit_cancel">Submit and Cancel Buttons Here</div>
+    </div>
+  </div>
+</body>
+</html>
+
