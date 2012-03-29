@@ -26,8 +26,6 @@ class InvoiceDataHolder extends DocumentDataHolder with LineItemsDataHolder {
 
   private[this] val deliveryNotesCell = ValueCell[Seq[Document]](Nil)
 
-  def deliveryNoteIds = deliveryNotesCell.lift(_ map (_ documentNumber) mkString ", ")
-
   // Accessor functions
 
   /**
@@ -40,12 +38,33 @@ class InvoiceDataHolder extends DocumentDataHolder with LineItemsDataHolder {
    */
   def invoiceAddress_=(addr: Option[Address]) = invoiceAddressCell.set(addr)
 
-  def deliveryNotes = deliveryNotesCell.get
-
+  /**
+   * Add a new delivery note to the current delivery notes.
+   *
+   * Also updates the carriage total and line items being invoiced
+   */
   def addDeliveryNote(deliveryNote: Document): Unit = deliveryNotesCell.atomicUpdate(deliveryNotes => deliveryNotes find (_.id.get == deliveryNote.id.get) match {
     case Some(dn) => deliveryNotes
-    case None => deliveryNotes :+ deliveryNote
+    case None => {
+      deliveryNote.lineItems.get foreach (addLineItem)
+      carriage = carriageValue + deliveryNote.carriage.get
+      deliveryNotes :+ deliveryNote
+    }
   })
 
-  def removeDeliveryNote(deliveryNote: Document): Unit = deliveryNotesCell atomicUpdate (_ filterNot (_ == deliveryNote))
+  /**
+   * Remove a delivery note from the current delivery notes.
+   *
+   * Also updates the carriage total and line items being invoiced
+   */
+  def removeDeliveryNote(deliveryNote: Document): Unit = {
+    deliveryNotesCell atomicUpdate (_ filterNot (_ == deliveryNote))
+    deliveryNote.lineItems.get foreach (removeLineItem)
+    carriage = carriageValue - deliveryNote.carriage.get
+  }
+
+  /**
+   * Get a comma separated list of the current delivery note `documentNumber`s
+   */
+  def deliveryNoteIds = deliveryNotesCell.lift(_ map (_ documentNumber) mkString ", ")
 }

@@ -139,20 +139,12 @@ class AddEditInvoice extends StatefulValidatingErrorDisplaySnippet with Transact
     }*/
   }
 
-  override def validationItems = Seq(ValidationItem(dataHolder.invoiceAddress, "Invoice Address")) //, ValidationItem(dataHolder.selectedOrder, "Selected Order"))
+  override def validationItems = Seq(ValidationItem(dataHolder.invoiceAddress, "Invoice Address"), ValidationItem(dataHolder.invoiceAddress, "Invoice Address"))
 
   private[this] def checkBoxSelected(selected: Boolean, deliveryNote: Document): JsCmd = {
     selected match {
-      case true => {
-        deliveryNote.lineItems.get foreach (dataHolder.addLineItem(_))
-        dataHolder.carriage = dataHolder.carriageValue + deliveryNote.carriage.get
-        dataHolder addDeliveryNote deliveryNote
-      }
-      case false => {
-        deliveryNote.lineItems.get foreach (dataHolder.removeLineItem(_))
-        dataHolder.carriage = dataHolder.carriageValue - deliveryNote.carriage.get
-        dataHolder removeDeliveryNote deliveryNote
-      }
+      case true => dataHolder addDeliveryNote deliveryNote
+      case false => dataHolder removeDeliveryNote deliveryNote
     }
     debug("Selected Line Items: %s".format(dataHolder.lineItems.mkString("[", ", ", "]")))
     refreshLineItemDisplay()
