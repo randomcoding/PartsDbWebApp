@@ -20,6 +20,7 @@ import net.liftweb.http.js.JsCmd
 import net.liftweb.http.{ WiringUI, S }
 import net.liftweb.util.Helpers._
 import uk.co.randomcoding.partsdb.lift.model.document.InvoiceDataHolder
+import uk.co.randomcoding.partsdb.lift.util.SnippetDisplayHelpers._
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
@@ -36,8 +37,6 @@ class AddEditInvoice extends StatefulValidatingErrorDisplaySnippet with Transact
   private[this] lazy val deliveries = documentsOfType(DocumentType.DeliveryNote).toList
 
   private[this] lazy val deliveryNoteSelection = (None, "Select Order") :: (deliveries map (deliveryNote => (Some(deliveryNote), textForDeliveryNote(deliveryNote))))
-
-  //private[this] val itemsOrdered = orders flatMap (_.lineItems.get)
 
   private[this] var selectedLineItems: Seq[LineItem] = Seq.empty
 
@@ -77,26 +76,45 @@ class AddEditInvoice extends StatefulValidatingErrorDisplaySnippet with Transact
   }
 
   def render = {
-    //dataHolder.deliveredItems = previousDeliveryNotes flatMap (_.lineItems.get)
-
     "#formTitle" #> Text("Create Delivery Note") &
       renderTransactionDetails() &
       "#addressSelect" #> styledAjaxObjectSelect(addressSelection, None, updateAjaxValue[Option[Address]](dataHolder.invoiceAddress = _)) &
+      "#availableDeliveryNotes *" #> renderAvailableDeliveryNotes(documentsOfType(DocumentType.DeliveryNote)) &
       renderEditableAddress() &
       renderAllLineItems() &
       renderDocumentTotals() &
       "#confirmCloseDeliveryNotes" #> styledCheckbox(false, confirmCloseDeliveryNotes = _) &
+      "#deliveryNoteIds" #> WiringUI.asText(dataHolder.deliveryNoteIds) &
       renderSubmitAndCancel()
   }
 
-  private[this] val itemsToBeDelivered = () => dataHolder.lineItems match {
-    case Nil => Seq("Please Select at least one item to be delivered")
+  private[this] def renderAvailableDeliveryNotes(deliveryNotes: Seq[Document]) = {
+    deliveryNotes map (deliveryNote => {
+      "#selected" #> styledAjaxCheckbox(false, checkBoxSelected(_, deliveryNote)) &
+        "#deliveryNoteId" #> Text(deliveryNote.documentNumber) &
+        "#raisedOn" #> Text(dateString(deliveryNote.createdOn.get)) &
+        "#totalDeliveryValue" #> Text(currencyFormat(deliveryNoteValue(deliveryNote)))
+    })
+  }
+
+  private[this] def deliveryNoteValue(deliveryNote: Document): Double = {
+    val linesCost = deliveryNote.lineItems.get map (_.lineCost) sum
+    val vatRate = 0.2d
+
+    (linesCost + deliveryNote.carriage.get) * vatRate
+  }
+
+  private[this] val itemsToBeInvoiced = () => dataHolder.lineItems match {
+    case Nil => Seq("Please Select at least one Delivery Note to be Invoiced")
     case _ => Nil
   }
 
-  private[this] val confirmOrderClose = () => if (confirmCloseDeliveryNotes) Nil else Seq("Please confirm it is ok to close the Order before generating this Delivery Note")
+  private[this] val checkConfirmCloseDeliveryNotes = () => confirmCloseDeliveryNotes match {
+    case true => Nil
+    case false => Seq("Please confirm it is ok to close the Order before generating this Delivery Note")
+  }
 
-  override def processSubmit(): JsCmd = performValidation(itemsToBeDelivered, confirmOrderClose) match {
+  override def processSubmit(): JsCmd = performValidation(itemsToBeInvoiced, checkConfirmCloseDeliveryNotes) match {
     case Nil => generateInvoice()
     case errors => {
       displayErrors(errors: _*)
@@ -121,17 +139,20 @@ class AddEditInvoice extends StatefulValidatingErrorDisplaySnippet with Transact
     }*/
   }
 
-  /*private[this] val updateOrderValue = (value: Option[Document]) => {
-    dataHolder selectedOrder = value
-    dataHolder.lineItemsCell.set(Nil)
-  }*/
-
   override def validationItems = Seq(ValidationItem(dataHolder.invoiceAddress, "Invoice Address")) //, ValidationItem(dataHolder.selectedOrder, "Selected Order"))
 
-  def checkBoxSelected(selected: Boolean, line: LineItem): JsCmd = {
+  private[this] def checkBoxSelected(selected: Boolean, deliveryNote: Document): JsCmd = {
     selected match {
-      case true => dataHolder.addLineItem(line)
-      case false => dataHolder.removeLineItem(line)
+      case true => {
+        deliveryNote.lineItems.get foreach (dataHolder.addLineItem(_))
+        dataHolder.carriage = dataHolder.carriageValue + deliveryNote.carriage.get
+        dataHolder addDeliveryNote deliveryNote
+      }
+      case false => {
+        deliveryNote.lineItems.get foreach (dataHolder.removeLineItem(_))
+        dataHolder.carriage = dataHolder.carriageValue - deliveryNote.carriage.get
+        dataHolder removeDeliveryNote deliveryNote
+      }
     }
     debug("Selected Line Items: %s".format(dataHolder.lineItems.mkString("[", ", ", "]")))
     refreshLineItemDisplay()

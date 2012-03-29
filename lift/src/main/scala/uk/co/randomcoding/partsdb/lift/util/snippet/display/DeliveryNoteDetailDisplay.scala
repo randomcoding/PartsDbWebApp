@@ -35,6 +35,6 @@ object DeliveryNoteDetailDisplay extends DocumentTotalsDisplay {
       "#billingAddressCountry" #> styledText(addressCountry, (s: String) => (), readonly) &
       "#lineItems" #> LineItemDisplay(deliveryNote.lineItems.get) &
       renderDocumentTotals(deliveryNote) &
-      "#raiseInvoice" #> link("/app/invoice?transactionId=%sdeliveryId=%s".format(transactionId, deliveryNote.id.get.toString), () => (), Text("Raise Invoice"))
+      "#raiseInvoice" #> link("/app/invoice?transactionId=%s&deliveryId=%s".format(transactionId, deliveryNote.id.get.toString), () => (), Text("Raise Invoice"))
   })
 }

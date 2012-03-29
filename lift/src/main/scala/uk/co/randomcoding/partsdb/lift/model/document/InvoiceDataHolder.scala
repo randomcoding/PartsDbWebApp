@@ -24,6 +24,10 @@ class InvoiceDataHolder extends DocumentDataHolder with LineItemsDataHolder {
 
   private[this] val invoiceAddressCell = ValueCell[Option[Address]](None)
 
+  private[this] val deliveryNotesCell = ValueCell[Seq[Document]](Nil)
+
+  def deliveryNoteIds = deliveryNotesCell.lift(_ map (_ documentNumber) mkString ", ")
+
   // Accessor functions
 
   /**
@@ -35,4 +39,13 @@ class InvoiceDataHolder extends DocumentDataHolder with LineItemsDataHolder {
    * Set the delivery address cell value
    */
   def invoiceAddress_=(addr: Option[Address]) = invoiceAddressCell.set(addr)
+
+  def deliveryNotes = deliveryNotesCell.get
+
+  def addDeliveryNote(deliveryNote: Document): Unit = deliveryNotesCell.atomicUpdate(deliveryNotes => deliveryNotes find (_.id.get == deliveryNote.id.get) match {
+    case Some(dn) => deliveryNotes
+    case None => deliveryNotes :+ deliveryNote
+  })
+
+  def removeDeliveryNote(deliveryNote: Document): Unit = deliveryNotesCell atomicUpdate (_ filterNot (_ == deliveryNote))
 }
