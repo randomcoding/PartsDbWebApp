@@ -21,6 +21,7 @@ import net.liftweb.http.{ WiringUI, S }
 import net.liftweb.util.Helpers._
 import uk.co.randomcoding.partsdb.lift.model.document.InvoiceDataHolder
 import uk.co.randomcoding.partsdb.lift.util.SnippetDisplayHelpers._
+import uk.co.randomcoding.partsdb.core.document.Invoice
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
@@ -123,20 +124,20 @@ class AddEditInvoice extends StatefulValidatingErrorDisplaySnippet with Transact
   }
 
   private[this] def generateInvoice() = {
-    Noop
-    /*val deliveryNote = DeliveryNote.create(dataHolder.lineItems, dataHolder.carriageValue, dataHolder.poReference.get).deliveryAddress(dataHolder.deliveryAddress.get)
+    // TODO Add invoice address to document
+    val invoice = Invoice.create(dataHolder.lineItems, dataHolder.carriageValue, dataHolder.poRef.get)
 
-    deliveryNote.saveTheRecord() match {
-      case Full(dn) => {
-        Transaction.addDocument(transaction.get.id.get, dn.id.get)
-        Document.close(dataHolder.selectedOrder.get.id.get)
+    invoice saveTheRecord match {
+      case Full(inv) => {
+        Transaction.addDocument(transaction.get.id.get, inv.id.get)
+        dataHolder.deliveryNotes foreach (Document close _.id.get)
         S redirectTo "/app/display/customer?id=%s".format(transaction.get.customer.get.toString)
       }
       case _ => {
-        displayError("Failed To create Delivery Note. Please send an Error Report")
+        displayError("Failed To create Invoice. Please send an Error Report")
         Noop
       }
-    }*/
+    }
   }
 
   override def validationItems = Seq(ValidationItem(dataHolder.invoiceAddress, "Invoice Address"), ValidationItem(dataHolder.invoiceAddress, "Invoice Address"))

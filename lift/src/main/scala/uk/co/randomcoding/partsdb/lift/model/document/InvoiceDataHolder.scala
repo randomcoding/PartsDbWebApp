@@ -67,4 +67,14 @@ class InvoiceDataHolder extends DocumentDataHolder with LineItemsDataHolder {
    * Get a comma separated list of the current delivery note `documentNumber`s
    */
   def deliveryNoteIds = deliveryNotesCell.lift(_ map (_ documentNumber) mkString ", ")
+
+  /**
+   * Get a list of the customer P/O numbers from the currently selected delivery notes as a comma separated list
+   */
+  def poRef = deliveryNotesCell.lift(_ map (_.customerPoReference.get) mkString ", ")
+
+  /**
+   * Get the currently selected delivery notes
+   */
+  def deliveryNotes = deliveryNotesCell.get
 }
