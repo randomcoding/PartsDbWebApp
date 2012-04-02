@@ -23,7 +23,7 @@ import net.liftweb.util.CssSel
 object DeliveryNoteDetailDisplay extends DocumentTotalsDisplay {
   def apply(orders: Seq[Document], transactionId: String): Seq[CssSel] = orders map (deliveryNote => {
     val addressLabel = "Delivery Address"
-    val (addressText, addressCountry) = deliveryNote.deliveryAddress.valueBox match {
+    val (addressText, addressCountry) = deliveryNote.documentAddress.valueBox match {
       case Full(addr) => (addr.addressText.get, addr.country.get)
       case _ => ("No Delivery Address", "No Delivery Address")
     }

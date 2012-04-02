@@ -70,11 +70,19 @@ class Document private () extends MongoRecord[Document] with ObjectIdPk[Document
   object customerPoReference extends StringField(this, 50)
 
   /**
-   * The [[uk.co.randomcoding.partsdb.core.address.Address]] to which delivery is to be made.
-   *
-   * This will be set in the Delivery Note stage
+   * The [[uk.co.randomcoding.partsdb.core.address.Address]] to which the document is to be delivered/sent
    */
-  object deliveryAddress extends BsonRecordField(this, Address)
+  object documentAddress extends BsonRecordField(this, Address)
+
+  /**
+   * The delivery notes that are invoiced in this Document (invoices only)
+   */
+  object invoicedDeliveryNotes extends BsonRecordListField(this, Document)
+
+  /**
+   * Get the Customer P/O Reference numbers of the invoiced delivery notes.
+   */
+  def invoicedCustomerOrderReferences = invoicedDeliveryNotes.get map (_.customerPoReference.get) distinct
 
   /**
    * The printable identifier for this document.
@@ -116,7 +124,7 @@ object Document extends Document with MongoMetaRecord[Document] {
    *
    * The `editable` field is set to true
    */
-  def create(items: Seq[LineItem], docType: DocumentType.DocType, carriage: Double, customerPoRef: String = ""): Document = {
+  def create(items: Seq[LineItem], docType: DocumentType.DocType, carriage: Double, customerPoRef: String = "", invoicedDeliveryNotes: Seq[Document] = Nil): Document = {
     require(items.nonEmpty, "Line Items Cannot be empty")
     Document.createRecord.editable(true).documentType(docType).lineItems(items.toList).createdOn(new Date).carriage(carriage).customerPoReference(customerPoRef)
   }
@@ -198,21 +206,21 @@ sealed abstract class DocumentInstance(docType: DocumentType.DocType) {
    *
    * This delegates to [[uk.co.randomcoding.partsdb.core.document.DocumentInstance#create(Seq[LineItem],Double,String)]]
    */
-  def apply(items: Seq[LineItem], carriage: Double, customerPoRef: String = ""): Document = create(items, carriage, customerPoRef)
+  def apply(items: Seq[LineItem], carriage: Double, customerPoRef: String = "", invoicedDeliveryNotes: Seq[Document] = Nil): Document = create(items, carriage, customerPoRef, invoicedDeliveryNotes)
 
   /**
    * Convenience method to create a new document instance.
    *
    * This delegates to [[uk.co.randomcoding.partsdb.core.document.Document#create(Seq[LineItem],DocumentType.DocType,Double,String)]]
    */
-  def create(items: Seq[LineItem], carriage: Double, customerPoRef: String = ""): Document = Document.create(items, docType, carriage, customerPoRef)
+  def create(items: Seq[LineItem], carriage: Double, customerPoRef: String = "", invoicedDeliveryNotes: Seq[Document] = Nil): Document = Document.create(items, docType, carriage, customerPoRef, invoicedDeliveryNotes)
 
   /**
    * Convenience method to create a new document instance and add it to the database
    *
    * This delegates to [[uk.co.randomcoding.partsdb.core.document.Document#add(Seq[LineItem],DocumentType.DocType,Double,String)]]
    */
-  def add(items: Seq[LineItem], carriage: Double, customerPoRef: String = ""): Option[Document] = Document.add(create(items, carriage, customerPoRef))
+  def add(items: Seq[LineItem], carriage: Double, customerPoRef: String = "", invoicedDeliveryNotes: Seq[Document] = Nil): Option[Document] = Document.add(create(items, carriage, customerPoRef, invoicedDeliveryNotes))
 }
 
 /**

@@ -47,9 +47,9 @@ class AddEditInvoice extends StatefulValidatingErrorDisplaySnippet with Transact
       case _ => (Nil, None)
     }
 
-    val invoiceToAddresses = customerDocumentsOfType(customerTransactions, DocumentType.Invoice) map (_.deliveryAddress.get) sortBy (_.shortName.get)
+    val invoiceToAddresses = customerDocumentsOfType(customerTransactions, DocumentType.Invoice) map (_.documentAddress.get) sortBy (_.shortName.get)
 
-    val deliveredToAddresses = customerDocumentsOfType(customerTransactions, DocumentType.DeliveryNote) map (_.deliveryAddress.get) sortBy (_.shortName.get)
+    val deliveredToAddresses = customerDocumentsOfType(customerTransactions, DocumentType.DeliveryNote) map (_.documentAddress.get) sortBy (_.shortName.get)
 
     val storedAddresses = (invoiceToAddresses ++ deliveredToAddresses).distinct toList
 
@@ -124,11 +124,9 @@ class AddEditInvoice extends StatefulValidatingErrorDisplaySnippet with Transact
   }
 
   private[this] def generateInvoice() = {
-    // TODO Add invoice address to document
-    val invoice = Invoice.create(dataHolder.lineItems, dataHolder.carriageValue, dataHolder.poRef.get)
-
-    invoice saveTheRecord match {
-      case Full(inv) => {
+    // TODO Add invoice address to document?
+    Invoice.add(dataHolder.lineItems, dataHolder.carriageValue, invoicedDeliveryNotes = dataHolder.deliveryNotes) match {
+      case Some(inv) => {
         Transaction.addDocument(transaction.get.id.get, inv.id.get)
         dataHolder.deliveryNotes foreach (Document close _.id.get)
         S redirectTo "/app/display/customer?id=%s".format(transaction.get.customer.get.toString)
