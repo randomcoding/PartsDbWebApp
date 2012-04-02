@@ -77,7 +77,7 @@ class AddEditInvoice extends StatefulValidatingErrorDisplaySnippet with Transact
   }
 
   def render = {
-    "#formTitle" #> Text("Create Delivery Note") &
+    "#formTitle" #> Text("Raise Invoice") &
       renderTransactionDetails() &
       "#addressSelect" #> styledAjaxObjectSelect(addressSelection, None, updateAjaxValue[Option[Address]](dataHolder.invoiceAddress = _)) &
       "#availableDeliveryNotes *" #> renderAvailableDeliveryNotes(documentsOfType(DocumentType.DeliveryNote)) &
@@ -124,8 +124,8 @@ class AddEditInvoice extends StatefulValidatingErrorDisplaySnippet with Transact
   }
 
   private[this] def generateInvoice() = {
-    // TODO Add invoice address to document?
-    Invoice.add(dataHolder.lineItems, dataHolder.carriageValue, invoicedDeliveryNotes = dataHolder.deliveryNotes) match {
+    val invoice = Invoice.create(dataHolder.lineItems, dataHolder.carriageValue, invoicedDeliveryNotes = dataHolder.deliveryNotes).documentAddress(dataHolder.invoiceAddress.get)
+    Document.add(invoice) match {
       case Some(inv) => {
         Transaction.addDocument(transaction.get.id.get, inv.id.get)
         dataHolder.deliveryNotes foreach (Document close _.id.get)
