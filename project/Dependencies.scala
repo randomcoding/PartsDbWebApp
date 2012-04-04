@@ -32,7 +32,7 @@ object Dependencies {
 	
   val scalatest = "org.scalatest" %% "scalatest" % "1.6.1" % "test"
 
-  val groovy = "org.codehaus.groovy" % "groovy-all" % "1.8.4"
+  val groovy = "org.codehaus.groovy" % "groovy" % "1.8.6"
 
   // Dependency groups
   val testDeps = Seq(scalatest)

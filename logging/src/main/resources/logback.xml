@@ -8,6 +8,8 @@
 
   <logger name="bootstrap.liftweb.Boot" level="INFO"/>
   <logger name="uk.co.randomcoding" level="INFO"/>
+  
+  <logger name="uk.co.randomcoding.partsdb.lift.snippet.AddEditInvoice" level="DEBUG" />
 
   <root level="warn">
     <appender-ref ref="STDOUT" />
