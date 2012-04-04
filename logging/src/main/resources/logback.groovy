@@ -12,25 +12,43 @@
 
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder
 import ch.qos.logback.core.ConsoleAppender
+import ch.qos.logback.core.status.OnConsoleStatusListener
 
 import static ch.qos.logback.classic.Level.DEBUG
 import static ch.qos.logback.classic.Level.INFO
 import static ch.qos.logback.classic.Level.WARN
-import ch.qos.logback.core.status.OnConsoleStatusListener
 
 statusListener(OnConsoleStatusListener)
 
+def HOST=hostname;
+
 scan()
+
 appender("STDOUT", ConsoleAppender) {
   encoder(PatternLayoutEncoder) {
 	pattern = "%d{HH:mm:ss.SSS} %-5level %logger{10} - %msg%n"
   }
 }
+
+logger("*", WARN)
+
 logger("bootstrap.liftweb.Boot", INFO)
 logger("uk.co.randomcoding", INFO)
 
-if (${hostname} == "benjymouse") {
+// This seems to need to be ad warn level. If not then there is no log output at all from the startup process
+addWarn("Current Host Name: ${HOST}")
+
+def rootLogLevel=INFO;
+
+if (HOST.equalsIgnoreCase("benjymouse")) {
+	addInfo("Using logging configuration for ${HOST}")
 	logger("uk.co.randomcoding.partsdb.lift.snippet.AddEditInvoice", DEBUG)
+	rootLogLevel=INFO
+}
+else {
+	addInfo("Using default logging configuration")
 }
 
-root(WARN, ["STDOUT"])
+addInfo("Setting Root Logger to use ${rootLogLevel} level");
+
+root(rootLogLevel, ["STDOUT"])
