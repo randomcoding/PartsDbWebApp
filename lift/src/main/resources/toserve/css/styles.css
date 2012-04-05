@@ -64,6 +64,19 @@ a .ui-button {
 	font-variant: small-caps;
 }
 
+.form-subtitle {
+	font-size: x-large;
+	font-weight: bolder;
+	text-decoration:underline;
+	font-variant: small-caps;
+}
+
+.form-subtitle-no-ul {
+	font-size: x-large;
+	font-weight: bolder;
+	font-variant: small-caps;
+}
+
 .search-label {
 	text-align: left;
 }

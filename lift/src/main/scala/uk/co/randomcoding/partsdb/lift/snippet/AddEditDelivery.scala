@@ -51,7 +51,7 @@ class AddEditDelivery extends StatefulValidatingErrorDisplaySnippet with Transac
 
     val deliveryNotesForCustomer = customerTransactions flatMap (tr => Document where (_.id in tr.documents.get) and (_.documentType eqs DocumentType.DeliveryNote) fetch)
 
-    val deliveredToAddresses = deliveryNotesForCustomer map (_.deliveryAddress.get) sortBy (_.shortName.get)
+    val deliveredToAddresses = deliveryNotesForCustomer map (_.documentAddress.get) sortBy (_.shortName.get)
 
     if (customerAddress isDefined) (customerAddress.get :: deliveredToAddresses).distinct else deliveredToAddresses
   }
@@ -103,7 +103,7 @@ class AddEditDelivery extends StatefulValidatingErrorDisplaySnippet with Transac
   }
 
   private[this] def generateDeliveryNote() = {
-    val deliveryNote = DeliveryNote.create(dataHolder.lineItems, dataHolder.carriageValue, dataHolder.poReference.get).deliveryAddress(dataHolder.deliveryAddress.get)
+    val deliveryNote = DeliveryNote.create(dataHolder.lineItems, dataHolder.carriageValue, dataHolder.poReference.get).documentAddress(dataHolder.deliveryAddress.get)
 
     deliveryNote.saveTheRecord() match {
       case Full(dn) => {

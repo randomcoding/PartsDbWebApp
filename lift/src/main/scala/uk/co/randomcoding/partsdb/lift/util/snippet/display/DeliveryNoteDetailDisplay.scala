@@ -21,9 +21,9 @@ import net.liftweb.util.CssSel
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
 object DeliveryNoteDetailDisplay extends DocumentTotalsDisplay {
-  def apply(orders: Seq[Document], transactionId: String): Seq[CssSel] = orders map (deliveryNote => {
+  def apply(deliveryNotes: Seq[Document], transactionId: String): Seq[CssSel] = deliveryNotes map (deliveryNote => {
     val addressLabel = "Delivery Address"
-    val (addressText, addressCountry) = deliveryNote.deliveryAddress.valueBox match {
+    val (addressText, addressCountry) = deliveryNote.documentAddress.valueBox match {
       case Full(addr) => (addr.addressText.get, addr.country.get)
       case _ => ("No Delivery Address", "No Delivery Address")
     }
@@ -35,6 +35,6 @@ object DeliveryNoteDetailDisplay extends DocumentTotalsDisplay {
       "#billingAddressCountry" #> styledText(addressCountry, (s: String) => (), readonly) &
       "#lineItems" #> LineItemDisplay(deliveryNote.lineItems.get) &
       renderDocumentTotals(deliveryNote) &
-      "#raiseDelivery" #> link("/app/delivery?transactionId=%s".format(transactionId), () => (), Text("Raise Delivery Note"))
+      "#raiseInvoice" #> link("/app/invoice?transactionId=%s&deliveryId=%s".format(transactionId, deliveryNote.id.get.toString), () => (), Text("Raise Invoice"))
   })
 }
