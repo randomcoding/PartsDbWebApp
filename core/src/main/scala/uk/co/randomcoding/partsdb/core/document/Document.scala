@@ -57,7 +57,9 @@ class Document private () extends MongoRecord[Document] with ObjectIdPk[Document
   /**
    * The carriage for the items in the document
    */
-  object carriage extends DoubleField(this)
+  object carriage extends DoubleField(this) {
+    override val defaultValue = 0d
+  }
 
   /**
    * Is this `Document` editable?
@@ -91,6 +93,20 @@ class Document private () extends MongoRecord[Document] with ObjectIdPk[Document
    * E.g. INV002401
    */
   lazy val documentNumber = "%s%06d".format(documentType.get, docNumber.get)
+
+  /**
+   * Calculates the value of a document
+   *
+   * This is the sum of the value of the line items and the carriage plus the VAT on that total if applicable
+   */
+  def documentValue: Double = {
+    val lineItemCost = lineItems.get map (_.lineCost) sum
+    val vatRate = if (documentAddress.get.country.get == "United Kingdom") 0.2d else 0.0d
+
+    val subTotal = lineItemCost + carriage.get
+
+    subTotal + (subTotal * vatRate)
+  }
 
   /**
    * Documents are `equals` if they have the same `documentType`, `docNumber`
