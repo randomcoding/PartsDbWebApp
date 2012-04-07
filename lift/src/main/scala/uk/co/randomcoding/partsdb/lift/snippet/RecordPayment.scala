@@ -40,7 +40,28 @@ class RecordPayment extends StatefulSnippet with ErrorDisplay with DataValidatio
       "#paymentDateEntry" #> styledAjaxDatePicker("paymentDateEntry", paymentDateText, paymentDateText = _, datePickerAttrs = List("readonly" -> "true")) &
       "#cancel" #> styledAjaxButton("Cancel", () => S redirectTo "/app/") &
       "#submit" #> styledAjaxButton("Record Payment", recordAndClear) &
+      "#payInvoices" #> styledAjaxButton("Pay Invoices", commitPaymentsAndGoToCustomerPage) &
       "#allRecordedPayments *" #> renderCurrentPayments
+  }
+
+  private[this] val commitPaymentsAndGoToCustomerPage: () => JsCmd = () => {
+    val errors = for {
+      payment <- recentNewPayments
+      if Payment.add(payment) isEmpty
+    } yield {
+      "Failed to add payment %s to the database"
+    }
+
+    errors match {
+      case Nil => {
+        recentNewPayments.set(Nil)
+        S redirectTo "/app/show?entityType=Customer"
+      }
+      case errors => {
+        displayErrors(errors: _*)
+        Noop
+      }
+    }
   }
 
   private[this] def renderCurrentPayments = recentNewPayments map (payment => {
