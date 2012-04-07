@@ -51,7 +51,10 @@ object JsScripts {
 		buttonImageOnly: true,
         buttonText: "Select Date",
         showAnim: "fadeIn",
-        dateFormat: "dd MM yy"
+        dateFormat: "dd/mm/yy",
+        onSelect: function(dateText, inst) {
+          $("#datepicker").focus()
+        }
 	  });
     })"""))
 }
