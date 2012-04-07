@@ -4,14 +4,14 @@
 package uk.co.randomcoding.partsdb.lift.util
 
 import scala.xml.{ Text, NodeSeq }
+
 import uk.co.randomcoding.partsdb.lift.util.snippet.StyleAttributes.jqueryUiTextStyled
+
 import net.liftweb.common.Full
 import net.liftweb.http.SHtml._
 import net.liftweb.http.js.JsCmds.Noop
 import net.liftweb.http.js.JsCmd
 import net.liftweb.util.Helpers._
-import scala.xml.Attribute
-import scala.xml.Null
 
 /**
  * Provides common helper functions for generating elements for transformations
@@ -241,10 +241,27 @@ object TransformHelpers {
     span(datePickerTextBox, Noop, (outerSpanId :: attrs): _*)
   }
 
-  def styledAjaxDatePicker(outerElementId: String, initialText: String, func: ajaxWidgetCallback[String], attrs: List[ElemAttr] = Nil): NodeSeq = {
+  /**
+   * Creates a AJAX date picker widget that takes the default styling.
+   *
+   * The date picker will inherit its configuration from the javascript used to set up the widget.
+   * See [[uk.co.randomcoding.partsdb.lift.snippet.jsJsScripts#calendarScript]] for the ''default'' configuration
+   *
+   * This creates a `<span>` element around the actual data picker. This allows the outer `<span>` to inherit any properties from lift without affecting the date picker itself.
+   *
+   * @param outerElementId The value of the `id` attribute for the outer `<span>` element. This should be used to preserve the id of the `CssSel` transformed element from the page render.
+   * @param initialValue The initial value to display in the date box. This value is '''not''' validated.
+   * @param func The callback to invoke on form submission
+   * @param attrs Any additional attributes to apply to the outer `<span>` element of this widget
+   * @param datePickerAttrs Any additional attributes to apply to the date picker text entry widget
+   */
+  def styledAjaxDatePicker(outerElementId: String, initialValue: String, func: ajaxWidgetCallback[String], attrs: List[ElemAttr] = Nil, datePickerAttrs: List[ElemAttr] = Nil): NodeSeq = {
     val datepickerAttributes: List[ElemAttr] = List("id" -> "datepicker", "style" -> "width: 7em")
-    val textBox = styledAjaxText(initialText, func, attrs ::: datepickerAttributes)
-    <span>  textBox </span> % Attribute(None, "id", Text(outerElementId), Null)
+    val datePickerTextBox = styledAjaxText(initialValue, func, datepickerAttributes ::: datePickerAttrs)
+
+    val outerSpanId: ElemAttr = ("id" -> outerElementId)
+
+    span(datePickerTextBox, Noop, (outerSpanId :: attrs): _*)
   }
 
   /**
