@@ -13,7 +13,7 @@ import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
 import uk.co.randomcoding.partsdb.lift.util.snippet._
 import uk.co.randomcoding.partsdb.lift.util._
 import net.liftweb.common.{ Logger, Full }
-import net.liftweb.http.SHtml.ElemAttr.pairToBasic
+import net.liftweb.http.SHtml._
 import net.liftweb.http.S
 import net.liftweb.util.Helpers._
 import net.liftweb.http.StatefulSnippet
@@ -52,6 +52,11 @@ class DisplayCustomer extends StatefulSnippet with ErrorDisplay with AddressSnip
     case _ => ("", "", "", "", "")
   }
 
+  def customerId = initialCustomer match {
+    case Some(cust) => cust.id.get.toString
+    case _ => ""
+  }
+
   private def transactions() = initialCustomer match {
     case Some(cust) => Transaction where (_.customer eqs cust.id.get) fetch
     case _ => List.empty
@@ -68,6 +73,7 @@ class DisplayCustomer extends StatefulSnippet with ErrorDisplay with AddressSnip
       renderReadOnlyAddress() &
       "#paymentTermsEntry" #> styledText(paymentTermsText, paymentTermsText = _, List(readonly, ("style", "width: 2em"))) &
       renderReadOnlyContactDetails() &
+      "#recordPaymentButton" #> link("/app/recordPayment?customerId=%s".format(customerId), () => (), Text("Record Payment")) &
       "#documentTabs" #> generateTabs() &
       "#quotes" #> TransactionSummaryDisplay(currentTransactions filter (_.transactionState == "Quoted")) &
       "#orders" #> TransactionSummaryDisplay(currentTransactions filter (_.transactionState == "Ordered")) &
