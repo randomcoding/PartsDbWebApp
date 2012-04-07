@@ -42,8 +42,15 @@ def rootLogLevel=INFO;
 
 if (HOST.equalsIgnoreCase("benjymouse")) {
 	addInfo("Using logging configuration for ${HOST}")
-	logger("uk.co.randomcoding.partsdb.lift.snippet.AddEditInvoice", DEBUG)
-	rootLogLevel=INFO
+	logger("uk.co.randomcoding.partsdb.lift.snippet.RecordPayment", DEBUG)
+	logger("scala", WARN)
+	logger("java", WARN)
+	logger("org", WARN)
+	logger("net", WARN)
+	logger("com", WARN)
+	logger("ch", WARN)
+	
+	rootLogLevel=DEBUG
 }
 else {
 	addInfo("Using default logging configuration")
