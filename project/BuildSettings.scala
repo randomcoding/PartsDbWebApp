@@ -9,7 +9,7 @@ object BuildSettings {
   import Resolvers._
 
   val buildOrganization = "uk.co.randomcoding"
-  val buildVersion      = "0.2.0-SNAPSHOT"
+  val buildVersion      = "0.4.6-SNAPSHOT"
   val buildScalaVersion = "2.9.1"
 
   val buildSettings = Defaults.defaultSettings ++ Seq (

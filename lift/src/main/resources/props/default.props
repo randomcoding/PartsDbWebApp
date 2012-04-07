@@ -1,1 +1,2 @@
 mongo.db=MainDb
+app.version.number=0.4.6-SNAPSHOT
