@@ -4,14 +4,14 @@
 package uk.co.randomcoding.partsdb.lift.util
 
 import scala.xml.{ Text, NodeSeq }
-
 import uk.co.randomcoding.partsdb.lift.util.snippet.StyleAttributes.jqueryUiTextStyled
-
 import net.liftweb.common.Full
 import net.liftweb.http.SHtml._
 import net.liftweb.http.js.JsCmds.Noop
 import net.liftweb.http.js.JsCmd
 import net.liftweb.util.Helpers._
+import scala.xml.Attribute
+import scala.xml.Null
 
 /**
  * Provides common helper functions for generating elements for transformations
@@ -184,12 +184,20 @@ object TransformHelpers {
     ajaxButton(Text(buttonText), func, styledAttributes(linkAttrs): _*)
   }
 
-  def styledMultiSelectObj[T](values: Seq[(T, String)], initialValue: Seq[T], func: List[T] => Any, linkAttrs: List[ElemAttr] = Nil): NodeSeq = {
-    multiSelectObj(values, initialValue, func, styledAttributes(linkAttrs): _*)
+  /**
+   * Creates a multi select widget that maps display strings to objects that is styled to fit the app.
+   *
+   * @param values The ordered sequence of `(Display String -> Object)` to use to populate the select box
+   * @param initialValue The entries from `values` that are to be selected initially
+   * @param func The function `(Seq[T] => Any)` that should be invoked on form submit
+   * @param attrs The additional attributes to set for the generated html element
+   */
+  def styledMultiSelectObj[T](values: Seq[(T, String)], initialValue: Seq[T], func: Seq[T] => Any, attrs: List[ElemAttr] = Nil): NodeSeq = {
+    multiSelectObj(values, initialValue, func, styledAttributes(attrs): _*)
   }
 
   /**
-   * Create a checkbox with the default app styling
+   * Create an AJAX checkbox with the default app styling
    *
    * @param initialValue The initial selected state of the checkbox. true = checked
    * @param func The function to invoke on change
@@ -199,8 +207,44 @@ object TransformHelpers {
     ajaxCheckbox(initialValue, func, styledAttributes(attrs): _*)
   }
 
+  /**
+   * Create a checkbox that is styled to suit the app
+   *
+   * @param initialValue The initially selected state of the checkbox. `true => selected`
+   * @param func The function to invoke on form submit
+   * @param attrs Any additional attributes to apply to this widget
+   */
   def styledCheckbox(initialValue: Boolean, func: Boolean => Any, attrs: List[ElemAttr] = Nil): NodeSeq = {
     checkbox(initialValue, func, styledAttributes(attrs): _*)
+  }
+
+  /**
+   * Creates a date picker widget that takes the default styling.
+   *
+   * The date picker will inherit its configuration from the javascript used to set up the widget.
+   * See [[uk.co.randomcoding.partsdb.lift.snippet.jsJsScripts#calendarScript]] for the ''default'' configuration
+   *
+   * This creates a `<span>` element around the actual data picker. This allows the outer `<span>` to inherit any properties from lift without affecting the date picker itself.
+   *
+   * @param outerElementId The value of the `id` attribute for the outer `<span>` element. This should be used to preserve the id of the `CssSel` transformed element from the page render.
+   * @param initialValue The initial value to display in the date box. This value is '''not''' validated.
+   * @param func The callback to invoke on form submission
+   * @param attrs Any additional attributes to apply to the outer `<span>` element of this widget
+   * @param datePickerAttrs Any additional attributes to apply to the date picker text entry widget
+   */
+  def styledDatePicker(outerElementId: String, initialValue: String, func: standardWidgetCallback[String], attrs: List[ElemAttr] = Nil, datePickerAttrs: List[ElemAttr] = Nil): NodeSeq = {
+    val datepickerAttributes: List[ElemAttr] = List("id" -> "datepicker", "style" -> "width: 7em")
+    val datePickerTextBox = styledText(initialValue, func, datepickerAttributes ::: datePickerAttrs)
+
+    val outerSpanId: ElemAttr = ("id" -> outerElementId)
+
+    span(datePickerTextBox, Noop, (outerSpanId :: attrs): _*)
+  }
+
+  def styledAjaxDatePicker(outerElementId: String, initialText: String, func: ajaxWidgetCallback[String], attrs: List[ElemAttr] = Nil): NodeSeq = {
+    val datepickerAttributes: List[ElemAttr] = List("id" -> "datepicker", "style" -> "width: 7em")
+    val textBox = styledAjaxText(initialText, func, attrs ::: datepickerAttributes)
+    <span>  textBox </span> % Attribute(None, "id", Text(outerElementId), Null)
   }
 
   /**
