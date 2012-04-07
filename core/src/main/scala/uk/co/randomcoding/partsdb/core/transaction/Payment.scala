@@ -3,16 +3,12 @@
  */
 package uk.co.randomcoding.partsdb.core.transaction
 
-import net.liftweb.mongodb.record.BsonRecord
-import net.liftweb.mongodb.record.BsonMetaRecord
+import net.liftweb.mongodb.record.MongoRecord
+import net.liftweb.mongodb.record.MongoMetaRecord
 import net.liftweb.record.field.{ DoubleField, StringField }
-import net.liftweb.mongodb.record.field.DateField
+import net.liftweb.mongodb.record.field._
 import java.util.Date
 import uk.co.randomcoding.partsdb.core.document.Document
-import net.liftweb.mongodb.record.field.MongoRefListField
-import net.liftweb.mongodb.record.field.ObjectIdRefListField
-import net.liftweb.mongodb.record.field.ObjectIdRefField
-import net.liftweb.mongodb.record.field.BsonRecordListField
 
 /**
  * Associates a payment from a customer, as identified by a date and reference (from a statement or cheque)
@@ -20,7 +16,7 @@ import net.liftweb.mongodb.record.field.BsonRecordListField
  *
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
-class Payment private () extends BsonRecord[Payment] {
+class Payment private () extends MongoRecord[Payment] with ObjectIdPk[Payment] {
   def meta = Payment
 
   object paymentAmount extends DoubleField(this)
@@ -32,7 +28,7 @@ class Payment private () extends BsonRecord[Payment] {
   object paidInvoices extends BsonRecordListField(this, InvoicePayment)
 }
 
-object Payment extends Payment with BsonMetaRecord[Payment] {
+object Payment extends Payment with MongoMetaRecord[Payment] {
 
   def apply(paymentAmount: Double, paymentReference: String, paidInvoices: Seq[InvoicePayment], paymentDate: Date = new Date): Payment = create(paymentAmount, paymentReference, paidInvoices, paymentDate)
 
@@ -46,4 +42,6 @@ object Payment extends Payment with BsonMetaRecord[Payment] {
   def create(paymentAmount: Double, paymentReference: String, paidInvoices: Seq[InvoicePayment], paymentDate: Date = new Date): Payment = {
     Payment.createRecord.paymentAmount(paymentAmount).paymentDate(paymentDate).paidInvoices(paidInvoices.toList).paymentReference(paymentReference)
   }
+
+  def add(payment: Payment): Option[Payment] = payment.saveTheRecord()
 }
