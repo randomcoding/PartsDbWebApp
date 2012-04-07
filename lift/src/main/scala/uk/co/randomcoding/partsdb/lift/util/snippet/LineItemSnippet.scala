@@ -39,8 +39,6 @@ trait LineItemSnippet extends ErrorDisplay with AllLineItemsSnippet with Logger 
       "#markup" #> styledAjaxText(dataHolder.markup, updateAjaxValue(dataHolder.markup(_)))
   }
 
-  //def renderAllLineItems() = "#lineItems" #> LineItemDisplay(quoteHolder.lineItems, false, false)
-
   private[this] def partNameContent() = styledAjaxObjectSelect[Option[Part]](partsSelect, dataHolder.currentPart, updateAjaxValue(dataHolder.currentPart(_), refreshSuppliers), List(("id" -> "partName")))
 
   private[this] def partQuantityContent() = styledAjaxText(dataHolder.quantity, updateAjaxValue(quantity => dataHolder.quantity(asInt(quantity) match {
