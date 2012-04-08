@@ -5,10 +5,10 @@ package uk.co.randomcoding.partsdb.core.transaction
 
 import net.liftweb.mongodb.record.MongoRecord
 import net.liftweb.mongodb.record.MongoMetaRecord
-import net.liftweb.record.field.{ DoubleField, StringField }
+import net.liftweb.record.field.{DoubleField, StringField}
 import net.liftweb.mongodb.record.field._
 import java.util.Date
-import uk.co.randomcoding.partsdb.core.document.Document
+import com.foursquare.rogue.Rogue._
 
 /**
  * Associates a payment from a customer, as identified by a date and reference (from a statement or cheque)
@@ -16,7 +16,7 @@ import uk.co.randomcoding.partsdb.core.document.Document
  *
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
-class Payment private () extends MongoRecord[Payment] with ObjectIdPk[Payment] {
+class Payment private() extends MongoRecord[Payment] with ObjectIdPk[Payment] {
   def meta = Payment
 
   object paymentAmount extends DoubleField(this)
@@ -26,6 +26,7 @@ class Payment private () extends MongoRecord[Payment] with ObjectIdPk[Payment] {
   object paymentReference extends StringField(this, 50)
 
   object paidInvoices extends BsonRecordListField(this, InvoicePayment)
+
 }
 
 object Payment extends Payment with MongoMetaRecord[Payment] {
@@ -37,11 +38,32 @@ object Payment extends Payment with MongoMetaRecord[Payment] {
    *
    * @param paymentAmount The amount of the payment
    * @param paymentReference The reference (possibly as it would appear on the statement) of the payment
-   * @param paidIncoices The invoices that are fully paid by this payment
+   * @param paidInvoices The invoices that are fully paid by this payment
    */
   def create(paymentAmount: Double, paymentReference: String, paidInvoices: Seq[InvoicePayment], paymentDate: Date = new Date): Payment = {
     Payment.createRecord.paymentAmount(paymentAmount).paymentDate(paymentDate).paidInvoices(paidInvoices.toList).paymentReference(paymentReference)
   }
 
-  def add(payment: Payment): Option[Payment] = payment.saveTheRecord()
+  /**
+   * Add a payment to the database unless there is already a matching payment.
+   *
+   * @see [[uk.co.randomcoding.partsdb.core.transaction.Payment# f i n d M a t c h i n g ( P a y m e n t )]]
+   *
+   * @param payment The payment to add to the database
+   * @return An option containing the added payment, if the addition was successful. If there was already a matching payment, then the option contains the match instead
+   */
+  def add(payment: Payment): Option[Payment] = findMatching(payment) match {
+    case Some(p) => Some(p)
+    case _ => payment.saveTheRecord()
+  }
+
+  /**
+   * Find a payment that matches the provided one.
+   *
+   * A payment matches if the `paymentReference` is the same.
+   *
+   * @param payment The payment to find a match for
+   * @return An `Option[Payment]` that is populated if a match is found or `None` if there is no match
+   */
+  def findMatching(payment: Payment): Option[Payment] = Payment where (_.paymentReference eqs payment.paymentReference.get) get
 }
