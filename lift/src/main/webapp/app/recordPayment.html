@@ -36,7 +36,22 @@
         <!-- Display added payments -->
         <hr />
         <div class="column span-19 last form-subtitle">Recently Recorded Payments</div>
-        <div class="column span-5 form-label">Payment Reference</div>
+          <!-- Display as a Table -->
+
+        <table style="width: 95%">
+            <tr>
+                <th>Payment Reference</th>
+                <th>Payment Date</th>
+                <th>Payment Value</th>
+            </tr>
+            <tr id="allRecordedPayments">
+                <td><span id="payRef">Payment Reference</span></td>
+                <td><span id="payDate">Payment Date</span></td>
+                <td><span id="payValue">Payment Value</span></td>
+            </tr>
+        </table>
+
+        <!--<div class="column span-5 form-label">Payment Reference</div>
         <div class="column span-5 form-label">Payment Date</div>
         <div class="column span-9 last form-label">Payment Value</div>
         <div class="column span-19 last">
@@ -48,10 +63,10 @@
               <span id="payDate">Payment Date</span>
             </div>
             <div class="column span-9 last">
-              <span id="payValue">Payment Value</span>
+                <span id="payValue">Payment Value</span>
             </div>
           </div>
-        </div>
+        </div>-->
       </div>
     </div>
   </div>
