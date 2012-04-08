@@ -27,6 +27,9 @@ class Payment private() extends MongoRecord[Payment] with ObjectIdPk[Payment] {
 
   object paidInvoices extends BsonRecordListField(this, InvoicePayment)
 
+  final def isFullyAllocated: Boolean = {
+    paidInvoices.get.map(_.paymentAmount.get).sum >= paymentAmount.get
+  }
 }
 
 object Payment extends Payment with MongoMetaRecord[Payment] {
