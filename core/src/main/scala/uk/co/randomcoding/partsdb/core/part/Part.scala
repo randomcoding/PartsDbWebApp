@@ -113,7 +113,7 @@ object Part extends Part with MongoMetaRecord[Part] {
    *
    *  This '''should''' only affect a single record however.
    */
-  def modify(oldName: String, newName: String, newVehicle: Vehicle, newModId: Option[String] = None) = {
+  def modify(oldName: String, newName: String, newVehicle: Vehicle, newModId: Option[String] = None) {
     Part.where(_.partName eqs oldName).modify(_.partName setTo newName) and (_.vehicle setTo newVehicle.id.get) and (_.modId setTo newModId.getOrElse("")) updateMulti
   }
 }

@@ -37,7 +37,7 @@ class User private () extends MongoRecord[User] with ObjectIdPk[User] {
    */
   object role extends EnumField(this, Role)
 
-  override def toString = "User: [username: %s, role: %s]".format(username.get, role.get)
+  override def toString() = "User: [username: %s, role: %s]".format(username.get, role.get)
 }
 
 object User extends User with MongoMetaRecord[User] {
@@ -47,8 +47,8 @@ object User extends User with MongoMetaRecord[User] {
   def findById(oid: ObjectId) = User where (_.id eqs oid) get
 
   def findUser(userName: String): Option[User] = User where (_.username eqs userName) get
-  
-  def modify(originalName: String, newName: String, newHashedPassword: String, newRole: Role) = {
+
+  def modify(originalName: String, newName: String, newHashedPassword: String, newRole: Role) {
     User where (_.username eqs originalName) modify (_.username setTo newName) and (_.password setTo newHashedPassword) and (_.role setTo newRole) updateMulti
   }
 

@@ -205,12 +205,17 @@ object Document extends Document with MongoMetaRecord[Document] {
   /**
    * Remove the Document with the given id from the database
    */
-  def remove(oid: ObjectId): Unit = Document where (_.id eqs oid) bulkDelete_!!
+  def remove(oid: ObjectId) {
+    Document where (_.id eqs oid) bulkDelete_!!
+  }
 
   /**
-   * Set the docuemnt with the given `oid` to not editable
+   * Set the document with the given `oid` to not editable
    */
-  def close(oid: ObjectId): Unit = Document.where(_.id eqs oid).modify(_.editable setTo false) updateMulti
+  def close(oid: ObjectId) {
+    Document.where(_.id eqs oid).modify(_.editable setTo false) updateMulti
+  }
+
 }
 
 /**
