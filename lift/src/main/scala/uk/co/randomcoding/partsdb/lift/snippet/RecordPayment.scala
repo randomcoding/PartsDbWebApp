@@ -7,6 +7,7 @@ import java.util.Date
 
 import scala.xml.Text
 
+import com.foursquare.rogue.Rogue._
 import uk.co.randomcoding.partsdb.core.transaction.Payment
 import uk.co.randomcoding.partsdb.lift.model.Session.recentNewPayments
 import uk.co.randomcoding.partsdb.lift.util.DateHelpers._
@@ -45,17 +46,17 @@ class RecordPayment extends StatefulSnippet with ErrorDisplay with DataValidatio
   }
 
   private[this] val commitPaymentsAndGoToCustomerPage: () => JsCmd = () => {
-    val errors = for {
+    val addPaymentErrors = for {
       payment <- recentNewPayments
       if Payment.add(payment) isEmpty
     } yield {
       "Failed to add payment %s to the database"
     }
 
-    errors match {
+    addPaymentErrors match {
       case Nil => {
         recentNewPayments.set(Nil)
-        S redirectTo "/app/show?entityType=Customer"
+        S redirectTo "/app/payInvoices"
       }
       case errors => {
         displayErrors(errors: _*)
@@ -74,11 +75,17 @@ class RecordPayment extends StatefulSnippet with ErrorDisplay with DataValidatio
 
   private[this] def paymentDate: Date = date(paymentDateText)
 
+  private[this] val paymentNameIsUnique = () => Payment where (_.paymentReference eqs paymentReference) get match {
+    case None => Nil
+    case _ => Seq("There is already a Payment with a reference of %s".format(paymentReference))
+  }
+
   private[this] val recordPayment: () => JsCmd = () => {
     debug("Payment Ref: %s".format(paymentReference))
     debug("Payment Value: %s".format(paymentValueText))
     debug("Payment Date: %s".format(paymentDateText))
-    performValidation() match {
+
+    performValidation(paymentNameIsUnique) match {
       case Nil => {
         val payment = Payment.create(asDouble(paymentValueText).get, paymentReference, Nil, paymentDate)
         debug("Created Payment Object: %s".format(payment))
@@ -92,7 +99,7 @@ class RecordPayment extends StatefulSnippet with ErrorDisplay with DataValidatio
     }
   }
 
-  override def validationItems: Seq[ValidationItem] = {
+  override def validationItems(): Seq[ValidationItem] = {
     Seq(ValidationItem(paymentReference, "Payment Reference"),
       ValidationItem(paymentDateText, "Payment Date"),
       ValidationItem(asDouble(paymentValueText) match {
