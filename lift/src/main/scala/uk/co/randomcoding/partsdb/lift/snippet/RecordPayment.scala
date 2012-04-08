@@ -14,10 +14,10 @@ import uk.co.randomcoding.partsdb.lift.util.DateHelpers._
 import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
 import uk.co.randomcoding.partsdb.lift.util.snippet._
 
-import net.liftweb.common.{ Logger, Full }
+import net.liftweb.common.{Logger, Full}
 import net.liftweb.http.js.JsCmds.Noop
 import net.liftweb.http.js.JsCmd
-import net.liftweb.http.{ StatefulSnippet, S }
+import net.liftweb.http.{StatefulSnippet, S}
 import net.liftweb.util.Helpers._
 
 /**
@@ -45,23 +45,12 @@ class RecordPayment extends StatefulSnippet with ErrorDisplay with DataValidatio
       "#allRecordedPayments *" #> renderCurrentPayments
   }
 
-  private[this] val commitPaymentsAndGoToCustomerPage: () => JsCmd = () => {
-    val addPaymentErrors = for {
+  private[this] def addPaymentsToDatabase() = {
+    for {
       payment <- recentNewPayments
       if Payment.add(payment) isEmpty
     } yield {
       "Failed to add payment %s to the database"
-    }
-
-    addPaymentErrors match {
-      case Nil => {
-        recentNewPayments.set(Nil)
-        S redirectTo "/app/payInvoices"
-      }
-      case errors => {
-        displayErrors(errors: _*)
-        Noop
-      }
     }
   }
 
@@ -91,6 +80,19 @@ class RecordPayment extends StatefulSnippet with ErrorDisplay with DataValidatio
         debug("Created Payment Object: %s".format(payment))
         recentNewPayments.atomicUpdate(recentNewPayments => recentNewPayments :+ payment)
         S redirectTo "/app/recordPayment"
+      }
+      case errors => {
+        displayErrors(errors: _*)
+        Noop
+      }
+    }
+  }
+
+  private[this] val commitPaymentsAndGoToCustomerPage: () => JsCmd = () => {
+    addPaymentsToDatabase() match {
+      case Nil => {
+        recentNewPayments.set(Nil)
+        S redirectTo "/app/payInvoices"
       }
       case errors => {
         displayErrors(errors: _*)
