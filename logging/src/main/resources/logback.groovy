@@ -43,6 +43,7 @@ def rootLogLevel=INFO;
 if (HOST.equalsIgnoreCase("benjymouse")) {
 	addInfo("Using logging configuration for ${HOST}")
 	logger("uk.co.randomcoding.partsdb.lift.snippet.RecordPayment", DEBUG)
+	logger("uk.co.randomcoding.partsdb.lift.snippet.PayInvoices", DEBUG)
 	logger("scala", WARN)
 	logger("java", WARN)
 	logger("org", WARN)

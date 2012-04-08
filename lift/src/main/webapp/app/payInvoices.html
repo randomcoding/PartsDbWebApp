@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta content="text/html; charset=UTF-8" http-equiv="content-type"/>
+    <title>Home</title>
+</head>
+<body class="lift:content_id=main">
+<div id="main" class="lift:surround?with=default;at=content">
+    <div class="column span-19 last">
+        <div class="lift:PayInvoices?eager_eval=true">
+            <div class="column span-19 last form-title">Pay Invoices</div>
+            <div class="column span-4 form-label">Payment</div>
+            <div class="column span-15 last"><span id="paymentSelect">Select Payment</span></div>
+            <div class="column span-4 form-label">Customer</div>
+            <div class="column span-15 last"><span id="customerSelect">Select Customer</span></div>
+            <hr/>
+            <div class="column span-19 last">
+                <table>
+                    <tr>
+                        <th>Invoice Number</th>
+                        <th>Invoice Date</th>
+                        <th>Invoice Value</th>
+                        <th>Remaining Balance</th>
+                    </tr>
+                    <tr id="unpaidInvoices">
+                        <td><span id="invNum">Invoice Number</span></td>
+                        <td><span id="invDate">Invoice Date</span></td>
+                        <td><span id="invValue">Invoice Value</span></td>
+                        <td><span id="unpaidBalance">Remaining Balance</span></td>
+                    </tr>
+                </table>
+            </div>
+            <hr />
+            <!--<div class="column span-19 last form-subtitle-no-up">Pay Invoice</div>
+            <div class="column span-5 form-label">Invoice</div>-->
+        </div>
+    </div>
+</div>
+</body>
+</html>
+
