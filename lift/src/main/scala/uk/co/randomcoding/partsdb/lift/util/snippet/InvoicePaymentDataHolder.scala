@@ -47,7 +47,7 @@ class InvoicePaymentDataHolder extends Logger {
 
   private lazy val customersWithUnpaidInvoices = outstandingTransactions map (_.customer.get) map (Customer.findById _) filter (_.isDefined) map (_.get)
 
-  private[this] val unpaidInvoicesSelectCell = unpaidInvoices.lift(invoices => (None, "Select Invoice") :: (invoices map (inv => (Some(inv), inv.documentNumber))))
+  private[this] def unpaidInvoicesSelectCell = unpaidInvoices.lift(invoices => (None, "Select Invoice") :: (invoices map (inv => (Some(inv), inv.documentNumber))))
 
   private[this] def unpaidInvoicesForCustomer(c: Customer) = {
     val documentIdsFromOutstandingTransactionsForCustomer = outstandingTransactions.filter(_.customer.get == c.id.get).flatMap(_.documents.get)
@@ -61,6 +61,11 @@ class InvoicePaymentDataHolder extends Logger {
    * Get the unallocated payment value as a currency formatted string
    */
   val unallocatedPaymentText = unallocatedPayment.lift("£%.2f".format(_))
+
+  /**
+   * The currently recorded invoice payments
+   */
+  val invoicePayments = ValueCell[Seq[InvoicePayment]](Nil)
 
   /**
    * Generates the values for use in a select combo box for invoice selection
@@ -161,7 +166,7 @@ class InvoicePaymentDataHolder extends Logger {
   val unpaidInvoices = currentCustomer.lift(invoicePayments)((c: Option[Customer], p: Seq[InvoicePayment]) => (c, p) match {
     case (Some(customer), Nil) => unpaidInvoicesForCustomer(customer)
     case (Some(customer), payments) => unpaidInvoicesForCustomer(customer) filterNot (inv => payments.exists(_.paidInvoice.get == inv.id.get))
-    case _ => Nil
+    case (_, _) => Nil
   })
 
   def createInvoicePayment(): Unit = {
@@ -184,9 +189,4 @@ class InvoicePaymentDataHolder extends Logger {
     currentAllocatedAmount set 0
     currentInvoiceCell set None
   }
-
-  /**
-   * The currently recorded invoice payments
-   */
-  val invoicePayments = ValueCell[Seq[InvoicePayment]](Nil)
 }

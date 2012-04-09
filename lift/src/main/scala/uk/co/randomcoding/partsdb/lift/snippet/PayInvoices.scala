@@ -23,16 +23,16 @@ import net.liftweb.util.Helpers._
 import net.liftweb.common.Logger
 import net.liftweb.http.js.JsCmds.Noop
 import org.bson.types.ObjectId
-import net.liftweb.http.{ WiringUI, StatefulSnippet }
-import scala.xml.{ NodeSeq, Text }
+import net.liftweb.http.{WiringUI, StatefulSnippet}
+import scala.xml.{NodeSeq, Text}
 import net.liftweb.http.js.JsCmd
-import uk.co.randomcoding.partsdb.core.transaction.{ InvoicePayment, Payment }
+import uk.co.randomcoding.partsdb.core.transaction.{InvoicePayment, Payment}
 
 class PayInvoices extends StatefulSnippet with ErrorDisplay with Logger {
 
   private[this] val dataHolder = new InvoicePaymentDataHolder
 
-  private[this] def availablePayments = (Payment where (_.id exists true) fetch ()) filterNot (_.isFullyAllocated) map (payment => (Some(payment), "%s %s (£%.2f)".format(payment.paymentReference.get, dateString(payment.paymentDate.get), payment.paymentAmount.get)))
+  private[this] def availablePayments = (Payment where (_.id exists true) fetch()) filterNot (_.isFullyAllocated) map (payment => (Some(payment), "%s %s (£%.2f)".format(payment.paymentReference.get, dateString(payment.paymentDate.get), payment.paymentAmount.get)))
 
   private[this] def paymentSelection: Seq[(Option[Payment], String)] = (None, "Select Payment") :: availablePayments
 
@@ -64,25 +64,26 @@ class PayInvoices extends StatefulSnippet with ErrorDisplay with Logger {
       val paidInFull = if (payment.paidInFull.get) "Yes" else "No"
 
       <td>
-        { Text(docNumber) }
+        {Text(docNumber)}
       </td>
-      <td>
-        { Text(paymentValue) }
-      </td>
-      <td>
-        { Text(paidInFull) }
-      </td>
+        <td>
+          {Text(paymentValue)}
+        </td>
+        <td>
+          {Text(paidInFull)}
+        </td>
     })
 
-    val rowsNodes = rows flatMap (row => <tr> row </tr>)
+    val rowsNodes = rows flatMap (row => <tr>
+      {row}
+    </tr>)
 
     <table>
       <tr>
         <th>Invoice Number</th>
         <th>Allocated Amount</th>
         <th>Fully Paid?</th>
-      </tr>
-      + rowsNodes +
+      </tr>{rowsNodes}
     </table>
   }
 
