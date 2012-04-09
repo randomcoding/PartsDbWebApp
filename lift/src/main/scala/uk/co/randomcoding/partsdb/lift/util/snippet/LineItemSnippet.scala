@@ -86,6 +86,4 @@ trait LineItemSnippet extends ErrorDisplay with AllLineItemsSnippet with Logger 
 
     refreshLineItemDisplay() & refreshPartName() & refreshSuppliers() & refreshQuantity()
   }
-
-  //def refreshLineItemDisplay(): JsCmd = SetHtml("lineItems", LineItemDisplay(quoteHolder.lineItems, false, false))
 }
