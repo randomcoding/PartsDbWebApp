@@ -1,40 +1,60 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta content="text/html; charset=UTF-8" http-equiv="content-type"/>
-    <title>Home</title>
+  <meta content="text/html; charset=UTF-8" http-equiv="content-type"/>
+  <title>Home</title>
 </head>
 <body class="lift:content_id=main">
 <div id="main" class="lift:surround?with=default;at=content">
-    <div class="column span-19 last">
-        <div class="lift:PayInvoices?eager_eval=true">
-            <div class="column span-19 last form-title">Pay Invoices</div>
-            <div class="column span-4 form-label">Payment</div>
-            <div class="column span-15 last"><span id="paymentSelect">Select Payment</span></div>
-            <div class="column span-4 form-label">Customer</div>
-            <div class="column span-15 last"><span id="customerSelect">Select Customer</span></div>
-            <hr/>
-            <div class="column span-19 last">
-                <table>
-                    <tr>
-                        <th>Invoice Number</th>
-                        <th>Invoice Date</th>
-                        <th>Invoice Value</th>
-                        <th>Remaining Balance</th>
-                    </tr>
-                    <tr id="unpaidInvoices">
-                        <td><span id="invNum">Invoice Number</span></td>
-                        <td><span id="invDate">Invoice Date</span></td>
-                        <td><span id="invValue">Invoice Value</span></td>
-                        <td><span id="unpaidBalance">Remaining Balance</span></td>
-                    </tr>
-                </table>
-            </div>
-            <hr />
-            <!--<div class="column span-19 last form-subtitle-no-up">Pay Invoice</div>
-            <div class="column span-5 form-label">Invoice</div>-->
+  <div class="column span-19 last">
+    <div class="lift:PayInvoices?eager_eval=true">
+      <div class="column span-19 last form-title">Pay Invoices</div>
+      <div class="column span-4 form-label">Payment</div>
+      <div class="column span-15 last"><span id="paymentSelect">Select Payment</span></div>
+      <div class="column span-4 form-label">Customer</div>
+      <div id="customerAndInvoices">
+        <div class="column span-15 last">
+          <span id="customerSelect">Select Customer</span>
         </div>
+        <hr/>
+        <div class="column span-19 last">
+          <table>
+            <tr>
+              <th>Invoice Number</th>
+              <th>Invoice Date</th>
+              <th>Invoice Value</th>
+              <th>Remaining Balance</th>
+            </tr>
+            <tr id="unpaidInvoices">
+              <td><span id="invNum">Invoice Number</span></td>
+              <td><span id="invDate">Invoice Date</span></td>
+              <td><span id="invValue">Invoice Value</span></td>
+              <td><span id="remainingBalance">Remaining Balance</span></td>
+            </tr>
+          </table>
+        </div>
+      </div>
+      <hr/>
+      <div class="column span-5 form-label">Payment Remaining:</div>
+      <div class="column span-14 last"><span id="paymentRemaining">Remaining Payment</span></div>
+      <div class="column span-19 last form-subtitle-no-up">Pay Invoice</div>
+      <div class="column span-19 last">
+        <div class="column span-5 form-label">Invoice</div>
+        <div class="column span-5 form-label">Pay Amount</div>
+        <div class="column span-9 last">&nbsp</div>
+      </div>
+      <div class="column span-5"><span id="invoiceToPaySelect">Select Invoice to Pay</span></div>
+      <div class="column span-1 form-label" style="margin-top: 5px; margin-right: -10px">&pound;</div>
+      <div class="column span-5 "><span id="allocateValue">Allocated Value</span></div>
+      <div class="column span-8 last" align="right"><span id="allocateToInvoiceButton">Allocate to Invoice</span></div>
+      <hr/>
+      <!--<div class="column span-19 last">
+        <span id="allocatedToInvoices">Allocated to invoices</span>
+      </div>
+      <div class="lift:embed?what=_sumbit_and_cancel">Submit & Cancel</div>-->
+
     </div>
+  </div>
 </div>
 </body>
 </html>
