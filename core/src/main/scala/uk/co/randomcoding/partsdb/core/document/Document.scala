@@ -101,6 +101,7 @@ class Document private () extends MongoRecord[Document] with ObjectIdPk[Document
    */
   def documentValue: Double = {
     val lineItemCost = lineItems.get map (_.lineCost) sum
+    // FIXME: VAT Rate will be added to general DB Properties
     val vatRate = if (documentAddress.get.country.get == "United Kingdom") 0.2d else 0.0d
 
     val subTotal = lineItemCost + carriage.get
