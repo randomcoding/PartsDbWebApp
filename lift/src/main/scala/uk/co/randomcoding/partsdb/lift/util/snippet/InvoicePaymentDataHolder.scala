@@ -169,7 +169,7 @@ class InvoicePaymentDataHolder extends Logger {
     case (_, _) => Nil
   })
 
-  def createInvoicePayment(): Unit = {
+  def createInvoicePayment() {
     currentInvoice match {
       case Some(inv) => {
         val payment = InvoicePayment(currentInvoice.get, allocatedToInvoice)
@@ -185,8 +185,28 @@ class InvoicePaymentDataHolder extends Logger {
   /**
    * Reset all the data values to their default
    */
-  def resetCurrentValues(): Unit = {
+  def resetCurrentValues() {
     currentAllocatedAmount set 0
     currentInvoiceCell set None
   }
+
+  def payments = invoicePayments.get
+
+  /**
+   * Validation checks for the current set of values
+   *
+   * These are to be used in [[uk.co.randomcoding.partsdb.lift.util.snippet.DataValidation]]
+   *
+   * @return The functions that will validate the input of the current allocation.
+   */
+  def createAllocationValidationChecks() = Seq(amountAllocated, allocatedAmountIsLessThanInvoiceAmount, allocatedAmountIsAvailableInRemainingPayment)
+
+  private val amountAllocated = () => if (allocatedToInvoice > 0d) Nil else Seq("Please enter an amount to allocate to the invoice")
+
+  private val allocatedAmountIsLessThanInvoiceAmount = () => currentInvoice match {
+    case Some(inv) => if (inv.documentValue < allocatedToInvoice) Seq("You cannot allocate more than the invoice value") else Nil
+    case _ => Nil
+  }
+
+  private val allocatedAmountIsAvailableInRemainingPayment = () => if (allocatedToInvoice > unallocatedAmount) Seq("You cannot allocate more than the remaining amount") else Nil
 }

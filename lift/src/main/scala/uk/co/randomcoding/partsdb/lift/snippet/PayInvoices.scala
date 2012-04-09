@@ -23,12 +23,14 @@ import net.liftweb.util.Helpers._
 import net.liftweb.common.Logger
 import net.liftweb.http.js.JsCmds.Noop
 import org.bson.types.ObjectId
-import net.liftweb.http.{WiringUI, StatefulSnippet}
 import scala.xml.{NodeSeq, Text}
 import net.liftweb.http.js.JsCmd
 import uk.co.randomcoding.partsdb.core.transaction.{InvoicePayment, Payment}
+import net.liftweb.http.{S, WiringUI, StatefulSnippet}
 
-class PayInvoices extends StatefulSnippet with ErrorDisplay with Logger {
+class PayInvoices extends StatefulSnippet with ErrorDisplay with Logger with SubmitAndCancelSnippet with DataValidation {
+
+  override val cameFrom = S.referer openOr "/app/"
 
   private[this] val dataHolder = new InvoicePaymentDataHolder
 
@@ -48,8 +50,28 @@ class PayInvoices extends StatefulSnippet with ErrorDisplay with Logger {
       "#allocateValue" #> WiringUI.toNode(dataHolder.currentAllocatedAmount)(allocatedAmountEntry) &
       "#allocateAllButton" #> styledAjaxButton("Allocate All", setAllocateAllAmountInDataHolder) &
       "#allocateToInvoiceButton" #> styledAjaxButton("Allocate", allocateToInvoice) &
-      "#allocatedToInvoices" #> WiringUI.toNode(dataHolder.invoicePayments)(renderAllocatedValues)
+      "#allocatedToInvoices" #> WiringUI.toNode(dataHolder.invoicePayments)(renderAllocatedValues) &
+      renderSubmitAndCancel()
   }
+
+  override def processSubmit(): JsCmd = {
+    performValidation() match {
+      case Nil => {
+        // can commit to db
+        val payment = dataHolder.payment.get
+
+        val updatedPayment = Payment addInvoices(payment.id.get, dataHolder.payments)
+        //TODO: Set invoices to paid and transaction to closed
+        Noop
+      }
+      case errors => {
+        displayErrors(errors: _*)
+        Noop
+      }
+    }
+  }
+
+  override def validationItems = Nil
 
   private[this] val renderAllocatedValues: (Seq[InvoicePayment], NodeSeq) => NodeSeq = (payments, nodes) => {
     // This is nasty hack, but will work for now
@@ -88,8 +110,13 @@ class PayInvoices extends StatefulSnippet with ErrorDisplay with Logger {
   }
 
   private[this] val allocateToInvoice: () => JsCmd = () => {
-    dataHolder.createInvoicePayment()
-    dataHolder.resetCurrentValues()
+    performValidation(dataHolder.createAllocationValidationChecks(): _*) match {
+      case Nil => {
+        dataHolder.createInvoicePayment()
+        dataHolder.resetCurrentValues()
+      }
+      case errors => displayErrors(errors: _*)
+    }
     Noop
   }
 

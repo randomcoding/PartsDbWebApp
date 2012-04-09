@@ -9,6 +9,7 @@ import net.liftweb.record.field.{DoubleField, StringField}
 import net.liftweb.mongodb.record.field._
 import java.util.Date
 import com.foursquare.rogue.Rogue._
+import org.bson.types.ObjectId
 
 /**
  * Associates a payment from a customer, as identified by a date and reference (from a statement or cheque)
@@ -69,4 +70,8 @@ object Payment extends Payment with MongoMetaRecord[Payment] {
    * @return An `Option[Payment]` that is populated if a match is found or `None` if there is no match
    */
   def findMatching(payment: Payment): Option[Payment] = Payment where (_.paymentReference eqs payment.paymentReference.get) get
+
+  def addInvoices(paymentId: ObjectId, invoicePayments: Seq[InvoicePayment]) = {
+    Payment where (_.id eqs paymentId) modify (_.paidInvoices setTo invoicePayments.toList) updateMulti
+  }
 }
