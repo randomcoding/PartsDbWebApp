@@ -49,6 +49,13 @@ class InvoicePaymentDataHolder extends Logger {
 
   private[this] val unpaidInvoicesSelectCell = unpaidInvoices.lift(invoices => (None, "Select Invoice") :: (invoices map (inv => (Some(inv), inv.documentNumber))))
 
+  private[this] def unpaidInvoicesForCustomer(c: Customer) = {
+    val documentIdsFromOutstandingTransactionsForCustomer = outstandingTransactions.filter(_.customer.get == c.id.get).flatMap(_.documents.get)
+    val invoicesForCustomer = Document where (_.id in documentIdsFromOutstandingTransactionsForCustomer) and (_.documentType eqs DocumentType.Invoice) fetch
+    val paidInvoices = (Payment where (_.id exists true) fetch) flatMap (_.paidInvoices.get.map(_.paidInvoice.get))
+    invoicesForCustomer filterNot (paidInvoices contains _.id.get)
+  }
+
   // Accessors
   /**
    * Get the unallocated payment value as a currency formatted string
@@ -151,13 +158,35 @@ class InvoicePaymentDataHolder extends Logger {
   /**
    * The invoices for the current customer that are not yet fully paid
    */
-  val unpaidInvoices = currentCustomer.lift(_ match {
-    case Some(c) => {
-      val documentIdsFromOutstandingTransactionsForCustomer = outstandingTransactions.filter(_.customer.get == c.id.get).flatMap(_.documents.get)
-      val invoicesForCustomer = Document where (_.id in documentIdsFromOutstandingTransactionsForCustomer) and (_.documentType eqs DocumentType.Invoice) fetch
-      val paidInvoices = (Payment where (_.id exists true) fetch) flatMap (_.paidInvoices.get.map(_.paidInvoice.get))
-      invoicesForCustomer filterNot (paidInvoices contains _.id.get)
-    }
+  val unpaidInvoices = currentCustomer.lift(invoicePayments)((c: Option[Customer], p: Seq[InvoicePayment]) => (c, p) match {
+    case (Some(customer), Nil) => unpaidInvoicesForCustomer(customer)
+    case (Some(customer), payments) => unpaidInvoicesForCustomer(customer) filterNot (inv => payments.exists(_.paidInvoice.get == inv.id.get))
     case _ => Nil
   })
+
+  def createInvoicePayment(): Unit = {
+    currentInvoice match {
+      case Some(inv) => {
+        val payment = InvoicePayment(currentInvoice.get, allocatedToInvoice)
+        invoicePayments.atomicUpdate(payments => payments find (_ == payment) match {
+          case Some(p) => payments
+          case _ => payments :+ payment
+        })
+      }
+      case _ => // Do Nothing
+    }
+  }
+
+  /**
+   * Reset all the data values to their default
+   */
+  def resetCurrentValues(): Unit = {
+    currentAllocatedAmount set 0
+    currentInvoiceCell set None
+  }
+
+  /**
+   * The currently recorded invoice payments
+   */
+  val invoicePayments = ValueCell[Seq[InvoicePayment]](Nil)
 }
