@@ -4,7 +4,7 @@
 package uk.co.randomcoding.partsdb.lift.util.snippet.display
 
 import scala.xml.Text
-import uk.co.randomcoding.partsdb.core.document.{ LineItem, Document }
+import uk.co.randomcoding.partsdb.core.document.{LineItem, Document}
 import uk.co.randomcoding.partsdb.lift.util.SnippetDisplayHelpers._
 import net.liftweb.util.Helpers._
 import net.liftweb.util.CssSel
@@ -25,10 +25,10 @@ trait DocumentTotalsDisplay {
    * Render the actual values from the provided [[uk.co.randomcoding.partsdb.core.document.Document]]
    *
    * Expects the elements with the following ids
-   *   - ''subtotal'' - Displays the pre-tax total of all the goods in all [[uk.co.randomcoding.partsdb.core.document.LineItem]]s from the [[uk.co.randomcoding.partsdb.core.document.Document]]
-   *   - ''carriage'' - Displays the carriage value from the [[uk.co.randomcoding.partsdb.core.document.Document]]
-   *   - ''vat'' - Displays the VAT amount for the ''subtotal'' and ''carriage''
-   *   - ''total'' The total of the ''subtotal'', ''carriage'' and ''vat'' fields. This is calculated
+   * - ''subtotal'' - Displays the pre-tax total of all the goods in all [[uk.co.randomcoding.partsdb.core.document.LineItem]]s from the [[uk.co.randomcoding.partsdb.core.document.Document]]
+   * - ''carriage'' - Displays the carriage value from the [[uk.co.randomcoding.partsdb.core.document.Document]]
+   * - ''vat'' - Displays the VAT amount for the ''subtotal'' and ''carriage''
+   * - ''total'' The total of the ''subtotal'', ''carriage'' and ''vat'' fields. This is calculated
    */
   def renderDocumentTotals(document: Document): CssSel = {
     renderDocumentTotals(document.lineItems.get, document.carriage.get)
@@ -38,10 +38,10 @@ trait DocumentTotalsDisplay {
    * Render the actual values from the provided [[uk.co.randomcoding.partsdb.core.document.LineItem]]s and carriage value
    *
    * Expects the elements with the following ids
-   *   - ''subtotal'' - Displays the pre-tax total of all the goods in all [[uk.co.randomcoding.partsdb.core.document.LineItem]]s from the [[uk.co.randomcoding.partsdb.core.document.Document]]
-   *   - ''carriage'' - Displays the carriage value from the [[uk.co.randomcoding.partsdb.core.document.Document]]
-   *   - ''vat'' - Displays the VAT amount for the ''subtotal'' and ''carriage''
-   *   - ''total'' The total of the ''subtotal'', ''carriage'' and ''vat'' fields. This is calculated
+   * - ''subtotal'' - Displays the pre-tax total of all the goods in all [[uk.co.randomcoding.partsdb.core.document.LineItem]]s from the [[uk.co.randomcoding.partsdb.core.document.Document]]
+   * - ''carriage'' - Displays the carriage value from the [[uk.co.randomcoding.partsdb.core.document.Document]]
+   * - ''vat'' - Displays the VAT amount for the ''subtotal'' and ''carriage''
+   * - ''total'' The total of the ''subtotal'', ''carriage'' and ''vat'' fields. This is calculated
    */
   def renderDocumentTotals(lineItems: Seq[LineItem], carriage: Double): CssSel = {
     "#subtotal *" #> renderSubtotal(lineItems) &
@@ -57,7 +57,9 @@ trait DocumentTotalsDisplay {
   private[this] def renderTotal(lineItems: Seq[LineItem], carriage: Double) = renderIdSpan(Text(currencyFormat(total(lineItems, carriage))), "total")
 
   private[this] def renderIdSpan(content: NodeSeq, id: String) = {
-    <span>{ content }</span> % Attribute("id", Text(id), Null)
+    <span>
+      {content}
+    </span> % Attribute("id", Text(id), Null)
   }
 
   def refreshSubtotal(lineItems: Seq[LineItem]) = SetHtml("subtotal", renderSubtotal(lineItems))
@@ -72,5 +74,5 @@ trait DocumentTotalsDisplay {
 
   private def vatAmount(lineItems: Seq[LineItem], carriage: Double) = (subTotal(lineItems) + carriage) * vatRate
 
-  private def total(lineItems: Seq[LineItem], carriage: Double) = subTotal(lineItems) + vatAmount(lineItems, carriage)
+  private def total(lineItems: Seq[LineItem], carriage: Double) = subTotal(lineItems) + carriage + vatAmount(lineItems, carriage)
 }
