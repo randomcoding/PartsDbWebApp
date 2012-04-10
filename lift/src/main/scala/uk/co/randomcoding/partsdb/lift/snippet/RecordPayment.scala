@@ -19,7 +19,7 @@ import net.liftweb.http.{ StatefulSnippet, S }
 import net.liftweb.util.Helpers._
 
 /**
- * Records one or more payments to allow them to later be matched against invoices.
+ * Records one or more invoicePayments to allow them to later be matched against invoices.
  *
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */

@@ -63,7 +63,7 @@ class InvoicePaymentDataHolder extends Logger {
   val unallocatedPaymentText = unallocatedPayment.lift("£%.2f".format(_))
 
   /**
-   * The currently recorded invoice payments
+   * The currently recorded invoice invoicePayments
    */
   val invoicePayments = ValueCell[Seq[InvoicePayment]](Nil)
 
