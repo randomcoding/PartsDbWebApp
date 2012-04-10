@@ -71,7 +71,31 @@ object Payment extends Payment with MongoMetaRecord[Payment] {
    */
   def findMatching(payment: Payment): Option[Payment] = Payment where (_.paymentReference eqs payment.paymentReference.get) get
 
+  /**
+   * Find a [[uk.co.randomcoding.partsdb.core.transaction.Payment]] by its Object Id
+   *
+   * @param oid The Object Id of the [[uk.co.randomcoding.partsdb.core.transaction.Payment]] to find
+   * @return An `Option[`[[uk.co.randomcoding.partsdb.core.transaction.Payment]]`]` with the found record if it exists or `None` otherwise
+   */
+  def findById(oid: ObjectId): Option[Payment] = Payment where (_.id eqs oid) get
+
+  /**
+   * Add invoice payments to the payment with the given `paymentId`
+   *
+   * @param paymentId The Object Id of the payment to modify
+   * @param invoicePayments The [[uk.co.randomcoding.partsdb.core.transaction.InvoicePayment]]s to set the
+   * @return The modified [[uk.co.randomcoding.partsdb.core.transaction.Payment]] record
+   */
   def addInvoices(paymentId: ObjectId, invoicePayments: Seq[InvoicePayment]) = {
-    Payment where (_.id eqs paymentId) modify (_.paidInvoices setTo invoicePayments.toList) updateMulti
+    val recordPayments = findById(paymentId) match {
+      case Some(p) => p.paidInvoices.get
+      case _ => Nil
+    }
+
+    val paymentsToAdd = (recordPayments ++ invoicePayments).toList.distinct
+
+    Payment where (_.id eqs paymentId) modify (_.paidInvoices setTo paymentsToAdd) updateMulti
+
+    findById(paymentId)
   }
 }
