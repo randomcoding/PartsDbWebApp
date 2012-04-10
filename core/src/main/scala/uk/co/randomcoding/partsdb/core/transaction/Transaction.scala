@@ -5,26 +5,24 @@ package uk.co.randomcoding.partsdb.core.transaction
 
 import java.util.Date
 
-import scala.math.Ordering.String
 
-import org.bson.types.ObjectId
 import org.joda.time.DateTime
 
 import com.foursquare.rogue.Rogue._
 
 import uk.co.randomcoding.partsdb.core.customer.Customer
-import uk.co.randomcoding.partsdb.core.document.{ DocumentType, Document }
+import uk.co.randomcoding.partsdb.core.document.{DocumentType, Document}
 
 import net.liftweb.record.field._
 import net.liftweb.mongodb.record.field._
-import net.liftweb.mongodb.record.{ MongoRecord, MongoMetaRecord }
+import net.liftweb.mongodb.record.{MongoRecord, MongoMetaRecord}
 
 /**
  * Encapsulates all the data for a transaction between the company and a customer.
  *
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
-class Transaction private () extends MongoRecord[Transaction] with ObjectIdPk[Transaction] {
+class Transaction private() extends MongoRecord[Transaction] with ObjectIdPk[Transaction] {
   def meta = Transaction
 
   object shortName extends StringField(this, 50)
@@ -69,6 +67,24 @@ class Transaction private () extends MongoRecord[Transaction] with ObjectIdPk[Tr
 
   override def hashCode: Int = getClass.toString.hashCode + customer.get.hashCode + (documents.get map (_ hashCode) sum) + shortName.get.hashCode
 
+  /**
+   * Get the value of all the documents of a given type in this transaction
+   *
+   * @param documentType The [[uk.co.randomcoding.partsdb.core.document.DocumentType]] to get the total value of
+   * @return The total of the `documentValue`s of all the documents of the given type from this transaction
+   */
+  def valueOfDocuments(documentType: DocumentType.DocType) = (Document where (_.id in documents.get) and (_.documentType eqs documentType) fetch).foldLeft(0.0d)(_ + _.documentValue)
+
+  /**
+   * Get the state of the transaction.
+   *
+   * Can be one of
+   * - '''Completed'''
+   * - '''Quoted'''
+   * - '''Ordered'''
+   * - '''Delivered'''
+   * - '''Invoiced'''
+   */
   lazy val transactionState = {
     new DateTime(completionDate.get) isAfter new DateTime(creationDate.get) match {
       case true => "Completed"
@@ -105,7 +121,7 @@ object Transaction extends Transaction with MongoMetaRecord[Transaction] {
    * If there is a `Transaction` that matches then this transaction will be returned and '''no''' add operation will
    * be attempted. Otherwise the transaction will be added to the database.
    *
-   * @see [[uk.co.randomcoding.partsdb.core.transaction.Transaction#findMatching(Transaction)]])
+   * @see [[uk.co.randomcoding.partsdb.core.transaction.Transaction# f i n d M a t c h i n g ( T r a n s a c t i o n )]])
    * @return A populated `Option[Transaction]` with either the matched or newly added record, if the add operation succeeded. Otherwise 'none'
    */
   def add(transaction: Transaction): Option[Transaction] = findMatching(transaction) match {
@@ -122,7 +138,7 @@ object Transaction extends Transaction with MongoMetaRecord[Transaction] {
    * If there is a `Transaction` that matches then this transaction will be returned and '''no''' add operation will
    * be attempted. Otherwise the transaction will be added to the database.
    *
-   * @see [[uk.co.randomcoding.partsdb.core.transaction.Transaction#findMatching(Transaction)]])
+   * @see [[uk.co.randomcoding.partsdb.core.transaction.Transaction# f i n d M a t c h i n g ( T r a n s a c t i o n )]])
    * @return A populated `Option[Transaction]` with either the matched or newly added record, if the add operation succeeded. Otherwise 'none'
    */
   def add(shortName: String, customer: Customer, documents: Seq[Document]): Option[Transaction] = add(create(shortName, customer, documents))

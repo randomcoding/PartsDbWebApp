@@ -7,7 +7,7 @@ import com.foursquare.rogue.Rogue._
 import uk.co.randomcoding.partsdb.core.address.Address
 import uk.co.randomcoding.partsdb.core.contact.ContactDetails
 import uk.co.randomcoding.partsdb.core.customer.Customer
-import uk.co.randomcoding.partsdb.core.document.{ LineItem, DocumentType, Document }
+import uk.co.randomcoding.partsdb.core.document.{LineItem, DocumentType, Document}
 import uk.co.randomcoding.partsdb.core.part.Part
 import uk.co.randomcoding.partsdb.core.transaction.Transaction
 import uk.co.randomcoding.partsdb.core.vehicle.Vehicle
@@ -32,14 +32,14 @@ class TransactionRecordTest extends MongoDbTestBase {
    * Setting the id for doc1 avoids a funny hash collision problem where the object ids generated for
    * doc1 & cust2 and doc2 & cust1 are effectively sequential. This results in hash code collisions where
    * the object ids of the two pairs have the same interval.
-   * 
+   *
    * E.g. oid (hash)
    * Cust1 id: 4f37b14023182cd492f528d7 (1224398707)
-   * Doc2 id: 4f37b14023182cd492f528dc (1224398792)
-   * 
+   * Doc2  id: 4f37b14023182cd492f528dc (1224398792)
+   *
    * Cust2 id: 4f37b14023182cd492f528db (1224398775)
-   * Doc1 id: 4f37b13e23182cd492f528d6 (1224398688)
-   * 
+   * Doc1  id: 4f37b13e23182cd492f528d6 (1224398688)
+   *
    * As only the last two digits change, and the two pairs add to the same then they will collide on hash code - GRR
    */
   val doc1 = Document.create(lines, DocumentType.Invoice, 0.0).docNumber(1001).id(new ObjectId)
@@ -109,10 +109,10 @@ class TransactionRecordTest extends MongoDbTestBase {
     Transaction.findMatching(t1NotMatching1) should be(None)
 
     val t1NotMatching2 = Transaction.create("t1", cust1, Seq(doc2))
-    Transaction.findMatching(t1NotMatching1) should be(None)
+    Transaction.findMatching(t1NotMatching2) should be(None)
 
     val t1NotMatching3 = Transaction.create("t1", cust1, Nil)
-    Transaction.findMatching(t1NotMatching1) should be(None)
+    Transaction.findMatching(t1NotMatching3) should be(None)
 
     val t2 = Transaction.add("t2", cust2, Seq(doc1, doc2, doc3)).get
 
@@ -205,6 +205,22 @@ class TransactionRecordTest extends MongoDbTestBase {
     Transaction.findById(t1.id.get).get.documents.get should (have size (2) and
       contain(doc1.id.get) and
       contain(doc2.id.get))
+  }
+
+  test("Value of Documents is correct for a transaction with quotes only") {
+    fail("Needds to be Implemented")
+  }
+
+  test("Value of Documents is correct for a transaction with quotes and orders") {
+    fail("Needds to be Implemented")
+  }
+
+  test("Value of Documents is correct for a transaction with quotes, orders and delivery notes") {
+    fail("Needds to be Implemented")
+  }
+
+  test("Value of Documents is correct for a transaction with quotes, orders delivery notes and invoices") {
+    fail("Needds to be Implemented")
   }
 
   test("Removing a Record that exists in the database successfully removes the entry from the database") {
