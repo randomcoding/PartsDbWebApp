@@ -27,6 +27,7 @@ import scala.xml.{NodeSeq, Text}
 import net.liftweb.http.js.JsCmd
 import uk.co.randomcoding.partsdb.core.transaction.{InvoicePayment, Payment}
 import net.liftweb.http.{S, WiringUI, StatefulSnippet}
+import uk.co.randomcoding.partsdb.db.mongo.PaymentDbManager
 
 class PayInvoices extends StatefulSnippet with ErrorDisplay with Logger with SubmitAndCancelSnippet with DataValidation {
 
@@ -60,8 +61,9 @@ class PayInvoices extends StatefulSnippet with ErrorDisplay with Logger with Sub
         // can commit to db
         val payment = dataHolder.payment.get
 
-        val updatedPayment = Payment addInvoices(payment.id.get, dataHolder.payments)
-        //TODO: Set invoices to paid and transaction to closed
+       PaymentDbManager.commitPayment(payment, dataHolder.payments)
+
+
         Noop
       }
       case errors => {
@@ -74,7 +76,7 @@ class PayInvoices extends StatefulSnippet with ErrorDisplay with Logger with Sub
   override def validationItems = Nil
 
   private[this] val renderAllocatedValues: (Seq[InvoicePayment], NodeSeq) => NodeSeq = (payments, nodes) => {
-    // This is nasty hack, but will work for now
+    //XXX This is nasty hack, but will work for now
     val rows = payments map (payment => {
       val paidInvoice = Document.findById(payment.paidInvoice.get)
 
