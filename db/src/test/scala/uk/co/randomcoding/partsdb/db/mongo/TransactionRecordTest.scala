@@ -7,11 +7,11 @@ import com.foursquare.rogue.Rogue._
 import uk.co.randomcoding.partsdb.core.address.Address
 import uk.co.randomcoding.partsdb.core.contact.ContactDetails
 import uk.co.randomcoding.partsdb.core.customer.Customer
-import uk.co.randomcoding.partsdb.core.document.{LineItem, DocumentType, Document}
 import uk.co.randomcoding.partsdb.core.part.Part
 import uk.co.randomcoding.partsdb.core.transaction.Transaction
 import uk.co.randomcoding.partsdb.core.vehicle.Vehicle
 import org.bson.types.ObjectId
+import uk.co.randomcoding.partsdb.core.document.{Quote, LineItem, DocumentType, Document}
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
@@ -205,22 +205,6 @@ class TransactionRecordTest extends MongoDbTestBase {
     Transaction.findById(t1.id.get).get.documents.get should (have size (2) and
       contain(doc1.id.get) and
       contain(doc2.id.get))
-  }
-
-  test("Value of Documents is correct for a transaction with quotes only") {
-    fail("Needds to be Implemented")
-  }
-
-  test("Value of Documents is correct for a transaction with quotes and orders") {
-    fail("Needds to be Implemented")
-  }
-
-  test("Value of Documents is correct for a transaction with quotes, orders and delivery notes") {
-    fail("Needds to be Implemented")
-  }
-
-  test("Value of Documents is correct for a transaction with quotes, orders delivery notes and invoices") {
-    fail("Needds to be Implemented")
   }
 
   test("Removing a Record that exists in the database successfully removes the entry from the database") {
