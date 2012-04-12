@@ -16,7 +16,7 @@ import uk.co.randomcoding.partsdb.core.transaction.Transaction
 import uk.co.randomcoding.partsdb.core.customer.Customer
 import uk.co.randomcoding.partsdb.core.contact.ContactDetails
 import uk.co.randomcoding.partsdb.core.address.Address
-import uk.co.randomcoding.partsdb.core.document.{Document, DocumentType, LineItem}
+import uk.co.randomcoding.partsdb.core.document._
 
 
 /**
@@ -40,11 +40,23 @@ class TransactionValueTest extends MongoDbTestBase {
   val markup = 0.1d
   val carriage = 10.0d
 
-  val quote1 = Document.create(Seq(LineItem.create(0, part1, 1, part1Cost, markup)), DocumentType.Quote, carriage)
-  val quote2 = Document.create(Seq(LineItem.create(0, part2, 1, part2Cost, markup)), DocumentType.Quote, carriage)
+  val lineItems1 = Seq(LineItem.create(0, part1, 1, part1Cost, markup))
+  val lineItems2 = Seq(LineItem.create(0, part2, 1, part2Cost, markup))
+
+  val quote1 = Quote.create(lineItems1, carriage)
+  val quote2 = Quote.create(lineItems2, carriage)
+
+  val order1 = Order.create(lineItems1, carriage, "order1")
+  val order2 = Order.create(lineItems2, carriage, "order2")
+
+  val deliveryNote1 = DeliveryNote.create(lineItems1, carriage, "order1")
+  val deliveryNote2 = DeliveryNote.create(lineItems2, carriage, "order1")
+
+  val invoice = Invoice.create(lineItems1 ++ lineItems2, carriage + carriage, "order1, order2", Seq(deliveryNote1, deliveryNote2))
 
   private[this] def saveDocuments(docTypes: DocumentType.DocType*) {
-    Seq(quote1, quote2) filter (doc => docTypes.contains(doc.documentType.get)) foreach (doc => if (doc.save != doc) fail("Failed to save document %s".format(doc)))
+    Seq(quote1, quote2, order1, order2, deliveryNote1, deliveryNote2, invoice) filter
+      (doc => docTypes.contains(doc.documentType.get)) foreach (doc => if (doc.save != doc) fail("Failed to save document %s".format(doc)))
   }
 
   test("Value of Documents is correct for a transaction with no documents") {
@@ -66,14 +78,32 @@ class TransactionValueTest extends MongoDbTestBase {
   }
 
   test("Value of Documents is correct for a transaction with quotes and orders") {
-    fail("Needs to be Implemented")
+    saveDocuments(DocumentType.Quote, DocumentType.Order)
+
+    val transaction = Transaction.add("Trans 1", customer, Seq(quote1, quote2, order1, order2)).get
+    transaction.valueOfDocuments(DocumentType.Quote) should be(quote1.documentValue + quote2.documentValue)
+    transaction.valueOfDocuments(DocumentType.Order) should be(order1.documentValue + order2.documentValue)
+    transaction.valueOfDocuments(DocumentType.DeliveryNote) should be(0.0d)
+    transaction.valueOfDocuments(DocumentType.Invoice) should be(0.0d)
   }
 
   test("Value of Documents is correct for a transaction with quotes, orders and delivery notes") {
-    fail("Needs to be Implemented")
+    saveDocuments(DocumentType.Quote, DocumentType.Order, DocumentType.DeliveryNote)
+
+    val transaction = Transaction.add("Trans 1", customer, Seq(quote1, quote2, order1, order2, deliveryNote1, deliveryNote2)).get
+    transaction.valueOfDocuments(DocumentType.Quote) should be(quote1.documentValue + quote2.documentValue)
+    transaction.valueOfDocuments(DocumentType.Order) should be(order1.documentValue + order2.documentValue)
+    transaction.valueOfDocuments(DocumentType.DeliveryNote) should be(deliveryNote1.documentValue + deliveryNote2.documentValue)
+    transaction.valueOfDocuments(DocumentType.Invoice) should be(0.0d)
   }
 
   test("Value of Documents is correct for a transaction with quotes, orders delivery notes and invoices") {
-    fail("Needs to be Implemented")
+    saveDocuments(DocumentType.Quote, DocumentType.Order, DocumentType.DeliveryNote, DocumentType.Invoice)
+
+    val transaction = Transaction.add("Trans 1", customer, Seq(quote1, quote2, order1, order2, deliveryNote1, deliveryNote2, invoice)).get
+    transaction.valueOfDocuments(DocumentType.Quote) should be(quote1.documentValue + quote2.documentValue)
+    transaction.valueOfDocuments(DocumentType.Order) should be(order1.documentValue + order2.documentValue)
+    transaction.valueOfDocuments(DocumentType.DeliveryNote) should be(deliveryNote1.documentValue + deliveryNote2.documentValue)
+    transaction.valueOfDocuments(DocumentType.Invoice) should be(invoice.documentValue)
   }
 }
