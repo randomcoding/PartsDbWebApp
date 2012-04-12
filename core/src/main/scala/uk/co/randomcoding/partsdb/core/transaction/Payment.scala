@@ -10,6 +10,7 @@ import net.liftweb.mongodb.record.field._
 import java.util.Date
 import com.foursquare.rogue.Rogue._
 import org.bson.types.ObjectId
+import uk.co.randomcoding.partsdb.core.document.{DocumentType, Document}
 
 /**
  * Associates a payment from a customer, as identified by a date and reference (from a statement or cheque)
@@ -31,6 +32,13 @@ class Payment private() extends MongoRecord[Payment] with ObjectIdPk[Payment] {
   final def isFullyAllocated: Boolean = {
     paidInvoices.get.map(_.paymentAmount.get).sum >= paymentAmount.get
   }
+
+  final def unallocatedBalance: Double = isFullyAllocated match {
+    case true => 0d
+    case false => paymentAmount.get - (actualInvoices.foldLeft(0.0d)(_ + _.documentValue))
+  }
+
+  private[this] def actualInvoices = Document where (_.id in (paidInvoices.get map (_.paidInvoice.get))) and (_.documentType eqs DocumentType.Invoice) fetch
 }
 
 object Payment extends Payment with MongoMetaRecord[Payment] {

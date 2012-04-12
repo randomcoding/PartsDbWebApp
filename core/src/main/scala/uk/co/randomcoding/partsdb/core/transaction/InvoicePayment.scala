@@ -1,5 +1,5 @@
 /*
- * 
+ *
  */
 package uk.co.randomcoding.partsdb.core.transaction
 
@@ -7,7 +7,6 @@ import net.liftweb.mongodb.record.BsonRecord
 import net.liftweb.mongodb.record.field.ObjectIdRefField
 import uk.co.randomcoding.partsdb.core.document.Document
 import net.liftweb.record.field.DoubleField
-import net.liftweb.record.field.BooleanField
 import net.liftweb.mongodb.record.BsonMetaRecord
 
 /**
@@ -35,8 +34,11 @@ class InvoicePayment extends BsonRecord[InvoicePayment] {
   /**
    * Whether or not this payment fully pays the invoice
    *
+   * This will only be `true` iff the [[uk.co.randomcoding.partsdb.core.transaction.InvoicePayment]] is a single payment for the full amount of the invoice.
+   * Two partial payments that pay the full value of an invoice will both return `false`.
+   *
    * @return An `Option[Boolean]` containing `true` or `false` if the invoice is located in the database.
-   * If the invoice cannot be found then `None` is returned. In this case an error should probably be raised and investigated.
+   *         If the invoice cannot be found then `None` is returned. In this case an error should probably be raised and investigated.
    */
   lazy val paidInFull = Document.findById(paidInvoice.get) match {
     case Some(invoice) => Some(paymentAmount.get >= invoice.documentValue)
