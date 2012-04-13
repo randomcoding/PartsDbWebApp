@@ -14,12 +14,14 @@ import uk.co.randomcoding.partsdb.core.document.Document
 import uk.co.randomcoding.partsdb.core.transaction.{Transaction, InvoicePayment, Payment}
 import com.foursquare.rogue.Rogue._
 
+
 /**
  * Manages submitting invoicePayments to the database.
  *
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
 object PaymentDbManager {
+  import PaymentValidationChecks._
 
   /**
    * Commit a payment to the database, adding some invoice payments to it.
@@ -54,11 +56,6 @@ object PaymentDbManager {
   private[this] def paymentErrorChecks: Seq[(Payment, Seq[InvoicePayment]) => Seq[String]] = Seq(
     paymentHasSufficientBalanceToPayTheInvoicePayments
   )
-
-  private[this] val paymentHasSufficientBalanceToPayTheInvoicePayments: (Payment, Seq[InvoicePayment]) => Seq[String] = (payment, invoicePayments) => {
-    val amountToAllocate = invoicePayments.foldLeft(0d)(_ + _.paymentAmount.get)
-    if (payment.unallocatedBalance >= amountToAllocate) Nil else Seq("The payment does not have sufficient available balance to pay £%.2f".format(amountToAllocate))
-  }
 
   private[this] def closeTransactionsForFullyPaidInvoices(paidInvoices: Seq[Document]) {
     val affectedTransactions = Transaction where (_.documents in (paidInvoices.map(_.id.get))) fetch
