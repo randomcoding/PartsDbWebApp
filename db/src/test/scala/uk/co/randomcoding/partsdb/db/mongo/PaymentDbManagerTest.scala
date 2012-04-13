@@ -42,9 +42,7 @@ class PaymentDbManagerTest extends MongoDbTestBase with GivenWhenThen {
     then("An error is raised")
     response should be(List(PaymentFailed("The payment does not have sufficient available balance to pay £100.00")))
     and("The database is not updated")
-    Payment where (_.id exists true) get() should be('empty)
-    Document where (_.id exists true) get() should be('empty)
-    Transaction where (_.id exists true) get() should be('empty)
+    databaseChecks()
   }
 
   test("Attempt to commit a payment that has already been partially allocated to some invoices that does not have sufficient value to pay all the additional invoices") {
@@ -59,9 +57,7 @@ class PaymentDbManagerTest extends MongoDbTestBase with GivenWhenThen {
     then("An error is raised")
     response should be(List(PaymentFailed("The payment does not have sufficient available balance to pay £100.00")))
     and("The database is not updated")
-    Payment where (_.id exists true) get() should be('empty)
-    Document where (_.id exists true) get() should be(Some(invoiceFor150Pounds))
-    Transaction where (_.id exists true) get() should be('empty)
+    databaseChecks(expectedDocuments = invoiceFor150Pounds)
   }
 
   test("Attempt to commit an Invoice Payment with a Payment that is already fully allocated") {
@@ -76,7 +72,7 @@ class PaymentDbManagerTest extends MongoDbTestBase with GivenWhenThen {
     then("An error is raised for the Payment already being fully allocated")
     response should be(List(PaymentFailed("Payment pay3 has already been fully allocated. It is not possible to pay any more invoices with it")))
     and("The database is not updated")
-    fail("Needs to be implemented")
+    databaseChecks(expectedDocuments = invoiceFor150Pounds)
   }
 
   test("Attempt to commit an Invoice Payment for an Invoice that is not in the database") {
@@ -252,6 +248,12 @@ class PaymentDbManagerTest extends MongoDbTestBase with GivenWhenThen {
 
   private[this] def invoice(lines: Seq[LineItem], poRef: String): Document = Invoice(lines, 0d, poRef)
 
-  private[this] implicit def itemToSeq[T](item: T): Seq[T] = Seq(item)
+  private[this] implicit def itemToList[T](item: T): List[T] = List(item)
+
+  private[this] def databaseChecks(expectedPayments: List[Payment] = Nil, expectedDocuments: List[Document] = Nil, expectedTransactions: List[Transaction] = Nil) {
+    Payment where (_.id exists true) fetch() should be(expectedPayments)
+    Document where (_.id exists true) fetch() should be(expectedDocuments)
+    Transaction where (_.id exists true) fetch() should be(expectedTransactions)
+  }
 }
 
