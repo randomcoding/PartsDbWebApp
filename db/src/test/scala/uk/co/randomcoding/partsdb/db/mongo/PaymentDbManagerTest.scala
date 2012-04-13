@@ -52,6 +52,7 @@ class PaymentDbManagerTest extends MongoDbTestBase with GivenWhenThen {
     val invoicePayment = InvoicePayment(invoiceFor100Pounds, 100.0d)
     and("A Payment for £200 that has already had £150 allocated to")
     val allocatedInvoicePayment = InvoicePayment(invoiceFor150Pounds, 150.0d)
+    Document.add(invoiceFor150Pounds)
     val payment = Payment(200.0, "pay2", allocatedInvoicePayment)
     when("The payment is committed to the database")
     val response = PaymentDbManager.commitPayment(payment, invoicePayment)
@@ -59,7 +60,7 @@ class PaymentDbManagerTest extends MongoDbTestBase with GivenWhenThen {
     response should be(List(PaymentFailed("The payment does not have sufficient available balance to pay £100.00")))
     and("The database is not updated")
     Payment where (_.id exists true) get() should be('empty)
-    Document where (_.id exists true) get() should be('empty)
+    Document where (_.id exists true) get() should be(Some(invoiceFor150Pounds))
     Transaction where (_.id exists true) get() should be('empty)
   }
 

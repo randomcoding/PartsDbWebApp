@@ -28,8 +28,7 @@ object PaymentDbManager {
    * @param invoicePayments The [[uk.co.randomcoding.partsdb.core.transaction.InvoicePayment]]s to add to the `payment`
    */
   def commitPayment(payment: Payment, invoicePayments: InvoicePayment*): Seq[PaymentResult] = {
-    // TODO: check the payment and Invoice Payments for errors
-    paymentErrorChecks.flatMap(_(payment, invoicePayments)) match {
+    paymentErrorChecks flatMap (_(payment, invoicePayments)) match {
       case Nil => processCommitOfPayment(payment)
       case errors => errors map (PaymentFailed(_))
     }
