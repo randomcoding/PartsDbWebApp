@@ -15,7 +15,8 @@ import uk.co.randomcoding.partsdb.core.document.{Invoice, LineItem, Document}
 import util.Random
 import uk.co.randomcoding.partsdb.core.vehicle.Vehicle
 import uk.co.randomcoding.partsdb.core.part.Part
-import uk.co.randomcoding.partsdb.core.transaction.{Payment, InvoicePayment}
+import com.foursquare.rogue.Rogue._
+import uk.co.randomcoding.partsdb.core.transaction.{Transaction, Payment, InvoicePayment}
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
@@ -23,12 +24,17 @@ import uk.co.randomcoding.partsdb.core.transaction.{Payment, InvoicePayment}
 class PaymentDbManagerTest extends MongoDbTestBase with GivenWhenThen {
   override val dbName = "paymentdbmanagertest"
 
+  private[this] lazy val lineFor100Pounds = lineItem("part1", 1, 100.0d)
+  private[this] lazy val lineFor50Pounds = lineItem("part2", 1, 50.0d)
+  private[this] lazy val invoiceFor100Pounds = invoice(lineFor100Pounds, "PoRef")
+  private[this] lazy val invoiceFor150Pounds = invoice(Seq(lineFor100Pounds, lineFor50Pounds), "PoRef2")
+
   /*
   * Payments that have errors
   */
   test("Attempt to commit a new payment that does not have sufficient value to pay all the invoices") {
     given("An Invoice Payment for £100")
-    val invoicePayment = InvoicePayment(invoice(Seq(lineItem("part1", 1, 100.0d)), "PoRef"), 100.0d)
+    val invoicePayment = InvoicePayment(invoiceFor100Pounds, 100.0d)
     and("A Payment object for £50 with no invoices already paid by it")
     val payment = Payment(50.0, "pay1", Nil)
     when("The payment is committed to the database")
@@ -36,17 +42,25 @@ class PaymentDbManagerTest extends MongoDbTestBase with GivenWhenThen {
     then("An error is raised")
     response should be(List(PaymentFailed("The payment does not have sufficient available balance to pay £100.00")))
     and("The database is not updated")
-    // TODO database checks
-    fail("Needs to be implemented")
+    Payment where (_.id exists true) get() should be('empty)
+    Document where (_.id exists true) get() should be('empty)
+    Transaction where (_.id exists true) get() should be('empty)
   }
 
   test("Attempt to commit a payment that has already been partially allocated to some invoices that does not have sufficient value to pay all the additional invoices") {
     given("An Invoice Payment for £100")
+    val invoicePayment = InvoicePayment(invoiceFor100Pounds, 100.0d)
     and("A Payment for £200 that has already had £150 allocated to")
+    val allocatedInvoicePayment = InvoicePayment(invoiceFor150Pounds, 150.0d)
+    val payment = Payment(200.0, "pay2", allocatedInvoicePayment)
     when("The payment is committed to the database")
+    val response = PaymentDbManager.commitPayment(payment, invoicePayment)
     then("An error is raised")
+    response should be(List(PaymentFailed("The payment does not have sufficient available balance to pay £100.00")))
     and("The database is not updated")
-    fail("Needs to be implemented")
+    Payment where (_.id exists true) get() should be('empty)
+    Document where (_.id exists true) get() should be('empty)
+    Transaction where (_.id exists true) get() should be('empty)
   }
 
   test("Attempt to commit an Invoice Payment with a Payment that is already fully allocated") {
@@ -59,6 +73,18 @@ class PaymentDbManagerTest extends MongoDbTestBase with GivenWhenThen {
   }
 
   test("Attempt to commit an Invoice Payment for an Invoice that is not in the database") {
+    fail("Needs to be implemented")
+  }
+
+  test("Attemp to pay an invoice that is already closed") {
+    fail("Needs to be implemented")
+  }
+
+  test("Attempt to pay more that the total amount of an invoice's value") {
+    fail("Needs to be implemented")
+  }
+
+  test("Attempt to pay more than an invoice's total value in two partial payments") {
     fail("Needs to be implemented")
   }
 
@@ -219,4 +245,5 @@ class PaymentDbManagerTest extends MongoDbTestBase with GivenWhenThen {
 
   private[this] def invoice(lines: Seq[LineItem], poRef: String): Document = Invoice(lines, 0d, poRef)
 
+  private[this] implicit def itemToSeq[T](item: T): Seq[T] = Seq(item)
 }
