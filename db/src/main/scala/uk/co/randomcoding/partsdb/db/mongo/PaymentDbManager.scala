@@ -21,7 +21,6 @@ import com.foursquare.rogue.Rogue._
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
 object PaymentDbManager {
-  import PaymentValidationChecks._
 
   /**
    * Commit a payment to the database, adding some invoice payments to it.
@@ -30,14 +29,13 @@ object PaymentDbManager {
    * @param invoicePayments The [[uk.co.randomcoding.partsdb.core.transaction.InvoicePayment]]s to add to the `payment`
    */
   def commitPayment(payment: Payment, invoicePayments: InvoicePayment*): Seq[PaymentResult] = {
-    paymentErrorChecks flatMap (_(payment, invoicePayments)) match {
+    PaymentValidationChecks(payment, invoicePayments) match {
       case Nil => processCommitOfPayment(payment)
       case errors => errors map (PaymentFailed(_))
     }
   }
 
   private[this] def processCommitOfPayment(payment: Payment, invoicePayments: InvoicePayment*): Seq[PaymentResult] = {
-
     // All ok then update records and commit
     Payment.addInvoices(payment.id.get, invoicePayments)
 
@@ -52,10 +50,6 @@ object PaymentDbManager {
     //TODO: Change returned list from Nil
     Nil
   }
-
-  private[this] def paymentErrorChecks: Seq[(Payment, Seq[InvoicePayment]) => Seq[String]] = Seq(
-    paymentHasSufficientBalanceToPayTheInvoicePayments
-  )
 
   private[this] def closeTransactionsForFullyPaidInvoices(paidInvoices: Seq[Document]) {
     val affectedTransactions = Transaction where (_.documents in (paidInvoices.map(_.id.get))) fetch
