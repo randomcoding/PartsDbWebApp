@@ -66,9 +66,15 @@ class PaymentDbManagerTest extends MongoDbTestBase with GivenWhenThen {
 
   test("Attempt to commit an Invoice Payment with a Payment that is already fully allocated") {
     given("A Payment that is fully allocated")
+    val allocatedInvoicePayment = InvoicePayment(invoiceFor150Pounds, 150.0d)
+    Document.add(invoiceFor150Pounds)
+    val payment = Payment(150.0, "pay3", allocatedInvoicePayment)
     and("An Invoice Payment of any type")
+    val invoicePayment = InvoicePayment(invoiceFor100Pounds, 100.0d)
     when("The Payment is committed")
+    val response = PaymentDbManager.commitPayment(payment, invoicePayment)
     then("An error is raised for the Payment already being fully allocated")
+    response should be(List(PaymentFailed("Payment pay3 has already been fully allocated. It is not possible to pay any more invoices with it")))
     and("The database is not updated")
     fail("Needs to be implemented")
   }
@@ -248,3 +254,4 @@ class PaymentDbManagerTest extends MongoDbTestBase with GivenWhenThen {
 
   private[this] implicit def itemToSeq[T](item: T): Seq[T] = Seq(item)
 }
+
