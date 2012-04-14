@@ -162,13 +162,14 @@ object Document extends Document with MongoMetaRecord[Document] {
    *
    * This also '''does not''' assign a document number as this is done in the `add` method.
    *
+   * The `editable` field is set to true
+   *
    * @param items The [[uk.co.randomcoding.partsdb.core.document.LineItem]]s to create the document with
    * @param docType The type of document. This is on of the [[uk.co.randomcoding.partsdb.core.document.DocumentType]]s
    * @param carriage The cost of carriage for the document
    * @param customerPoRef The customer's Purchase Order Reference number. This will be assigned to the document in the Order stage.
    *                      Defaults to an empty string so it is not required to be entered for Quotes
-   *
-   *                      The `editable` field is set to true
+   * @param invoicedDeliveryNotes The delivery notes that are being charged . This is only applicable to Invoices and defaults to an empty list
    */
   def create(items: Seq[LineItem], docType: DocumentType.DocType, carriage: Double, customerPoRef: String = "", invoicedDeliveryNotes: Seq[Document] = Nil): Document = {
     require(items.nonEmpty, "Line Items Cannot be empty")
