@@ -3,13 +3,16 @@
  */
 package uk.co.randomcoding.partsdb.core.document
 
-import net.liftweb.mongodb.record.{ MongoRecord, MongoMetaRecord }
+import net.liftweb.mongodb.record.{MongoRecord, MongoMetaRecord}
 import net.liftweb.mongodb.record.field._
 import net.liftweb.record.field._
 
 import uk.co.randomcoding.partsdb.core.address.Address
 
 import java.util.Date
+
+import com.foursquare.rogue.Rogue._
+import uk.co.randomcoding.partsdb.core.transaction.Payment
 
 /**
  * `Document`s are the basic objects that make up a [[uk.co.randomcoding.partsdb.core.transaction.Transaction]].
@@ -22,7 +25,7 @@ import java.util.Date
  *
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
-class Document private () extends MongoRecord[Document] with ObjectIdPk[Document] {
+class Document private() extends MongoRecord[Document] with ObjectIdPk[Document] {
   def meta = Document
 
   private val DefaultDocumentId = -1l
@@ -110,12 +113,37 @@ class Document private () extends MongoRecord[Document] with ObjectIdPk[Document
   }
 
   /**
+   * Calculate the unpaid value of this invoice.
+   *
+   * This will assume that if the invoice is closed, it has no outstanding balance
+   *
+   * @return The outstanding balance for this invoice
+   */
+  def remainingBalance: Double = {
+    if (documentType.get != DocumentType.Invoice) documentValue
+    else {
+      editable.get match {
+        case false => 0.0d
+        case true => Payment where (_.paidInvoices subfield (_.paidInvoice) eqs id.get) select (_.paidInvoices) fetch() flatten match {
+          // No payments for this invoice
+          case Nil => documentValue
+          case payments => {
+            val totalPaid = payments filter (_.paidInvoice.get == id.get) map (_.paymentAmount.get) sum
+
+            documentValue - totalPaid
+          }
+        }
+      }
+    }
+  }
+
+  /**
    * Documents are `equals` if they have the same `documentType`, `docNumber`
    */
   override def equals(that: Any): Boolean = that match {
     case other: Document => documentType.get == other.documentType.get &&
-      docNumber.get == other.docNumber.get &&
-      customerPoReference.get == other.customerPoReference.get
+        docNumber.get == other.docNumber.get &&
+        customerPoReference.get == other.customerPoReference.get
     case _ => false
   }
 
@@ -123,6 +151,7 @@ class Document private () extends MongoRecord[Document] with ObjectIdPk[Document
 }
 
 object Document extends Document with MongoMetaRecord[Document] {
+
   import com.foursquare.rogue.Rogue._
   import org.bson.types.ObjectId
 
@@ -137,9 +166,9 @@ object Document extends Document with MongoMetaRecord[Document] {
    * @param docType The type of document. This is on of the [[uk.co.randomcoding.partsdb.core.document.DocumentType]]s
    * @param carriage The cost of carriage for the document
    * @param customerPoRef The customer's Purchase Order Reference number. This will be assigned to the document in the Order stage.
-   * Defaults to an empty string so it is not required to be entered for Quotes
+   *                      Defaults to an empty string so it is not required to be entered for Quotes
    *
-   * The `editable` field is set to true
+   *                      The `editable` field is set to true
    */
   def create(items: Seq[LineItem], docType: DocumentType.DocType, carriage: Double, customerPoRef: String = "", invoicedDeliveryNotes: Seq[Document] = Nil): Document = {
     require(items.nonEmpty, "Line Items Cannot be empty")
@@ -226,21 +255,21 @@ sealed abstract class DocumentInstance(docType: DocumentType.DocType) {
   /**
    * Convenience method to create a new document instance.
    *
-   * This delegates to [[uk.co.randomcoding.partsdb.core.document.DocumentInstance#create(Seq[LineItem],Double,String)]]
+   * This delegates to [[uk.co.randomcoding.partsdb.core.document.DocumentInstance# c r e a t e ( S e q[ L i n e I t e m ], D o u b l e, S t r i n g )]]
    */
   def apply(items: Seq[LineItem], carriage: Double, customerPoRef: String = "", invoicedDeliveryNotes: Seq[Document] = Nil): Document = create(items, carriage, customerPoRef, invoicedDeliveryNotes)
 
   /**
    * Convenience method to create a new document instance.
    *
-   * This delegates to [[uk.co.randomcoding.partsdb.core.document.Document#create(Seq[LineItem],DocumentType.DocType,Double,String)]]
+   * This delegates to [[uk.co.randomcoding.partsdb.core.document.Document# c r e a t e ( S e q[ L i n e I t e m ], D o c u m e n t T y p e.D o c T y p e, D o u b l e, S t r i n g )]]
    */
   def create(items: Seq[LineItem], carriage: Double, customerPoRef: String = "", invoicedDeliveryNotes: Seq[Document] = Nil): Document = Document.create(items, docType, carriage, customerPoRef, invoicedDeliveryNotes)
 
   /**
    * Convenience method to create a new document instance and add it to the database
    *
-   * This delegates to [[uk.co.randomcoding.partsdb.core.document.Document#add(Seq[LineItem],DocumentType.DocType,Double,String)]]
+   * This delegates to [[uk.co.randomcoding.partsdb.core.document.Document# a d d ( S e q[ L i n e I t e m ], D o c u m e n t T y p e.D o c T y p e, D o u b l e, S t r i n g )]]
    */
   def add(items: Seq[LineItem], carriage: Double, customerPoRef: String = "", invoicedDeliveryNotes: Seq[Document] = Nil): Option[Document] = Document.add(create(items, carriage, customerPoRef, invoicedDeliveryNotes))
 }
