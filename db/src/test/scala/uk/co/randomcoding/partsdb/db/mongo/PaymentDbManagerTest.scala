@@ -22,12 +22,15 @@ import uk.co.randomcoding.partsdb.core.transaction.{Transaction, Payment, Invoic
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
 class PaymentDbManagerTest extends MongoDbTestBase with GivenWhenThen {
+
+  import PaymentDbManager.commitPayment
+
   override val dbName = "paymentdbmanagertest"
 
   private[this] lazy val lineFor100Pounds = lineItem("part1", 1, 100.0d)
   private[this] lazy val lineFor50Pounds = lineItem("part2", 1, 50.0d)
-  private[this] lazy val invoiceFor100Pounds = invoice(lineFor100Pounds, "PoRef")
-  private[this] lazy val invoiceFor150Pounds = invoice(Seq(lineFor100Pounds, lineFor50Pounds), "PoRef2")
+  private[this] lazy val invoiceFor100Pounds = invoice(lineFor100Pounds, "PoRef", 101)
+  private[this] lazy val invoiceFor150Pounds = invoice(Seq(lineFor100Pounds, lineFor50Pounds), "PoRef2", 202)
 
   /*
   * Payments that have errors
@@ -42,7 +45,7 @@ class PaymentDbManagerTest extends MongoDbTestBase with GivenWhenThen {
     then("An error is raised")
     response should be(List(PaymentFailed("The payment does not have sufficient available balance to pay £100.00")))
     and("The database is not updated")
-    databaseChecks()
+    performDatabaseChecks()
   }
 
   test("Attempt to commit a payment that has already been partially allocated to some invoices that does not have sufficient value to pay all the additional invoices") {
@@ -57,7 +60,7 @@ class PaymentDbManagerTest extends MongoDbTestBase with GivenWhenThen {
     then("An error is raised")
     response should be(List(PaymentFailed("The payment does not have sufficient available balance to pay £100.00")))
     and("The database is not updated")
-    databaseChecks(expectedDocuments = invoiceFor150Pounds)
+    performDatabaseChecks(expectedDocuments = invoiceFor150Pounds)
   }
 
   test("Attempt to commit an Invoice Payment with a Payment that is already fully allocated") {
@@ -72,11 +75,20 @@ class PaymentDbManagerTest extends MongoDbTestBase with GivenWhenThen {
     then("An error is raised for the Payment already being fully allocated")
     response should be(List(PaymentFailed("Payment pay3 has already been fully allocated. It is not possible to pay any more invoices with it")))
     and("The database is not updated")
-    databaseChecks(expectedDocuments = invoiceFor150Pounds)
+    performDatabaseChecks(expectedDocuments = invoiceFor150Pounds)
   }
 
   test("Attempt to commit an Invoice Payment for an Invoice that is not in the database") {
-    fail("Needs to be implemented")
+    given("A Payment for £100")
+    val payment = Payment(100.0, "pay4", Nil)
+    and("An Invoice Payment for an invoice that is not stored in the database")
+    val invoicePayment = InvoicePayment(invoiceFor100Pounds, 100.0)
+    when("The Payment is committed")
+    val response = commitPayment(payment, invoicePayment)
+    then("An error indicating the invoice was not found is returned")
+    response should be(List(PaymentFailed("Invoice for payment of £100.00 was not found in the database.\nObject Id: %s".format(invoiceFor100Pounds.id.get))))
+    and("The database is not updated")
+    performDatabaseChecks()
   }
 
   test("Attemp to pay an invoice that is already closed") {
@@ -246,11 +258,11 @@ class PaymentDbManagerTest extends MongoDbTestBase with GivenWhenThen {
 
   private[this] def lineItem(partName: String, quantity: Int, price: Double): LineItem = LineItem.create(Random.nextInt(1000), Part.create(partName, vehicle), quantity, price, 0d)
 
-  private[this] def invoice(lines: Seq[LineItem], poRef: String): Document = Invoice(lines, 0d, poRef)
+  private[this] def invoice(lines: Seq[LineItem], poRef: String, documentNumber: Int): Document = Invoice(lines, 0d, poRef).docNumber(documentNumber)
 
   private[this] implicit def itemToList[T](item: T): List[T] = List(item)
 
-  private[this] def databaseChecks(expectedPayments: List[Payment] = Nil, expectedDocuments: List[Document] = Nil, expectedTransactions: List[Transaction] = Nil) {
+  private[this] def performDatabaseChecks(expectedPayments: List[Payment] = Nil, expectedDocuments: List[Document] = Nil, expectedTransactions: List[Transaction] = Nil) {
     Payment where (_.id exists true) fetch() should be(expectedPayments)
     Document where (_.id exists true) fetch() should be(expectedDocuments)
     Transaction where (_.id exists true) fetch() should be(expectedTransactions)

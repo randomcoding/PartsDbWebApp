@@ -11,6 +11,8 @@
 package uk.co.randomcoding.partsdb.db.mongo
 
 import uk.co.randomcoding.partsdb.core.transaction.{InvoicePayment, Payment}
+import org.bson.types.ObjectId
+import uk.co.randomcoding.partsdb.core.document.Document
 
 /**
  * Contains functions to perform validation checks on Payment operations
@@ -44,7 +46,8 @@ object PaymentValidationChecks {
   def apply(payment: Payment, invoicePayments: Seq[InvoicePayment]): Seq[String] = paymentErrorChecks flatMap (_(payment, invoicePayments))
 
   private[this] def paymentErrorChecks: Seq[(Payment, Seq[InvoicePayment]) => Seq[String]] = Seq(
-    paymentHasSufficientBalanceToPayTheInvoicePayments
+    paymentHasSufficientBalanceToPayTheInvoicePayments,
+    invoicesToBePaidAreInDatabase
   )
 
   /**
@@ -59,6 +62,17 @@ object PaymentValidationChecks {
     payment.isFullyAllocated match {
       case true => Seq("Payment %s has already been fully allocated. It is not possible to pay any more invoices with it".format(payment.paymentReference.get))
       case false => if (payment.unallocatedBalance >= amountToAllocate) Nil else Seq("The payment does not have sufficient available balance to pay £%.2f".format(amountToAllocate))
+    }
+  }
+
+  val invoicesToBePaidAreInDatabase: (Payment, Seq[InvoicePayment]) => Seq[String] = (payment, invoicePayments) => {
+    val findInvoiceInDatabase = (invoiceId: ObjectId) => Document findById (invoiceId)
+    for {
+      invPayment <- invoicePayments
+      if findInvoiceInDatabase(invPayment.paidInvoice.get) isEmpty
+    }
+    yield {
+      "Invoice for payment of £%.2f was not found in the database.\nObject Id: %s".format(invPayment.paymentAmount.get, invPayment.paidInvoice.get)
     }
   }
 }
