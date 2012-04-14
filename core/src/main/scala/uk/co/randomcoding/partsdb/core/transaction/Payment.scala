@@ -92,18 +92,20 @@ object Payment extends Payment with MongoMetaRecord[Payment] {
    *
    * @param paymentId The Object Id of the payment to modify
    * @param invoicePayments The [[uk.co.randomcoding.partsdb.core.transaction.InvoicePayment]]s to set the
-   * @return The modified [[uk.co.randomcoding.partsdb.core.transaction.Payment]] record
+   * @return The modified [[uk.co.randomcoding.partsdb.core.transaction.Payment]] record if it is present in the database.
+   *         If there is not a `Payment` with the given `paymentId` then returns `None`
    */
-  def addInvoices(paymentId: ObjectId, invoicePayments: Seq[InvoicePayment]) = {
-    val recordPayments = findById(paymentId) match {
-      case Some(p) => p.paidInvoices.get
-      case _ => Nil
+  def addInvoices(paymentId: ObjectId, invoicePayments: Seq[InvoicePayment]): Option[Payment] = {
+    findById(paymentId) match {
+      case Some(p) => {
+        val existingPayments = p.paidInvoices.get
+        val paymentsToAdd = (existingPayments ++ invoicePayments).toList.distinct
+
+        Payment where (_.id eqs paymentId) modify (_.paidInvoices setTo paymentsToAdd) updateMulti
+
+        findById(paymentId)
+      }
+      case _ => None
     }
-
-    val paymentsToAdd = (recordPayments ++ invoicePayments).toList.distinct
-
-    Payment where (_.id eqs paymentId) modify (_.paidInvoices setTo paymentsToAdd) updateMulti
-
-    findById(paymentId)
   }
 }
