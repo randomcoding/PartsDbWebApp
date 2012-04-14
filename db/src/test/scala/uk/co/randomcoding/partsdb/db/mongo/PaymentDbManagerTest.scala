@@ -43,7 +43,7 @@ class PaymentDbManagerTest extends MongoDbTestBase with GivenWhenThen {
     when("The payment is committed to the database")
     val response = PaymentDbManager.commitPayment(payment, invoicePayment)
     then("An error is raised")
-    response should be(List(PaymentFailed("The payment does not have sufficient available balance to pay £100.00")))
+    response should contain(PaymentFailed("The payment does not have sufficient available balance to pay £100.00").asInstanceOf[PaymentResult])
     and("The database is not updated")
     performDatabaseChecks()
   }
@@ -58,7 +58,7 @@ class PaymentDbManagerTest extends MongoDbTestBase with GivenWhenThen {
     when("The payment is committed to the database")
     val response = PaymentDbManager.commitPayment(payment, invoicePayment)
     then("An error is raised")
-    response should be(List(PaymentFailed("The payment does not have sufficient available balance to pay £100.00")))
+    response should contain(PaymentFailed("The payment does not have sufficient available balance to pay £100.00").asInstanceOf[PaymentResult])
     and("The database is not updated")
     performDatabaseChecks(expectedDocuments = invoiceFor150Pounds)
   }
@@ -73,7 +73,7 @@ class PaymentDbManagerTest extends MongoDbTestBase with GivenWhenThen {
     when("The Payment is committed")
     val response = PaymentDbManager.commitPayment(payment, invoicePayment)
     then("An error is raised for the Payment already being fully allocated")
-    response should be(List(PaymentFailed("Payment pay3 has already been fully allocated. It is not possible to pay any more invoices with it")))
+    response should contain(PaymentFailed("Payment pay3 has already been fully allocated. It is not possible to pay any more invoices with it").asInstanceOf[PaymentResult])
     and("The database is not updated")
     performDatabaseChecks(expectedDocuments = invoiceFor150Pounds)
   }
@@ -86,13 +86,41 @@ class PaymentDbManagerTest extends MongoDbTestBase with GivenWhenThen {
     when("The Payment is committed")
     val response = commitPayment(payment, invoicePayment)
     then("An error indicating the invoice was not found is returned")
-    response should be(List(PaymentFailed("Invoice for payment of £100.00 was not found in the database.\nObject Id: %s".format(invoiceFor100Pounds.id.get))))
+    response should contain(PaymentFailed("Invoice for payment of £100.00 was not found in the database.\nObject Id: %s".format(invoiceFor100Pounds.id.get)).asInstanceOf[PaymentResult])
     and("The database is not updated")
     performDatabaseChecks()
   }
 
-  test("Attemp to pay an invoice that is already closed") {
-    fail("Needs to be implemented")
+  test("Attempt to commit an Invoice Payment for two Invoices that are not in the database") {
+    given("A Payment for £100")
+    val payment = Payment(250.0, "pay5", Nil)
+    and("Two Invoice Payments for invoices that are not stored in the database")
+    val invoicePayment1 = InvoicePayment(invoiceFor100Pounds, 100.0)
+    val invoicePayment2 = InvoicePayment(invoiceFor150Pounds, 150.0)
+    when("The Payment is committed")
+    val response = commitPayment(payment, invoicePayment1, invoicePayment2)
+    then("An error indicating neither of the invoices were found is returned")
+    response should (have size (2) and
+        contain(PaymentFailed("Invoice for payment of £100.00 was not found in the database.\nObject Id: %s".format(invoiceFor100Pounds.id.get)).asInstanceOf[PaymentResult]) and
+        contain(PaymentFailed("Invoice for payment of £150.00 was not found in the database.\nObject Id: %s".format(invoiceFor150Pounds.id.get)).asInstanceOf[PaymentResult]))
+    and("The database is not updated")
+    performDatabaseChecks()
+  }
+
+  test("Attempt to pay an invoice that is already closed") {
+    given("A Payment for £100")
+    val payment = Payment(100.0, "pay6", Nil)
+    and("An invoice that is in the database and already marked as closed")
+    Document.add(invoiceFor100Pounds)
+    Document.close(invoiceFor100Pounds.id.get)
+    and("An Invoice Payment for the closed invoice")
+    val invoicePayment = InvoicePayment(invoiceFor100Pounds, 100.00)
+    when("The Payment is committed")
+    val response = commitPayment(payment, invoicePayment)
+    then("An error reporting the invoice is already closed is returned")
+    response should be(List(PaymentFailed("Invoice INV000101 has already been closed")))
+    and("The database is not updated")
+    performDatabaseChecks(expectedDocuments = List(invoiceFor100Pounds))
   }
 
   test("Attempt to pay more that the total amount of an invoice's value") {

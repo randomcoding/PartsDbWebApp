@@ -46,8 +46,9 @@ object PaymentValidationChecks {
   def apply(payment: Payment, invoicePayments: Seq[InvoicePayment]): Seq[String] = paymentErrorChecks flatMap (_(payment, invoicePayments))
 
   private[this] def paymentErrorChecks: Seq[(Payment, Seq[InvoicePayment]) => Seq[String]] = Seq(
-    paymentHasSufficientBalanceToPayTheInvoicePayments,
-    invoicesToBePaidAreInDatabase
+    invoicesToBePaidAreInDatabase,
+    invoicesToBePaidAreNotAlreadyClosed,
+    paymentHasSufficientBalanceToPayTheInvoicePayments
   )
 
   /**
@@ -65,14 +66,27 @@ object PaymentValidationChecks {
     }
   }
 
+  private[this] def findInvoiceInDatabase(invoiceId: ObjectId) = Document findById (invoiceId)
+
   val invoicesToBePaidAreInDatabase: (Payment, Seq[InvoicePayment]) => Seq[String] = (payment, invoicePayments) => {
-    val findInvoiceInDatabase = (invoiceId: ObjectId) => Document findById (invoiceId)
     for {
       invPayment <- invoicePayments
       if findInvoiceInDatabase(invPayment.paidInvoice.get) isEmpty
     }
     yield {
       "Invoice for payment of £%.2f was not found in the database.\nObject Id: %s".format(invPayment.paymentAmount.get, invPayment.paidInvoice.get)
+    }
+  }
+
+  val invoicesToBePaidAreNotAlreadyClosed: (Payment, Seq[InvoicePayment]) => Seq[String] = (payment, invoicePayments) => {
+    for {
+      invPayment <- invoicePayments
+      val inv = findInvoiceInDatabase(invPayment.paidInvoice.get)
+      if inv.isDefined
+      if inv.get.editable.get == false
+    }
+    yield {
+      "Invoice %s has already been closed".format(inv.get.documentNumber)
     }
   }
 }
