@@ -138,6 +138,32 @@ class PaymentDbManagerTest extends MongoDbTestBase with GivenWhenThen {
     performDatabaseChecks(expectedDocuments = List(invoiceFor100Pounds))
   }
 
+  test("Attempt to pay more that the remaining balance of an invoice (in this case the full amount) in a payment for two invoices") {
+    given("A Payment for £300")
+    val payment = Payment(300.0, "pay7", Nil)
+    and("An invoice that is in the database for £100")
+    Document.add(invoiceFor100Pounds)
+    and("An invoice that is in the database for £150")
+    Document.add(invoiceFor150Pounds)
+    and("An Invoice Payment for £150 against the invoice for £100")
+    val invoicePayment1 = InvoicePayment(invoiceFor100Pounds, 150.00)
+    and("An Invoice Payment for £150 against the invoice for £150")
+    val invoicePayment2 = InvoicePayment(invoiceFor150Pounds, 150.00)
+    when("The Payment is committed")
+    val response = commitPayment(payment, invoicePayment1, invoicePayment2)
+    then("An error reporting the payment is for more than the remaining balance of the invoice for £100 is returned")
+    response should be(List(PaymentFailed("Invoice INV000101 only has £100.00 outstanding. It is not possible to allocate £150.00 to this invoice")))
+    and("The Database is not updated")
+    performDatabaseChecks(expectedDocuments = List(invoiceFor100Pounds, invoiceFor150Pounds))
+    val inv1 = Document.findById(invoiceFor150Pounds.id.get).get
+    inv1.editable.get should be(true)
+    inv1.remainingBalance should be(150.00)
+    val inv2 = Document.findById(invoiceFor100Pounds.id.get).get
+    inv2.editable.get should be(true)
+    inv2.remainingBalance should be(100.00)
+
+  }
+
   test("Attempt to pay more than an invoice's remaining balance with the second of two partial payments") {
     given("An invoice for £100 in the database")
     and("A successful Payment of £50 against that invoice")
