@@ -17,6 +17,9 @@ import uk.co.randomcoding.partsdb.core.vehicle.Vehicle
 import uk.co.randomcoding.partsdb.core.part.Part
 import com.foursquare.rogue.Rogue._
 import uk.co.randomcoding.partsdb.core.transaction.{Transaction, Payment, InvoicePayment}
+import uk.co.randomcoding.partsdb.core.customer.Customer
+import uk.co.randomcoding.partsdb.core.address.Address
+import uk.co.randomcoding.partsdb.core.contact.ContactDetails
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
@@ -180,14 +183,28 @@ class PaymentDbManagerTest extends MongoDbTestBase with GivenWhenThen {
   */
   test("Payment of a Transaction with a single document stream correctly closes the invoice and completes Transaction") {
     given("A Transaction with a single invoice that has not been paid")
+    val inv = Document.add(invoiceFor100Pounds).get
+    val transaction = Transaction.add("Trans 1", customer("Customer"), Seq(invoiceFor100Pounds)).get
     and("An Invoice Payment for the full amount of the invoice")
+    val invoicePayment = InvoicePayment(inv, 100.00)
     and("A Payment Object that only contains that invoice")
+    val payment = Payment(100, "pay101", Nil)
     when("The payment is committed")
-    then("The Invoice is matked as closed")
+    val response = commitPayment(payment, invoicePayment)
+    then("The response is Payment Success")
+    response should be(List(PaymentSuccessful))
+    and("The Invoice is marked as closed")
+    val updatedInv = Document.findById(invoiceFor100Pounds.id.get).get
+    updatedInv.editable.get should be(false)
     and("The Transaction is completed")
+    val updatedTransaction = Transaction.findById(transaction.id.get).get
+    updatedTransaction.transactionState should be("Completed")
     and("The Payment is marked as fully allocated")
+    val updatedPayment = Payment.findById(payment.id.get).get
+    updatedPayment.isFullyAllocated should be(true)
+    updatedPayment.unallocatedBalance should be(0)
     and("The Invoice Payment is paid in full")
-    fail("Needs to be implemented")
+    updatedPayment.paidInvoices.get map (_.paidInFull) should be(List(Some(true)))
   }
 
   test("A Partial Payment for a single invoice in a Transaction with a single invoice does not close the invoice and the transaction is not marked as closed") {
@@ -331,6 +348,8 @@ class PaymentDbManagerTest extends MongoDbTestBase with GivenWhenThen {
   private[this] def lineItem(partName: String, quantity: Int, price: Double): LineItem = LineItem.create(Random.nextInt(1000), Part.create(partName, vehicle), quantity, price, 0d)
 
   private[this] def invoice(lines: Seq[LineItem], poRef: String, documentNumber: Int): Document = Invoice(lines, 0d, poRef).docNumber(documentNumber)
+
+  private[this] def customer(customerName: String): Customer = Customer.create(customerName, Address.create("Address", "Address", "United Kingdom"), 30, ContactDetails.create("Dave", "", "", "", "", true))
 
   private[this] implicit def itemToList[T](item: T): List[T] = List(item)
 
