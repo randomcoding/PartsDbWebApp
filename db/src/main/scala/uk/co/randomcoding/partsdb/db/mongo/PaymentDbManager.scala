@@ -98,7 +98,6 @@ object PaymentDbManager {
    *         If there was a problem with the close operation, this will be `None`
    */
   private[this] def closeTransactionIfFullyPaid(transaction: Transaction): Option[Transaction] = {
-    //FIXME: This is not working properly
     val documents = Document where (_.id in transaction.documents.get) fetch()
     val allDocumentsClosed = documents filter (_.editable.get == true) isEmpty
     val allInvoicesPaid = documents filter (_.documentType.get == DocumentType.Invoice) filter (_.remainingBalance > 0) isEmpty

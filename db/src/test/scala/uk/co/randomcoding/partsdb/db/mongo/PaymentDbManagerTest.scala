@@ -207,7 +207,6 @@ class PaymentDbManagerTest extends MongoDbTestBase with GivenWhenThen {
     updatedInv.editable.get should be(false)
     and("The Transaction is completed")
     val updatedTransaction = Transaction.findById(transaction.id.get).get
-    //TODO: The transaction is not updated correctly
     updatedTransaction.completionDate.get should not be (new Date(0))
     updatedTransaction.transactionState should be("Completed")
     and("The Payment is marked as fully allocated")
