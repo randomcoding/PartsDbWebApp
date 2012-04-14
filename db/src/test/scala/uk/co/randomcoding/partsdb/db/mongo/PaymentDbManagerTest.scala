@@ -123,22 +123,29 @@ class PaymentDbManagerTest extends MongoDbTestBase with GivenWhenThen {
     performDatabaseChecks(expectedDocuments = List(invoiceFor100Pounds))
   }
 
-  test("Attempt to pay more that the total amount of an invoice's value") {
+  test("Attempt to pay more that the remaining balance of an invoice (in this case the full amount)") {
     given("A Payment for £150")
-    val payment = Payment(100.0, "pay7", Nil)
+    val payment = Payment(150.0, "pay7", Nil)
     and("An invoice that is in the database for £100")
     Document.add(invoiceFor100Pounds)
     and("An Invoice Payment for £150 against the invoice for £100")
     val invoicePayment = InvoicePayment(invoiceFor100Pounds, 150.00)
     when("The Payment is committed")
     val response = commitPayment(payment, invoicePayment)
-    then("An error reporting the payment is for more than the total of the invoice is returned")
-    response should be(List(PaymentFailed("Invoice INV000101 only has £100 outstanding. It is not possible to allocate £150 to this invoice")))
+    then("An error reporting the payment is for more than the remaining balance of the invoice is returned")
+    response should be(List(PaymentFailed("Invoice INV000101 only has £100.00 outstanding. It is not possible to allocate £150.00 to this invoice")))
     and("The Database is not updated")
     performDatabaseChecks(expectedDocuments = List(invoiceFor100Pounds))
   }
 
-  test("Attempt to pay more than an invoice's total value in two partial payments") {
+  test("Attempt to pay more than an invoice's remaining balance with the second of two partial payments") {
+    given("An invoice for £100 in the database")
+    and("A successful Payment of £50 against that invoice")
+    and("Another Payment for £75")
+    and("A corresponding Invoice Payment for £75 against the same invoice")
+    when("The Second payment is committed")
+    then("An error reporting the second payment is for more that the remaining balance on the invoice is returned")
+    and("The database is not updated with any of the details from the second payment")
     fail("Needs to be implemented")
   }
 

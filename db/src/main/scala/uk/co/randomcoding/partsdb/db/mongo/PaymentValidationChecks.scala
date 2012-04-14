@@ -48,6 +48,7 @@ object PaymentValidationChecks {
   private[this] def paymentErrorChecks: Seq[(Payment, Seq[InvoicePayment]) => Seq[String]] = Seq(
     invoicesToBePaidAreInDatabase,
     invoicesToBePaidAreNotAlreadyClosed,
+    invoicePaymentIsForTheOutstandingBalanceOfTheInvoiceOrLess,
     paymentHasSufficientBalanceToPayTheInvoicePayments
   )
 
@@ -87,6 +88,19 @@ object PaymentValidationChecks {
     }
     yield {
       "Invoice %s has already been closed".format(inv.get.documentNumber)
+    }
+  }
+
+  val invoicePaymentIsForTheOutstandingBalanceOfTheInvoiceOrLess: (Payment, Seq[InvoicePayment]) => Seq[String] = (payment, invoicePayments) => {
+    for {
+      invPayment <- invoicePayments
+      val inv = findInvoiceInDatabase(invPayment.paidInvoice.get)
+      if inv.isDefined
+      val outstandingBalance = inv.get.remainingBalance
+      if invPayment.paymentAmount.get > outstandingBalance
+    }
+    yield {
+      "Invoice %s only has £%.2f outstanding. It is not possible to allocate £%.2f to this invoice".format(inv.get.documentNumber, outstandingBalance, invPayment.paymentAmount.get)
     }
   }
 }
