@@ -30,7 +30,7 @@ object PaymentDbManager {
    */
   def commitPayment(payment: Payment, invoicePayments: InvoicePayment*): Seq[PaymentResult] = {
     PaymentValidationChecks(payment, invoicePayments) match {
-      case Nil => processCommitOfPayment(payment)
+      case Nil => processCommitOfPayment(payment, invoicePayments: _*)
       case errors => errors map (PaymentFailed(_))
     }
   }
@@ -42,9 +42,12 @@ object PaymentDbManager {
    * Here we add the payments to the database and if that went ok then update the relevant invoices and transactions
    */
   private[this] def processCommitOfPayment(payment: Payment, invoicePayments: InvoicePayment*): Seq[PaymentResult] = {
-    Payment.addInvoices(payment.id.get, invoicePayments) match {
-      case Some(p) => recordPaymentsAgainstInvoicesAndUpdateTransactions(invoicePayments)
-      case _ => Seq(PaymentFailed("Failed to add invoice payments to database"))
+    Payment.add(payment) match {
+      case Some(pmt) => Payment.addInvoices(payment.id.get, invoicePayments) match {
+        case Some(p) => recordPaymentsAgainstInvoicesAndUpdateTransactions(invoicePayments)
+        case _ => Seq(PaymentFailed("Failed to add invoice payments to database"))
+      }
+      case _ => Seq(PaymentFailed("Failed to add Payment %s for £%.2f to the database".format(payment.paymentReference.get, payment.paymentAmount.get)))
     }
   }
 
@@ -95,6 +98,7 @@ object PaymentDbManager {
    *         If there was a problem with the close operation, this will be `None`
    */
   private[this] def closeTransactionIfFullyPaid(transaction: Transaction): Option[Transaction] = {
+    //FIXME: This is not working properly
     val documents = Document where (_.id in transaction.documents.get) fetch()
     val allDocumentsClosed = documents filter (_.editable.get == true) isEmpty
     val allInvoicesPaid = documents filter (_.documentType.get == DocumentType.Invoice) filter (_.remainingBalance > 0) isEmpty

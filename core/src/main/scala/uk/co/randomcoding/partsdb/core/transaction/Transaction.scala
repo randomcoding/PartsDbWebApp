@@ -14,6 +14,7 @@ import uk.co.randomcoding.partsdb.core.document.{DocumentType, Document}
 import net.liftweb.record.field._
 import net.liftweb.mongodb.record.field._
 import net.liftweb.mongodb.record.{MongoRecord, MongoMetaRecord}
+import org.joda.time.DateTime
 
 /**
  * Encapsulates all the data for a transaction between the company and a customer.
@@ -198,7 +199,8 @@ object Transaction extends Transaction with MongoMetaRecord[Transaction] {
    * @return The Modified transaction, or None if the transaction is not found in the database
    */
   def close(oid: ObjectId): Option[Transaction] = {
-    Transaction where (_.id eqs oid) modify (_.completionDate setTo new Date()) updateMulti
+    val now = DateTime.now
+    Transaction where (_.id eqs oid) modify (_.completionDate setTo now.toDate) updateMulti
 
     findById(oid)
   }

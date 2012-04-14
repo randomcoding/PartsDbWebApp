@@ -11,7 +11,6 @@
 package uk.co.randomcoding.partsdb.db.mongo
 
 import org.scalatest.GivenWhenThen
-import uk.co.randomcoding.partsdb.core.document.{Invoice, LineItem, Document}
 import util.Random
 import uk.co.randomcoding.partsdb.core.vehicle.Vehicle
 import uk.co.randomcoding.partsdb.core.part.Part
@@ -20,6 +19,8 @@ import uk.co.randomcoding.partsdb.core.transaction.{Transaction, Payment, Invoic
 import uk.co.randomcoding.partsdb.core.customer.Customer
 import uk.co.randomcoding.partsdb.core.address.Address
 import uk.co.randomcoding.partsdb.core.contact.ContactDetails
+import java.util.Date
+import uk.co.randomcoding.partsdb.core.document._
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
@@ -34,6 +35,8 @@ class PaymentDbManagerTest extends MongoDbTestBase with GivenWhenThen {
   private[this] lazy val lineFor50Pounds = lineItem("part2", 1, 50.0d)
   private[this] lazy val invoiceFor100Pounds = invoice(lineFor100Pounds, "PoRef", 101)
   private[this] lazy val invoiceFor150Pounds = invoice(Seq(lineFor100Pounds, lineFor50Pounds), "PoRef2", 202)
+  private[this] lazy val orderFor100Pounds = Order(lineFor100Pounds, 0, "PoRef")
+  private[this] lazy val deliveryFor100Pounds = DeliveryNote(lineFor100Pounds, 0, "PoRef")
 
   /*
   * Payments that have errors
@@ -121,7 +124,7 @@ class PaymentDbManagerTest extends MongoDbTestBase with GivenWhenThen {
     when("The Payment is committed")
     val response = commitPayment(payment, invoicePayment)
     then("An error reporting the invoice is already closed is returned")
-    response should be(List(PaymentFailed("Invoice INV000101 has already been closed")))
+    response should contain(PaymentFailed("Invoice INV000101 has already been closed").asInstanceOf[PaymentResult])
     and("The database is not updated")
     performDatabaseChecks(expectedDocuments = List(invoiceFor100Pounds))
   }
@@ -182,9 +185,15 @@ class PaymentDbManagerTest extends MongoDbTestBase with GivenWhenThen {
   * Payments for a single invoice and Transactions with a single invoice
   */
   test("Payment of a Transaction with a single document stream correctly closes the invoice and completes Transaction") {
-    given("A Transaction with a single invoice that has not been paid")
+    given("A series of documents for a single order -> delivery -> invoice")
     val inv = Document.add(invoiceFor100Pounds).get
-    val transaction = Transaction.add("Trans 1", customer("Customer"), Seq(invoiceFor100Pounds)).get
+    Document.add(orderFor100Pounds)
+    Document.close(orderFor100Pounds.id.get) should be('defined)
+    Document.add(deliveryFor100Pounds)
+    Document.close(deliveryFor100Pounds.id.get) should be('defined)
+
+    and("A Transaction with a single invoice that has not been paid")
+    val transaction = Transaction.add("Trans 1", customer("Customer"), Seq(orderFor100Pounds, deliveryFor100Pounds, invoiceFor100Pounds)).get
     and("An Invoice Payment for the full amount of the invoice")
     val invoicePayment = InvoicePayment(inv, 100.00)
     and("A Payment Object that only contains that invoice")
@@ -198,6 +207,8 @@ class PaymentDbManagerTest extends MongoDbTestBase with GivenWhenThen {
     updatedInv.editable.get should be(false)
     and("The Transaction is completed")
     val updatedTransaction = Transaction.findById(transaction.id.get).get
+    //TODO: The transaction is not updated correctly
+    updatedTransaction.completionDate.get should not be (new Date(0))
     updatedTransaction.transactionState should be("Completed")
     and("The Payment is marked as fully allocated")
     val updatedPayment = Payment.findById(payment.id.get).get
