@@ -113,11 +113,14 @@ class Document private() extends MongoRecord[Document] with ObjectIdPk[Document]
   }
 
   /**
-   * Calculate the unpaid value of this invoice.
+   * Calculate the unpaid value of this invoice by getting the payment values of all the
+   * [[uk.co.randomcoding.partsdb.core.transaction.InvoicePayment]]s allocated to this invoice from the database.
    *
-   * This will assume that if the invoice is closed, it has no outstanding balance
+   * This will assume that if the invoice is closed, it has no outstanding balance.
    *
-   * @return The outstanding balance for this invoice
+   * Additionally, if the remaining balance is calculated to be less than 0.001 then this will return ''0.0''
+   *
+   * @return The outstanding balance for this invoice or ''0.0'' if it is fully paid
    */
   def remainingBalance: Double = {
     if (documentType.get != DocumentType.Invoice) documentValue
@@ -130,7 +133,9 @@ class Document private() extends MongoRecord[Document] with ObjectIdPk[Document]
           case payments => {
             val totalPaid = payments filter (_.paidInvoice.get == id.get) map (_.paymentAmount.get) sum
 
-            documentValue - totalPaid
+            val outstanding = documentValue - totalPaid
+
+            if (outstanding < 0.001) 0.0 else outstanding
           }
         }
       }
@@ -242,9 +247,14 @@ object Document extends Document with MongoMetaRecord[Document] {
 
   /**
    * Set the document with the given `oid` to not editable
+   *
+   * @return The updated document in an `Option[`[[uk.co.randomcoding.partsdb.core.document.Document]]`]`
+   *         If this returns `None` then there was no document with the given `oid` in the database
    */
-  def close(oid: ObjectId) {
+  def close(oid: ObjectId): Option[Document] = {
     Document.where(_.id eqs oid).modify(_.editable setTo false) updateMulti
+
+    findById(oid)
   }
 
 }
