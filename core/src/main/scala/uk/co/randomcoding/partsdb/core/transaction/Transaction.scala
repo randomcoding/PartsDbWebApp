@@ -6,8 +6,6 @@ package uk.co.randomcoding.partsdb.core.transaction
 import java.util.Date
 
 
-import org.joda.time.DateTime
-
 import com.foursquare.rogue.Rogue._
 
 import uk.co.randomcoding.partsdb.core.customer.Customer
@@ -52,9 +50,11 @@ class Transaction private() extends MongoRecord[Transaction] with ObjectIdPk[Tra
   /**
    * The date this transaction was completed.
    *
-   * If there is no value here, then the transaction is still active.
+   * Default value is `new Date(0)`
    */
-  object completionDate extends DateField(this)
+  object completionDate extends DateField(this) {
+    override val defaultValue = new Date(0)
+  }
 
   /**
    * Two documents are `equal` if they are for the same customer (determined by the same `oid`) and
@@ -86,7 +86,7 @@ class Transaction private() extends MongoRecord[Transaction] with ObjectIdPk[Tra
    * - '''Invoiced'''
    */
   lazy val transactionState = {
-    new DateTime(completionDate.get) isAfter new DateTime(creationDate.get) match {
+    completionDate.get after creationDate.get match {
       case true => "Completed"
       case false => {
         val docs = documents.get map (Document.findById(_)) filter (_ isDefined) map (_.get)
@@ -187,6 +187,20 @@ object Transaction extends Transaction with MongoMetaRecord[Transaction] {
       case _ => Nil // If this is the case then the update operation will do nothing so Nil is safe
     }
     Transaction.where(_.id eqs transactionId).modify(_.documents setTo docIds).updateMulti
+  }
+
+  /**
+   * Mark a transaction as closed.
+   *
+   * This sets the `completionDate` to the current date.
+   *
+   * @param oid The `ObjectId` of the transaction to close
+   * @return The Modified transaction, or None if the transaction is not found in the database
+   */
+  def close(oid: ObjectId): Option[Transaction] = {
+    Transaction where (_.id eqs oid) modify (_.completionDate setTo new Date()) updateMulti
+
+    findById(oid)
   }
 }
 
