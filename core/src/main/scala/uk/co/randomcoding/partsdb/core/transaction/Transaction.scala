@@ -24,6 +24,8 @@ import org.joda.time.DateTime
 class Transaction private() extends MongoRecord[Transaction] with ObjectIdPk[Transaction] {
   def meta = Transaction
 
+  private val defaultCompletionDate = new Date(0)
+
   object shortName extends StringField(this, 50)
 
   /**
@@ -54,7 +56,7 @@ class Transaction private() extends MongoRecord[Transaction] with ObjectIdPk[Tra
    * Default value is `new Date(0)`
    */
   object completionDate extends DateField(this) {
-    override val defaultValue = new Date(0)
+    override val defaultValue = defaultCompletionDate
   }
 
   /**
@@ -87,9 +89,9 @@ class Transaction private() extends MongoRecord[Transaction] with ObjectIdPk[Tra
    * - '''Invoiced'''
    */
   lazy val transactionState = {
-    completionDate.get after creationDate.get match {
-      case true => "Completed"
-      case false => {
+    completionDate.get == defaultCompletionDate match {
+      case false => "Completed"
+      case true => {
         val docs = documents.get map (Document.findById(_)) filter (_ isDefined) map (_.get)
         val quoteCount = docs.filter(_.documentType.get == DocumentType.Quote).size
         val orderCount = docs.filter(_.documentType.get == DocumentType.Order).size
