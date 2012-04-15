@@ -39,8 +39,11 @@ class PaymentDbManagerTest extends MongoDbTestBase with GivenWhenThen {
   private[this] lazy val invoiceFor150Pounds = invoice(Seq(lineFor100Pounds, lineFor50Pounds), "PoRef2", 202)
   private[this] lazy val orderFor100Pounds = Order(lineFor100Pounds, 0, "PoRef")
   private[this] lazy val deliveryFor100Pounds = DeliveryNote(lineFor100Pounds, 0, "PoRef")
+  private[this] lazy val orderFor150Pounds = Order(Seq(lineFor100Pounds, lineFor50Pounds), 0, "PoRef2")
+  private[this] lazy val deliveryFor150Pounds = DeliveryNote(Seq(lineFor100Pounds, lineFor50Pounds), 0, "PoRef2")
 
   private[this] lazy val transactionFor100Pounds = Transaction.create("Trans 1", customer("Customer"), Seq(orderFor100Pounds, deliveryFor100Pounds, invoiceFor100Pounds))
+  private[this] lazy val transactionWithTwoInvoicesFor250Pounds = Transaction.create("Trans 3", customer("Customer"), Seq(orderFor100Pounds, orderFor150Pounds, deliveryFor100Pounds, deliveryFor150Pounds, invoiceFor100Pounds, invoiceFor150Pounds))
 
   private[this] val successfulPaymentResponse = List(PaymentSuccessful)
 
@@ -287,7 +290,8 @@ class PaymentDbManagerTest extends MongoDbTestBase with GivenWhenThen {
   */
   test("Payment for the full amount of one of multiple invoices in a Transaction correctly closes the invoice, but does not complete the Transaction") {
     given("A Transaction that contains two unpaid invoices")
-    and("A Payment for the full amount of one invoice in the transaction")
+    val transaction =
+      and("A Payment for the full amount of one invoice in the transaction")
     and("An Invoice Payment that pays the full value of the invoice")
     when("The payment is committed")
     then("The paid Invoice is marked as closed")
@@ -412,14 +416,20 @@ class PaymentDbManagerTest extends MongoDbTestBase with GivenWhenThen {
     Transaction where (_.id exists true) fetch() should be(expectedTransactions)
   }
 
-  private[this] def setupTransactionFor100Pounds: Transaction = {
-    Document.add(invoiceFor100Pounds).get
-    Document.add(orderFor100Pounds)
-    Document.close(orderFor100Pounds.id.get) should be('defined)
-    Document.add(deliveryFor100Pounds)
-    Document.close(deliveryFor100Pounds.id.get) should be('defined)
+  private[this] def setupTransactionFor100Pounds: Transaction = setupTransaction(transactionFor100Pounds, invoiceFor100Pounds, orderFor100Pounds, deliveryFor100Pounds)
 
-    Transaction.add(transactionFor100Pounds).get
+  private[this] def setupTransaction(transaction: Transaction, documents: Document*): Transaction = {
+    // Sanity check that the transaction contains all the documents in the documents list
+    val orderById = (ids: List[ObjectId]) => ids.sortBy(_.toString)
+    orderById(transaction.documents.get) should be(orderById(documents.map(_.id.get).toList))
+
+    // Add the documents and close the non invoices
+    documents foreach (doc => {
+      Document add doc
+      if (doc.documentType.get != DocumentType.Invoice) Document close doc
+    })
+
+    Transaction.add(transaction).get
   }
 
   private[this] def getCurrentInvoiceFromDb(inv: Document): Document = Document.findById(inv.id.get).get
