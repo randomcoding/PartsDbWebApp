@@ -21,6 +21,8 @@ import uk.co.randomcoding.partsdb.core.address.Address
 import uk.co.randomcoding.partsdb.core.contact.ContactDetails
 import java.util.Date
 import uk.co.randomcoding.partsdb.core.document._
+import org.bson.types.ObjectId
+import net.liftweb.mongodb.record.field.ObjectIdPk
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
@@ -240,14 +242,33 @@ class PaymentDbManagerTest extends MongoDbTestBase with GivenWhenThen {
 
   test("Two Partial Payments for a single invoice that make up the full amount in a Transaction with a single invoice correctly closes the invoice and completed the transaction") {
     given("A Transaction with a single unpaid invoice for £100")
+    val transaction = setupTransactionFor100Pounds
     and("A partial payment for £50 already allocated to the invoice")
+    val payment1 = Payment(50, "pay202", Nil)
+    val invPay1 = invoicePayment(invoiceFor100Pounds, 50.0)
+    commitPayment(payment1, invPay1) should be(successfulPaymentResponse)
     and("Another partial payment for the reamining £50 of the invoice's balance")
+    val payment2 = Payment(50, "pay203", Nil)
+    val invPay2 = invoicePayment(invoiceFor100Pounds, 50.0)
     when("The second payment is committed")
+    commitPayment(payment2, invPay2) should be(successfulPaymentResponse)
     then("The Invoice is marked as closed")
+    val inv = getCurrentInvoiceFromDb(invoiceFor100Pounds)
+    inv.editable.get should be(false)
+    and("The invoice has a remaining balance of £0")
+    inv.remainingBalance should be(0.0)
     and("The Transaction is completed")
-    and("The Payment is marked as fully allocated")
-    and("The Invoice Payment is paid in full")
-    fail("Needs to be implemented")
+    Transaction.findById(transaction.id.get).get.transactionState should be("Completed")
+    and("The Payments are marked as fully allocated")
+    val updatedPayment1 = Payment.findById(payment1).get
+    val updatedPayment2 = Payment.findById(payment2).get
+    updatedPayment1.isFullyAllocated should be(true)
+    updatedPayment2.isFullyAllocated should be(true)
+    and("The Invoice Payments are not paid in full")
+    updatedPayment1.paidInvoices.get should have size (1)
+    updatedPayment1.paidInvoices.get(0).paidInFull should be(Some(false))
+    updatedPayment2.paidInvoices.get should have size (1)
+    updatedPayment2.paidInvoices.get(0).paidInFull should be(Some(false))
   }
 
   /*
@@ -391,5 +412,7 @@ class PaymentDbManagerTest extends MongoDbTestBase with GivenWhenThen {
   }
 
   private[this] def getCurrentInvoiceFromDb(inv: Document): Document = Document.findById(inv.id.get).get
+
+  private[this] implicit def recordToObjectId(record: ObjectIdPk[_]): ObjectId = record.id.get
 }
 
