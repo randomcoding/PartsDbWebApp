@@ -1,5 +1,3 @@
-package uk.co.randomcoding.partsdb.lift.util.snippet
-
 /*
  * Copyright (c) 2012 RandomCoder <randomcoder@randomcoding.co.uk>
  * All rights reserved. This program and the accompanying materials
@@ -10,6 +8,7 @@ package uk.co.randomcoding.partsdb.lift.util.snippet
  * Contributors:
  *    RandomCoder - initial API and implementation and/or initial documentation
  */
+package uk.co.randomcoding.partsdb.lift.util.snippet
 
 import net.liftweb.util.ValueCell
 import uk.co.randomcoding.partsdb.core.customer.Customer
@@ -20,7 +19,9 @@ import net.liftweb.util.Helpers.asDouble
 import net.liftweb.common.{Logger, Full}
 
 /**
- * TODO: Class Documentation
+ * Data holder for invoice the payment page.
+ *
+ * This manages all the required state etc. to maintain the widgets on the page and to provide `WiringUI` updates
  *
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
@@ -42,18 +43,18 @@ class InvoicePaymentDataHolder extends Logger {
   private[this] val currentCustomer = ValueCell[Option[Customer]](None)
 
   // Correct version - cannot use until #96 is fixed
-  //private[this] def outstandingTransactions = (Transaction where (_.completionDate exists false) fetch) filter (_.transactionState == "Invoiced")
-  private lazy val outstandingTransactions = (Transaction where (_.id exists true) fetch) filter (_.transactionState == "Invoiced")
+  //private[this] def outstandingTransactions = (Transaction where (_.completionDate eqs new Date(0)) fetch) filter (_.transactionState == "Invoiced")
+  private[this] def outstandingTransactions = Transaction fetch() filter (_.transactionState == "Invoiced")
 
-  private lazy val customersWithUnpaidInvoices = outstandingTransactions map (_.customer.get) map (Customer.findById _) filter (_.isDefined) map (_.get)
+  private[this] def customersWithUnpaidInvoices = Customer where (_.id in outstandingTransactions.map(_.customer.get)) fetch()
 
   private[this] def unpaidInvoicesSelectCell = unpaidInvoices.lift(invoices => (None, "Select Invoice") :: (invoices map (inv => (Some(inv), inv.documentNumber))))
 
   private[this] def unpaidInvoicesForCustomer(c: Customer) = {
-    val documentIdsFromOutstandingTransactionsForCustomer = outstandingTransactions.filter(_.customer.get == c.id.get).flatMap(_.documents.get)
-    val invoicesForCustomer = Document where (_.id in documentIdsFromOutstandingTransactionsForCustomer) and (_.documentType eqs DocumentType.Invoice) fetch
-    val paidInvoices = (Payment where (_.id exists true) fetch) flatMap (_.paidInvoices.get.map(_.paidInvoice.get))
-    invoicesForCustomer filterNot (paidInvoices contains _.id.get)
+    val docIdsForCustomerTransactions = outstandingTransactions.filter(_.customer.get == c.id.get).flatMap(_.documents.get)
+    val docs = Document where (_.id in docIdsForCustomerTransactions) and (_.documentType eqs DocumentType.Invoice) and (_.editable eqs true) fetch()
+
+    docs filter (_.remainingBalance > 0.0)
   }
 
   // Accessors
