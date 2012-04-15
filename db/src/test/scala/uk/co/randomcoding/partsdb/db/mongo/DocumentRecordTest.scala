@@ -4,12 +4,11 @@
 package uk.co.randomcoding.partsdb.db.mongo
 
 import org.bson.types.ObjectId
-
 import com.foursquare.rogue.Rogue._
-
 import uk.co.randomcoding.partsdb.core.document.{ LineItem, DocumentType, DocumentId, Document }
 import uk.co.randomcoding.partsdb.core.part.Part
 import uk.co.randomcoding.partsdb.core.vehicle.Vehicle
+import uk.co.randomcoding.partsdb.core.address.Address
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
@@ -174,6 +173,20 @@ class DocumentRecordTest extends MongoDbTestBase {
     Document.close(document1.id.get)
 
     (Document where (_.editable eqs false) get) should be(Some(Document.create(Seq(line2), DocumentType.Invoice, 0.0).docNumber(document1.docNumber.get)))
+  }
+
+  test("Document Value is correctly calculated") {
+    val addr = Address.create("Addr", "An Address", "United Kingdom")
+    val doc = Document.add(Seq(line1, line2), DocumentType.Invoice, 20.0).get.documentAddress(addr)
+    val line1Cost = 11.0d
+    val line2Cost = 48.0d
+    line1.lineCost should be(line1Cost)
+    line2.lineCost should be(line2Cost)
+
+    val docSubtotal = line1Cost + line2Cost + 20.0d
+    val vatRate = 0.2d
+    val docTax = docSubtotal * vatRate
+    doc.documentValue should be(docSubtotal + docTax)
   }
 
   test("Modify a Record with all new values correctly updates the database") {

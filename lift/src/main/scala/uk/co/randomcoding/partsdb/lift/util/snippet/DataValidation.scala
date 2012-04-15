@@ -8,7 +8,6 @@ import scala.collection.Traversable
 import uk.co.randomcoding.partsdb.core.address.Address
 import uk.co.randomcoding.partsdb.core.contact.ContactDetails
 import uk.co.randomcoding.partsdb.core.util.CountryCodes.matchToCountryCode
-import uk.co.randomcoding.partsdb.lift.util.snippet._
 
 import net.liftweb.common.Logger
 
@@ -30,7 +29,7 @@ trait DataValidation extends Logger {
    *  contained in a `Seq[String]` if they fail or `Nil` if they pass validation.
    *  @return A `Seq` or error messages, or `Nil` if all items validated OK
    */
-  def performValidation(validationFuncs: () => Seq[String]*) = validate(validationItems(): _*) ++ (validationFuncs flatMap (_()))
+  def performValidation(validationFuncs: (() => Seq[String])*) = validate(validationItems(): _*) ++ (validationFuncs flatMap (_()))
 
   /**
    * Sequence of [[uk.co.randomcoding.partsdb.lift.util.snippet.ValidationItem]]s to validate on the given page
@@ -92,11 +91,11 @@ trait DataValidation extends Logger {
    * Performs actual address validation.
    *
    * Checks for:
-   *  * [[uk.co.randomcoding.partsdb.core.address.NullAddress]] => false
    *  * The country being a match in [[uk.co.randomcoding.partsdb.core.util.CountryCodes]]
+   *  * The short name being ok see [[uk.co.randomcoding.partsdb.lift.util.snippet.DataValidation#addressShortNameChecks]]
    *
    * @param address The [[uk.co.randomcoding.partsdb.core.address.Address]] to validate
-   * @return `true` if the address is not a [[uk.co.randomcoding.partsdb.core.address.NullAddress]] and has a valid entry for country
+   * @return `true` if the address has a valid entry for country and the short name validates ok
    */
   private def validateAddress(address: Address) = {
     val countryCodeIsOk = (address: Address) => matchToCountryCode(address.country.get).isDefined
@@ -115,6 +114,10 @@ trait DataValidation extends Logger {
 
   /**
    * Functions used to validate address short names.
+   *
+   * Checks for the following:
+   *  - The short name is not empty, or made up of whitespace only
+   *  - The short name is not just **Business Address** plus whitespace
    *
    * Each function should return `false` if the short name does not validate
    */

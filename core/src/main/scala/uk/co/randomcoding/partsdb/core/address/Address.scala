@@ -72,17 +72,19 @@ object Address extends Address with MongoMetaRecord[Address] {
    * @param newAddressText The new address text to set
    * @param newCountry The new country to set
    */
-  def modify(oid: ObjectId, newShortName: String, newAddressText: String, newCountry: String): Unit = {
+  def modify(oid: ObjectId, newShortName: String, newAddressText: String, newCountry: String) {
     Address.where(_.id eqs oid).modify(_.shortName setTo newShortName) and (_.addressText setTo newAddressText) and (_.country setTo newCountry) updateMulti
   }
 
   /**
    * Modify an address by populating its fields with the values from the `newAddress`
    */
-  def modify(oid: ObjectId, newAddress: Address): Unit = modify(oid, newAddress.shortName.get, newAddress.addressText.get, newAddress.country.get)
+  def modify(oid: ObjectId, newAddress: Address) {
+    modify(oid, newAddress.shortName.get, newAddress.addressText.get, newAddress.country.get)
+  }
 
   /**
-   * Add a new address constructed from the paramters unless a matching record is found.
+   * Add a new address constructed from the parameters unless a matching record is found.
    *
    * @return `Some(address)` if a match was made, or the addition was successful. `None` if the save operation failed
    */

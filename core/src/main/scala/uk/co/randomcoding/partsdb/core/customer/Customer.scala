@@ -70,7 +70,7 @@ object Customer extends Customer with MongoMetaRecord[Customer] with Logger {
   /**
    * Add a new customer unless there is already a ''matching'' record. In which case the found entry is returned.
    *
-   * This method assumes that the referenced [[uk.co.randomcoding.partsdb.core.address.Address]] and [[uk.co.randomcoding.partsdb.core.contactDetails.ContactDetails]]
+   * This method assumes that the referenced [[uk.co.randomcoding.partsdb.core.address.Address]] and [[uk.co.randomcoding.partsdb.core.contact.ContactDetails]]
    * already exist in the database.
    *
    * @return An `Option[Customer]`, populated if the addition was successful, or `None` if it failed.
@@ -146,7 +146,7 @@ object Customer extends Customer with MongoMetaRecord[Customer] with Logger {
    *
    * To keep a field with the same value, simply use the original value
    */
-  def modify(oid: ObjectId, newName: String, newAddress: Address, newTerms: Int, newContacts: List[ContactDetails]) = {
+  def modify(oid: ObjectId, newName: String, newAddress: Address, newTerms: Int, newContacts: List[ContactDetails]) {
     val address = Address findMatching (newAddress) match {
       case Some(addr) => Some(addr)
       case None => Address.add(newAddress)

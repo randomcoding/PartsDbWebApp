@@ -29,14 +29,23 @@ trait DocumentDataHolder extends Logger {
   private val DEFAULT_CARRIAGE = 0.0d
 
   /**
+   * The total computed base cost of the line items, before tax
+   *
+   * Abstract, required to be defined by subclasses.
+   */
+  def preTaxTotal: Cell[Double]
+
+  /**
+   * This contains the total value of all the line items before tax and without carriage
+   *
+   * Abstract, required to be defined by subclasses.
+   */
+  val lineItemsSubTotalCell: Cell[Double]
+
+  /**
    * Container for the value of the carriage associated with this document
    */
   val carriageCell = ValueCell[Double](DEFAULT_CARRIAGE)
-
-  /**
-   * The total computed base cost of the line items, before tax
-   */
-  def preTaxTotal: Cell[Double]
 
   /**
    * The tax rate. Set to 0.2 (20%)
@@ -52,11 +61,6 @@ trait DocumentDataHolder extends Logger {
    * Calculated total cost of all line items
    */
   private lazy val total = preTaxTotal.lift(tax)(_ + _)
-
-  /**
-   * This contains the total value of all the line items before tax and without carriage
-   */
-  val lineItemsSubTotalCell: Cell[Double]
 
   // Values for display in the GUI
 

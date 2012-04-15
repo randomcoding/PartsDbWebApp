@@ -93,6 +93,9 @@ class Boot extends Loggable {
     // Add Quote Button
     val addQuoteLoc = Menu(Loc("addQuote", new Link("app" :: "quote" :: Nil, false), "New Quote", userLoggedIn))
 
+    // Add Payment Button
+    val addPayment = Menu(Loc("recordPayment", new Link("app" :: "recordPayment" :: Nil, false), "Record Payment(s)", userLoggedIn))
+
     // Display... locs hidden
     val displayEntitiesLoc = Menu(Loc("displayEntities", new Link("app" :: "display" :: Nil, true), "Display Entities", Hidden, userLoggedIn))
 
@@ -103,7 +106,7 @@ class Boot extends Loggable {
     val rootLoc = Menu(Loc("login", new Link("index" :: Nil, false), "Login", Hidden))
 
     // Construct the menu list to use
-    val menus = mainAppLoc :: showCustomers :: showParts :: showVehicles :: showSuppliers :: searchLoc :: addQuoteLoc :: displayEntitiesLoc :: adminLoc :: rootLoc :: Nil
+    val menus = mainAppLoc :: showCustomers :: showParts :: showVehicles :: showSuppliers :: searchLoc :: addQuoteLoc :: addPayment :: displayEntitiesLoc :: adminLoc :: rootLoc :: Nil
 
     LiftRules.setSiteMap(SiteMap(menus: _*))
 
@@ -151,6 +154,7 @@ class Boot extends Loggable {
           User.createRecord.username("Adam").password(hash("adam123")).role(ADMIN).save
           //User.createRecord.username("Dave").password(hash("dave123")).role(USER).save
         }
+        else logger.error("Exception whilst adding default users: %s".format(e.getMessage), e)
       }
     }
   }

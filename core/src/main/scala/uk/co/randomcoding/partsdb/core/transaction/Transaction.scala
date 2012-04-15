@@ -5,27 +5,27 @@ package uk.co.randomcoding.partsdb.core.transaction
 
 import java.util.Date
 
-import scala.math.Ordering.String
-
-import org.bson.types.ObjectId
-import org.joda.time.DateTime
-
 import com.foursquare.rogue.Rogue._
 
 import uk.co.randomcoding.partsdb.core.customer.Customer
-import uk.co.randomcoding.partsdb.core.document.{ DocumentType, Document }
+import uk.co.randomcoding.partsdb.core.document.{DocumentType, Document}
 
 import net.liftweb.record.field._
 import net.liftweb.mongodb.record.field._
-import net.liftweb.mongodb.record.{ MongoRecord, MongoMetaRecord }
+import net.liftweb.mongodb.record.{MongoRecord, MongoMetaRecord}
+
+import org.joda.time.DateTime
+import net.liftweb.common.Logger
 
 /**
  * Encapsulates all the data for a transaction between the company and a customer.
  *
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
-class Transaction private () extends MongoRecord[Transaction] with ObjectIdPk[Transaction] {
+class Transaction private() extends MongoRecord[Transaction] with ObjectIdPk[Transaction] {
   def meta = Transaction
+
+  private val defaultCompletionDate = new Date(0)
 
   object shortName extends StringField(this, 50)
 
@@ -54,9 +54,11 @@ class Transaction private () extends MongoRecord[Transaction] with ObjectIdPk[Tr
   /**
    * The date this transaction was completed.
    *
-   * If there is no value here, then the transaction is still active.
+   * Default value is `new Date(0)`
    */
-  object completionDate extends DateField(this)
+  object completionDate extends DateField(this) {
+    override val defaultValue = defaultCompletionDate
+  }
 
   /**
    * Two documents are `equal` if they are for the same customer (determined by the same `oid`) and
@@ -69,10 +71,28 @@ class Transaction private () extends MongoRecord[Transaction] with ObjectIdPk[Tr
 
   override def hashCode: Int = getClass.toString.hashCode + customer.get.hashCode + (documents.get map (_ hashCode) sum) + shortName.get.hashCode
 
+  /**
+   * Get the value of all the documents of a given type in this transaction
+   *
+   * @param documentType The [[uk.co.randomcoding.partsdb.core.document.DocumentType]] to get the total value of
+   * @return The total of the `documentValue`s of all the documents of the given type from this transaction
+   */
+  def valueOfDocuments(documentType: DocumentType.DocType) = (Document where (_.id in documents.get) and (_.documentType eqs documentType) fetch).foldLeft(0.0d)(_ + _.documentValue)
+
+  /**
+   * Get the state of the transaction.
+   *
+   * Can be one of
+   * - '''Completed'''
+   * - '''Quoted'''
+   * - '''Ordered'''
+   * - '''Delivered'''
+   * - '''Invoiced'''
+   */
   lazy val transactionState = {
-    new DateTime(completionDate.get) isAfter new DateTime(creationDate.get) match {
-      case true => "Completed"
-      case false => {
+    completionDate.get == defaultCompletionDate match {
+      case false => "Completed"
+      case true => {
         val docs = documents.get map (Document.findById(_)) filter (_ isDefined) map (_.get)
         val quoteCount = docs.filter(_.documentType.get == DocumentType.Quote).size
         val orderCount = docs.filter(_.documentType.get == DocumentType.Order).size
@@ -89,7 +109,7 @@ class Transaction private () extends MongoRecord[Transaction] with ObjectIdPk[Tr
   }
 }
 
-object Transaction extends Transaction with MongoMetaRecord[Transaction] {
+object Transaction extends Transaction with MongoMetaRecord[Transaction] with Logger {
 
   import com.foursquare.rogue.Rogue._
   import org.bson.types.ObjectId
@@ -105,7 +125,7 @@ object Transaction extends Transaction with MongoMetaRecord[Transaction] {
    * If there is a `Transaction` that matches then this transaction will be returned and '''no''' add operation will
    * be attempted. Otherwise the transaction will be added to the database.
    *
-   * @see [[uk.co.randomcoding.partsdb.core.transaction.Transaction#findMatching(Transaction)]])
+   * @see [[uk.co.randomcoding.partsdb.core.transaction.Transaction# f i n d M a t c h i n g ( T r a n s a c t i o n )]])
    * @return A populated `Option[Transaction]` with either the matched or newly added record, if the add operation succeeded. Otherwise 'none'
    */
   def add(transaction: Transaction): Option[Transaction] = findMatching(transaction) match {
@@ -122,7 +142,7 @@ object Transaction extends Transaction with MongoMetaRecord[Transaction] {
    * If there is a `Transaction` that matches then this transaction will be returned and '''no''' add operation will
    * be attempted. Otherwise the transaction will be added to the database.
    *
-   * @see [[uk.co.randomcoding.partsdb.core.transaction.Transaction#findMatching(Transaction)]])
+   * @see [[uk.co.randomcoding.partsdb.core.transaction.Transaction# f i n d M a t c h i n g ( T r a n s a c t i o n )]])
    * @return A populated `Option[Transaction]` with either the matched or newly added record, if the add operation succeeded. Otherwise 'none'
    */
   def add(shortName: String, customer: Customer, documents: Seq[Document]): Option[Transaction] = add(create(shortName, customer, documents))
@@ -165,12 +185,30 @@ object Transaction extends Transaction with MongoMetaRecord[Transaction] {
    * @param transactionId The oid of the `Transaction` to add the document(s) to
    * @param documentId The id(s) of the document(s) to add to the transaction
    */
-  def addDocument(transactionId: ObjectId, documentId: ObjectId*) = {
+  def addDocument(transactionId: ObjectId, documentId: ObjectId*) {
     val docIds = findById(transactionId) match {
       case Some(t) => (t.documents.get ++ documentId).distinct
       case _ => Nil // If this is the case then the update operation will do nothing so Nil is safe
     }
     Transaction.where(_.id eqs transactionId).modify(_.documents setTo docIds).updateMulti
+  }
+
+  /**
+   * Mark a transaction as closed.
+   *
+   * This sets the `completionDate` to the current date.
+   *
+   * @param oid The `ObjectId` of the transaction to close
+   * @return The Modified transaction, or None if the transaction is not found in the database
+   */
+  def close(oid: ObjectId): Option[Transaction] = {
+    val now = DateTime.now
+    debug("Closing transaction with id %s, setting completion date to %s".format(oid, now))
+    debug("There are %d transactions to modify".format(Transaction.where(_.id eqs oid).count))
+    Transaction where (_.id eqs oid) modify (_.completionDate setTo now.toDate) updateMulti
+
+    debug("Modified Transaction: %s".format(findById(oid)))
+    findById(oid)
   }
 }
 

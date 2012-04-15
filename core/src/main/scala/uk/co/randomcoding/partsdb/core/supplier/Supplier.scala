@@ -134,7 +134,7 @@ object Supplier extends Supplier with MongoMetaRecord[Supplier] {
    *
    * Any updates that are required to the contact details or the supplied parts themselves must be done externally to this method
    */
-  def modify(oid: ObjectId, newName: String, newContacts: ContactDetails, newAddress: Address, newParts: Seq[PartCost], newNotes: String) = {
+  def modify(oid: ObjectId, newName: String, newContacts: ContactDetails, newAddress: Address, newParts: Seq[PartCost], newNotes: String) {
     Supplier.where(_.id eqs oid).modify(_.supplierName setTo newName).
       and(_.contactDetails setTo newContacts).
       and(_.suppliedParts setTo newParts).

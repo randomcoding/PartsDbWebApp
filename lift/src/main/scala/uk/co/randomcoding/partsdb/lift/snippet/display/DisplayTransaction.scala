@@ -8,10 +8,10 @@ import scala.xml.Text
 import org.bson.types.ObjectId
 
 import uk.co.randomcoding.partsdb.core.customer.Customer
-import uk.co.randomcoding.partsdb.core.document.DocumentType.{ Quote, Order, DocType, DeliveryNote }
+import uk.co.randomcoding.partsdb.core.document.DocumentType.{ Quote, Order, Invoice, DocType, DeliveryNote }
 import uk.co.randomcoding.partsdb.core.document.Document
 import uk.co.randomcoding.partsdb.core.transaction.Transaction
-import uk.co.randomcoding.partsdb.lift.util.snippet.display.{ QuoteDetailDisplay, OrderDetailDisplay, DeliveryNoteDetailDisplay }
+import uk.co.randomcoding.partsdb.lift.util.snippet.display.{ QuoteDetailDisplay, OrderDetailDisplay, InvoiceDetailDisplay, DeliveryNoteDetailDisplay }
 import uk.co.randomcoding.partsdb.lift.util.snippet._
 
 import net.liftweb.common.{ Logger, Full }
@@ -48,8 +48,8 @@ object DisplayTransaction extends TabDisplaySnippet with Logger {
         "#documentTabs" #> generateTabs() &
           "#quotes *" #> QuoteDetailDisplay(documents filter (_.documentType.get == Quote), transactionId) &
           "#orders *" #> OrderDetailDisplay(documents filter (_.documentType.get == Order), transactionId) &
-          "#deliveryNotes" #> DeliveryNoteDetailDisplay(documents filter (_.documentType.get == DeliveryNote), transactionId) /*&
-          "#invoices *" #> InvoiceDetailDisplay(documents filter (_.documentType.get == Invoice), transactionId)*/
+          "#deliveryNotes" #> DeliveryNoteDetailDisplay(documents filter (_.documentType.get == DeliveryNote), transactionId) &
+          "#invoices *" #> InvoiceDetailDisplay(documents filter (_.documentType.get == Invoice), transactionId)
       }
     }
 
