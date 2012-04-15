@@ -56,20 +56,20 @@ class PayInvoices extends StatefulSnippet with ErrorDisplay with Logger with Sub
   }
 
   override def processSubmit(): JsCmd = {
+    debug("Submit Pressed")
     performValidation() match {
       case Nil => {
         // can commit to db
         val payment = dataHolder.payment.get
+        debug("Committing payment %s to database with invoice payments %s".format(payment, dataHolder.payments.mkString("[", "\n", "]")))
 
         PaymentDbManager.commitPayment(payment, dataHolder.payments: _*) filter (_.isInstanceOf[PaymentFailed]) map (_.asInstanceOf[PaymentFailed]) match {
-          case Nil => // all went ok
+          case Nil => S redirectTo "/app/" // all went ok
           case paymentErrors => {
             displayErrors((paymentErrors map (_.failureReason)): _*)
+            Noop
           }
         }
-
-
-        Noop
       }
       case errors => {
         displayErrors(errors: _*)
@@ -78,7 +78,7 @@ class PayInvoices extends StatefulSnippet with ErrorDisplay with Logger with Sub
     }
   }
 
-  override def validationItems = Nil
+  override def validationItems() = Nil
 
   private[this] val renderAllocatedValues: (Seq[InvoicePayment], NodeSeq) => NodeSeq = (payments, nodes) => {
     //XXX This is nasty hack, but will work for now
