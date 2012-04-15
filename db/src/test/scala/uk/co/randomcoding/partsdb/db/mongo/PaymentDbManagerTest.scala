@@ -178,13 +178,24 @@ class PaymentDbManagerTest extends MongoDbTestBase with GivenWhenThen {
 
   test("Attempt to pay more than an invoice's remaining balance with the second of two partial payments") {
     given("An invoice for £100 in the database")
+    val transId = setupTransactionFor100Pounds.id.get
+    //Document.add(invoiceFor100Pounds)
     and("A successful Payment of £50 against that invoice")
+    val payment1 = Payment(50.0, "pay303", Nil)
+    val invPay1 = invoicePayment(invoiceFor100Pounds, 50.0)
+    commitPayment(payment1, invPay1) should be(successfulPaymentResponse)
     and("Another Payment for £75")
+    val payment2 = Payment(75.0, "pay304", Nil)
     and("A corresponding Invoice Payment for £75 against the same invoice")
+    val invPay2 = invoicePayment(invoiceFor100Pounds, 75.0)
     when("The Second payment is committed")
+    val response = commitPayment(payment2, invPay2)
     then("An error reporting the second payment is for more that the remaining balance on the invoice is returned")
+    response should contain(PaymentFailed("Invoice INV000101 only has £50.00 outstanding. It is not possible to allocate £75.00 to this invoice").asInstanceOf[PaymentResult])
     and("The database is not updated with any of the details from the second payment")
-    fail("Needs to be implemented")
+    performDatabaseChecks(expectedPayments = List(Payment(50.0, "pay303", invPay1)),
+      expectedDocuments = List(invoiceFor100Pounds, orderFor100Pounds, deliveryFor100Pounds),
+      expectedTransactions = List(Transaction.findById(transId).get))
   }
 
   /*
