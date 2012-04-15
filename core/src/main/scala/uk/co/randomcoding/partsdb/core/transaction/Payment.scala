@@ -5,12 +5,12 @@ package uk.co.randomcoding.partsdb.core.transaction
 
 import net.liftweb.mongodb.record.MongoRecord
 import net.liftweb.mongodb.record.MongoMetaRecord
-import net.liftweb.record.field.{DoubleField, StringField}
+import net.liftweb.record.field.{ DoubleField, StringField }
 import net.liftweb.mongodb.record.field._
 import java.util.Date
 import com.foursquare.rogue.Rogue._
 import org.bson.types.ObjectId
-import uk.co.randomcoding.partsdb.core.document.{DocumentType, Document}
+import uk.co.randomcoding.partsdb.core.document.{ DocumentType, Document }
 
 /**
  * Associates a payment from a customer, as identified by a date and reference (from a statement or cheque)
@@ -18,7 +18,7 @@ import uk.co.randomcoding.partsdb.core.document.{DocumentType, Document}
  *
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
-class Payment private() extends MongoRecord[Payment] with ObjectIdPk[Payment] {
+class Payment private () extends MongoRecord[Payment] with ObjectIdPk[Payment] {
   def meta = Payment
 
   object paymentAmount extends DoubleField(this)
@@ -39,6 +39,17 @@ class Payment private() extends MongoRecord[Payment] with ObjectIdPk[Payment] {
   }
 
   private[this] def actualInvoices = Document where (_.id in (paidInvoices.get map (_.paidInvoice.get))) and (_.documentType eqs DocumentType.Invoice) fetch
+
+  override def equals(that: Any): Boolean = that match {
+    case other: Payment => {
+      paymentAmount.get == other.paymentAmount.get &&
+        paymentReference.get == other.paymentReference.get &&
+        paidInvoices.get == other.paidInvoices.get
+    }
+    case _ => false
+  }
+
+  override def hashCode: Int = getClass.hashCode + paymentAmount.get.hashCode + paymentReference.get.hashCode + paidInvoices.get.hashCode
 }
 
 object Payment extends Payment with MongoMetaRecord[Payment] {

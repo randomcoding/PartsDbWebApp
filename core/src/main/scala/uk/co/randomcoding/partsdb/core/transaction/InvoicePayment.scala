@@ -44,6 +44,13 @@ class InvoicePayment extends BsonRecord[InvoicePayment] {
     case Some(invoice) => Some(paymentAmount.get >= invoice.documentValue)
     case _ => None
   }
+
+  override def equals(that: Any): Boolean = that match {
+    case other: InvoicePayment => paidInvoice.get == other.paidInvoice.get && paymentAmount.get == other.paymentAmount.get
+    case _ => false
+  }
+
+  override def hashCode: Int = getClass.hashCode + paidInvoice.get.hashCode + paymentAmount.get.hashCode
 }
 
 object InvoicePayment extends InvoicePayment with BsonMetaRecord[InvoicePayment] {
