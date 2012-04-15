@@ -13,6 +13,7 @@ package uk.co.randomcoding.partsdb.db.mongo
 import uk.co.randomcoding.partsdb.core.transaction.{Transaction, InvoicePayment, Payment}
 import com.foursquare.rogue.Rogue._
 import uk.co.randomcoding.partsdb.core.document.{DocumentType, Document}
+import net.liftweb.common.Logger
 
 
 /**
@@ -20,7 +21,7 @@ import uk.co.randomcoding.partsdb.core.document.{DocumentType, Document}
  *
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
-object PaymentDbManager {
+object PaymentDbManager extends Logger {
 
   /**
    * Commit a payment to the database, adding some invoice payments to it.
@@ -98,15 +99,25 @@ object PaymentDbManager {
    *         If there was a problem with the close operation, this will be `None`
    */
   private[this] def closeTransactionIfFullyPaid(transaction: Transaction): Option[Transaction] = {
+    debug("Checking id transaction %s can be closed.".format(transaction.shortName.get))
     val documents = Document where (_.id in transaction.documents.get) fetch()
     val allDocumentsClosed = documents filter (_.editable.get == true) isEmpty
     val allInvoicesPaid = documents filter (_.documentType.get == DocumentType.Invoice) filter (_.remainingBalance > 0) isEmpty
 
-    val orderValue = transaction.valueOfDocuments(DocumentType.Order)
+    val orderValue = {
+      val orderVal = transaction.valueOfDocuments(DocumentType.Order)
+      orderVal + (orderVal * 0.2) // This is a fix
+    }
     val dNoteValue = transaction.valueOfDocuments(DocumentType.DeliveryNote)
     val invoiceValue = transaction.valueOfDocuments(DocumentType.Invoice)
 
+    debug("Docs Closed: %s".format(allDocumentsClosed))
+    debug("Invs Paid: %s".format(allInvoicesPaid))
+    debug("Order Value: £%.2f".format(orderValue))
+    debug("Delivery Note Value: £%.2f".format(dNoteValue))
+    debug("Invoice Value: £%.2f".format(invoiceValue))
     val okToCloseTransaction = (invoiceValue == dNoteValue && dNoteValue == orderValue && allDocumentsClosed && allInvoicesPaid)
+    debug("Ok To Close: %s".format(okToCloseTransaction))
 
     if (okToCloseTransaction) Transaction.close(transaction.id.get) else Some(transaction)
   }
