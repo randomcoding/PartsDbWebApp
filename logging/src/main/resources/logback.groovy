@@ -43,7 +43,7 @@ if (HOST.equalsIgnoreCase("benjymouse")) {
     addInfo("Using logging configuration for ${HOST}")
     logger("uk.co.randomcoding.partsdb.lift.snippet.RecordPayment", DEBUG)
     logger("uk.co.randomcoding.partsdb.lift.snippet.PayInvoices", DEBUG)
-    logger("uk.co.randomcoding.partsdb.lift.util.snippet.InvoicePaymentDataHolder", DEBUG)
+    logger("uk.co.randomcoding.partsdb.db.mongo.PaymentDbManager", DEBUG)
     logger("scala", WARN)
     logger("java", WARN)
     logger("org", WARN)
