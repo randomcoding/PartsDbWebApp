@@ -13,7 +13,7 @@ import net.liftweb.mongodb.record.field.ObjectIdRefField
 /**
  * A line item for documents.
  *
- * This is created as a `BsonRecord` to allow it to be embedded directly into the dosument object rather than referenced by an id
+ * This is created as a `BsonRecord` to allow it to be embedded directly into the document object rather than referenced by an id
  *
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
@@ -61,7 +61,7 @@ object LineItem extends LineItem with BsonMetaRecord[LineItem] {
    * Create a new `LineItem` but '''do not''' save it to the database
    *
    * @param lineNumber The index of the line
-   * @param partId The `ObjectId` of the [[uk.co.randomcoding.partsdb.core.part.Part]] that this line item is selling
+   * @param part The [[uk.co.randomcoding.partsdb.core.part.Part]] that this line item is selling
    * @param quantity The number of parts in this line item
    * @param basePrice The base price of the part being sold. This is derived from the [[uk.co.randomcoding.partsdb.core.supplier.Supplier]]'s price for the part
    * @param markup The percentage markup to apply to the base price. This derives the total, pre tax, price per part for this line item.

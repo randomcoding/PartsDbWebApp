@@ -4,19 +4,21 @@
 package uk.co.randomcoding.partsdb.lift.snippet.display
 
 import scala.xml.Text
+
 import org.bson.types.ObjectId
+
 import com.foursquare.rogue.Rogue._
+
 import uk.co.randomcoding.partsdb.core.address.Address
 import uk.co.randomcoding.partsdb.core.customer.Customer
 import uk.co.randomcoding.partsdb.core.transaction.Transaction
 import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
 import uk.co.randomcoding.partsdb.lift.util.snippet._
 import uk.co.randomcoding.partsdb.lift.util._
-import net.liftweb.common.{ Logger, Full }
-import net.liftweb.http.SHtml.ElemAttr.pairToBasic
-import net.liftweb.http.S
+
+import net.liftweb.common.{Logger, Full}
+import net.liftweb.http.{S, StatefulSnippet}
 import net.liftweb.util.Helpers._
-import net.liftweb.http.StatefulSnippet
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
@@ -52,6 +54,11 @@ class DisplayCustomer extends StatefulSnippet with ErrorDisplay with AddressSnip
     case _ => ("", "", "", "", "")
   }
 
+  def customerId = initialCustomer match {
+    case Some(cust) => cust.id.get.toString
+    case _ => ""
+  }
+
   private def transactions() = initialCustomer match {
     case Some(cust) => Transaction where (_.customer eqs cust.id.get) fetch
     case _ => List.empty
@@ -64,15 +71,16 @@ class DisplayCustomer extends StatefulSnippet with ErrorDisplay with AddressSnip
   def render = {
     val currentTransactions = transactions()
     "#formTitle" #> Text("Display Customer") &
-      "#nameEntry" #> styledText(name, name = _, readonly) &
-      renderReadOnlyAddress() &
-      "#paymentTermsEntry" #> styledText(paymentTermsText, paymentTermsText = _, List(readonly, ("style", "width: 2em"))) &
-      renderReadOnlyContactDetails() &
-      "#documentTabs" #> generateTabs() &
-      "#quotes" #> TransactionSummaryDisplay(currentTransactions filter (_.transactionState == "Quoted")) &
-      "#orders" #> TransactionSummaryDisplay(currentTransactions filter (_.transactionState == "Ordered")) &
-      "#deliveryNotes" #> TransactionSummaryDisplay(currentTransactions filter (_.transactionState == "Delivered")) &
-      "#invoices" #> TransactionSummaryDisplay(currentTransactions filter (_.transactionState == "Invoiced")) &
-      "#completed" #> TransactionSummaryDisplay(currentTransactions filter (_.transactionState == "Completed"))
+        "#nameEntry" #> styledText(name, name = _, readonly) &
+        renderReadOnlyAddress() &
+        "#paymentTermsEntry" #> styledText(paymentTermsText, paymentTermsText = _, List(readonly, ("style", "width: 2em"))) &
+        renderReadOnlyContactDetails() &
+        "#recordPaymentButton" #> link("/app/recordPayment?customerId=%s".format(customerId), () => (), Text("Record Payment")) &
+        "#documentTabs" #> generateTabs() &
+        "#quotes" #> TransactionSummaryDisplay(currentTransactions filter (_.transactionState == "Quoted")) &
+        "#orders" #> TransactionSummaryDisplay(currentTransactions filter (_.transactionState == "Ordered")) &
+        "#deliveryNotes" #> TransactionSummaryDisplay(currentTransactions filter (_.transactionState == "Delivered")) &
+        "#invoices" #> TransactionSummaryDisplay(currentTransactions filter (_.transactionState == "Invoiced")) &
+        "#completed" #> TransactionSummaryDisplay(currentTransactions filter (_.transactionState == "Completed"))
   }
 }

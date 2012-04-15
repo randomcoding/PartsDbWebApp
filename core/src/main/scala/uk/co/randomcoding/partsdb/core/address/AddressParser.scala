@@ -17,7 +17,7 @@ import uk.co.randomcoding.partsdb.core.util.CountryCode._
  * {{{
  * val addressText = "4 House Lane, A Village, A Town, DG6 9GH. UK"
  * val address = addressText match {
- *   case AddressParser(addr) => addr
+ *   case AddressParser(a) => a
  *   case _ => NullAddress
  * }
  * }}}
@@ -29,7 +29,7 @@ object AddressParser {
    * Pattern matching on an address string
    *
    * The input text is split into lines by commas or full stops and then the Country code is extracted from
-   * the address lines and matched to a country code in [[uk.co.randomcoding.core.util.CountryCodes]].
+   * the address lines and matched to a country code in [[uk.co.randomcoding.partsdb.core.util.CountryCodes]].
    * If there is a match (either on the country code or full name) then an [[uk.co.randomcoding.partsdb.core.address.Address]]
    * is generated with a  and using the first line of the address
    * as the `shortName` parameter. The address text is generated from the split input string (no trailing punctuation)
