@@ -5,7 +5,6 @@ package uk.co.randomcoding.partsdb.core.transaction
 
 import java.util.Date
 
-
 import com.foursquare.rogue.Rogue._
 
 import uk.co.randomcoding.partsdb.core.customer.Customer
@@ -14,6 +13,7 @@ import uk.co.randomcoding.partsdb.core.document.{DocumentType, Document}
 import net.liftweb.record.field._
 import net.liftweb.mongodb.record.field._
 import net.liftweb.mongodb.record.{MongoRecord, MongoMetaRecord}
+
 import org.joda.time.DateTime
 
 /**

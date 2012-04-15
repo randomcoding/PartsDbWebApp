@@ -45,14 +45,14 @@ class PayInvoices extends StatefulSnippet with ErrorDisplay with Logger with Sub
 
   def render = {
     "#paymentSelect" #> styledAjaxObjectSelect(paymentSelection, None, updateAjaxValue((p: Option[Payment]) => dataHolder.payment = p)) &
-        "#customerAndInvoices" #> customerAndInvoices &
-        "#paymentRemaining" #> WiringUI.asText(dataHolder.unallocatedPaymentText) &
-        "#invoiceToPaySelect" #> WiringUI.toNode(dataHolder.unpaidInvoices)(unpaidInvoices) &
-        "#allocateValue" #> WiringUI.toNode(dataHolder.currentAllocatedAmount)(allocatedAmountEntry) &
-        "#allocateAllButton" #> styledAjaxButton("Allocate All", setAllocateAllAmountInDataHolder) &
-        "#allocateToInvoiceButton" #> styledAjaxButton("Allocate", allocateToInvoice) &
-        "#allocatedToInvoices" #> WiringUI.toNode(dataHolder.invoicePayments)(renderAllocatedValues) &
-        renderSubmitAndCancel()
+      "#customerAndInvoices" #> customerAndInvoices &
+      "#paymentRemaining" #> WiringUI.asText(dataHolder.unallocatedPaymentText) &
+      "#invoiceToPaySelect" #> WiringUI.toNode(dataHolder.unpaidInvoices)(unpaidInvoices) &
+      "#allocateValue" #> WiringUI.toNode(dataHolder.currentAllocatedAmount)(allocatedAmountEntry) &
+      "#allocateAllButton" #> styledAjaxButton("Allocate All", setAllocateAllAmountInDataHolder) &
+      "#allocateToInvoiceButton" #> styledAjaxButton("Allocate", allocateToInvoice) &
+      "#allocatedToInvoices" #> WiringUI.toNode(dataHolder.invoicePayments)(renderAllocatedValues) &
+      renderSubmitAndCancel()
   }
 
   override def processSubmit(): JsCmd = {
@@ -95,12 +95,12 @@ class PayInvoices extends StatefulSnippet with ErrorDisplay with Logger with Sub
       <td>
         {Text(docNumber)}
       </td>
-          <td>
-            {Text(paymentValue)}
-          </td>
-          <td>
-            {Text(paidInFull)}
-          </td>
+        <td>
+          {Text(paymentValue)}
+        </td>
+        <td>
+          {Text(paidInFull)}
+        </td>
     })
 
     val rowsNodes = rows flatMap (row => <tr>
@@ -148,14 +148,14 @@ class PayInvoices extends StatefulSnippet with ErrorDisplay with Logger with Sub
     customerSelect =>
       "#customerSelect" #> styledAjaxObjectSelect(dataHolder.customerSelection, dataHolder.selectedCustomer, updateAjaxValue((c: Option[Customer]) => dataHolder.selectedCustomer = c,
         ajaxInvoke(customerSelect.setHtml _)._2.cmd)) &
-          "#unpaidInvoices" #> renderUnpaidInvoices
+        "#unpaidInvoices" #> renderUnpaidInvoices
   }
 
   private[this] def renderUnpaidInvoices = dataHolder.unpaidInvoices.get map (invoice =>
     "#invNum" #> Text(invoice.documentNumber) &
-        "#invDate" #> Text(dateString(invoice.createdOn.get)) &
-        "#invValue" #> Text("£%.2f".format(invoice.documentValue)) &
-        "#remainingBalance" #> Text("£%.2f".format(remainingBalance(invoice))))
+      "#invDate" #> Text(dateString(invoice.createdOn.get)) &
+      "#invValue" #> Text("£%.2f".format(invoice.documentValue)) &
+      "#remainingBalance" #> Text("£%.2f".format(remainingBalance(invoice))))
 
   private[this] def remainingBalance(invoice: Document): Double = {
     val paymentsForInvoice = (Payment where (_.id exists true) fetch) flatMap (_.paidInvoices.get) filter (_.paidInvoice.get == invoice.id.get)
