@@ -15,6 +15,7 @@ import net.liftweb.mongodb.record.field._
 import net.liftweb.mongodb.record.{MongoRecord, MongoMetaRecord}
 
 import org.joda.time.DateTime
+import net.liftweb.common.Logger
 
 /**
  * Encapsulates all the data for a transaction between the company and a customer.
@@ -108,7 +109,7 @@ class Transaction private() extends MongoRecord[Transaction] with ObjectIdPk[Tra
   }
 }
 
-object Transaction extends Transaction with MongoMetaRecord[Transaction] {
+object Transaction extends Transaction with MongoMetaRecord[Transaction] with Logger {
 
   import com.foursquare.rogue.Rogue._
   import org.bson.types.ObjectId
@@ -202,8 +203,11 @@ object Transaction extends Transaction with MongoMetaRecord[Transaction] {
    */
   def close(oid: ObjectId): Option[Transaction] = {
     val now = DateTime.now
+    debug("Closing transaction with id %s, setting completion date to %s".format(oid, now))
+    debug("There are %d transactions to modify".format(Transaction.where(_.id eqs oid).count))
     Transaction where (_.id eqs oid) modify (_.completionDate setTo now.toDate) updateMulti
 
+    debug("Modified Transaction: %s".format(findById(oid)))
     findById(oid)
   }
 }
