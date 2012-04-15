@@ -42,8 +42,10 @@ class PaymentDbManagerTest extends MongoDbTestBase with GivenWhenThen {
   private[this] lazy val orderFor150Pounds = Order(Seq(lineFor100Pounds, lineFor50Pounds), 0, "PoRef2")
   private[this] lazy val deliveryFor150Pounds = DeliveryNote(Seq(lineFor100Pounds, lineFor50Pounds), 0, "PoRef2")
 
-  private[this] lazy val transactionFor100Pounds = Transaction.create("Trans 1", customer("Customer"), Seq(orderFor100Pounds, deliveryFor100Pounds, invoiceFor100Pounds))
-  private[this] lazy val transactionWithTwoInvoicesFor250Pounds = Transaction.create("Trans 3", customer("Customer"), Seq(orderFor100Pounds, orderFor150Pounds, deliveryFor100Pounds, deliveryFor150Pounds, invoiceFor100Pounds, invoiceFor150Pounds))
+  private[this] lazy val transactionFor100PoundsDocuments = Seq(orderFor100Pounds, deliveryFor100Pounds, invoiceFor100Pounds)
+  private[this] lazy val transactionFor100Pounds = Transaction.create("Trans 1", customer("Customer"), transactionFor100PoundsDocuments)
+  private[this] lazy val twoInvoiceTransactionDocuments = Seq(orderFor100Pounds, orderFor150Pounds, deliveryFor100Pounds, deliveryFor150Pounds, invoiceFor100Pounds, invoiceFor150Pounds)
+  private[this] lazy val transactionWithTwoInvoicesFor250Pounds = Transaction.create("Trans 3", customer("Customer"), twoInvoiceTransactionDocuments)
 
   private[this] val successfulPaymentResponse = List(PaymentSuccessful)
 
@@ -290,16 +292,33 @@ class PaymentDbManagerTest extends MongoDbTestBase with GivenWhenThen {
   */
   test("Payment for the full amount of one of multiple invoices in a Transaction correctly closes the invoice, but does not complete the Transaction") {
     given("A Transaction that contains two unpaid invoices")
-    val transaction =
-      and("A Payment for the full amount of one invoice in the transaction")
+    val transaction = setupTransaction(transactionWithTwoInvoicesFor250Pounds, twoInvoiceTransactionDocuments: _*)
+    and("A Payment for the full amount of one invoice in the transaction")
+    val payment1 = Payment(100.0, "pay-inv-1", Nil)
     and("An Invoice Payment that pays the full value of the invoice")
+    val invPayment1 = InvoicePayment(invoiceFor100Pounds, 100.0)
     when("The payment is committed")
+    commitPayment(payment1, invPayment1) should be(successfulPaymentResponse)
     then("The paid Invoice is marked as closed")
-    and("The other Invoices in the transaction are still not closed")
+    val updatedInvoice = getCurrentInvoiceFromDb(invoiceFor100Pounds)
+    updatedInvoice.editable.get should be(false)
+    and("Should have a remaining balance of 0")
+    updatedInvoice.remainingBalance should be(0)
+    and("The other Invoices in the transaction are still not closed and have their full balance remaining")
+    val otherInvoice = getCurrentInvoiceFromDb(invoiceFor150Pounds)
+    otherInvoice.editable.get should be(true)
+    otherInvoice.remainingBalance should be(otherInvoice.documentValue)
     and("The Transaction is still in the Invoiced state")
+    val updatedTransaction = Transaction.findById(transaction).get
+    updatedTransaction.transactionState should be("Invoiced")
+    and("Should not be marked as completed")
+    updatedTransaction.completionDate.get should be(new Date(0))
     and("The Payment is marked as fully allocated")
+    val updatedPayment = Payment.findById(payment1).get
+    updatedPayment.isFullyAllocated should be(true)
     and("The Invoice Payment is paid in full")
-    fail("Needs to be implemented")
+    updatedPayment.paidInvoices.get should have size (1)
+    updatedPayment.paidInvoices.get(0).paidInFull should be(Some(true))
   }
 
   test("Partial Payment for one of multiple invoices in a Transaction does not close the invoice and does not complete the Transaction") {
@@ -331,11 +350,26 @@ class PaymentDbManagerTest extends MongoDbTestBase with GivenWhenThen {
   /*
   * Payments for a multiple invoices and Transactions with a multiple invoices
   */
-  test("Full Payment for all invoices in a Transaction with a multiple document stream correctly closes all invoice and completes Transaction") {
-    given("A Transaction with three invoices")
-    and("A Single Payment for the full value of all three invoices")
+  test("Full Payment for all invoices in a Transaction with a multiple document stream correctly closes all invoices and completes Transaction") {
+    given("A Transaction with two invoices")
+    and("A Single Payment for the full value of both invoices")
     and("Invoice Payments for the full amount of each invoice")
     when("The payments are committed")
+    then("All invoices are marked as closed")
+    and("The Transaction is in the Completed state")
+    and("The Payments are marked as fully allocated")
+    and("The Invoice Payments are all paid in full")
+    fail("Needs to be implemented")
+  }
+
+  test("Two separate full Payments for all invoices in a Transaction with a two invoices correctly closes both invoices and completes Transaction") {
+    given("A Transaction with two invoices")
+    and("A Single Payment for the full value of one invoice")
+    and("An Invoice Payment for the full amount of the same invoice")
+    and("The successful commit of the payment for the first invoice")
+    and("A Payment for the full value of the second invoice")
+    and("An Inovice Payment to allocate the full value of the second invoice")
+    when("The second payment is committed")
     then("All three invoices are marked as closed")
     and("The Transaction is in the Completed state")
     and("The Payment is marked as fully allocated")
@@ -398,6 +432,9 @@ class PaymentDbManagerTest extends MongoDbTestBase with GivenWhenThen {
     fail("Needs to be implemented")
   }
 
+  /*
+   * Helper methods etc.
+   */
   private[this] val vehicle = Vehicle.create("Vehicle")
 
   private[this] def lineItem(partName: String, quantity: Int, price: Double): LineItem = LineItem.create(Random.nextInt(1000), Part.create(partName, vehicle), quantity, price, 0d)
