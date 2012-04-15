@@ -1,75 +1,62 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta content="text/html; charset=UTF-8" http-equiv="content-type" />
-<title>Home</title>
+  <meta content="text/html; charset=UTF-8" http-equiv="content-type"/>
+  <title>Home</title>
 </head>
 <body class="lift:content_id=main">
-  <div id="main" class="lift:surround?with=default;at=content">
-    <script class="lift:js/JsScripts.calendarScript?eager_eval=true"></script>
-    <div class="column span-19 last">
-      <div class="lift:RecordPayment?eager_eval=true">
-        <div class="column span-19 last form-title">Record New Payment</div>
-        <div class="column span-4 form-label">Payment Reference:</div>
-        <div class="column span-15 last">
-          <div style="width: 15em">
-            <span id="paymentReferenceEntry">Payment Reference Entry</span>
-          </div>
+<div id="main" class="lift:surround?with=default;at=content">
+  <script class="lift:js/JsScripts.calendarScript?eager_eval=true"></script>
+  <div class="column span-19 last">
+    <div class="lift:RecordPayment?eager_eval=true">
+      <div class="column span-19 last form-title">Record New Payment</div>
+      <div class="column span-4 form-label">Payment Reference:</div>
+      <div class="column span-15 last">
+        <div style="width: 15em">
+          <span id="paymentReferenceEntry">Payment Reference Entry</span>
         </div>
-        <div class="column span-3 form-label">Payment Value:</div>
-        <div class="column span-1 form-label" align="right" style="margin-top: 5px">&nbsp;&pound;</div>
-        <div class="column span-15 last">
-          <div style="width: 5em">
-            <span id="paymentValueEntry">Payment Value Entry</span>
-          </div>
+      </div>
+      <div class="column span-3 form-label">Payment Value:</div>
+      <div class="column span-1 form-label" align="right" style="margin-top: 5px">&nbsp;&pound;</div>
+      <div class="column span-15 last">
+        <div style="width: 5em">
+          <span id="paymentValueEntry">Payment Value Entry</span>
         </div>
-        <div class="column span-4 form-label">Payment Date:</div>
-        <div class="column span-15 last">
-          <span id="paymentDateEntry">Payment Date Entry</span>
+      </div>
+      <div class="column span-4 form-label">Payment Date:</div>
+      <div class="column span-15 last">
+        <span id="paymentDateEntry">Payment Date Entry</span>
+      </div>
+      <div class="column span-19 last">
+        <div class="column span-5 form-label" align="right">&nbsp;</div>
+        <div class="column span-14 last form-label" align="right">
+          <span id="cancel">Cancel Button</span> <span id="submit">Submit Button</span>
         </div>
-        <div class="column span-19 last">
-          <div class="column span-5 form-label" align="right">&nbsp;</div>
-          <div class="column span-14 last form-label" align="right">
-            <span id="cancel">Cancel Button</span> <span id="submit">Submit Button</span> <span id="payInvoices">Pay Invoices Button</span>
-          </div>
-        </div>
-        <!-- Display added invoicePayments -->
-        <hr />
-        <div class="column span-19 last form-subtitle">Recently Recorded Payments</div>
-          <!-- Display as a Table -->
+      </div>
+      <!-- Display added invoicePayments -->
+      <hr/>
+      <!-- Display as a Table -->
+      <div class="column span-19 last form-subtitle">Recently Recorded Payments</div>
 
-        <table style="width: 95%">
-            <tr>
-                <th>Payment Reference</th>
-                <th>Payment Date</th>
-                <th>Payment Value</th>
-            </tr>
-            <tr id="allRecordedPayments">
-                <td><span id="payRef">Payment Reference</span></td>
-                <td><span id="payDate">Payment Date</span></td>
-                <td><span id="payValue">Payment Value</span></td>
-            </tr>
-        </table>
-
-        <!--<div class="column span-5 form-label">Payment Reference</div>
-        <div class="column span-5 form-label">Payment Date</div>
-        <div class="column span-9 last form-label">Payment Value</div>
-        <div class="column span-19 last">
-          <div id="allRecordedPayments">
-            <div class="column span-5">
-              <span id="payRef">Payment Reference</span>
-            </div>
-            <div class="column span-5">
-              <span id="payDate">Payment Date</span>
-            </div>
-            <div class="column span-9 last">
-                <span id="payValue">Payment Value</span>
-            </div>
-          </div>
-        </div>-->
+      <table style="width: 95%">
+        <tr>
+          <th>Payment Reference</th>
+          <th>Payment Date</th>
+          <th>Payment Value</th>
+        </tr>
+        <tr id="allRecordedPayments">
+          <td><span id="payRef">Payment Reference</span></td>
+          <td><span id="payDate">Payment Date</span></td>
+          <td><span id="payValue">Payment Value</span></td>
+        </tr>
+      </table>
+      <div class="column span-19 last form-label" align="right">
+        <hr/>
+        <span id="payInvoices">Pay Invoices Button</span>
       </div>
     </div>
   </div>
+</div>
 </body>
 </html>
 

@@ -44,6 +44,7 @@ if (HOST.equalsIgnoreCase("benjymouse")) {
     logger("uk.co.randomcoding.partsdb.lift.snippet.RecordPayment", DEBUG)
     logger("uk.co.randomcoding.partsdb.lift.snippet.PayInvoices", DEBUG)
     logger("uk.co.randomcoding.partsdb.db.mongo.PaymentDbManager", DEBUG)
+    logger("uk.co.randomcoding.partsdb.core.transaction", DEBUG)
     logger("scala", WARN)
     logger("java", WARN)
     logger("org", WARN)
