@@ -31,27 +31,47 @@ appender("STDOUT", ConsoleAppender) {
 
 logger("*", WARN)
 
+logger("scala", WARN)
+logger("java", WARN)
+logger("org", WARN)
+logger("net", WARN)
+logger("com", WARN)
+logger("ch", WARN)
+logger("comet_trace", WARN)
+
 logger("bootstrap.liftweb.Boot", INFO)
 logger("uk.co.randomcoding", INFO)
+
 
 // This seems to need to be ad warn level. If not then there is no log output at all from the startup process
 addWarn("Current Host Name: ${HOST}")
 
 def rootLogLevel = INFO;
 
+def isTest = System.getProperty("testing", "no")
+
 if (HOST.equalsIgnoreCase("benjymouse")) {
-    addInfo("Using logging configuration for ${HOST}")
-    logger("uk.co.randomcoding.partsdb.lift.snippet.RecordPayment", DEBUG)
+	addInfo("Using logging configuration for ${HOST}")
+	
+	def testingLogs = ["uk.co.randomcoding": INFO]
+	
+	def defaultLogs = ["uk.co.randomcoding.partsdb.lift.snippet.RecordPayment": DEBUG,
+		"uk.co.randomcoding.partsdb.lift.snippet.PayInvoices": DEBUG,
+		"uk.co.randomcoding.partsdb.db.mongo.PaymentDbManager": DEBUG,
+		"uk.co.randomcoding.partsdb.core.transaction": DEBUG ]
+
+	def logs = defaultLogs
+	if (isTest.equalsIgnoreCase("yes")) {
+		addInfo("Using tests logging configuration")
+		logs = testingLogs
+	}	
+	
+	logs.each() { key, value -> logger(key, value) }
+    /*logger("uk.co.randomcoding.partsdb.lift.snippet.RecordPayment", DEBUG)
     logger("uk.co.randomcoding.partsdb.lift.snippet.PayInvoices", DEBUG)
     logger("uk.co.randomcoding.partsdb.db.mongo.PaymentDbManager", DEBUG)
-    logger("uk.co.randomcoding.partsdb.core.transaction", DEBUG)
-    logger("scala", WARN)
-    logger("java", WARN)
-    logger("org", WARN)
-    logger("net", WARN)
-    logger("com", WARN)
-    logger("ch", WARN)
-    logger("comet_trace", WARN)
+    logger("uk.co.randomcoding.partsdb.core.transaction", DEBUG)*/
+    
 
     rootLogLevel = DEBUG
 }
