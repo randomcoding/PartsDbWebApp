@@ -3,7 +3,7 @@
  */
 package uk.co.randomcoding.partsdb.core.document
 
-import net.liftweb.mongodb.record.{MongoRecord, MongoMetaRecord}
+import net.liftweb.mongodb.record.{ MongoRecord, MongoMetaRecord }
 import net.liftweb.mongodb.record.field._
 import net.liftweb.record.field._
 
@@ -25,7 +25,7 @@ import uk.co.randomcoding.partsdb.core.transaction.Payment
  *
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
-class Document private() extends MongoRecord[Document] with ObjectIdPk[Document] {
+class Document private () extends MongoRecord[Document] with ObjectIdPk[Document] {
   def meta = Document
 
   private val DefaultDocumentId = -1l
@@ -127,7 +127,7 @@ class Document private() extends MongoRecord[Document] with ObjectIdPk[Document]
     else {
       editable.get match {
         case false => 0.0d
-        case true => Payment where (_.paidInvoices subfield (_.paidInvoice) eqs id.get) select (_.paidInvoices) fetch() flatten match {
+        case true => Payment where (_.paidInvoices subfield (_.paidInvoice) eqs id.get) select (_.paidInvoices) fetch () flatten match {
           // No payments for this invoice
           case Nil => documentValue
           case payments => {
@@ -147,8 +147,8 @@ class Document private() extends MongoRecord[Document] with ObjectIdPk[Document]
    */
   override def equals(that: Any): Boolean = that match {
     case other: Document => documentType.get == other.documentType.get &&
-        docNumber.get == other.docNumber.get &&
-        customerPoReference.get == other.customerPoReference.get
+      docNumber.get == other.docNumber.get &&
+      customerPoReference.get == other.customerPoReference.get
     case _ => false
   }
 
@@ -226,8 +226,10 @@ object Document extends Document with MongoMetaRecord[Document] {
   def findMatching(document: Document): Option[Document] = findById(document.id.get) match {
     case Some(d) => Some(d)
     case _ => {
-      val doc = Document.where(_.docNumber eqs document.docNumber.get).and(_.documentType eqs document.documentType.get).get
-      doc
+      document.docNumber.get match {
+        case -1l => None // force documents with id of -1 to never be matched as they require a new document number
+        case docNum => Document.where(_.docNumber eqs docNum).and(_.documentType eqs document.documentType.get).get
+      }
     }
   }
 
