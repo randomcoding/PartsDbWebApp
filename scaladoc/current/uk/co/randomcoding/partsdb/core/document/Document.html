@@ -274,17 +274,6 @@ which in turn indicates the current stage of the <a name="uk.co.randomcoding.par
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>MongoRecord</dd></dl></div>
-    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.core.document.Document.deliveryAddress" data-isabs="false">
-      <a id="deliveryAddress:deliveryAddress"></a>
-      <h4 class="signature">
-      <span class="kind">object</span>
-      <span class="symbol"> 
-        <a href="Document$deliveryAddress$.html"><span class="name">deliveryAddress</span></a>
-        
-        <span class="result"> extends BsonRecordField[Document, Address]</span>
-      </span>
-      </h4>
-      <p class="comment cmt">The <a name="uk.co.randomcoding.partsdb.core.address.Address" class="extype" href="../address/Address.html">Address</a> to which delivery is to be made.</p>
     </li><li visbl="pub" name="uk.co.randomcoding.partsdb.core.document.Document.docNumber" data-isabs="false">
       <a id="docNumber:docNumber"></a>
       <h4 class="signature">
@@ -296,6 +285,18 @@ which in turn indicates the current stage of the <a name="uk.co.randomcoding.par
       </span>
       </h4>
       <p class="comment cmt">The numeric identifier of this document.</p>
+    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.core.document.Document.documentAddress" data-isabs="false">
+      <a id="documentAddress:documentAddress"></a>
+      <h4 class="signature">
+      <span class="kind">object</span>
+      <span class="symbol"> 
+        <a href="Document$documentAddress$.html"><span class="name">documentAddress</span></a>
+        
+        <span class="result"> extends BsonRecordField[Document, Address]</span>
+      </span>
+      </h4>
+      <p class="comment cmt">The <a name="uk.co.randomcoding.partsdb.core.address.Address" class="extype" href="../address/Address.html">Address</a> to which the document is to be delivered/sent
+</p>
     </li><li visbl="pub" name="uk.co.randomcoding.partsdb.core.document.Document#documentNumber" data-isabs="false">
       <a id="documentNumber:String"></a>
       <h4 class="signature">
@@ -321,6 +322,18 @@ Comprises the document type string plus the <code>docNumber</code> zero padded t
       </h4>
       <p class="comment cmt">The type of document
 </p>
+    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.core.document.Document#documentValue" data-isabs="false">
+      <a id="documentValue:Double"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">documentValue</span>
+        
+        <span class="result">: <span name="scala.Double" class="extype">Double</span></span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">Calculates the value of a document</p><div class="fullcomment"><div class="comment cmt"><p>Calculates the value of a document</p><p>This is the sum of the value of the line items and the carriage plus the VAT on that total if applicable
+</p></div></div>
     </li><li visbl="pub" name="uk.co.randomcoding.partsdb.core.document.Document.editable" data-isabs="false">
       <a id="editable:editable"></a>
       <h4 class="signature">
@@ -415,6 +428,29 @@ Comprises the document type string plus the <code>docNumber</code> zero padded t
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a name="uk.co.randomcoding.partsdb.core.document.Document" class="extype" href="">Document</a> → AnyRef → Any</dd></dl></div>
+    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.core.document.Document#invoicedCustomerOrderReferences" data-isabs="false">
+      <a id="invoicedCustomerOrderReferences:List[String]"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">invoicedCustomerOrderReferences</span>
+        
+        <span class="result">: <span name="scala.collection.immutable.List" class="extype">List</span>[<span name="java.lang.String" class="extype">String</span>]</span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">Get the Customer P/O Reference numbers of the invoiced delivery notes.</p>
+    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.core.document.Document.invoicedDeliveryNotes" data-isabs="false">
+      <a id="invoicedDeliveryNotes:invoicedDeliveryNotes"></a>
+      <h4 class="signature">
+      <span class="kind">object</span>
+      <span class="symbol"> 
+        <a href="Document$invoicedDeliveryNotes$.html"><span class="name">invoicedDeliveryNotes</span></a>
+        
+        <span class="result"> extends BsonRecordListField[Document, Document]</span>
+      </span>
+      </h4>
+      <p class="comment cmt">The delivery notes that are invoiced in this Document (invoices only)
+</p>
     </li><li visbl="pub" name="scala.Any#isInstanceOf" data-isabs="false">
       <a id="isInstanceOf[T0]:Boolean"></a>
       <h4 class="signature">
@@ -482,6 +518,21 @@ Comprises the document type string plus the <code>docNumber</code> zero padded t
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>final </dd><dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.core.document.Document#remainingBalance" data-isabs="false">
+      <a id="remainingBalance:Double"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">remainingBalance</span>
+        
+        <span class="result">: <span name="scala.Double" class="extype">Double</span></span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">Calculate the unpaid value of this invoice by getting the payment values of all the
+<a name="uk.co.randomcoding.partsdb.core.transaction.InvoicePayment" class="extype" href="../transaction/InvoicePayment.html">InvoicePayment</a>s allocated to this invoice from the database.</p><div class="fullcomment"><div class="comment cmt"><p>Calculate the unpaid value of this invoice by getting the payment values of all the
+<a name="uk.co.randomcoding.partsdb.core.transaction.InvoicePayment" class="extype" href="../transaction/InvoicePayment.html">InvoicePayment</a>s allocated to this invoice from the database.</p><p>This will assume that if the invoice is closed, it has no outstanding balance.</p><p>Additionally, if the remaining balance is calculated to be less than 0.001 then this will return <i>0.0</i>
+</p></div><dl class="paramcmts block"><dt>returns</dt><dd class="cmt"><p>The outstanding balance for this invoice or <i>0.0</i> if it is fully paid
+</p></dd></dl></div>
     </li><li visbl="pub" name="net.liftweb.record.Record#runSafe" data-isabs="false">
       <a id="runSafe[T](⇒ T):T"></a>
       <h4 class="signature">

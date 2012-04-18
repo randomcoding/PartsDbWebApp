@@ -59,6 +59,28 @@
       </h4>
       <p class="comment cmt">Container for the connection details
 </p>
+    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.db.mongo.PaymentFailed" data-isabs="false">
+      <a id="PaymentFailed:PaymentFailed"></a>
+      <h4 class="signature">
+      <span class="kind">case class</span>
+      <span class="symbol"> 
+        <a href="PaymentFailed.html"><span class="name">PaymentFailed</span></a>
+        
+        <span class="params">(<span name="failureReason">failureReason: String</span>)</span><span class="result"> extends PaymentResult with Product with Serializable</span>
+      </span>
+      </h4>
+      
+    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.db.mongo.PaymentResult" data-isabs="true">
+      <a id="PaymentResult:PaymentResult"></a>
+      <h4 class="signature">
+      <span class="kind">class</span>
+      <span class="symbol"> 
+        <a href="PaymentResult.html"><span class="name">PaymentResult</span></a>
+        
+        <span class="result"> extends AnyRef</span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>sealed abstract </dd></dl></div>
     </li></ol>
             </div>
         
@@ -90,6 +112,39 @@
       </h4>
       <p class="comment cmt">Provides access to the user database for the app
 </p>
+    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.db.mongo.PaymentDbManager" data-isabs="false">
+      <a id="PaymentDbManager:PaymentDbManager"></a>
+      <h4 class="signature">
+      <span class="kind">object</span>
+      <span class="symbol"> 
+        <a href="PaymentDbManager$.html"><span class="name">PaymentDbManager</span></a>
+        
+        <span class="result"> extends Logger</span>
+      </span>
+      </h4>
+      <p class="comment cmt">Manages submitting invoicePayments to the database.</p>
+    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.db.mongo.PaymentSuccessful" data-isabs="false">
+      <a id="PaymentSuccessful:PaymentSuccessful"></a>
+      <h4 class="signature">
+      <span class="kind">object</span>
+      <span class="symbol"> 
+        <a href="PaymentSuccessful$.html"><span class="name">PaymentSuccessful</span></a>
+        
+        <span class="result"> extends PaymentResult with Product with Serializable</span>
+      </span>
+      </h4>
+      
+    </li><li visbl="pub" name="uk.co.randomcoding.partsdb.db.mongo.PaymentValidationChecks" data-isabs="false">
+      <a id="PaymentValidationChecks:PaymentValidationChecks"></a>
+      <h4 class="signature">
+      <span class="kind">object</span>
+      <span class="symbol"> 
+        <a href="PaymentValidationChecks$.html"><span class="name">PaymentValidationChecks</span></a>
+        
+        <span class="result"> extends AnyRef</span>
+      </span>
+      </h4>
+      <p class="comment cmt">Contains functions to perform validation checks on Payment operations</p>
     </li></ol>
             </div>
 
