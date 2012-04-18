@@ -10,7 +10,7 @@ object BuildSettings {
 
 
   val buildOrganization = "uk.co.randomcoding"
-  val buildVersion = "0.5.0-SNAPSHOT"
+  val buildVersion = "0.4.7"
   val buildScalaVersion = "2.9.1"
 
   val buildSettings = Defaults.defaultSettings ++ Seq(
