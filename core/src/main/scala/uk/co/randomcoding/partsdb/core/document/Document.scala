@@ -268,21 +268,21 @@ sealed abstract class DocumentInstance(docType: DocumentType.DocType) {
   /**
    * Convenience method to create a new document instance.
    *
-   * This delegates to [[uk.co.randomcoding.partsdb.core.document.DocumentInstance# c r e a t e ( S e q[ L i n e I t e m ], D o u b l e, S t r i n g )]]
+   * This delegates to [[uk.co.randomcoding.partsdb.core.document.DocumentInstance#create(Seq[LineItem],Double,String)]]
    */
   def apply(items: Seq[LineItem], carriage: Double, customerPoRef: String = "", invoicedDeliveryNotes: Seq[Document] = Nil): Document = create(items, carriage, customerPoRef, invoicedDeliveryNotes)
 
   /**
    * Convenience method to create a new document instance.
    *
-   * This delegates to [[uk.co.randomcoding.partsdb.core.document.Document# c r e a t e ( S e q[ L i n e I t e m ], D o c u m e n t T y p e.D o c T y p e, D o u b l e, S t r i n g )]]
+   * This delegates to [[uk.co.randomcoding.partsdb.core.document.Document#create(Seq[LineItem],DocumentType.DocType,Double,String)]]
    */
   def create(items: Seq[LineItem], carriage: Double, customerPoRef: String = "", invoicedDeliveryNotes: Seq[Document] = Nil): Document = Document.create(items, docType, carriage, customerPoRef, invoicedDeliveryNotes)
 
   /**
    * Convenience method to create a new document instance and add it to the database
    *
-   * This delegates to [[uk.co.randomcoding.partsdb.core.document.Document# a d d ( S e q[ L i n e I t e m ], D o c u m e n t T y p e.D o c T y p e, D o u b l e, S t r i n g )]]
+   * This delegates to [[uk.co.randomcoding.partsdb.core.document.Document#add(Seq[LineItem],DocumentType.DocType,Double,String)]]
    */
   def add(items: Seq[LineItem], carriage: Double, customerPoRef: String = "", invoicedDeliveryNotes: Seq[Document] = Nil): Option[Document] = Document.add(create(items, carriage, customerPoRef, invoicedDeliveryNotes))
 }

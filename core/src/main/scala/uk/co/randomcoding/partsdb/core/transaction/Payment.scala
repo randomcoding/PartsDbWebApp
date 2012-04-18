@@ -70,7 +70,7 @@ object Payment extends Payment with MongoMetaRecord[Payment] {
   /**
    * Add a payment to the database unless there is already a matching payment.
    *
-   * @see [[uk.co.randomcoding.partsdb.core.transaction.Payment# f i n d M a t c h i n g ( P a y m e n t )]]
+   * @see [[uk.co.randomcoding.partsdb.core.transaction.Payment#findMatching(Payment)]]
    *
    * @param payment The payment to add to the database
    * @return An option containing the added payment, if the addition was successful. If there was already a matching payment, then the option contains the match instead
