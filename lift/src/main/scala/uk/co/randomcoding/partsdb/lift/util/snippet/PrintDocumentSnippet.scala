@@ -19,9 +19,7 @@ import net.liftweb.util.Helpers._
  */
 trait PrintDocumentSnippet {
 
-  private[this] val printTargets = Map(Quote -> "quote", Order -> "order", DeliveryNote -> "deliverynote", Invoice -> "invoice").withDefaultValue("unknowndocumenttype")
-
-  private[this] def printTarget(document: Document): String = "/app/print/print%s?documentId=%s".format(printTargets(document.documentType.get), document.id.get)
+  private[this] def printTarget(document: Document): String = "/app/print/printdocument?documentId=%s".format(document.id.get)
 
   def renderPrintDocument(document: Document) = {
     "#printDocument" #> link(printTarget(document), noopFunction, Text("Print Preview Document"), ("target" -> "_blank"))
