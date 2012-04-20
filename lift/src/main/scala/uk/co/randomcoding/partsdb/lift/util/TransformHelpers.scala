@@ -25,6 +25,8 @@ object TransformHelpers {
    */
   val readonly: ElemAttr = ("readonly", "readonly");
 
+  val noopFunction = () => ()
+
   /**
    * Convenience definition of a typed Ajax callback function. This is used in the Ajax styled widget functions
    */
