@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html; charset=UTF-8" http-equiv="content-type" />
+<title>C.A.T. 9 - Print Quote</title>
+</head>
+<body class="lift:content_id=main">
+  <div id="main" class="lift:surround?with=print/printeddocument;at=content">
+    <div class="lift:print/PrintQuote?form=POST&eager_eval=true">
+      <div style="width: 98%" align="center"></div>
+      <div>
+        <span id="documentDetails" class="lift:embed?what=print/_document_header">Document Header</span>
+      </div>
+      <table>
+        <tr>
+          <td class="form-label" align="left" style="min-width: 10em">Carriage:</td>
+          <td align="left"><span id="carriageEntry">Carriage Display</span></td>
+        </tr>
+      </table>
+      <hr class="space" />
+      <table>
+        <tr>
+          <td colspan="5" class="form-label">Quoted Items</td>
+        </tr>
+        <tr id="quotedItems">
+          <td id="lineNumber">Line Number</td>
+          <td id="partName">Part Name</td>
+          <td id="partQuantity">Part Quantity</td>
+          <td id="partCost">Part Cost</td>
+        </tr>
+      </table>
+      <hr class="space" />
+      <div id="displayoftotals">
+        <span class="lift:embed?what=_document_totals">Document totals</span>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+
