@@ -7,22 +7,15 @@
 <body class="lift:content_id=main">
   <div id="main" class="lift:surround?with=print/printeddocument;at=content">
     <div class="lift:print/PrintDocument?eager_eval=true">
-      <div style="width: 98%" align="center"></div>
       <div>
         <span id="documentDetails" class="lift:embed?what=print/_document_header">Document Header</span>
       </div>
-      <table>
-        <tr>
-          <td class="form-label" align="left" style="min-width: 10em">Carriage:</td>
-          <td align="left"><span id="carriageEntry">Carriage Display</span></td>
-        </tr>
-      </table>
       <hr class="space" />
       <table>
         <tr>
           <td colspan="5" class="form-label"><span id="documentItemsTitle">Title for items in document</span></td>
         </tr>
-        <tr id="quotedItems">
+        <tr id="lineItems">
           <td id="lineNumber">Line Number</td>
           <td id="partName">Part Name</td>
           <td id="partQuantity">Part Quantity</td>

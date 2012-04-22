@@ -22,7 +22,7 @@ import uk.co.randomcoding.partsdb.lift.util.DateHelpers._
  */
 class PrintDocument extends StatefulSnippet {
 
-  private[this] val titleForDocumentType = Map(Quote -> "Quote", Order -> "Order", DeliveryNote -> "Delivery Note", Invoice -> "Invoice").withDefaultValue("Unknown Document Type")
+  private[this] val titleForDocumentType = Map(Quote -> "Quoted", Order -> "Ordered", DeliveryNote -> "Delivered", Invoice -> "Invoiced").withDefaultValue("Unknown Document Type")
 
   private[this] val document = S param "documentId" match {
     case Full(docId) => Document findById docId
@@ -48,8 +48,8 @@ class PrintDocument extends StatefulSnippet {
     // document header
     "#documentAddress" #> addressDisplay(doc.documentAddress.get) &
       "#documentNumber" #> Text(doc.documentNumber) &
-      "#documentTypeTitle" #> Text(titleForDocumentType(doc.documentType.get)) &
-      "#documentDate" #> Text(dateString(doc.createdOn.get))
+      "#documentItemsTitle" #> Text("%s Items".format(titleForDocumentType(doc.documentType.get))) &
+      "#documentDate" #> Text(dateString(doc.createdOn.get));
   }
 
   private[this] def addressDisplay(address: Address): Seq[NodeSeq] = {
