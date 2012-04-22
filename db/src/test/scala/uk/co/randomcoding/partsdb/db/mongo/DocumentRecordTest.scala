@@ -4,11 +4,13 @@
 package uk.co.randomcoding.partsdb.db.mongo
 
 import org.bson.types.ObjectId
+
 import com.foursquare.rogue.Rogue._
+
+import uk.co.randomcoding.partsdb.core.address.Address
 import uk.co.randomcoding.partsdb.core.document.{ LineItem, DocumentType, DocumentId, Document }
 import uk.co.randomcoding.partsdb.core.part.Part
 import uk.co.randomcoding.partsdb.core.vehicle.Vehicle
-import uk.co.randomcoding.partsdb.core.address.Address
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>

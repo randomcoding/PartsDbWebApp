@@ -5,10 +5,9 @@ package uk.co.randomcoding.partsdb.lift.snippet
 
 import scala.xml.Text
 
-import org.bson.types.ObjectId
-
 import uk.co.randomcoding.partsdb.core.user.Role.stringToRole
 import uk.co.randomcoding.partsdb.core.user.User
+import uk.co.randomcoding.partsdb.core.util.MongoHelpers._
 import uk.co.randomcoding.partsdb.db.mongo.MongoUserAccess._
 import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
 import uk.co.randomcoding.partsdb.lift.util.auth.PasswordValidation.passwordErrors
@@ -26,7 +25,7 @@ class AddEditUser extends StatefulSnippet with ErrorDisplay with DataValidation 
   private[this] val roles = List(("User" -> "User"), ("Admin" -> "Admin"))
 
   private[this] val initialUser = S param ("id") match {
-    case Full(id) => User findById (new ObjectId(id))
+    case Full(id) => User findById id
     case _ => None
   }
 

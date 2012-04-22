@@ -2,12 +2,11 @@ package uk.co.randomcoding.partsdb.lift.snippet
 
 import scala.xml.Text
 
-import org.bson.types.ObjectId
-
 import com.foursquare.rogue.Rogue._
 
 import uk.co.randomcoding.partsdb.core.part.Part.add
 import uk.co.randomcoding.partsdb.core.part.Part
+import uk.co.randomcoding.partsdb.core.util.MongoHelpers._
 import uk.co.randomcoding.partsdb.core.vehicle.Vehicle
 import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
 import uk.co.randomcoding.partsdb.lift.util.snippet._
@@ -29,7 +28,7 @@ class AddEditPart extends StatefulSnippet with ErrorDisplay with DataValidation 
    * Check if we have been called with an id parameter or not and setup the initial part appropriately
    */
   val initialPart = S param ("id") match {
-    case Full(id) => Part findById (new ObjectId(id))
+    case Full(id) => Part findById id
     case _ => None
   }
 

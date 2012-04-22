@@ -11,6 +11,7 @@ import uk.co.randomcoding.partsdb.core.address.Address
 import uk.co.randomcoding.partsdb.core.contact.ContactDetails
 import uk.co.randomcoding.partsdb.core.customer.Customer._
 import uk.co.randomcoding.partsdb.core.customer.Customer
+import uk.co.randomcoding.partsdb.core.util.MongoHelpers._
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
@@ -98,7 +99,7 @@ class CustomerRecordTest extends MongoDbTestBase {
 
     findNamed("Customer2") should be(Nil)
 
-    findById(new ObjectId("4f2871f4231823ddb82a080c")) should be('empty)
+    findById("4f2871f4231823ddb82a080c") should be('empty)
   }
 
   test("Modify a customer") {
