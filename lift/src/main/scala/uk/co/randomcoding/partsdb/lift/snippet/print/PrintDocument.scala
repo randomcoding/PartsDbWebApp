@@ -16,11 +16,15 @@ import scala.xml.NodeSeq
 import uk.co.randomcoding.partsdb.core.util.CountryCodes
 import uk.co.randomcoding.partsdb.core.document.DocumentType._
 import uk.co.randomcoding.partsdb.lift.util.DateHelpers._
+import uk.co.randomcoding.partsdb.core.document.LineItem
+import org.bson.types.ObjectId
+import uk.co.randomcoding.partsdb.core.part.Part
+import uk.co.randomcoding.partsdb.lift.util.snippet.display.DocumentTotalsDisplay
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
-class PrintDocument extends StatefulSnippet {
+class PrintDocument extends StatefulSnippet with DocumentTotalsDisplay {
 
   private[this] val titleForDocumentType = Map(Quote -> "Quoted", Order -> "Ordered", DeliveryNote -> "Delivered", Invoice -> "Invoiced").withDefaultValue("Unknown Document Type")
 
@@ -45,11 +49,34 @@ class PrintDocument extends StatefulSnippet {
   }
 
   private[this] def renderDocument(doc: Document) = {
-    // document header
+    renderDocumentHeader(doc) &
+      renderDocumentLineItems(doc.lineItems.get) &
+      renderDocumentTotals(doc)
+  }
+
+  private[this] def renderDocumentHeader(doc: Document) = {
     "#documentAddress" #> addressDisplay(doc.documentAddress.get) &
       "#documentNumber" #> Text(doc.documentNumber) &
       "#documentItemsTitle" #> Text("%s Items".format(titleForDocumentType(doc.documentType.get))) &
-      "#documentDate" #> Text(dateString(doc.createdOn.get));
+      "#documentDate" #> Text(dateString(doc.createdOn.get))
+  }
+
+  private[this] def renderDocumentLineItems(lineItems: Seq[LineItem]) = {
+    "#lineItems *" #> (lineItems map (renderLineItem))
+  }
+
+  private[this] def renderLineItem(lineItem: LineItem) = {
+    "#lineNumber" #> Text("%d".format(lineItem.lineNumber.get)) &
+      "#partName" #> Text(nameForPart(lineItem.partId.get)) &
+      "#partQuantity" #> Text("%d".format(lineItem.quantity.get)) &
+      "#partCost" #> Text("£%.2f".format(lineItem.lineCost))
+  }
+
+  private[this] def nameForPart(partId: ObjectId) = {
+    Part findById partId match {
+      case Some(p) => p.partName.get
+      case _ => "No part with id: %s".format(partId.toString)
+    }
   }
 
   private[this] def addressDisplay(address: Address): Seq[NodeSeq] = {

@@ -11,15 +11,23 @@
         <span id="documentDetails" class="lift:embed?what=print/_document_header">Document Header</span>
       </div>
       <hr class="space" />
-      <table>
-        <tr>
-          <td colspan="5" class="form-label"><span id="documentItemsTitle">Title for items in document</span></td>
-        </tr>
+      <div class="form-subtitle-no-ul">
+        <span id="documentItemsTitle">Title for items in document</span>
+      </div>
+      <table style="width: 100%">
+        <thead>
+          <tr>
+            <th align="left">Line Number</th>
+            <th align="left">Part Name</th>
+            <th align="left">Quantity</th>
+            <th align="left">Line Cost</th>
+          </tr>
+        </thead>
         <tr id="lineItems">
-          <td id="lineNumber">Line Number</td>
-          <td id="partName">Part Name</td>
-          <td id="partQuantity">Part Quantity</td>
-          <td id="partCost">Part Cost</td>
+          <td><span id="lineNumber">Line Number</span></td>
+          <td><span id="partName">Part Name</span></td>
+          <td><span id="partQuantity">Part Quantity</span></td>
+          <td><span id="partCost">Part Cost</span></td>
         </tr>
       </table>
       <hr class="space" />
