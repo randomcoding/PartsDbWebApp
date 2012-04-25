@@ -3,23 +3,23 @@
  */
 package uk.co.randomcoding.partsdb.lift.snippet.print
 
-import net.liftweb.http.StatefulSnippet
-import net.liftweb.util.Helpers._
-import net.liftweb.http.S
-import net.liftweb.common.Full
-import uk.co.randomcoding.partsdb.core.document.Document
-import uk.co.randomcoding.partsdb.core.util.MongoHelpers._
-import uk.co.randomcoding.partsdb.core.address.Address
 import scala.io.Source
-import scala.xml.Text
-import scala.xml.NodeSeq
-import uk.co.randomcoding.partsdb.core.util.CountryCodes
-import uk.co.randomcoding.partsdb.core.document.DocumentType._
-import uk.co.randomcoding.partsdb.lift.util.DateHelpers._
-import uk.co.randomcoding.partsdb.core.document.LineItem
+import scala.xml.{ Text, NodeSeq }
+
 import org.bson.types.ObjectId
+
+import uk.co.randomcoding.partsdb.core.address.Address
+import uk.co.randomcoding.partsdb.core.document.DocumentType.{ Quote, Order, Invoice, DeliveryNote }
+import uk.co.randomcoding.partsdb.core.document.{ LineItem, DocumentType, Document }
 import uk.co.randomcoding.partsdb.core.part.Part
+import uk.co.randomcoding.partsdb.core.util.MongoHelpers._
+import uk.co.randomcoding.partsdb.core.util.CountryCodes
+import uk.co.randomcoding.partsdb.lift.util.DateHelpers._
 import uk.co.randomcoding.partsdb.lift.util.snippet.display.DocumentTotalsDisplay
+
+import net.liftweb.common.Full
+import net.liftweb.http.{ StatefulSnippet, S }
+import net.liftweb.util.Helpers._
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
@@ -50,9 +50,16 @@ class PrintDocument extends StatefulSnippet with DocumentTotalsDisplay {
 
   private[this] def renderDocument(doc: Document) = {
     renderDocumentHeader(doc) &
-      renderDocumentLineItems(doc.lineItems.get) &
-      renderDocumentTotals(doc)
+      renderPartCostTitle(doc) &
+      renderDocumentLineItems(doc.lineItems.get, doc.documentType.get == DocumentType.DeliveryNote) &
+      renderDocTotals(doc)
   }
+
+  private[this] def renderDocTotals(doc: Document) = {
+    if (doc.documentType.get == DocumentType.DeliveryNote) hideDeliveryTotals else renderDocumentTotals(doc)
+  }
+
+  private[this] def hideDeliveryTotals = "#displayoftotals" #> <div hidden="true">&nbsp;</div>
 
   private[this] def renderDocumentHeader(doc: Document) = {
     "#documentAddress" #> addressDisplay(doc.documentAddress.get) &
@@ -61,15 +68,22 @@ class PrintDocument extends StatefulSnippet with DocumentTotalsDisplay {
       "#documentDate" #> Text(dateString(doc.createdOn.get))
   }
 
-  private[this] def renderDocumentLineItems(lineItems: Seq[LineItem]) = {
-    "#lineItems *" #> (lineItems map (renderLineItem))
+  private[this] def renderPartCostTitle(doc: Document) = {
+    "#lineCostTitle" #> (doc.documentType.get match {
+      case DeliveryNote => Text("")
+      case _ => Text("Line Cost")
+    })
   }
 
-  private[this] def renderLineItem(lineItem: LineItem) = {
+  private[this] def renderDocumentLineItems(lineItems: Seq[LineItem], isDeliveryNote: Boolean) = {
+    "#lineItems *" #> (lineItems map (renderLineItem(_, isDeliveryNote)))
+  }
+
+  private[this] def renderLineItem(lineItem: LineItem, isDeliveryNote: Boolean) = {
     "#lineNumber" #> Text("%d".format(lineItem.lineNumber.get)) &
       "#partName" #> Text(nameForPart(lineItem.partId.get)) &
       "#partQuantity" #> Text("%d".format(lineItem.quantity.get)) &
-      "#partCost" #> Text("£%.2f".format(lineItem.lineCost))
+      "#partCost" #> (if (isDeliveryNote) Text("") else Text("£%.2f".format(lineItem.lineCost)))
   }
 
   private[this] def nameForPart(partId: ObjectId) = {
