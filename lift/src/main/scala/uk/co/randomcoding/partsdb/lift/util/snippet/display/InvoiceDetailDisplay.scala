@@ -12,11 +12,12 @@ import net.liftweb.common.Full
 import net.liftweb.http.SHtml.link
 import scala.xml.Text
 import uk.co.randomcoding.partsdb.lift.util.LineItemDisplay
+import uk.co.randomcoding.partsdb.lift.util.snippet.PrintDocumentSnippet
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
-object InvoiceDetailDisplay extends DocumentTotalsDisplay {
+object InvoiceDetailDisplay extends DocumentTotalsDisplay with PrintDocumentSnippet {
   def apply(invoices: Seq[Document], transactionId: String): Seq[CssSel] = invoices map (invoice => {
     val addressLabel = "Invoice Address"
     val (addressText, addressCountry) = invoice.documentAddress.valueBox match {
@@ -32,6 +33,7 @@ object InvoiceDetailDisplay extends DocumentTotalsDisplay {
       "#billingAddressCountry" #> styledText(addressCountry, (s: String) => (), readonly) &
       "#lineItems" #> LineItemDisplay(invoice.lineItems.get) &
       renderDocumentTotals(invoice) &
-      "#payInvoice" #> link("/app/payInvoice?transactionId=%s&invoiceId=%s".format(transactionId, invoice.id.get.toString), () => (), Text("Pay Invoice"))
+      "#payInvoice" #> link("/app/payInvoice?transactionId=%s&invoiceId=%s".format(transactionId, invoice.id.get.toString), () => (), Text("Pay Invoice")) &
+      renderPrintDocument(invoice)
   })
 }

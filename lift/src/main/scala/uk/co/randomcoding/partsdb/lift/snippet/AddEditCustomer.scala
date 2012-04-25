@@ -5,11 +5,10 @@ package uk.co.randomcoding.partsdb.lift.snippet
 
 import scala.xml.Text
 
-import org.bson.types.ObjectId
-
 import uk.co.randomcoding.partsdb.core.address.Address
 import uk.co.randomcoding.partsdb.core.contact.ContactDetails
 import uk.co.randomcoding.partsdb.core.customer.Customer
+import uk.co.randomcoding.partsdb.core.util.MongoHelpers._
 import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
 import uk.co.randomcoding.partsdb.lift.util.snippet._
 
@@ -28,7 +27,7 @@ class AddEditCustomer extends StatefulSnippet with ErrorDisplay with DataValidat
   override val cameFrom = S.referer openOr "/app/show?entityType=Customer"
 
   val initialCustomer = S param "id" match {
-    case Full(id) => Customer findById new ObjectId(id)
+    case Full(id) => Customer findById id
     case _ => None
   }
 

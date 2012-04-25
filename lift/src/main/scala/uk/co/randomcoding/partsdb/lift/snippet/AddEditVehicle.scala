@@ -2,8 +2,7 @@ package uk.co.randomcoding.partsdb.lift.snippet
 
 import scala.xml.Text
 
-import org.bson.types.ObjectId
-
+import uk.co.randomcoding.partsdb.core.util.MongoHelpers._
 import uk.co.randomcoding.partsdb.core.vehicle.Vehicle.add
 import uk.co.randomcoding.partsdb.core.vehicle.Vehicle
 import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
@@ -21,7 +20,7 @@ import net.liftweb.util.Helpers._
 class AddEditVehicle extends StatefulSnippet with ErrorDisplay with SubmitAndCancelSnippet with DataValidation with Logger {
 
   val initialVehicle = S param ("id") match {
-    case Full(id) => Vehicle findById (new ObjectId(id))
+    case Full(id) => Vehicle findById id
     case _ => None
   }
 

@@ -29,31 +29,44 @@ class Boot extends Loggable {
     // Initialise MongoDB
     MongoConfig.init(Props.get("mongo.db", "MainDb"))
 
-    // packages to search for snippet code
-    LiftRules.addToPackages("uk.co.randomcoding.partsdb.lift")
-
     // Uncomment this to add new users required for user access initialisation
     //addBootstrapUsers
 
+    // Uncomment this to reset all the data in the database except the user data.
+    // This can be modified in the resetDatabase method
+    // resetDatabase
+
+    configureAccessAndMenus
+
+    configureLiftRules
+
+    registerSearchProviders
+  }
+
+  private[this] def resetDatabase {
     /*
      * The names of the collections in use by the database
      */
     val appCollections = Seq("addresss", "contactdetailss", "customers", "documentids", "documents", "parts", "suppliers", "transactions", "users", "vehicles")
 
     /*
-     * Name of collections not to drop during a call to resetCollections(String*)
+     * Name of collections not to drop.
+     * 
+     * By default, don't drop the user data as this is not related to the main running of the app and will deny people access.
      */
     val dontDrop = Seq("users")
 
     /* 
-     * Uncomment this line to drop all data from the named collections
+     * Drops all data from the named collections
      * 
-     * If you want to exclude any collection from being dropped simply add its name to the dontDtop Seq
+     * If you want to exclude any collection from being dropped simply add its name to dontDrop above
      * 
      * Available collections are shown in the appCollections Seq
      */
-    //resetCollections((appCollections filterNot (dontDrop contains _): _*))
+    resetCollections((appCollections filterNot (dontDrop contains _): _*))
+  }
 
+  private[this] def configureAccessAndMenus {
     val userLoggedIn = If(() => Session.currentUser.get match {
       case (s: String, r: Role) => r == USER
       case _ => false
@@ -99,16 +112,52 @@ class Boot extends Loggable {
     // Display... locs hidden
     val displayEntitiesLoc = Menu(Loc("displayEntities", new Link("app" :: "display" :: Nil, true), "Display Entities", Hidden, userLoggedIn))
 
+    // Allow access to printing documents
+    val printDocumentsLoc = Menu(Loc("printDocuments", new Link("app" :: "print" :: Nil, true), "Print Documents", Hidden, userLoggedIn))
+
     // Provide access to the admin menu. This is hidden.
     val adminLoc = Menu(Loc("adminSection", new Link("admin" :: Nil, true), "Admin", Hidden, adminLoggedIn))
 
     // The root of the app. Provides login
     val rootLoc = Menu(Loc("login", new Link("index" :: Nil, false), "Login", Hidden))
 
-    // Construct the menu list to use
-    val menus = mainAppLoc :: showCustomers :: showParts :: showVehicles :: showSuppliers :: searchLoc :: addQuoteLoc :: addPayment :: displayEntitiesLoc :: adminLoc :: rootLoc :: Nil
+    // Construct the menu list to use - separated into displayed and hidden
 
+    // The order of addition here is the order the menus are displayed in the navigation bar
+    val displayedMenus = List(mainAppLoc, showCustomers, showParts, showVehicles, showSuppliers, searchLoc, addQuoteLoc, addPayment)
+    val hiddenMenues = List(displayEntitiesLoc, printDocumentsLoc, adminLoc, rootLoc)
+
+    val menus = displayedMenus ::: hiddenMenues
     LiftRules.setSiteMap(SiteMap(menus: _*))
+  }
+
+  private[this] def registerSearchProviders {
+    // register search providers
+    SearchProviders.register(CustomerSearchPageProvider)
+    /*SearchProviders.register(QuoteSearchPageProvider)*/
+  }
+
+  // Default users to add to the DB to bootstrap the login process
+  private[this] def addBootstrapUsers: Unit = {
+    import uk.co.randomcoding.partsdb.core.user.User
+    try {
+      User.addUser("Dave", hash("dave123"), USER)
+      User.addUser("Adam", hash("adam123"), ADMIN)
+    }
+    catch {
+      case e: MongoException => {
+        if (e.getMessage startsWith "Collection not found") {
+          User.createRecord.username("Adam").password(hash("adam123")).role(ADMIN).save
+          //User.createRecord.username("Dave").password(hash("dave123")).role(USER).save
+        }
+        else logger.error("Exception whilst adding default users: %s".format(e.getMessage), e)
+      }
+    }
+  }
+
+  private[this] def configureLiftRules {
+    // packages to search for snippet code
+    LiftRules.addToPackages("uk.co.randomcoding.partsdb.lift")
 
     // Use jQuery 1.4
     LiftRules.jsArtifacts = net.liftweb.http.js.jquery.JQuery14Artifacts
@@ -134,28 +183,6 @@ class Boot extends Loggable {
     ResourceServer.allow {
       case "css" :: _ => true
       case "js" :: _ => true
-    }
-
-    // register search providers
-    SearchProviders.register(CustomerSearchPageProvider)
-    /*SearchProviders.register(QuoteSearchPageProvider)*/
-  }
-
-  // Default users to add to the DB to bootstrap the login process
-  private[this] def addBootstrapUsers: Unit = {
-    import uk.co.randomcoding.partsdb.core.user.User
-    try {
-      User.addUser("Dave", hash("dave123"), USER)
-      User.addUser("Adam", hash("adam123"), ADMIN)
-    }
-    catch {
-      case e: MongoException => {
-        if (e.getMessage startsWith "Collection not found") {
-          User.createRecord.username("Adam").password(hash("adam123")).role(ADMIN).save
-          //User.createRecord.username("Dave").password(hash("dave123")).role(USER).save
-        }
-        else logger.error("Exception whilst adding default users: %s".format(e.getMessage), e)
-      }
     }
   }
 

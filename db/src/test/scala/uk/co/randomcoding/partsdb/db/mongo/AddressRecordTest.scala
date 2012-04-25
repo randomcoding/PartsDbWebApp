@@ -4,9 +4,8 @@
 package uk.co.randomcoding.partsdb.db.mongo
 
 import com.foursquare.rogue.Rogue._
-import uk.co.randomcoding.partsdb.core.vehicle.Vehicle
-import uk.co.randomcoding.partsdb.core.vehicle.Vehicle._
-import org.bson.types.ObjectId
+
+import uk.co.randomcoding.partsdb.core.util.MongoHelpers._
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
@@ -105,7 +104,7 @@ class AddressRecordTest extends MongoDbTestBase {
 
     findNamed("Address2") should be(Nil)
 
-    findById(new ObjectId("4f2871f4231823ddb82a080c")) should be('empty)
+    findById("4f2871f4231823ddb82a080c") should be('empty)
 
     findByAddressText("Another Address Text") should be(Nil)
   }
