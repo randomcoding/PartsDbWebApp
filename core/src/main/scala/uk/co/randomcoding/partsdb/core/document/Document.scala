@@ -85,6 +85,11 @@ class Document private () extends MongoRecord[Document] with ObjectIdPk[Document
   object invoicedDeliveryNotes extends BsonRecordListField(this, Document)
 
   /**
+   * Any notes on the document that should be displayed when printed.
+   */
+  object documentPrintNotes extends StringField(this, 10000)
+
+  /**
    * Get the Customer P/O Reference numbers of the invoiced delivery notes.
    */
   def invoicedCustomerOrderReferences = invoicedDeliveryNotes.get map (_.customerPoReference.get) distinct
@@ -257,6 +262,15 @@ object Document extends Document with MongoMetaRecord[Document] {
     Document.where(_.id eqs oid).modify(_.editable setTo false) updateMulti
 
     findById(oid)
+  }
+
+  /**
+   * Set the `documentPrintNotesField` to the value in `notes` and return the `Option[Document]` with the updated record
+   */
+  def updateNotes(document: Document, notes: String): Option[Document] = {
+    Document where (_.id eqs document.id.get) modify (_.documentPrintNotes setTo notes)
+
+    findById(document.id.get)
   }
 
 }

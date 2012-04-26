@@ -76,11 +76,22 @@ object TransformHelpers {
    * Creates a Text Area with JQueryUI Styling
    *
    * @param initialText The initial value to display in the text area
-   * @param func The function to call on form Submit. Commonly sets the value of a variable in the snippet
+   * @param func The function to call on change. Commonly sets the value of a variable in the snippet
    * @param attrs Any additional attributes to apply to this text area
    */
   def styledTextArea(initialText: String, func: standardWidgetCallback[String], attrs: List[ElemAttr] = Nil): NodeSeq = {
     textarea(initialText, func, styledAttributes(attrs): _*)
+  }
+
+  /**
+   * Creates a Text Area with JQueryUI Styling
+   *
+   * @param initialText The initial value to display in the text area
+   * @param func The function to call on change. Commonly sets the value of a variable in the snippet
+   * @param attrs Any additional attributes to apply to this text area
+   */
+  def styledAjaxTextArea(initialText: String, func: ajaxWidgetCallback[String], attrs: List[ElemAttr] = Nil): NodeSeq = {
+    ajaxTextarea(initialText, func, styledAttributes(attrs): _*)
   }
 
   /**
