@@ -87,7 +87,7 @@ trait TabularEntityDisplay extends Logger {
   /**
    * Create the link to display the edit button for the entity
    */
-  val editEntityLink = (entityType: String, entityId: ObjectId) => link("%s?id=%s".format(entityType toLowerCase, entityId.toString), () => Unit, Text("Edit"), "class" -> "btn", "style" -> "width: 3em")
+  val editEntityLink = (entityType: String, entityId: ObjectId) => link("%s?id=%s".format(entityType toLowerCase, entityId.toString), () => Unit, Text("Edit"), "class" -> "btn", "style" -> "width: 4em")
 
   /**
    * Create the link to display the Display button for the entity

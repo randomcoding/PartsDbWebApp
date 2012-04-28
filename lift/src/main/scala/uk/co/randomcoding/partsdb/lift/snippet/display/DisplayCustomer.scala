@@ -74,7 +74,7 @@ class DisplayCustomer extends StatefulSnippet with ErrorDisplay with AddressSnip
       renderReadOnlyAddress() &
       "#paymentTermsEntry" #> styledText(paymentTermsText, paymentTermsText = _, List(readonly, ("style", "width: 2em"))) &
       renderReadOnlyContactDetails() &
-      "#recordPaymentButton" #> link("/app/recordPayment?customerId=%s".format(customerId), () => (), Text("Record Payment")) &
+      "#recordPaymentButton" #> buttonLink("/app/recordPayment?customerId=%s".format(customerId), "Record Payment") &
       "#documentTabs" #> generateTabs() &
       "#quotes" #> TransactionSummaryDisplay(currentTransactions filter (_.transactionState == "Quoted")) &
       "#orders" #> TransactionSummaryDisplay(currentTransactions filter (_.transactionState == "Ordered")) &

@@ -3,14 +3,15 @@
  */
 package uk.co.randomcoding.partsdb.lift.util.snippet.display
 
-import scala.xml.Text
 import org.joda.time.DateTime
+
 import uk.co.randomcoding.partsdb.core.document.Document
+import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
+import uk.co.randomcoding.partsdb.lift.util.snippet._
 import uk.co.randomcoding.partsdb.lift.util._
-import net.liftweb.http.SHtml._
+
 import net.liftweb.util.Helpers._
 import net.liftweb.util.CssSel
-import uk.co.randomcoding.partsdb.lift.util.snippet.PrintDocumentSnippet
 
 /**
  * Displays a series of quotes using the template `_quote_detail_display.html`
@@ -25,7 +26,7 @@ object QuoteDetailDisplay extends DocumentTotalsDisplay with PrintDocumentSnippe
         "#quotedOn" #> new DateTime(quote.createdOn.get).toString("dd/MM/yyyy") &
         "#lineItems" #> LineItemDisplay(quote.lineItems.get) &
         renderDocumentTotals(quote) &
-        "#raiseOrder" #> link("/app/order?transactionId=%s".format(transactionId), () => (), Text("Raise Order")) &
+        "#raiseOrder" #> buttonLink("/app/order?transactionId=%s".format(transactionId), "Raise Order") &
         renderPrintDocument(quote)
     })
   }

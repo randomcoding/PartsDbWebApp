@@ -10,11 +10,11 @@ import uk.co.randomcoding.partsdb.core.document.DocumentType.{ Quote, Order, Inv
 import uk.co.randomcoding.partsdb.core.document.Document
 import uk.co.randomcoding.partsdb.core.transaction.Transaction
 import uk.co.randomcoding.partsdb.core.util.MongoHelpers._
+import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
 import uk.co.randomcoding.partsdb.lift.util.snippet.display.{ QuoteDetailDisplay, OrderDetailDisplay, InvoiceDetailDisplay, DeliveryNoteDetailDisplay }
 import uk.co.randomcoding.partsdb.lift.util.snippet._
 
 import net.liftweb.common.{ Logger, Full }
-import net.liftweb.http.SHtml._
 import net.liftweb.http.S
 import net.liftweb.util.Helpers._
 
@@ -71,7 +71,7 @@ object DisplayTransaction extends TabDisplaySnippet with Logger {
     }
 
     "#formTitle" #> Text(transactionTitleText) &
-      "#backLink" #> link(cameFrom, () => (), Text(" <- Back")) &
+      "#backLink" #> buttonLink(cameFrom, " <- Back") &
       "#customerName" #> Text(customerNameText) &
       generateDocumentDisplays()
   }

@@ -3,13 +3,15 @@
  */
 package uk.co.randomcoding.partsdb.lift.snippet
 
-import scala.xml.{Text, NodeSeq}
+import scala.xml.{ Text, NodeSeq }
 
-import uk.co.randomcoding.partsdb.core.user.Role.{stringToRole, Role, NO_ROLE}
+import uk.co.randomcoding.partsdb.core.user.Role.{ stringToRole, Role, NO_ROLE }
 import uk.co.randomcoding.partsdb.lift.model.Session
+import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
 
 import net.liftweb.common.Logger
-import net.liftweb.http.SHtml
+import net.liftweb.http.SHtml._
+import net.liftweb.http.js.JsCmds.Noop
 import net.liftweb.util.Helpers._
 
 /**
@@ -28,8 +30,8 @@ object LoggedInAs extends Logger {
 
   private def loggedIn(user: String, role: Role): NodeSeq = {
     val loggedInText = Text("Logged in as: %s (%s) - ".format(user, role))
-    val logoutLink = SHtml.link("/logout", () => Session.currentUser(("", "")), Text("logout"))
+    val logoutLink = buttonLink("/logout", "logout", () => Session.currentUser(("", "")))
 
-    <span>{ loggedInText } { logoutLink }</span>
+    span(loggedInText ++ logoutLink, Noop)
   }
 }
