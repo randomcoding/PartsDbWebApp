@@ -46,8 +46,9 @@ object TransformHelpers {
    * @param linkTarget The url of the destination of the link
    * @return a [[scala.xml.NodeSeq]] for a link with an inner span and the class attribute of the `<a>` element set to `button`
    */
-  def buttonLink(linkText: String, linkTarget: String): NodeSeq = {
-    attrLink(linkTarget, linkText, "class" -> "btn")
+  def buttonLink(linkText: String, linkTarget: String, buttonFunc: () => Any = noopFunction, attrs: List[ElemAttr] = Nil): NodeSeq = {
+    val buttonAttr: ElemAttr = "class" -> "btn"
+    span(attrLink(linkTarget, linkText, buttonFunc), Noop, (buttonAttr :: attrs): _*)
   }
 
   /**
@@ -57,7 +58,7 @@ object TransformHelpers {
    * @param linkTarget The url of the destination of the link
    */
   def plainLink(linkText: String, linkTarget: String): NodeSeq = {
-    attrLink(linkTarget, linkText)
+    attrLink(linkTarget, linkText, noopFunction)
   }
 
   /**
@@ -68,8 +69,8 @@ object TransformHelpers {
    * @param linkAttrs A varargs list of `"attributeName" -> "attributeValue"` pairs to add to the `<a>` element
    * @return a [[scala.xml.NodeSeq]] for a link with an inner span and the given element attributes set on the `<a>` element
    */
-  def attrLink(linkText: String, linkTarget: String, linkAttrs: ElemAttr*): NodeSeq = {
-    link(linkTarget, () => Unit, span(Text(linkText), Noop), linkAttrs: _*)
+  def attrLink(linkText: String, linkTarget: String, linkFunc: () => Any, linkAttrs: ElemAttr*): NodeSeq = {
+    link(linkTarget, linkFunc, span(Text(linkText), Noop), linkAttrs: _*)
   }
 
   /**
@@ -275,6 +276,14 @@ object TransformHelpers {
     val outerSpanId: ElemAttr = ("id" -> outerElementId)
 
     span(datePickerTextBox, Noop, (outerSpanId :: attrs): _*)
+  }
+
+  /**
+   * Create a button with JQuery UI Styling
+   */
+  def styledButton(buttonText: String, func: () => Any, buttonAttrs: List[ElemAttr] = Nil): NodeSeq = {
+    val styleAttrs: List[ElemAttr] = List("style" -> "padding-top: 5px; padding-bottom: 5px; padding-left: 3px; padding-right: 3px")
+    button(buttonText, func, styledAttributes(buttonAttrs ::: styleAttrs): _*)
   }
 
   /**

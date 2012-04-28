@@ -22,33 +22,28 @@
 	type="text/javascript"></script>
 </head>
 <body>
-	<div class="container">
-  <span class="lift:embed?what=_page_header">Page Header</span>
-		<hr></hr>
-		<div class="btn">
-			<div class="column span-4 colborder sidebar">
-				<h2 style="text-indent: 10px">Navigation</h2>
-				<span class="lift:Menu.builder?linkToSelf=true&li_item:class=selected">Menu</span>
-				<hr class="space"></hr>
-        <ul>
-        <li>
-				<a href="/app/" target="_blank" style="min-width: 133px" class="ui-button">New Window</a>
-        </li> 
-        </ul>
-				<!-- <div class="lift:Msgs?showAll=true"></div> -->
-				<hr class="space"></hr>
-			</div>
+  <div class="container">
+    <span class="lift:embed?what=_page_header">Page Header</span>
+    <hr></hr>
+    <div class="column span-4 colborder sidebar btn">
+      <h2 style="text-indent: 10px">Navigation</h2>
+      <span class="lift:Menu.builder?linkToSelf=true&li_item:class=selected">Menu</span>
+      <hr class="space"></hr>
+      <ul>
+        <li><a href="/app/" target="_blank" style="min-width: 133px" class="ui-button">New Window</a></li>
+      </ul>
+      <hr class="space"></hr>
+    </div>
 
-			<div class="column span-19 last">
-        <span class="lift:embed?what=_error_messages">Error Messages displayed here (if any)</span>
-      </div>
-			<div class="column span-19 last">
-				<div id="content">The main content will get bound here</div>
-			</div>
-		</div>
+    <div class="column span-19 last">
+      <span class="lift:embed?what=_error_messages">Error Messages displayed here (if any)</span>
+    </div>
+    <div class="column span-19 last">
+      <div id="content">The main content will get bound here</div>
+    </div>
     <hr class="space"></hr>
-		<hr></hr>
+    <hr></hr>
     <span class="lift:embed?what=_page_footer">Page Footer</span>
-	</div>
+  </div>
 </body>
 </html>

@@ -51,11 +51,10 @@ class DisplayExisting extends ErrorDisplay with Logger {
   private[this] def displayTable(entityType: String) = {
     entityType.toLowerCase match {
       case "customer" => CustomerDisplay(Customer where (_.id exists true) orderDesc (_.customerName) fetch)
-      case "user" => UserDisplay(User where (_.id exists true) orderDesc (_.username) fetch)
-      case "part" => PartDisplay(Part where (_.id exists true) orderDesc (_.partName) fetch)
-      case "vehicle" => VehicleDisplay(Vehicle where (_.id exists true) orderDesc (_.vehicleName) fetch)
-      case "supplier" => SupplierDisplay(Supplier where (_.id exists true) orderDesc (_.supplierName) fetch)
-      //case "lineitem" => DisplayLineItem.displayTable(entities map (_.asInstanceOf[LineItem]))
+      case "user" => UserDisplay(User where (_.id exists true) orderDesc (_.username) fetch, displayLink = false)
+      case "part" => PartDisplay(Part where (_.id exists true) orderDesc (_.partName) fetch, displayLink = false)
+      case "vehicle" => VehicleDisplay(Vehicle where (_.id exists true) orderDesc (_.vehicleName) fetch, displayLink = false)
+      case "supplier" => SupplierDisplay(Supplier where (_.id exists true) orderDesc (_.supplierName) fetch, displayLink = false)
       case _ => {
         error("Unknown Type: %s".format(entityType))
         TabularEntityDisplay.emptyTable
