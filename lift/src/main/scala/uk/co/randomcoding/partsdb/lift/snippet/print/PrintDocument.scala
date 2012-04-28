@@ -8,23 +8,28 @@ import scala.xml.{ Text, NodeSeq }
 
 import org.bson.types.ObjectId
 
+import com.foursquare.rogue.Rogue._
+
 import uk.co.randomcoding.partsdb.core.address.Address
+import uk.co.randomcoding.partsdb.core.customer.Customer
 import uk.co.randomcoding.partsdb.core.document.DocumentType.{ Quote, Order, Invoice, DeliveryNote }
 import uk.co.randomcoding.partsdb.core.document.{ LineItem, DocumentType, Document }
 import uk.co.randomcoding.partsdb.core.part.Part
+import uk.co.randomcoding.partsdb.core.transaction.Transaction
 import uk.co.randomcoding.partsdb.core.util.MongoHelpers._
 import uk.co.randomcoding.partsdb.core.util.CountryCodes
 import uk.co.randomcoding.partsdb.lift.util.DateHelpers._
+import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
 import uk.co.randomcoding.partsdb.lift.util.snippet.display.DocumentTotalsDisplay
 
-import net.liftweb.common.Full
+import net.liftweb.common.{ Logger, Full }
 import net.liftweb.http.{ StatefulSnippet, S }
 import net.liftweb.util.Helpers._
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
-class PrintDocument extends StatefulSnippet with DocumentTotalsDisplay {
+class PrintDocument extends StatefulSnippet with DocumentTotalsDisplay with Logger {
 
   private[this] val titleForDocumentType = Map(Quote -> "Quoted", Order -> "Ordered", DeliveryNote -> "Delivered", Invoice -> "Invoiced").withDefaultValue("Unknown Document Type")
 
@@ -33,12 +38,16 @@ class PrintDocument extends StatefulSnippet with DocumentTotalsDisplay {
     case _ => None
   }
 
+  private[this] var currentDocument = document
+
+  private[this] var documentNotes = ""
+
   def dispatch = {
     case "render" => render
   }
 
   def render = {
-    document match {
+    currentDocument match {
       case Some(doc) => renderDocument(doc)
       case _ => renderNoDocument
     }
@@ -52,7 +61,18 @@ class PrintDocument extends StatefulSnippet with DocumentTotalsDisplay {
     renderDocumentHeader(doc) &
       renderPartCostTitle(doc) &
       renderDocumentLineItems(doc.lineItems.get, doc.documentType.get == DocumentType.DeliveryNote) &
-      renderDocTotals(doc)
+      renderDocTotals(doc) &
+      renderNotesEntry(doc)
+  }
+
+  private[this] def renderNotesEntry(doc: Document) = {
+    documentNotes = doc.documentPrintNotes.get
+
+    "#notesEntry" #> styledAjaxTextArea(documentNotes, updateAjaxValue[String](notes => {
+      documentNotes = notes
+      currentDocument = Document.updateNotes(doc, notes)
+      debug("Current Document is now: %s".format(currentDocument))
+    }))
   }
 
   private[this] def renderDocTotals(doc: Document) = {
@@ -62,10 +82,21 @@ class PrintDocument extends StatefulSnippet with DocumentTotalsDisplay {
   private[this] def hideDeliveryTotals = "#displayoftotals" #> <div hidden="true">&nbsp;</div>
 
   private[this] def renderDocumentHeader(doc: Document) = {
-    "#documentAddress" #> addressDisplay(doc.documentAddress.get) &
+    "#customerName" #> Text(getCustomerNameForDocument(doc)) &
+      "#documentAddress" #> addressDisplay(doc.documentAddress.get) &
       "#documentNumber" #> Text(doc.documentNumber) &
       "#documentItemsTitle" #> Text("%s Items".format(titleForDocumentType(doc.documentType.get))) &
       "#documentDate" #> Text(dateString(doc.createdOn.get))
+  }
+
+  private[this] def getCustomerNameForDocument(doc: Document): String = {
+    Transaction where (_.documents contains doc.id.get) get () match {
+      case Some(transaction) => Customer where (_.id eqs transaction.customer.get) get () match {
+        case Some(customer) => customer.customerName.get
+        case _ => "No Customer for transaction"
+      }
+      case _ => "No Transaction with Document"
+    }
   }
 
   private[this] def renderPartCostTitle(doc: Document) = {

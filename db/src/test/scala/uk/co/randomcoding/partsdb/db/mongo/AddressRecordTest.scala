@@ -7,12 +7,13 @@ import com.foursquare.rogue.Rogue._
 
 import uk.co.randomcoding.partsdb.core.util.MongoHelpers._
 
+import uk.co.randomcoding.partsdb.core.address.Address._
+import uk.co.randomcoding.partsdb.core.address.Address
+
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
 class AddressRecordTest extends MongoDbTestBase {
-  import uk.co.randomcoding.partsdb.core.address.Address._
-  import uk.co.randomcoding.partsdb.core.address.Address
 
   override val dbName = "AddressRecordTest"
 
@@ -100,7 +101,7 @@ class AddressRecordTest extends MongoDbTestBase {
   }
 
   test("Find an address that is not present in the database") {
-    val addr1 = add("Address1", "An Address Text", "UK").get
+    add("Address1", "An Address Text", "UK")
 
     findNamed("Address2") should be(Nil)
 
@@ -113,7 +114,7 @@ class AddressRecordTest extends MongoDbTestBase {
     val origAddr = add("Address 1", "An Address Text", "UK").get
     val origId = origAddr.id.get
 
-    modify(origAddr.id.get, "Address 1-1", "Modified Address Text", "United Kingdom")
+    modify(origId, "Address 1-1", "Modified Address Text", "United Kingdom")
 
     findNamed("Address 1") should be(Nil)
     findNamed("Address 1-1") should be(List(createRecord.shortName("Address 1-1").addressText("Modified Address Text").country("United Kingdom")))
