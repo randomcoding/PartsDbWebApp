@@ -268,7 +268,7 @@ object Document extends Document with MongoMetaRecord[Document] {
    * Set the `documentPrintNotesField` to the value in `notes` and return the `Option[Document]` with the updated record
    */
   def updateNotes(document: Document, notes: String): Option[Document] = {
-    Document where (_.id eqs document.id.get) modify (_.documentPrintNotes setTo notes)
+    Document where (_.id eqs document.id.get) modify (_.documentPrintNotes setTo notes) updateMulti
 
     findById(document.id.get)
   }
