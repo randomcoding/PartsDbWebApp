@@ -21,6 +21,8 @@ import net.liftweb.util.Helpers._
 import net.liftweb.common.Full
 import uk.co.randomcoding.partsdb.lift.util.snippet.display.DocumentDataHolderTotalsDisplay
 import uk.co.randomcoding.partsdb.lift.model.document.QuoteDocumentDataHolder
+import uk.co.randomcoding.partsdb.core.document.Document
+import uk.co.randomcoding.partsdb.core.address.Address
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
@@ -79,20 +81,24 @@ class AddEditQuote extends StatefulSnippet with ErrorDisplay with DataValidation
     }
   }
 
-  private[this] def addQuote(cust: Customer) = Quote.add(dataHolder.lineItems, dataHolder.carriageValue) match {
-    case Some(q) => Transaction.add(transactionName, cust, Seq(q)) match {
-      case Some(t) => {
-        info("Successfully added quote %s to transaction %s".format(q, t))
-        S.redirectTo("/app/")
+  private[this] def addQuote(cust: Customer) = {
+    val quote: Document = Quote.create(dataHolder.lineItems, dataHolder.carriageValue).documentAddress(Address.findById(currentCustomer.get.businessAddress.get).get)
+
+    Document.add(quote) match {
+      case Some(q) => Transaction.add(transactionName, cust, Seq(q)) match {
+        case Some(t) => {
+          info("Successfully added quote %s to transaction %s".format(q, t))
+          S.redirectTo("/app/")
+        }
+        case _ => {
+          error("Added quote %s, but failed to add transaction".format(q))
+          Noop
+        }
       }
       case _ => {
-        error("Added quote %s, but failed to add transaction".format(q))
+        error("Failed to add quote  with items %s".format(dataHolder.lineItems.mkString("[", "\n", "]")))
         Noop
       }
-    }
-    case _ => {
-      error("Failed to add quote  with items %s".format(dataHolder.lineItems.mkString("[", "\n", "]")))
-      Noop
     }
   }
 
