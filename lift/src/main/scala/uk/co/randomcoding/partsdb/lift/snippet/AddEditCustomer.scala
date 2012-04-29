@@ -59,7 +59,7 @@ class AddEditCustomer extends StatefulSnippet with ErrorDisplay with DataValidat
   def render = {
     "#formTitle" #> Text("Add Customer") &
       "#nameEntry" #> styledText(name, name = _) &
-      renderEditableAddress() &
+      renderEditableAddress("Business Address", None) &
       "#paymentTermsEntry" #> styledSelect(terms, paymentTermsText, paymentTermsText = _) &
       renderEditableContactDetails() &
       renderSubmitAndCancel()

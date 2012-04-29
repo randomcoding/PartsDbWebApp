@@ -78,7 +78,7 @@ class AddEditSupplier extends StatefulSnippet with AddressSnippet with ContactDe
   def render = {
     "#formTitle" #> Text("Add Supplier") &
       "#nameEntry" #> styledText(supplierName, supplierName = _) &
-      renderEditableAddress() &
+      renderEditableAddress("Business Address", None) &
       renderEditableContactDetails() &
       renderAddPartCost() &
       renderCurrentPartCosts() &

@@ -32,7 +32,7 @@ class AddEditDelivery extends StatefulValidatingErrorDisplaySnippet with Transac
 
   override var addressText: String = ""
   override var addressCountry: String = ""
-  override val addressLabel = "Delivery Address"
+  //override val addressLabel = "Delivery Address"
 
   private[this] lazy val previousDeliveryNotes = documentsOfType(DocumentType.DeliveryNote)
   private[this] lazy val orders = documentsOfType(DocumentType.Order).toList
@@ -78,7 +78,7 @@ class AddEditDelivery extends StatefulValidatingErrorDisplaySnippet with Transac
       "#selectOrder" #> styledAjaxObjectSelect(ordersSelection, None, updateAjaxValue[Option[Document]](updateOrderValue(_), refreshLineItemEntries())) &
       "#customerPoRefEntry" #> WiringUI.asText(dataHolder.poReference) &
       "#addressSelect" #> styledAjaxObjectSelect(addressSelection, None, updateAjaxValue[Option[Address]](dataHolder.deliveryAddress = _)) &
-      renderEditableAddress() &
+      renderEditableAddress("Delivery Address", customer) &
       renderAvailableLineItems(dataHolder.availableLineItems) &
       renderAllLineItems() &
       renderDocumentTotals() &
@@ -92,9 +92,11 @@ class AddEditDelivery extends StatefulValidatingErrorDisplaySnippet with Transac
     case _ => Nil
   }
 
+  private[this] val confirmAddressSelectedOrEntered = () => if (deliverToAddress isDefined) Nil else Seq("Please Select or Enter a New Delivery Address")
+
   private[this] val confirmOrderClose = () => if (confirmCloseOrder) Nil else Seq("Please confirm it is ok to close the Order before generating this Delivery Note")
 
-  override def processSubmit(): JsCmd = performValidation(itemsToBeDelivered, confirmOrderClose) match {
+  override def processSubmit(): JsCmd = performValidation(itemsToBeDelivered, confirmAddressSelectedOrEntered, confirmOrderClose) match {
     case Nil => generateDeliveryNote()
     case errors => {
       displayErrors(errors: _*)
@@ -102,8 +104,13 @@ class AddEditDelivery extends StatefulValidatingErrorDisplaySnippet with Transac
     }
   }
 
+  private[this] def deliverToAddress = addressFromInput(addressName) match {
+    case Some(addr) => Some(addr)
+    case _ => dataHolder.deliveryAddress
+  }
+
   private[this] def generateDeliveryNote() = {
-    val deliveryNote = DeliveryNote.create(dataHolder.lineItems, dataHolder.carriageValue, dataHolder.poReference.get).documentAddress(dataHolder.deliveryAddress.get)
+    val deliveryNote = DeliveryNote.create(dataHolder.lineItems, dataHolder.carriageValue, dataHolder.poReference.get).documentAddress(deliverToAddress.get)
 
     Document.add(deliveryNote) match {
       case Some(dn) => {
@@ -126,7 +133,7 @@ class AddEditDelivery extends StatefulValidatingErrorDisplaySnippet with Transac
   private[this] def refreshLineItemEntries(): JsCmd = ajaxInvoke(() => refreshAvailableLineItems(dataHolder.availableLineItems) &
     refreshLineItemDisplay())._2.cmd
 
-  override def validationItems = Seq(ValidationItem(dataHolder.deliveryAddress, "Delivery Address"), ValidationItem(dataHolder.selectedOrder, "Selected Order"))
+  override def validationItems = Seq(ValidationItem(dataHolder.selectedOrder, "Selected Order"))
 
   override def checkBoxSelected(selected: Boolean, line: LineItem): JsCmd = {
     selected match {

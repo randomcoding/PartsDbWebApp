@@ -32,7 +32,7 @@ class AddEditInvoice extends StatefulValidatingErrorDisplaySnippet with Transact
 
   override var addressText = ""
   override var addressCountry = ""
-  override val addressLabel = "Invoice Address"
+  //override val addressLabel = "Invoice Address"
 
   private[this] lazy val previousInvoices = documentsOfType(DocumentType.Invoice)
   private[this] lazy val deliveries = documentsOfType(DocumentType.DeliveryNote).toList
@@ -81,7 +81,7 @@ class AddEditInvoice extends StatefulValidatingErrorDisplaySnippet with Transact
       renderTransactionDetails() &
       "#addressSelect" #> styledAjaxObjectSelect(addressSelection, None, updateAjaxValue[Option[Address]](dataHolder.invoiceAddress = _)) &
       "#availableDeliveryNotes *" #> renderAvailableDeliveryNotes(documentsOfType(DocumentType.DeliveryNote)) &
-      renderEditableAddress() &
+      renderEditableAddress("Invoice Address", customer) &
       renderAllLineItems() &
       renderDocumentTotals() &
       "#confirmCloseDeliveryNotes" #> styledCheckbox(false, confirmCloseDeliveryNotes = _) &
@@ -115,7 +115,7 @@ class AddEditInvoice extends StatefulValidatingErrorDisplaySnippet with Transact
     case false => Seq("Please confirm it is ok to close the Order before generating this Delivery Note")
   }
 
-  override def processSubmit(): JsCmd = performValidation(itemsToBeInvoiced, checkConfirmCloseDeliveryNotes) match {
+  override def processSubmit(): JsCmd = performValidation(itemsToBeInvoiced, confirmAddressSelectedOrEntered, checkConfirmCloseDeliveryNotes) match {
     case Nil => generateInvoice()
     case errors => {
       displayErrors(errors: _*)
@@ -123,8 +123,17 @@ class AddEditInvoice extends StatefulValidatingErrorDisplaySnippet with Transact
     }
   }
 
+  private[this] val confirmAddressSelectedOrEntered = () => if (invoiceToAddress isDefined) Nil else Seq("Please Select or Enter a New Invoice Address")
+
+  private[this] def invoiceToAddress = addressFromInput(addressName) match {
+    case Some(addr) => Some(addr)
+    case _ => dataHolder.invoiceAddress
+  }
+
   private[this] def generateInvoice() = {
-    val invoice = Invoice.create(dataHolder.lineItems, dataHolder.carriageValue, invoicedDeliveryNotes = dataHolder.deliveryNotes).documentAddress(dataHolder.invoiceAddress.get)
+
+    val invoice = Invoice.create(dataHolder.lineItems, dataHolder.carriageValue, invoicedDeliveryNotes = dataHolder.deliveryNotes).documentAddress(invoiceToAddress)
+
     Document.add(invoice) match {
       case Some(inv) => {
         Transaction.addDocument(transaction.get.id.get, inv.id.get)
@@ -138,7 +147,7 @@ class AddEditInvoice extends StatefulValidatingErrorDisplaySnippet with Transact
     }
   }
 
-  override def validationItems = Seq(ValidationItem(dataHolder.invoiceAddress, "Invoice Address"), ValidationItem(dataHolder.invoiceAddress, "Invoice Address"))
+  override def validationItems = Nil
 
   private[this] def checkBoxSelected(selected: Boolean, deliveryNote: Document): JsCmd = {
     selected match {

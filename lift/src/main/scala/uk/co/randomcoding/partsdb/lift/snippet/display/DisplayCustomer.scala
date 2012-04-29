@@ -71,7 +71,7 @@ class DisplayCustomer extends StatefulSnippet with ErrorDisplay with AddressSnip
     val currentTransactions = transactions()
     "#formTitle" #> Text("Display Customer") &
       "#nameEntry" #> styledText(name, name = _, readonly) &
-      renderReadOnlyAddress() &
+      renderReadOnlyAddress("Business Address", initialCustomer) &
       "#paymentTermsEntry" #> styledText(paymentTermsText, paymentTermsText = _, List(readonly, ("style", "width: 2em"))) &
       renderReadOnlyContactDetails() &
       "#recordPaymentButton" #> buttonLink("/app/recordPayment?customerId=%s".format(customerId), "Record Payment") &
