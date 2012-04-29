@@ -25,7 +25,7 @@ import uk.co.randomcoding.partsdb.core.transaction.Transaction
 import uk.co.randomcoding.partsdb.core.customer.Customer
 import uk.co.randomcoding.partsdb.core.address.Address
 import com.foursquare.rogue.Rogue._
-import uk.co.randomcoding.partsdb.lift.util.mongo.DatabaseCleanupOperations._
+import uk.co.randomcoding.partsdb.lift.util.mongo.DatabaseCleanupOperations
 
 /**
  * A class that's instantiated early and run.  It allows the application
@@ -36,7 +36,7 @@ class Boot extends Loggable {
     // Initialise MongoDB
     MongoConfig.init(Props.get("mongo.db", "MainDb"))
 
-    cleanUpDatabase()
+    DatabaseCleanupOperations.cleanUpDatabase()
 
     configureAccessAndMenus
 
