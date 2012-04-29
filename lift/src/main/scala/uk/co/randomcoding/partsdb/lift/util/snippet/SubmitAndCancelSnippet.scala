@@ -8,6 +8,8 @@ import net.liftweb.http.js.JsCmd
 import net.liftweb.http.S
 import net.liftweb.util.Helpers._
 
+import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
+
 /**
  * This snippet provides basic functionality to render to buttons, '''Submit''' and '''Cancel'''
  *
@@ -23,8 +25,8 @@ trait SubmitAndCancelSnippet {
    * Renders buttons in the divs (or spans) with ids ''submit'' and ''cancel''
    */
   def renderSubmitAndCancel() = {
-    "#submit" #> button("Submit", processSubmit) &
-      "#cancel" #> button("Cancel", processCancel)
+    "#submit" #> styledButton("Submit", processSubmit) &
+      "#cancel" #> styledButton("Cancel", processCancel)
   }
 
   /**

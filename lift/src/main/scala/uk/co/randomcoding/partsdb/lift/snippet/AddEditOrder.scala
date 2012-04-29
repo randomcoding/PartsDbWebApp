@@ -4,11 +4,8 @@
 package uk.co.randomcoding.partsdb.lift.snippet
 
 import scala.xml.Text
-
 import org.bson.types.ObjectId
-
 import com.foursquare.rogue.Rogue._
-
 import uk.co.randomcoding.partsdb.core.customer.Customer
 import uk.co.randomcoding.partsdb.core.document.{ Order, LineItem, DocumentType, Document }
 import uk.co.randomcoding.partsdb.core.part.Part
@@ -17,12 +14,12 @@ import uk.co.randomcoding.partsdb.lift.model.document.OrderDocumentDataHolder
 import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
 import uk.co.randomcoding.partsdb.lift.util.snippet.display.DocumentDataHolderTotalsDisplay
 import uk.co.randomcoding.partsdb.lift.util.snippet._
-
 import net.liftweb.common.Full
 import net.liftweb.http.js.JsCmds.Noop
 import net.liftweb.http.js.JsCmd
 import net.liftweb.http.{ StatefulSnippet, S }
 import net.liftweb.util.Helpers._
+import uk.co.randomcoding.partsdb.core.address.Address
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
@@ -51,25 +48,31 @@ class AddEditOrder extends StatefulValidatingErrorDisplaySnippet with Transactio
 
   private[this] val validateQuoteCloseConfirmation = () => if (confirmCloseQuote) Nil else Seq("Please confirm it is ok to close the Quote before generating this Order")
 
-  override def processSubmit(): JsCmd = {
-    performValidation(validateQuoteCloseConfirmation) match {
-      case Nil => generateOrder()
-      case errors => {
-        displayErrors(errors: _*)
-        Noop
-      }
+  private[this] val transactionHasValidAddress = () => if (customersAddress isDefined) Nil else (Seq("The parent transaction does not contain a valid customer address"))
+
+  private[this] def customersAddress = Address.findById(transaction.get.customer.get)
+
+  override def processSubmit(): JsCmd = performValidation(validateQuoteCloseConfirmation) match {
+    case Nil => generateOrder()
+    case errors => {
+      displayErrors(errors: _*)
+      Noop
     }
   }
 
-  private[this] def generateOrder(): JsCmd = Order.add(dataHolder.lineItems, dataHolder.carriageValue, customerPoRef) match {
-    case Some(o) => {
-      Transaction.addDocument(transaction.get.id.get, o.id.get)
-      Document.close(quote.get.id.get)
-      S redirectTo "/app/display/customer?id=%s".format(transaction.get.customer.get.toString)
-    }
-    case _ => {
-      displayError("Failed to create Order. Please send an error report.")
-      Noop
+  private[this] def generateOrder(): JsCmd = {
+    val order = Order.create(dataHolder.lineItems, dataHolder.carriageValue, customerPoRef).documentAddress(customersAddress.get)
+
+    Document.add(order) match {
+      case Some(o) => {
+        Transaction.addDocument(transaction.get.id.get, o.id.get)
+        Document.close(quote.get.id.get)
+        S redirectTo "/app/display/customer?id=%s".format(transaction.get.customer.get.toString)
+      }
+      case _ => {
+        displayError("Failed to create Order. Please send an error report.")
+        Noop
+      }
     }
   }
 

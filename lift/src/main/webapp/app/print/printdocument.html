@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html; charset=UTF-8" http-equiv="content-type" />
+<title>C.A.T. 9 - Print Document</title>
+</head>
+<body class="lift:content_id=main">
+  <div id="main" class="lift:surround?with=print/printeddocument;at=content">
+    <div class="lift:print/PrintDocument?eager_eval=true">
+      <div>
+        <span id="documentDetails" class="lift:embed?what=print/_document_header">Document Header</span>
+      </div>
+      <hr class="space" />
+      <div class="form-subtitle-no-ul">
+        <span id="documentItemsTitle">Title for items in document</span>
+      </div>
+      <table style="width: 100%">
+        <thead>
+          <tr>
+            <th align="left">Line Number</th>
+            <th align="left">Part Name</th>
+            <th align="left">Quantity</th>
+            <th align="left"><span id="lineCostTitle">Line Cost</span></th>
+          </tr>
+        </thead>
+        <tr id="lineItems">
+          <td><span id="lineNumber">Line Number</span></td>
+          <td><span id="partName">Part Name</span></td>
+          <td><span id="partQuantity">Part Quantity</span></td>
+          <td><span id="partCost">Part Cost</span></td>
+        </tr>
+      </table>
+      <hr class="space" />
+      <div id="displayoftotals">
+        <span class="lift:embed?what=_document_totals">Document totals</span>
+      </div>
+      <div style="width: 100%; height: 5mm">&nbsp;</div>
+      <div id="documentNotesSection">
+        <div class="form-subtitle-no-ul" style="width: 100%">Notes</div>
+        <div style="width: 100%; height: 5em;">
+          <span id="notesEntry">Entry for Document Notes</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+

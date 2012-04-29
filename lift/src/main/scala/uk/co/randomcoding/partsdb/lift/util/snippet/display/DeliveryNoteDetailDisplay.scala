@@ -8,6 +8,7 @@ import scala.xml.Text
 import uk.co.randomcoding.partsdb.core.document.Document
 import uk.co.randomcoding.partsdb.lift.util.DateHelpers._
 import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
+import uk.co.randomcoding.partsdb.lift.util.snippet._
 import uk.co.randomcoding.partsdb.lift.util._
 
 import net.liftweb.common.Full
@@ -20,7 +21,7 @@ import net.liftweb.util.CssSel
  *
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
-object DeliveryNoteDetailDisplay extends DocumentTotalsDisplay {
+object DeliveryNoteDetailDisplay extends DocumentTotalsDisplay with PrintDocumentSnippet {
   def apply(deliveryNotes: Seq[Document], transactionId: String): Seq[CssSel] = deliveryNotes map (deliveryNote => {
     val addressLabel = "Delivery Address"
     val (addressText, addressCountry) = deliveryNote.documentAddress.valueBox match {
@@ -35,6 +36,7 @@ object DeliveryNoteDetailDisplay extends DocumentTotalsDisplay {
       "#billingAddressCountry" #> styledText(addressCountry, (s: String) => (), readonly) &
       "#lineItems" #> LineItemDisplay(deliveryNote.lineItems.get) &
       renderDocumentTotals(deliveryNote) &
-      "#raiseInvoice" #> link("/app/invoice?transactionId=%s&deliveryId=%s".format(transactionId, deliveryNote.id.get.toString), () => (), Text("Raise Invoice"))
+      "#raiseInvoice" #> buttonLink("/app/invoice?transactionId=%s&deliveryId=%s".format(transactionId, deliveryNote.id.get.toString), "Raise Invoice") &
+      renderPrintDocument(deliveryNote)
   })
 }

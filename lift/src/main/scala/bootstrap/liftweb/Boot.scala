@@ -19,6 +19,13 @@ import com.mongodb.Mongo
 import net.liftweb.mongodb.MongoDB
 import net.liftweb.mongodb.DefaultMongoIdentifier
 import scala.collection.JavaConversions._
+import uk.co.randomcoding.partsdb.core.document.Document
+import uk.co.randomcoding.partsdb.core.document.DocumentType
+import uk.co.randomcoding.partsdb.core.transaction.Transaction
+import uk.co.randomcoding.partsdb.core.customer.Customer
+import uk.co.randomcoding.partsdb.core.address.Address
+import com.foursquare.rogue.Rogue._
+import uk.co.randomcoding.partsdb.lift.util.mongo.DatabaseCleanupOperations
 
 /**
  * A class that's instantiated early and run.  It allows the application
@@ -29,31 +36,16 @@ class Boot extends Loggable {
     // Initialise MongoDB
     MongoConfig.init(Props.get("mongo.db", "MainDb"))
 
-    // packages to search for snippet code
-    LiftRules.addToPackages("uk.co.randomcoding.partsdb.lift")
+    DatabaseCleanupOperations.cleanUpDatabase()
 
-    // Uncomment this to add new users required for user access initialisation
-    //addBootstrapUsers
+    configureAccessAndMenus
 
-    /*
-     * The names of the collections in use by the database
-     */
-    val appCollections = Seq("addresss", "contactdetailss", "customers", "documentids", "documents", "parts", "suppliers", "transactions", "users", "vehicles")
+    configureLiftRules
 
-    /*
-     * Name of collections not to drop during a call to resetCollections(String*)
-     */
-    val dontDrop = Seq("users")
+    registerSearchProviders
+  }
 
-    /* 
-     * Uncomment this line to drop all data from the named collections
-     * 
-     * If you want to exclude any collection from being dropped simply add its name to the dontDtop Seq
-     * 
-     * Available collections are shown in the appCollections Seq
-     */
-    //resetCollections((appCollections filterNot (dontDrop contains _): _*))
-
+  private[this] def configureAccessAndMenus {
     val userLoggedIn = If(() => Session.currentUser.get match {
       case (s: String, r: Role) => r == USER
       case _ => false
@@ -99,16 +91,52 @@ class Boot extends Loggable {
     // Display... locs hidden
     val displayEntitiesLoc = Menu(Loc("displayEntities", new Link("app" :: "display" :: Nil, true), "Display Entities", Hidden, userLoggedIn))
 
+    // Allow access to printing documents
+    val printDocumentsLoc = Menu(Loc("printDocuments", new Link("app" :: "print" :: Nil, true), "Print Documents", Hidden, userLoggedIn))
+
     // Provide access to the admin menu. This is hidden.
     val adminLoc = Menu(Loc("adminSection", new Link("admin" :: Nil, true), "Admin", Hidden, adminLoggedIn))
 
     // The root of the app. Provides login
     val rootLoc = Menu(Loc("login", new Link("index" :: Nil, false), "Login", Hidden))
 
-    // Construct the menu list to use
-    val menus = mainAppLoc :: showCustomers :: showParts :: showVehicles :: showSuppliers :: searchLoc :: addQuoteLoc :: addPayment :: displayEntitiesLoc :: adminLoc :: rootLoc :: Nil
+    // Construct the menu list to use - separated into displayed and hidden
 
+    // The order of addition here is the order the menus are displayed in the navigation bar
+    val displayedMenus = List(mainAppLoc, showCustomers, showParts, showVehicles, showSuppliers, searchLoc, addQuoteLoc, addPayment)
+    val hiddenMenues = List(displayEntitiesLoc, printDocumentsLoc, adminLoc, rootLoc)
+
+    val menus = displayedMenus ::: hiddenMenues
     LiftRules.setSiteMap(SiteMap(menus: _*))
+  }
+
+  private[this] def registerSearchProviders {
+    // register search providers
+    SearchProviders.register(CustomerSearchPageProvider)
+    /*SearchProviders.register(QuoteSearchPageProvider)*/
+  }
+
+  // Default users to add to the DB to bootstrap the login process
+  private[this] def addBootstrapUsers: Unit = {
+    import uk.co.randomcoding.partsdb.core.user.User
+    try {
+      User.addUser("Dave", hash("dave123"), USER)
+      User.addUser("Adam", hash("adam123"), ADMIN)
+    }
+    catch {
+      case e: MongoException => {
+        if (e.getMessage startsWith "Collection not found") {
+          User.createRecord.username("Adam").password(hash("adam123")).role(ADMIN).save
+          //User.createRecord.username("Dave").password(hash("dave123")).role(USER).save
+        }
+        else logger.error("Exception whilst adding default users: %s".format(e.getMessage), e)
+      }
+    }
+  }
+
+  private[this] def configureLiftRules {
+    // packages to search for snippet code
+    LiftRules.addToPackages("uk.co.randomcoding.partsdb.lift")
 
     // Use jQuery 1.4
     LiftRules.jsArtifacts = net.liftweb.http.js.jquery.JQuery14Artifacts
@@ -135,43 +163,5 @@ class Boot extends Loggable {
       case "css" :: _ => true
       case "js" :: _ => true
     }
-
-    // register search providers
-    SearchProviders.register(CustomerSearchPageProvider)
-    /*SearchProviders.register(QuoteSearchPageProvider)*/
-  }
-
-  // Default users to add to the DB to bootstrap the login process
-  private[this] def addBootstrapUsers: Unit = {
-    import uk.co.randomcoding.partsdb.core.user.User
-    try {
-      User.addUser("Dave", hash("dave123"), USER)
-      User.addUser("Adam", hash("adam123"), ADMIN)
-    }
-    catch {
-      case e: MongoException => {
-        if (e.getMessage startsWith "Collection not found") {
-          User.createRecord.username("Adam").password(hash("adam123")).role(ADMIN).save
-          //User.createRecord.username("Dave").password(hash("dave123")).role(USER).save
-        }
-        else logger.error("Exception whilst adding default users: %s".format(e.getMessage), e)
-      }
-    }
-  }
-
-  private[this] def resetCollections(collections: String*) = {
-    MongoDB.getDb(DefaultMongoIdentifier) match {
-      case Some(db) => {
-        val dbCollections: Set[String] = db.getCollectionNames().toSet
-        collections filter (dbCollections contains _) foreach (collection => {
-          logger.info("Dropping Collection: %s".format(collection))
-          db.getCollection(collection).getFullName()
-          db.getCollection(collection).drop()
-          if (db.getCollectionNames() contains collection) logger.error("Failed to drop collection: %s".format(collection))
-        })
-      }
-      case _ => logger.error("Unable to load Default Mongo Database!")
-    }
-
   }
 }

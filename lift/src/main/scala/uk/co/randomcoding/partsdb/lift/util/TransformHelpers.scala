@@ -25,6 +25,8 @@ object TransformHelpers {
    */
   val readonly: ElemAttr = ("readonly", "readonly");
 
+  val noopFunction = () => ()
+
   /**
    * Convenience definition of a typed Ajax callback function. This is used in the Ajax styled widget functions
    */
@@ -44,8 +46,8 @@ object TransformHelpers {
    * @param linkTarget The url of the destination of the link
    * @return a [[scala.xml.NodeSeq]] for a link with an inner span and the class attribute of the `<a>` element set to `button`
    */
-  def buttonLink(linkText: String, linkTarget: String): NodeSeq = {
-    attrLink(linkTarget, linkText, "class" -> "btn")
+  def buttonLink(linkText: String, linkTarget: String, buttonFunc: () => Any = noopFunction, attrs: List[ElemAttr] = Nil): NodeSeq = {
+    span(attrLink(linkTarget, linkText, buttonFunc, attrs: _*), Noop, "class" -> "btn")
   }
 
   /**
@@ -55,7 +57,7 @@ object TransformHelpers {
    * @param linkTarget The url of the destination of the link
    */
   def plainLink(linkText: String, linkTarget: String): NodeSeq = {
-    attrLink(linkTarget, linkText)
+    attrLink(linkTarget, linkText, noopFunction)
   }
 
   /**
@@ -66,19 +68,30 @@ object TransformHelpers {
    * @param linkAttrs A varargs list of `"attributeName" -> "attributeValue"` pairs to add to the `<a>` element
    * @return a [[scala.xml.NodeSeq]] for a link with an inner span and the given element attributes set on the `<a>` element
    */
-  def attrLink(linkText: String, linkTarget: String, linkAttrs: ElemAttr*): NodeSeq = {
-    link(linkTarget, () => Unit, span(Text(linkText), Noop), linkAttrs: _*)
+  def attrLink(linkText: String, linkTarget: String, linkFunc: () => Any, linkAttrs: ElemAttr*): NodeSeq = {
+    link(linkTarget, linkFunc, span(Text(linkText), Noop), linkAttrs: _*)
   }
 
   /**
    * Creates a Text Area with JQueryUI Styling
    *
    * @param initialText The initial value to display in the text area
-   * @param func The function to call on form Submit. Commonly sets the value of a variable in the snippet
+   * @param func The function to call on change. Commonly sets the value of a variable in the snippet
    * @param attrs Any additional attributes to apply to this text area
    */
   def styledTextArea(initialText: String, func: standardWidgetCallback[String], attrs: List[ElemAttr] = Nil): NodeSeq = {
     textarea(initialText, func, styledAttributes(attrs): _*)
+  }
+
+  /**
+   * Creates a Text Area with JQueryUI Styling
+   *
+   * @param initialText The initial value to display in the text area
+   * @param func The function to call on change. Commonly sets the value of a variable in the snippet
+   * @param attrs Any additional attributes to apply to this text area
+   */
+  def styledAjaxTextArea(initialText: String, func: ajaxWidgetCallback[String], attrs: List[ElemAttr] = Nil): NodeSeq = {
+    ajaxTextarea(initialText, func, styledAttributes(attrs): _*)
   }
 
   /**
@@ -262,6 +275,14 @@ object TransformHelpers {
     val outerSpanId: ElemAttr = ("id" -> outerElementId)
 
     span(datePickerTextBox, Noop, (outerSpanId :: attrs): _*)
+  }
+
+  /**
+   * Create a button with JQuery UI Styling
+   */
+  def styledButton(buttonText: String, func: () => Any, buttonAttrs: List[ElemAttr] = Nil): NodeSeq = {
+    val styleAttrs: List[ElemAttr] = List("style" -> "padding-top: 5px; padding-bottom: 5px; padding-left: 3px; padding-right: 3px")
+    button(buttonText, func, styledAttributes(buttonAttrs ::: styleAttrs): _*)
   }
 
   /**

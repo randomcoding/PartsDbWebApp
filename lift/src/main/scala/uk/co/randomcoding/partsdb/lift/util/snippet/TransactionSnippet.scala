@@ -2,16 +2,20 @@
  *
  */
 package uk.co.randomcoding.partsdb.lift.util.snippet
+
+import scala.xml.Text
+
+import com.foursquare.rogue.Rogue._
+
+import uk.co.randomcoding.partsdb.core.customer.Customer
+import uk.co.randomcoding.partsdb.core.document.DocumentType.DocType
+import uk.co.randomcoding.partsdb.core.document.Document
+import uk.co.randomcoding.partsdb.core.transaction.Transaction
+import uk.co.randomcoding.partsdb.core.util.MongoHelpers._
+
+import net.liftweb.common.Full
 import net.liftweb.http.S
 import net.liftweb.util.Helpers._
-import net.liftweb.common.Full
-import uk.co.randomcoding.partsdb.core.transaction.Transaction
-import org.bson.types.ObjectId
-import uk.co.randomcoding.partsdb.core.customer.Customer
-import scala.xml.Text
-import uk.co.randomcoding.partsdb.core.document.Document
-import com.foursquare.rogue.Rogue._
-import uk.co.randomcoding.partsdb.core.document.DocumentType.DocType
 
 /**
  * Snippet helper to extract and process a [[uk.co.randomcoding.partsdb.core.transaction.Transaction]].
@@ -25,7 +29,7 @@ trait TransactionSnippet {
    * The transaction passed to this shippet identified by a ''transactionId'' parameter
    */
   lazy val transaction = S param "transactionId" match {
-    case Full(id) => Transaction findById new ObjectId(id)
+    case Full(id) => Transaction findById id
     case _ => None
   }
 
