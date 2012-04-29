@@ -23,9 +23,20 @@ trait AddressSnippet extends Logger {
 
   var addressText: String
   var addressCountry: String
-  //val addressLabel = "Business Address"
   var addressName = ""
 
+  /**
+   * Render address fields to allow the editing or creation of an address.
+   *
+   * The actual controls rendered are dependent on the provided parameters.
+   *  - If the `addressLabel` is ''Business Address'' and `customer` is populated, then display '''Customer Name Business Address'''
+   *  - If the `addressLabel` is ''Business Address'' and `customer` is empty, then the address name section is hidden completely. This is used to hide entry for auto populated values such as the New Customer address.
+   *  - If the `addressLabel` is anything else and `customer` is empty then a default text display of '''New <address label>''' is used
+   *  - Otherwise if the `customer` is populated then an editable text box is displayed to enable the user to enter their own name for the address.
+   *
+   * @param addressLabel The label to display for the address type.
+   * @param customer An optional [[uk.co.randomcoding.partsdb.core.customer.Customer]] used to determine whether or not this address is for a new customer or not
+   */
   def renderEditableAddress(addressLabel: String = "Business Address", customer: Option[Customer]) = {
     addressShortName(addressLabel, customer) &
       "#addressLabel" #> Text(addressLabel) &
@@ -33,6 +44,12 @@ trait AddressSnippet extends Logger {
       "#billingAddressCountry" #> styledSelect(countryCodes, addressCountry, addressCountry = _)
   }
 
+  /**
+   * Render the address controls as read only.
+   *
+   * @param addressLabel The label to use for the address
+   * @param customer An optional [[uk.co.randomcoding.partsdb.core.customer.Customer]]. This should not be `None`.
+   */
   def renderReadOnlyAddress(addressLabel: String = "Business Address", customer: Option[Customer]) = {
     "#addressNameEntry" #> readOnlyAddressName(addressLabel, customer) &
       "#addressLabel" #> Text(addressLabel) &
@@ -42,7 +59,10 @@ trait AddressSnippet extends Logger {
 
   private[this] def readOnlyAddressName(addressLabel: String, customer: Option[Customer]) = {
     addressName = customer match {
-      case Some(cust) => "%s %s".format(cust.customerName.get, addressLabel)
+      case Some(cust) => (Address findById cust.businessAddress.get match {
+        case Some(addr) => addr.shortName.get
+        case _ => "%s for Unknown Address".format(addressLabel)
+      })
       case _ => "%s for Unknown Customer".format(addressLabel)
     }
 
@@ -53,7 +73,7 @@ trait AddressSnippet extends Logger {
     (addressLabel, customer) match {
       case ("Business Address", Some(cust)) => setBusinessAddressNameAndRender(cust)
       case ("Business Address", None) => hiddenAddressName
-      case (label, None) => "#addressNameEntry" #> Text("New %s:".format(label))
+      case (label, None) => "#addressNameEntry" #> Text("New %s".format(label))
       case (_, _) => "#addressNameEntry" #> styledAjaxText(addressName, addressName = _)
     }
   }
