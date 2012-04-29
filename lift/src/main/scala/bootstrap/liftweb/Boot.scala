@@ -19,6 +19,13 @@ import com.mongodb.Mongo
 import net.liftweb.mongodb.MongoDB
 import net.liftweb.mongodb.DefaultMongoIdentifier
 import scala.collection.JavaConversions._
+import uk.co.randomcoding.partsdb.core.document.Document
+import uk.co.randomcoding.partsdb.core.document.DocumentType
+import uk.co.randomcoding.partsdb.core.transaction.Transaction
+import uk.co.randomcoding.partsdb.core.customer.Customer
+import uk.co.randomcoding.partsdb.core.address.Address
+import com.foursquare.rogue.Rogue._
+import uk.co.randomcoding.partsdb.lift.util.mongo.DatabaseCleanupOperations
 
 /**
  * A class that's instantiated early and run.  It allows the application
@@ -29,41 +36,13 @@ class Boot extends Loggable {
     // Initialise MongoDB
     MongoConfig.init(Props.get("mongo.db", "MainDb"))
 
-    // Uncomment this to add new users required for user access initialisation
-    //addBootstrapUsers
-
-    // Uncomment this to reset all the data in the database except the user data.
-    // This can be modified in the resetDatabase method
-    // resetDatabase
+    DatabaseCleanupOperations.cleanUpDatabase()
 
     configureAccessAndMenus
 
     configureLiftRules
 
     registerSearchProviders
-  }
-
-  private[this] def resetDatabase {
-    /*
-     * The names of the collections in use by the database
-     */
-    val appCollections = Seq("addresss", "contactdetailss", "customers", "documentids", "documents", "parts", "suppliers", "transactions", "users", "vehicles")
-
-    /*
-     * Name of collections not to drop.
-     * 
-     * By default, don't drop the user data as this is not related to the main running of the app and will deny people access.
-     */
-    val dontDrop = Seq("users")
-
-    /* 
-     * Drops all data from the named collections
-     * 
-     * If you want to exclude any collection from being dropped simply add its name to dontDrop above
-     * 
-     * Available collections are shown in the appCollections Seq
-     */
-    resetCollections((appCollections filterNot (dontDrop contains _): _*))
   }
 
   private[this] def configureAccessAndMenus {
@@ -184,21 +163,5 @@ class Boot extends Loggable {
       case "css" :: _ => true
       case "js" :: _ => true
     }
-  }
-
-  private[this] def resetCollections(collections: String*) = {
-    MongoDB.getDb(DefaultMongoIdentifier) match {
-      case Some(db) => {
-        val dbCollections: Set[String] = db.getCollectionNames().toSet
-        collections filter (dbCollections contains _) foreach (collection => {
-          logger.info("Dropping Collection: %s".format(collection))
-          db.getCollection(collection).getFullName()
-          db.getCollection(collection).drop()
-          if (db.getCollectionNames() contains collection) logger.error("Failed to drop collection: %s".format(collection))
-        })
-      }
-      case _ => logger.error("Unable to load Default Mongo Database!")
-    }
-
   }
 }

@@ -67,12 +67,7 @@ if (HOST.equalsIgnoreCase("benjymouse")) {
 		logs = testingLogs
 	}	
 	
-	logs.each() { key, value -> logger(key, value) }
-    /*logger("uk.co.randomcoding.partsdb.lift.snippet.RecordPayment", DEBUG)
-    logger("uk.co.randomcoding.partsdb.lift.snippet.PayInvoices", DEBUG)
-    logger("uk.co.randomcoding.partsdb.db.mongo.PaymentDbManager", DEBUG)
-    logger("uk.co.randomcoding.partsdb.core.transaction", DEBUG)*/
-    
+	logs.each() { key, value -> logger(key, value) }    
 
     rootLogLevel = DEBUG
 }

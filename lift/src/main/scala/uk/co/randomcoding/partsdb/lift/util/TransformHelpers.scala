@@ -47,8 +47,7 @@ object TransformHelpers {
    * @return a [[scala.xml.NodeSeq]] for a link with an inner span and the class attribute of the `<a>` element set to `button`
    */
   def buttonLink(linkText: String, linkTarget: String, buttonFunc: () => Any = noopFunction, attrs: List[ElemAttr] = Nil): NodeSeq = {
-    val buttonAttr: ElemAttr = "class" -> "btn"
-    span(attrLink(linkTarget, linkText, buttonFunc), Noop, (buttonAttr :: attrs): _*)
+    span(attrLink(linkTarget, linkText, buttonFunc, attrs: _*), Noop, "class" -> "btn")
   }
 
   /**

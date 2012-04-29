@@ -10,11 +10,10 @@
  */
 package uk.co.randomcoding.partsdb.db.mongo
 
-import uk.co.randomcoding.partsdb.core.transaction.{Transaction, InvoicePayment, Payment}
+import uk.co.randomcoding.partsdb.core.transaction.{ Transaction, InvoicePayment, Payment }
 import com.foursquare.rogue.Rogue._
-import uk.co.randomcoding.partsdb.core.document.{DocumentType, Document}
+import uk.co.randomcoding.partsdb.core.document.{ DocumentType, Document }
 import net.liftweb.common.Logger
-
 
 /**
  * Manages submitting invoicePayments to the database.
@@ -80,7 +79,7 @@ object PaymentDbManager extends Logger {
   private[this] def closeTransactionContainingInvoiceIfFullyPaid(invPayment: InvoicePayment): PaymentResult = {
     val invoiceId = invPayment.paidInvoice.get
 
-    Transaction where (_.documents contains invoiceId) get() match {
+    Transaction where (_.documents contains invoiceId) get () match {
       case Some(t) => closeTransactionIfFullyPaid(t) match {
         case Some(_) => PaymentSuccessful
         case _ => PaymentFailed("Error when attempting to close transaction %s. PLease file an error report".format(t.shortName.get))
@@ -100,14 +99,11 @@ object PaymentDbManager extends Logger {
    */
   private[this] def closeTransactionIfFullyPaid(transaction: Transaction): Option[Transaction] = {
     debug("Checking id transaction %s can be closed.".format(transaction.shortName.get))
-    val documents = Document where (_.id in transaction.documents.get) fetch()
+    val documents = Document where (_.id in transaction.documents.get) fetch ()
     val allDocumentsClosed = documents filter (_.editable.get == true) isEmpty
     val allInvoicesPaid = documents filter (_.documentType.get == DocumentType.Invoice) filter (_.remainingBalance > 0) isEmpty
 
-    val orderValue = {
-      val orderVal = transaction.valueOfDocuments(DocumentType.Order)
-      orderVal + (orderVal * 0.2) // This is a fix
-    }
+    val orderValue = transaction.valueOfDocuments(DocumentType.Order)
     val dNoteValue = transaction.valueOfDocuments(DocumentType.DeliveryNote)
     val invoiceValue = transaction.valueOfDocuments(DocumentType.Invoice)
 
@@ -121,7 +117,6 @@ object PaymentDbManager extends Logger {
 
     if (okToCloseTransaction) Transaction.close(transaction.id.get) else Some(transaction)
   }
-
 
   private[this] def processInvoiceClosureForPayments(invoicePayments: Seq[InvoicePayment]): Seq[PaymentResult] = {
     val resultsOfInvoiceUpdate = invoicePayments map (invPayment => (invPayment, closeInvoiceIfFullyPaid(invPayment)))

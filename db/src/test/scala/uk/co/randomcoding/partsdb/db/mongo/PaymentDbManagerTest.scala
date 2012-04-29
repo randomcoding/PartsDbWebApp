@@ -15,7 +15,7 @@ import util.Random
 import uk.co.randomcoding.partsdb.core.vehicle.Vehicle
 import uk.co.randomcoding.partsdb.core.part.Part
 import com.foursquare.rogue.Rogue._
-import uk.co.randomcoding.partsdb.core.transaction.{Transaction, Payment, InvoicePayment}
+import uk.co.randomcoding.partsdb.core.transaction.{ Transaction, Payment, InvoicePayment }
 import uk.co.randomcoding.partsdb.core.customer.Customer
 import uk.co.randomcoding.partsdb.core.address.Address
 import uk.co.randomcoding.partsdb.core.contact.ContactDetails
@@ -118,8 +118,8 @@ class PaymentDbManagerTest extends MongoDbTestBase with GivenWhenThen {
     val response = commitPayment(payment, invoicePayment1, invoicePayment2)
     then("An error indicating neither of the invoices were found is returned")
     response should (have size (2) and
-        contain(PaymentFailed("Invoice for payment of £100.00 was not found in the database.\nObject Id: %s".format(invoiceFor100Pounds.id.get)).asInstanceOf[PaymentResult]) and
-        contain(PaymentFailed("Invoice for payment of £150.00 was not found in the database.\nObject Id: %s".format(invoiceFor150Pounds.id.get)).asInstanceOf[PaymentResult]))
+      contain(PaymentFailed("Invoice for payment of £100.00 was not found in the database.\nObject Id: %s".format(invoiceFor100Pounds.id.get)).asInstanceOf[PaymentResult]) and
+      contain(PaymentFailed("Invoice for payment of £150.00 was not found in the database.\nObject Id: %s".format(invoiceFor150Pounds.id.get)).asInstanceOf[PaymentResult]))
     and("The database is not updated")
     performDatabaseChecks()
   }
@@ -322,6 +322,7 @@ class PaymentDbManagerTest extends MongoDbTestBase with GivenWhenThen {
   }
 
   test("Partial Payment for one of multiple invoices in a Transaction does not close the invoice and does not complete the Transaction") {
+    pending
     given("A Transaction that contains two unpaid invoices")
     and("A Payment for less than the full amount of one invoice in the transaction")
     and("An Invoice Payment that pays the partial value of the invoice")
@@ -331,10 +332,10 @@ class PaymentDbManagerTest extends MongoDbTestBase with GivenWhenThen {
     and("The Transaction is still in the Invoiced state")
     and("The Payment is marked as fully allocated")
     and("The Invoice Payment is paid in full")
-    fail("Needs to be implemented")
   }
 
   test("Two Partial Payments for a single invoice that make up the full amount in a Transaction with multiple invoices correctly closes the invoice but does not completed the transaction") {
+    pending
     given("A Transaction that contains two unpaid invoices")
     and("Two Payments for half the amount of one invoice in the transaction")
     and("Two Invoice Payments that each pay half the value of the invoice")
@@ -344,13 +345,13 @@ class PaymentDbManagerTest extends MongoDbTestBase with GivenWhenThen {
     and("The Transaction is still in the Invoiced state")
     and("The Payments are marked as fully allocated")
     and("The Invoice Payments are not paid in full")
-    fail("Needs to be implemented")
   }
 
   /*
   * Payments for a multiple invoices and Transactions with a multiple invoices
   */
   test("Full Payment for all invoices in a Transaction with a multiple document stream correctly closes all invoices and completes Transaction") {
+    pending
     given("A Transaction with two invoices")
     and("A Single Payment for the full value of both invoices")
     and("Invoice Payments for the full amount of each invoice")
@@ -363,6 +364,7 @@ class PaymentDbManagerTest extends MongoDbTestBase with GivenWhenThen {
   }
 
   test("Two separate full Payments for all invoices in a Transaction with a two invoices correctly closes both invoices and completes Transaction") {
+    pending
     given("A Transaction with two invoices")
     and("A Single Payment for the full value of one invoice")
     and("An Invoice Payment for the full amount of the same invoice")
@@ -378,6 +380,7 @@ class PaymentDbManagerTest extends MongoDbTestBase with GivenWhenThen {
   }
 
   test("Partial Payment for two invoices in a Transaction (with two invoices) does not close the invoices and does not complete the Transaction") {
+    pending
     given("A Transaction with two invoices")
     and("A Payment that is less than the value of both invoices")
     and("Two invoice Payments that allocate the entire payment and each pay part of one invoice")
@@ -389,6 +392,7 @@ class PaymentDbManagerTest extends MongoDbTestBase with GivenWhenThen {
   }
 
   test("Two Partial Payments for two invoices (that make up the full amount) in a Transaction (with two invoices) close the invoices and completes the Transaction") {
+    pending
     given("A Tranaction with two invoices")
     and("A Payment for part of the value of each invoice")
     and("Two Invoice Payments for part of the value of each invoice")
@@ -403,6 +407,7 @@ class PaymentDbManagerTest extends MongoDbTestBase with GivenWhenThen {
   }
 
   test("A payment for the full amount of one invoice and part of the value of a second in a Transaction with two invoices closes the fully paid invoice but does not close the other and does not complete the Transaction") {
+    pending
     given("A Transaction with two invoices")
     and("A Payment for the value of one whole invoice and part of the other")
     and("One Invoice Payment for the full value of one invoice")
@@ -421,14 +426,17 @@ class PaymentDbManagerTest extends MongoDbTestBase with GivenWhenThen {
    * Payments that affect invoices from multiple transactions
    */
   test("Full payment for two invoices in different Transactions, where each transaction only has the single invoice correctly closes both invoices and completes both Transactions") {
+    pending
     fail("Needs to be implemented")
   }
 
   test("Part Payment for two invoices in different transactions where each Transaction only has the single invoice does not close either invoice nor complete either transaction") {
+    pending
     fail("Needs to be implemented")
   }
 
   test("Payment for two invoices in different transactions, on full and one partial, where each Transaction only has the single invoice closes the fully paid invoice and copmletes the relevant Transaction, but does not close the partially paid invoice nor complete its transaction") {
+    pending
     fail("Needs to be implemented")
   }
 
@@ -448,9 +456,9 @@ class PaymentDbManagerTest extends MongoDbTestBase with GivenWhenThen {
   private[this] implicit def itemToList[T](item: T): List[T] = List(item)
 
   private[this] def performDatabaseChecks(expectedPayments: List[Payment] = Nil, expectedDocuments: List[Document] = Nil, expectedTransactions: List[Transaction] = Nil) {
-    Payment where (_.id exists true) fetch() should be(expectedPayments)
-    Document where (_.id exists true) fetch() should be(expectedDocuments)
-    Transaction where (_.id exists true) fetch() should be(expectedTransactions)
+    Payment where (_.id exists true) fetch () should be(expectedPayments)
+    Document where (_.id exists true) fetch () should be(expectedDocuments)
+    Transaction where (_.id exists true) fetch () should be(expectedTransactions)
   }
 
   private[this] def setupTransactionFor100Pounds: Transaction = setupTransaction(transactionFor100Pounds, invoiceFor100Pounds, orderFor100Pounds, deliveryFor100Pounds)

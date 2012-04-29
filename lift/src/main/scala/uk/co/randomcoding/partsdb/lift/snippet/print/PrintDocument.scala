@@ -125,10 +125,10 @@ class PrintDocument extends StatefulSnippet with DocumentTotalsDisplay with Logg
   }
 
   private[this] def addressDisplay(address: Address): Seq[NodeSeq] = {
-    val addressSource = Source.fromString(address.addressText.get).getLines.toSeq
+    val addressLines = Source.fromString(address.addressText.get).getLines.toSeq ++ Seq(address.country.get)
 
-    addressSource map (line => CountryCodes.matchToCountryCode(line) match {
-      case None => Text(line) ++ <br/>
+    addressLines map (line => CountryCodes.matchToCountryCode(line) match {
+      case None => Text(line + ",") ++ <br/>
       case Some(_) => Text(line)
     })
   }
