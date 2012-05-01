@@ -12,7 +12,7 @@ import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
 import uk.co.randomcoding.partsdb.lift.util.snippet._
 
 import net.liftweb.common.{ Logger, Full }
-import net.liftweb.http.js.JsCmds.Replace
+import net.liftweb.http.js.JsCmds.{ Replace, Noop }
 import net.liftweb.http.js.JsCmd
 import net.liftweb.http.{ WiringUI, SHtml }
 import net.liftweb.util.Helpers._
@@ -28,9 +28,16 @@ trait LineItemSnippet extends ErrorDisplay with AllLineItemsSnippet with Logger 
   val parts = Part where (_.id exists true) orderDesc (_.partName) fetch
   val partsSelect = (None, "Select Part") :: (parts map ((p: Part) => (Some(p), p.partName.get)))
 
-  def renderAddEditLineItem() = {
-    "#addLineButton" #> styledAjaxButton("Add Line", addLine) &
-      "#partName" #> partNameContent() &
+  /**
+   * Render the controls to add or edit a Line Item plus the button to add it to the `dataHolder`.
+   *
+   * @param addButtonText The text to display on the '''Add''' button. Defaults to ''Add Line''
+   * @param additionalAddLineAction The `JsCmd` to execute in addition to adding the line item to the `dataHolder`.
+   * This is executed after the add operation and defaults to a `Noop`
+   */
+  def renderAddEditLineItem(addButtonText: String = "Add Line", additionalAddLineAction: JsCmd = Noop) = {
+    "#addLineButton" #> styledAjaxButton(addButtonText, (() => (addLine & additionalAddLineAction))) &
+      "#partName" #> partNameContent() & // these can be done with WiringUI.toNode
       "#supplierName" #> suppliersContent() &
       "#partQuantity" #> partQuantityContent() &
       "#basePartCost" #> WiringUI.asText(dataHolder.currentPartBaseCostDisplay) &
