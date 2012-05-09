@@ -35,15 +35,25 @@ class PartKit private () extends MongoRecord[PartKit] with ObjectIdPk[PartKit] {
    */
   def kitCost: Double = parts.get map (_.lineCost) sum
 
+  /**
+   * Part Kits are equals if their name and parts are equals
+   */
   override def equals(that: Any): Boolean = that match {
-    case other: PartKit => kitName.get == other.kitName.get
+    case other: PartKit => kitName.get == other.kitName.get && parts.get == other.parts.get
     case _ => false
   }
 
-  override def hashCode: Int = getClass.hashCode + kitName.get.hashCode
+  override def hashCode: Int = getClass.hashCode + kitName.get.hashCode + parts.get.foldLeft(0)(_ + _.hashCode)
 }
 
 object PartKit extends PartKit with MongoMetaRecord[PartKit] {
+
+  /**
+   * Create a new instance of a Part Kit.
+   *
+   * This is '''not''' added to the database
+   */
+  def apply(kitName: String, partLines: Seq[LineItem]) = PartKit.createRecord.kitName(kitName).parts(partLines.toList)
 
   /**
    * Create a new instance of a Part Kit.
