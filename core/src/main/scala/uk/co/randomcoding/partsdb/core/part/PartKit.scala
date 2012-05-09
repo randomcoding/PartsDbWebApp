@@ -68,7 +68,11 @@ object PartKit extends PartKit with MongoMetaRecord[PartKit] {
    * @param oid The Object Id of the `PartKit` to find
    * @return An optional `PartKit` which is populated iff there is a record with the given Object Id. Returnd `None` otherwise.
    */
-  def findById(oid: ObjectId): Option[PartKit] = PartKit where (_.id eqs oid) get
+  def findById(oid: ObjectId): Option[PartKit] = {
+    val pk = PartKit where (_.id eqs oid) get
+
+    pk
+  }
 
   /**
    * Find a record that matches the given `PartKit` in the database.
@@ -98,6 +102,9 @@ object PartKit extends PartKit with MongoMetaRecord[PartKit] {
    */
   def add(partKit: PartKit): Option[PartKit] = findMatching(partKit) match {
     case Some(pk) => Some(pk)
-    case _ => partKit.saveTheRecord
+    case _ => partKit.save match {
+      case pk: PartKit => Some(pk)
+      case _ => None
+    }
   }
 }

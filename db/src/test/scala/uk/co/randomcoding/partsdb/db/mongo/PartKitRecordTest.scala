@@ -19,10 +19,9 @@
  */
 package uk.co.randomcoding.partsdb.db.mongo
 
-import uk.co.randomcoding.partsdb.core.part.PartKit
-import uk.co.randomcoding.partsdb.core.part.Part
-import uk.co.randomcoding.partsdb.core.vehicle.Vehicle
 import uk.co.randomcoding.partsdb.core.document.LineItem
+import uk.co.randomcoding.partsdb.core.part.{ PartKit, Part }
+import uk.co.randomcoding.partsdb.core.vehicle.Vehicle
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
@@ -32,6 +31,10 @@ class PartKitRecordTest extends MongoDbTestBase {
   override val dbName = "PartKitTest"
 
   private[this] val part1 = Part.create("Part", Vehicle.create("Vehicle"), Some("modId"))
+
+  private[this] def line(lineNumber: Int = 0, part: Part = part1, quantity: Int = 1, price: Double = 100.0d, markup: Double = 0.0d): LineItem = {
+    LineItem.create(lineNumber, part, quantity, price, markup)
+  }
 
   test("Hash Code and Equality for Part Kits That Should be Equals") {
     val emptyKit1 = PartKit("empty kit", Nil)
@@ -77,4 +80,21 @@ class PartKitRecordTest extends MongoDbTestBase {
     kit1.hashCode should (not equal (kit2.hashCode) and not equal (kit3.hashCode))
   }
 
+  test("Addition of Part Kit to Database and find by id") {
+    val kit1 = PartKit("Kit", Seq(line()))
+
+    val partKit1 = PartKit.add(kit1)
+
+    partKit1 should be('defined)
+
+    PartKit.findById(partKit1.get.id.get) should be(partKit1)
+  }
+
+  test("Find Matching record by object id") {
+    pending
+  }
+
+  test("Find Matching record by part kit name") {
+    pending
+  }
 }
