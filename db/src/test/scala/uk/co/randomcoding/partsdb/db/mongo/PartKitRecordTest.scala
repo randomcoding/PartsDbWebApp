@@ -19,11 +19,11 @@
  */
 package uk.co.randomcoding.partsdb.db.mongo
 
+import com.foursquare.rogue.Rogue._
+
 import uk.co.randomcoding.partsdb.core.document.LineItem
 import uk.co.randomcoding.partsdb.core.part.{ PartKit, Part }
 import uk.co.randomcoding.partsdb.core.vehicle.Vehicle
-import net.liftweb.mongodb.record.MongoRecord
-import com.foursquare.rogue.Rogue._
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
@@ -146,5 +146,29 @@ class PartKitRecordTest extends MongoDbTestBase {
     PartKit.fetch() should be(List(kit1))
     PartKit.findMatching(kit3) should be(Some(kit1))
     PartKit.fetch() should be(List(kit1))
+  }
+
+  test("Update record that exists") {
+    val kit1 = PartKit("Kit1", Seq(LineItem.create(0, part1, 1, 100, 0)))
+    val oid = kit1.id.get
+    PartKit.add(kit1)
+    PartKit.findById(oid) should be(Some(kit1))
+
+    val kit2 = PartKit("Kit2", Seq(LineItem.create(0, part1, 2, 100, 0)))
+    PartKit.update(oid, kit2)
+    PartKit.findById(oid) should be(Some(kit2))
+
+    val kit3 = PartKit("Kit3", Seq(LineItem.create(0, part1, 1, 200, 0)))
+    PartKit.update(oid, kit3)
+    PartKit.findById(oid) should be(Some(kit3))
+  }
+
+  test("Update record that does not exist returns None and does not add records to the database") {
+    val kit1 = PartKit("Kit", Seq(LineItem.create(0, part1, 1, 100, 0)))
+    val oid = kit1.id.get
+    PartKit.update(oid, kit1) should be('empty)
+
+    PartKit.fetch() should be(Nil)
+    PartKit.get() should be(None)
   }
 }

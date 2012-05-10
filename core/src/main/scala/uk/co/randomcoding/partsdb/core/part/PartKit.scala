@@ -103,4 +103,17 @@ object PartKit extends PartKit with MongoMetaRecord[PartKit] {
       case _ => None
     }
   }
+
+  /**
+   * Update a `PartKit` record with the contents of a new part kit
+   *
+   * @param oid The `ObjectId` of the `PartKit` record to update. If there is no part with this id nothing is done.
+   * @param partKit The `PartKit` object that contains the new vales (`name` and `parts`)
+   * @return An optional `PartKit` that will contain the updated record if there was one with the given `ObjectId` or `None` otherwise.
+   */
+  def update(oid: ObjectId, partKit: PartKit): Option[PartKit] = {
+    PartKit.where(_.id eqs oid).modify(_.kitName setTo partKit.kitName.get).and(_.parts setTo partKit.parts.get).updateMulti
+
+    findById(oid)
+  }
 }
