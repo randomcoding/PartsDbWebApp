@@ -22,6 +22,8 @@ package uk.co.randomcoding.partsdb.db.mongo
 import uk.co.randomcoding.partsdb.core.document.LineItem
 import uk.co.randomcoding.partsdb.core.part.{ PartKit, Part }
 import uk.co.randomcoding.partsdb.core.vehicle.Vehicle
+import net.liftweb.mongodb.record.MongoRecord
+import com.foursquare.rogue.Rogue._
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
@@ -91,10 +93,58 @@ class PartKitRecordTest extends MongoDbTestBase {
   }
 
   test("Find Matching record by object id") {
-    pending
+    val kit1 = PartKit("Kit1", Seq(LineItem.create(0, part1, 1, 100, 0)))
+    val kitId = kit1.id.get
+    val kit2 = PartKit("Kit2", Seq(LineItem.create(0, part1, 2, 100, 0))).id(kitId)
+    val kit3 = PartKit("Kit3", Seq(LineItem.create(0, part1, 1, 200, 0))).id(kitId)
+
+    val addedKit = PartKit.add(kit1)
+    addedKit should be(Some(kit1))
+    addedKit.get.id.get should be(kitId)
+
+    PartKit.findMatching(kit2) should be(Some(kit1))
+    PartKit.findMatching(kit3) should be(Some(kit1))
   }
 
   test("Find Matching record by part kit name") {
-    pending
+    val kit1 = PartKit("Kit", Seq(LineItem.create(0, part1, 1, 100, 0)))
+    val kit2 = PartKit("Kit", Seq(LineItem.create(0, part1, 2, 100, 0)))
+    val kit3 = PartKit("Kit", Seq(LineItem.create(0, part1, 1, 200, 0)))
+
+    val addedKit = PartKit.add(kit1)
+    addedKit should be(Some(kit1))
+
+    PartKit.findMatching(kit2) should be(Some(kit1))
+    PartKit.findMatching(kit3) should be(Some(kit1))
+  }
+
+  test("Add record with matching object id returns the original record with the id and does not add extra records to the database") {
+    val kit1 = PartKit("Kit1", Seq(LineItem.create(0, part1, 1, 100, 0)))
+    val kitId = kit1.id.get
+    val kit2 = PartKit("Kit2", Seq(LineItem.create(0, part1, 2, 100, 0))).id(kitId)
+    val kit3 = PartKit("Kit3", Seq(LineItem.create(0, part1, 1, 200, 0))).id(kitId)
+
+    val addedKit = PartKit.add(kit1)
+    addedKit should be(Some(kit1))
+    addedKit.get.id.get should be(kitId)
+
+    PartKit.add(kit2) should be(Some(kit1))
+    PartKit.fetch() should be(List(kit1))
+    PartKit.add(kit3) should be(Some(kit1))
+    PartKit.fetch() should be(List(kit1))
+  }
+
+  test("Add record with matching part kit name returns the original record with the id and does not add extra records to the database") {
+    val kit1 = PartKit("Kit", Seq(LineItem.create(0, part1, 1, 100, 0)))
+    val kit2 = PartKit("Kit", Seq(LineItem.create(0, part1, 2, 100, 0)))
+    val kit3 = PartKit("Kit", Seq(LineItem.create(0, part1, 1, 200, 0)))
+
+    val addedKit = PartKit.add(kit1)
+    addedKit should be(Some(kit1))
+
+    PartKit.findMatching(kit2) should be(Some(kit1))
+    PartKit.fetch() should be(List(kit1))
+    PartKit.findMatching(kit3) should be(Some(kit1))
+    PartKit.fetch() should be(List(kit1))
   }
 }
