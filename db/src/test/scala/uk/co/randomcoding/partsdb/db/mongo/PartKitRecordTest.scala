@@ -171,4 +171,12 @@ class PartKitRecordTest extends MongoDbTestBase {
     PartKit.fetch() should be(Nil)
     PartKit.get() should be(None)
   }
+
+  test("Remove existing record from database") {
+    pending
+  }
+
+  test("Remove non existent record from database") {
+    pending
+  }
 }
