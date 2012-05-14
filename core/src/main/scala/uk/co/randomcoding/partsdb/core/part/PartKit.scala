@@ -31,6 +31,11 @@ class PartKit private () extends MongoRecord[PartKit] with ObjectIdPk[PartKit] {
   object parts extends BsonRecordListField(this, LineItem)
 
   /**
+   * The description of the PartKit
+   */
+  object description extends StringField(this, 2048)
+
+  /**
    * Get the total cost of all the line items in this Part Kit
    */
   def kitCost: Double = parts.get map (_.lineCost) sum
@@ -53,20 +58,20 @@ object PartKit extends PartKit with MongoMetaRecord[PartKit] {
    *
    * This is '''not''' added to the database
    */
-  def apply(kitName: String, partLines: Seq[LineItem]) = PartKit.createRecord.kitName(kitName).parts(partLines.toList)
+  def apply(kitName: String, partLines: Seq[LineItem], description: String = "") = PartKit.createRecord.kitName(kitName).parts(partLines.toList).description(description)
 
   /**
    * Create a new instance of a Part Kit.
    *
    * This is '''not''' added to the database
    */
-  def create(kitName: String, partLines: Seq[LineItem]) = PartKit.createRecord.kitName(kitName).parts(partLines.toList)
+  def create(kitName: String, partLines: Seq[LineItem], description: String = "") = PartKit(kitName, partLines, description)
 
   /**
    * Find a `PartKit` by its object id.
    *
    * @param oid The Object Id of the `PartKit` to find
-   * @return An optional `PartKit` which is populated iff there is a record with the given Object Id. Returnd `None` otherwise.
+   * @return An optional `PartKit` which is populated iff there is a record with the given Object Id. Returned `None` otherwise.
    */
   def findById(oid: ObjectId): Option[PartKit] = PartKit where (_.id eqs oid) get
 
@@ -112,7 +117,9 @@ object PartKit extends PartKit with MongoMetaRecord[PartKit] {
    * @return An optional `PartKit` that will contain the updated record if there was one with the given `ObjectId` or `None` otherwise.
    */
   def update(oid: ObjectId, partKit: PartKit): Option[PartKit] = {
-    PartKit.where(_.id eqs oid).modify(_.kitName setTo partKit.kitName.get).and(_.parts setTo partKit.parts.get).updateMulti
+    PartKit.where(_.id eqs oid).modify(_.kitName setTo partKit.kitName.get)
+      .and(_.parts setTo partKit.parts.get)
+      .and(_.description setTo partKit.description.get).updateMulti
 
     findById(oid)
   }
