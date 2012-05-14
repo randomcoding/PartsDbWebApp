@@ -19,22 +19,24 @@
  */
 package uk.co.randomcoding.partsdb.lift.snippet
 
-import scala.xml.Text
+import scala.xml.{ Text, NodeSeq }
 
+import uk.co.randomcoding.partsdb.core.document.LineItem
+import uk.co.randomcoding.partsdb.core.part.PartKit
 import uk.co.randomcoding.partsdb.lift.model.PartKitDataHolder
-import uk.co.randomcoding.partsdb.lift.util.snippet._
 import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
+import uk.co.randomcoding.partsdb.lift.util.snippet._
 
 import net.liftweb.common.Logger
 import net.liftweb.http.js.JsCmds.Noop
 import net.liftweb.http.js.JsCmd
-import net.liftweb.http.{ StatefulSnippet, S }
+import net.liftweb.http.{ WiringUI, StatefulSnippet, S }
 import net.liftweb.util.Helpers._
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
-class AddEditPartKit extends StatefulSnippet with Logger with SubmitAndCancelSnippet with LineItemSnippet {
+class AddEditPartKit extends StatefulSnippet with Logger with SubmitAndCancelSnippet with LineItemSnippet with AllLineItemsSnippet {
 
   override val cameFrom = S.referer openOr "/app/"
 
@@ -46,10 +48,25 @@ class AddEditPartKit extends StatefulSnippet with Logger with SubmitAndCancelSni
 
   def render = {
     "#nameEntry" #> styledAjaxText(dataHolder.kitName, updateAjaxValue[String](name => dataHolder.kitName = name)) &
-      "#descriptionENtry" #> styledAjaxTextArea(dataHolder.kitDescription, updateAjaxValue[String](name => dataHolder.kitDescription = name)) &
+      "#descriptionEntry" #> styledAjaxTextArea(dataHolder.kitDescription, updateAjaxValue[String](name => dataHolder.kitDescription = name)) &
       renderAddEditLineItem("Add Item") &
-      "#thing" #> Text("stuff")
+      "#partKitContentsDisplay *" #> WiringUI.toNode(dataHolder.lineItemsCell)(renderPartKitLineItems) &
+      renderSubmitAndCancel()
   }
 
   override def processSubmit(): JsCmd = Noop
+
+  private[this] def renderPartKitLineItems: (List[LineItem], NodeSeq) => NodeSeq = (lines, nodes) => {
+    lines flatMap (line => transformLineItem(line)(nodes))
+  }
+
+  private[this] val transformLineItem = (line: LineItem) => {
+    "#itemName" #> (PartKit.findById(line.partId.get) match {
+      case Some(pk) => Text(pk.kitName.get)
+      case _ => Text("No Kit Name")
+    }) &
+      "#itemQuantity" #> Text("%.2f".format(line.quantity.get)) &
+      "#itemCostPrice" #> ("£%.2f".format(line.lineCost)) &
+      "#itemMarkup" #> "%d%%".format(line.markup.get)
+  }
 }

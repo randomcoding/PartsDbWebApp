@@ -78,6 +78,7 @@ class Boot extends Loggable {
     val showParts = Menu(Loc("showParts", ExtLink("/app/show?entityType=Part"), "Parts", userLoggedIn))
     val showSuppliers = Menu(Loc("showSuppliers", ExtLink("/app/show?entityType=Supplier"), "Suppliers", userLoggedIn))
     val showVehicles = Menu(Loc("showVehicles", ExtLink("/app/show?entityType=Vehicle"), "Vehicles", userLoggedIn))
+    val showPartKits = Menu(Loc("showPartKits", ExtLink("/app/show?entityType=PartKit"), "Part Kits", userLoggedIn))
 
     // Search Button
     val searchLoc = Menu(Loc("search", new Link("app" :: "search" :: Nil, false), "Search", userLoggedIn))
@@ -85,8 +86,11 @@ class Boot extends Loggable {
     // Add Quote Button
     val addQuoteLoc = Menu(Loc("addQuote", new Link("app" :: "quote" :: Nil, false), "New Quote", userLoggedIn))
 
-    // Add Payment Button
+    // Payments Menu
+
+    // Payments Button
     val addPayment = Menu(Loc("recordPayment", new Link("app" :: "recordPayment" :: Nil, false), "Record Payment(s)", userLoggedIn))
+    val payInvoices = Menu(Loc("payInvoicesPayment", new Link("app" :: "payInvoices" :: Nil, false), "Pay Invoices", userLoggedIn))
 
     // Display... locs hidden
     val displayEntitiesLoc = Menu(Loc("displayEntities", new Link("app" :: "display" :: Nil, true), "Display Entities", Hidden, userLoggedIn))
@@ -103,7 +107,7 @@ class Boot extends Loggable {
     // Construct the menu list to use - separated into displayed and hidden
 
     // The order of addition here is the order the menus are displayed in the navigation bar
-    val displayedMenus = List(mainAppLoc, showCustomers, showParts, showVehicles, showSuppliers, searchLoc, addQuoteLoc, addPayment)
+    val displayedMenus = List(mainAppLoc, showCustomers, showParts, showPartKits, showVehicles, showSuppliers, searchLoc, addQuoteLoc, addPayment, payInvoices)
     val hiddenMenues = List(displayEntitiesLoc, printDocumentsLoc, adminLoc, rootLoc)
 
     val menus = displayedMenus ::: hiddenMenues
