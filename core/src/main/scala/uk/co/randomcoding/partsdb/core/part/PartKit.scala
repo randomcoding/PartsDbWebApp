@@ -38,7 +38,7 @@ class PartKit private () extends MongoRecord[PartKit] with ObjectIdPk[PartKit] {
   /**
    * Get the total cost of all the line items in this `PartKit`
    */
-  def kitCost: Double = parts.get.foldLeft(0.0d)(_ + _.lineCost) //  map (_.lineCost) sum
+  def kitPrice: Double = parts.get.foldLeft(0.0d)(_ + _.lineCost)
 
   /**
    * Get the cost price of all the item in this `PartKit`
