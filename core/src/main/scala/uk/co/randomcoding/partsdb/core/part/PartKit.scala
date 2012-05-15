@@ -26,7 +26,7 @@ class PartKit private () extends MongoRecord[PartKit] with ObjectIdPk[PartKit] {
   object kitName extends StringField(this, 100)
 
   /**
-   * The line item records that are contained in this part kit.
+   * The line item records that are contained in this `PartKit`.
    */
   object parts extends BsonRecordListField(this, LineItem)
 
@@ -36,9 +36,16 @@ class PartKit private () extends MongoRecord[PartKit] with ObjectIdPk[PartKit] {
   object description extends StringField(this, 2048)
 
   /**
-   * Get the total cost of all the line items in this Part Kit
+   * Get the total cost of all the line items in this `PartKit`
    */
-  def kitCost: Double = parts.get map (_.lineCost) sum
+  def kitCost: Double = parts.get.foldLeft(0.0d)(_ + _.lineCost) //  map (_.lineCost) sum
+
+  /**
+   * Get the cost price of all the item in this `PartKit`
+   *
+   * The cost price is the price without any markup.
+   */
+  def costPrice: Double = parts.get.foldLeft(0.0d)(_ + _.basePrice.get)
 
   /**
    * Part Kits are equals if their name and parts are equals

@@ -55,6 +55,7 @@ class DisplayExisting extends ErrorDisplay with Logger {
       case "part" => PartDisplay(Part where (_.id exists true) orderDesc (_.partName) fetch, displayLink = false)
       case "vehicle" => VehicleDisplay(Vehicle where (_.id exists true) orderDesc (_.vehicleName) fetch, displayLink = false)
       case "supplier" => SupplierDisplay(Supplier where (_.id exists true) orderDesc (_.supplierName) fetch, displayLink = false)
+      case "partkit" => PartKitDisplay(PartKit orderDesc ())
       case _ => {
         error("Unknown Type: %s".format(entityType))
         TabularEntityDisplay.emptyTable
