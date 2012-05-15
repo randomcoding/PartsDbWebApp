@@ -25,7 +25,7 @@ import net.liftweb.util.Helpers._
 trait LineItemSnippet extends ErrorDisplay with AllLineItemsSnippet with Logger {
   val dataHolder: NewLineItemDataHolder
 
-  val parts = Part where (_.id exists true) orderDesc (_.partName) fetch
+  val parts = Part orderDesc (_.partName) fetch
   val partsSelect = (None, "Select Part") :: (parts map ((p: Part) => (Some(p), p.partName.get)))
 
   /**

@@ -35,7 +35,7 @@ class AddEditQuote extends StatefulSnippet with ErrorDisplay with DataValidation
   var customerName = ""
   override val dataHolder = new QuoteDocumentDataHolder
 
-  val customers = Customer where (_.id exists true) orderDesc (_.customerName) fetch
+  val customers = Customer orderDesc (_.customerName) fetch
   val customersSelect = (None, "Select Customer") :: (customers map ((c: Customer) => (Some(c), c.customerName.get)))
   var currentCustomer: Option[Customer] = None
 

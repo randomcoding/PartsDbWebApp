@@ -34,7 +34,7 @@ object CustomerSearchProvider {
    * @param contactEmail Finds any customers that have this value in the  `emailAddress` field of their `contactDetails`
    */
   def findMatching(customerName: String = "", addressContains: String = "", contactName: String = "", contactPhoneNumber: String = "", contactMobileNumber: String = "", contactFax: String = "", contactEmail: String = ""): Seq[Customer] = {
-    val allCustomers = (Customer where (_.id exists true) fetch) toSet
+    val allCustomers = (Customer fetch) toSet
 
     val allEmpty = Seq(customerName, addressContains, contactName, contactPhoneNumber, contactMobileNumber, contactEmail, contactFax) filter (_ nonEmpty) isEmpty
 

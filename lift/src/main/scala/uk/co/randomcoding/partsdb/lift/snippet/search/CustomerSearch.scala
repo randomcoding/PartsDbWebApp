@@ -58,7 +58,7 @@ object CustomerSearch {
       "#mobileNumberEntry" #> styledAjaxText(mobileNumber, (s: String) => updateValue(() => mobileNumber = s)(s)) &
       "#faxNumberEntry" #> styledAjaxText(faxNumber, (s: String) => updateValue(() => faxNumber = s)(s)) &
       "#emailEntry" #> styledAjaxText(email, (s: String) => updateValue(() => email = s)(s)) &
-      "#results" #> displayResults(Customer where (_.id exists true) fetch)
+      "#results" #> displayResults(Customer fetch)
   }
 
   private def displayResults(results: List[Customer]) = CustomerDisplay(results.sortBy(_.customerName.get), displayLink = true)

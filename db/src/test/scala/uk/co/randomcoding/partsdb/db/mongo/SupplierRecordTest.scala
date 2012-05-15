@@ -32,7 +32,7 @@ class SupplierRecordTest extends MongoDbTestBase {
   val partCost1 = PartCost.create(part1, 10.0, now, "part1-1")
   val partCost2 = PartCost.create(part1, 12.0, now, "part1-2")
 
-  def allSuppliers = Supplier where (_.id exists true) fetch
+  def allSuppliers = Supplier fetch
 
   test("Equality and HashCode") {
     val s1 = create("Supplier 1", contactDave, address1, Seq(partCost1))
