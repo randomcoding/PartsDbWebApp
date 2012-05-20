@@ -50,7 +50,7 @@ class AddEditPartKit extends StatefulSnippet with Logger with SubmitAndCancelSni
       "#nameEntry" #> styledAjaxText(dataHolder.kitName, updateAjaxValue[String](name => dataHolder.kitName = name)) &
       "#descriptionEntry" #> styledAjaxTextArea(dataHolder.kitDescription, updateAjaxValue[String](name => dataHolder.kitDescription = name)) &
       renderAddEditLineItem("Add Item") &
-      //"#partKitItem *" #> WiringUI.toNode(dataHolder.lineItemsCell)(renderPartKitLineItems) &
+      "#partKitItems" #> WiringUI.toNode(dataHolder.lineItemsCell)(renderPartKitLineItems) &
       renderSubmitAndCancel()
   }
 
@@ -58,7 +58,7 @@ class AddEditPartKit extends StatefulSnippet with Logger with SubmitAndCancelSni
 
   private[this] def renderPartKitLineItems: (List[LineItem], NodeSeq) => NodeSeq = (lines, nodes) => {
     debug("Received nodes for line items: %s".format(nodes.toString))
-    val outNodes = lines flatMap (line => transformLineItem(line)(nodes))
+    val outNodes = lines flatMap (line => <tr>{ transformLineItem(line)(nodes) }</tr>)
     debug("Generated Nodes: %s".format(outNodes))
     outNodes
   }
@@ -66,8 +66,9 @@ class AddEditPartKit extends StatefulSnippet with Logger with SubmitAndCancelSni
   private[this] val transformLineItem = (line: LineItem) => {
     "#itemName" #> Text(lineItemPartName(line)) &
       "#itemQuantity" #> Text("%d".format(line.quantity.get)) &
-      "#itemCostPrice" #> ("£%.2f".format(line.lineCost)) &
-      "#itemMarkup" #> "%.0f%%".format(line.markup.get * 100)
+      "#itemCostPrice" #> Text("£%.2f".format(line.costPrice)) &
+      "#itemMarkup" #> Text("%.0f%%".format(line.markup.get * 100)) &
+      "#itemFullPrice" #> Text("£%.2f".format(line.lineCost))
   }
 
   private[this] def lineItemPartName(line: LineItem): String = Part.findById(line.partId.get) match {
