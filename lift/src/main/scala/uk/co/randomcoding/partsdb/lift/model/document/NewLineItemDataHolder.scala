@@ -57,7 +57,7 @@ trait NewLineItemDataHolder extends LineItemsDataHolder with Logger {
   /**
    * Find all the suppliers who provide a part
    */
-  private def suppliedBy(partId: ObjectId): List[Supplier] = Supplier where (_.suppliedParts.subfield(_.part) eqs partId) fetch
+  private def suppliedBy(partId: ObjectId): List[Supplier] = Supplier where (_.suppliedParts.subfield(_.part) eqs partId) orderAsc (_.supplierName) fetch
 
   /**
    * Calculated value of the base cost of the currently selected part
