@@ -53,5 +53,9 @@ done
 #done
 
 #java ${JAVA_OPTS} -jar `dirname $0`/sbt-launch-${SBT_VER}.jar "$@"
-java ${JAVA_OPTS} -jar `dirname $0`/sbt-launch-${SBT_VER}.jar "$SBT_ARGS"
+if [ -z "${SBT_ARGS}" ] ; then
+  java ${JAVA_OPTS} -jar `dirname $0`/sbt-launch-${SBT_VER}.jar
+else
+  java ${JAVA_OPTS} -jar `dirname $0`/sbt-launch-${SBT_VER}.jar "$SBT_ARGS"
+fi
 
