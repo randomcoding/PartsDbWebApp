@@ -39,6 +39,11 @@ class LineItem private () extends BsonRecord[LineItem] {
    */
   final def lineCost: Double = (basePrice + (basePrice * markup)) * quantity
 
+  /**
+   * The cost price of the line item without markup.
+   */
+  final def costPrice: Double = basePrice * quantity
+
   override def equals(that: Any): Boolean = that match {
     case other: LineItem => {
       lineNumber.get == other.lineNumber.get &&
