@@ -21,6 +21,7 @@ package uk.co.randomcoding.partsdb.lift.model
 
 import uk.co.randomcoding.partsdb.lift.model.document.NewLineItemDataHolder
 import net.liftweb.util.ValueCell
+import uk.co.randomcoding.partsdb.core.part.PartKit
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
@@ -39,6 +40,9 @@ class PartKitDataHolder extends NewLineItemDataHolder {
 
   def kitDescription_=(newDescription: String) = partKitDescription.set(newDescription)
 
-  // Create the part kit from the current data
+  /**
+   * Create the part kit from the current data
+   */
+  def partKit: PartKit = PartKit(kitName, lineItems, kitDescription)
 
 }

@@ -35,7 +35,7 @@ import uk.co.randomcoding.partsdb.core.part.Part
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
-class AddEditPartKit extends StatefulSnippet with Logger with SubmitAndCancelSnippet with LineItemSnippet with AllLineItemsSnippet {
+class AddEditPartKit extends StatefulSnippet with Logger with SubmitAndCancelSnippet with LineItemSnippet with AllLineItemsSnippet with ErrorDisplay with DataValidation {
 
   override val cameFrom = S.referer openOr "/app/"
 
@@ -54,7 +54,27 @@ class AddEditPartKit extends StatefulSnippet with Logger with SubmitAndCancelSni
       renderSubmitAndCancel()
   }
 
-  override def processSubmit(): JsCmd = Noop
+  override def processSubmit(): JsCmd = {
+    performValidation() match {
+      case Nil => createPartKitAndAddToDatabase match {
+        case Some(pk) => S redirectTo cameFrom
+        case None => {
+          displayError("Failed To Add Part Kit. Please Submit an error report.")
+          Noop
+        }
+      }
+      case errors => {
+        displayErrors(errors: _*)
+        Noop
+      }
+    }
+  }
+
+  private[this] def createPartKitAndAddToDatabase: Option[PartKit] = PartKit add dataHolder.partKit
+
+  override def validationItems: Seq[ValidationItem] = Seq(ValidationItem(dataHolder.kitDescription, "Kit Description"),
+    ValidationItem(dataHolder.kitName, "Kit Name"),
+    ValidationItem(dataHolder.lineItems, "Kit Contents"))
 
   private[this] def renderPartKitLineItems: (List[LineItem], NodeSeq) => NodeSeq = (lines, nodes) => {
     debug("Received nodes for line items: %s".format(nodes.toString))
