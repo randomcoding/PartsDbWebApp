@@ -35,6 +35,6 @@ object PartKitDisplay extends TabularEntityDisplay {
     <td>{ partKit.description.get }</td>
     <td>{ "£%.2f".format(partKit.costPrice) }</td>
     <td>{ "£%.2f".format(partKit.kitPrice) }</td> ++
-      editAndDisplayCells("Part Kit", partKit.id.get, editLink, displayLink)
+      editAndDisplayCells("PartKit", partKit.id.get, editLink, displayLink)
   }
 }
