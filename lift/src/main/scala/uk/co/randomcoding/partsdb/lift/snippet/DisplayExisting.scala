@@ -23,7 +23,7 @@ import uk.co.randomcoding.partsdb.core.part.PartKit
  *
  * The entity type is specified by the `entityType` query parameter * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
-class DisplayExisting extends ErrorDisplay with Logger {
+object DisplayExisting extends ErrorDisplay with Logger {
 
   /**
    * Display the web page content

@@ -31,6 +31,8 @@ import net.liftweb.http.js.JsCmd
 import net.liftweb.http.{ WiringUI, StatefulSnippet, S }
 import net.liftweb.util.Helpers._
 import uk.co.randomcoding.partsdb.core.part.Part
+import net.liftweb.common.Full
+import org.bson.types.ObjectId
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
@@ -40,6 +42,11 @@ class AddEditPartKit extends StatefulSnippet with Logger with SubmitAndCancelSni
   override val cameFrom = S.referer openOr "/app/"
 
   override val dataHolder = new PartKitDataHolder
+
+  private[this] val initialPartKit = S param "id" match {
+    case Full(id) => getPartKitFromDatabaseAndUpdateDataHolder(id)
+    case _ => None
+  }
 
   def dispatch = {
     case "render" => render
@@ -70,7 +77,10 @@ class AddEditPartKit extends StatefulSnippet with Logger with SubmitAndCancelSni
     }
   }
 
-  private[this] def createPartKitAndAddToDatabase: Option[PartKit] = PartKit add dataHolder.partKit
+  private[this] def createPartKitAndAddToDatabase: Option[PartKit] = initialPartKit match {
+    case None => PartKit add dataHolder.partKit
+    case Some(pk) => PartKit.update(pk.id.get, pk)
+  }
 
   override def validationItems: Seq[ValidationItem] = Seq(ValidationItem(dataHolder.kitDescription, "Kit Description"),
     ValidationItem(dataHolder.kitName, "Kit Name"),
@@ -94,5 +104,15 @@ class AddEditPartKit extends StatefulSnippet with Logger with SubmitAndCancelSni
   private[this] def lineItemPartName(line: LineItem): String = Part.findById(line.partId.get) match {
     case Some(part) => part.partName.get
     case _ => "No Part Name"
+  }
+
+  private[this] def getPartKitFromDatabaseAndUpdateDataHolder(id: String): Option[PartKit] = {
+    PartKit findById new ObjectId(id) match {
+      case Some(pk) => {
+        dataHolder.partKit = pk
+        Some(pk)
+      }
+      case _ => None
+    }
   }
 }

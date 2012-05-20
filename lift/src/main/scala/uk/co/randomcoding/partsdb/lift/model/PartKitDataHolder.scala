@@ -45,4 +45,12 @@ class PartKitDataHolder extends NewLineItemDataHolder {
    */
   def partKit: PartKit = PartKit(kitName, lineItems, kitDescription)
 
+  /**
+   * Set the kit name, description and parts from the provided part kit
+   */
+  def partKit_=(partKit: PartKit) = {
+    kitName = partKit.kitName.get
+    kitDescription = partKit.description.get
+    partKit.parts.get foreach (addLineItem(_))
+  }
 }
