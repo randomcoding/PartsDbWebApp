@@ -6,11 +6,12 @@ package uk.co.randomcoding.partsdb.lift.model.document
 import uk.co.randomcoding.partsdb.core.document.LineItem
 import uk.co.randomcoding.partsdb.core.part.Part
 import net.liftweb.util.ValueCell
+import net.liftweb.common.Logger
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
-trait LineItemsDataHolder {
+trait LineItemsDataHolder extends Logger {
   /**
    * Holder for the current line items
    */
@@ -27,7 +28,10 @@ trait LineItemsDataHolder {
   def addLineItem(lineItem: LineItem): Unit = {
     lineItemsCell.atomicUpdate(items => items.find(_.partId.get == lineItem.partId.get) match {
       case None => items :+ lineItem
-      case Some(item) => items
+      case Some(item) => {
+        debug("Line Items already contains an item for part with id %S".format(item.partId.get))
+        items
+      }
     })
   }
 
@@ -60,12 +64,12 @@ trait LineItemsDataHolder {
    */
   def addOrUpdateLineItem(partCost: Double, markup: Double, part: Part, quantity: Int) {
     lineItemsCell.atomicUpdate(items => items.find(_.partId.get == part.id.get) match {
-      case Some(lineItem) => items.map(li => {
-        li.partId.get == part.id.get match {
-          case true => updateLineItem(li, quantity, partCost, markup)
-          case false => li
-        }
-      })
+      case Some(lineItem) => {
+        val newItem: LineItem = LineItem.create(lineItem.lineNumber.get, part, quantity, partCost, markup)
+        removeLineItem(lineItem)
+        addLineItem(newItem)
+        lineItems
+      }
       case _ => items :+ LineItem.create(items.size, part, quantity, partCost, markup)
     })
   }
@@ -86,6 +90,8 @@ trait LineItemsDataHolder {
 
   /**
    * Update the quantity, cost and markup of a line item
+   *
+   * @todo This does not seem to trigger a refresh of the cell and therefore does not cause a `WiringUI` update event to fire
    */
   private[this] val updateLineItem = (li: LineItem, quant: Int, cost: Double, markupValue: Double) => li.quantity(quant).basePrice(cost).markup(markupValue)
 
