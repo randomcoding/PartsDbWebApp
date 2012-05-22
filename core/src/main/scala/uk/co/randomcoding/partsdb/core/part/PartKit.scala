@@ -3,12 +3,15 @@
  */
 package uk.co.randomcoding.partsdb.core.part
 
-import net.liftweb.mongodb.record.{ MongoRecord, MongoMetaRecord }
-import net.liftweb.mongodb.record.field._
-import net.liftweb.record.field._
-import uk.co.randomcoding.partsdb.core.document.LineItem
 import org.bson.types.ObjectId
+
 import com.foursquare.rogue.Rogue._
+
+import uk.co.randomcoding.partsdb.core.document.LineItem
+
+import net.liftweb.mongodb.record.field._
+import net.liftweb.mongodb.record.{ MongoRecord, MongoMetaRecord }
+import net.liftweb.record.field._
 
 /**
  * A collection of [[uk.co.randomcoding.partsdb.core.part.Part]]s sold together as a kit.

@@ -55,12 +55,7 @@ if (HOST.equalsIgnoreCase("benjymouse")) {
 	
 	def testingLogs = ["uk.co.randomcoding": INFO]
 	
-	def defaultLogs = ["uk.co.randomcoding.partsdb.lift.snippet.RecordPayment": DEBUG,
-		"uk.co.randomcoding.partsdb.lift.snippet.PayInvoices": DEBUG,
-		"uk.co.randomcoding.partsdb.db.mongo.PaymentDbManager": DEBUG,
-		"uk.co.randomcoding.partsdb.core.transaction": DEBUG,
-		"uk.co.randomcoding.partsdb.lift.snippet.print": DEBUG,
-		"uk.co.randomcoding.partsdb.lift.snippet.AddEditPartKit": DEBUG ]
+	def defaultLogs = []
 
 	def logs = defaultLogs
 	if (isTest.equalsIgnoreCase("yes")) {

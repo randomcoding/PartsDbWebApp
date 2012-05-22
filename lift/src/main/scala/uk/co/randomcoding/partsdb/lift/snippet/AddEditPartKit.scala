@@ -20,19 +20,19 @@
 package uk.co.randomcoding.partsdb.lift.snippet
 
 import scala.xml.{ Text, NodeSeq }
+
 import uk.co.randomcoding.partsdb.core.document.LineItem
-import uk.co.randomcoding.partsdb.core.part.PartKit
+import uk.co.randomcoding.partsdb.core.part.{ PartKit, Part }
+import uk.co.randomcoding.partsdb.core.util.MongoHelpers._
 import uk.co.randomcoding.partsdb.lift.model.PartKitDataHolder
 import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
 import uk.co.randomcoding.partsdb.lift.util.snippet._
-import net.liftweb.common.Logger
+
+import net.liftweb.common.{ Logger, Full }
 import net.liftweb.http.js.JsCmds.Noop
 import net.liftweb.http.js.JsCmd
 import net.liftweb.http.{ WiringUI, StatefulSnippet, S }
 import net.liftweb.util.Helpers._
-import uk.co.randomcoding.partsdb.core.part.Part
-import net.liftweb.common.Full
-import org.bson.types.ObjectId
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
@@ -63,12 +63,9 @@ class AddEditPartKit extends StatefulSnippet with Logger with SubmitAndCancelSni
 
   override def processSubmit(): JsCmd = {
     performValidation() match {
-      case Nil => createPartKitAndAddToDatabase match {
-        case Some(pk) => S redirectTo cameFrom
-        case None => {
-          displayError("Failed To Add Part Kit. Please Submit an error report.")
-          Noop
-        }
+      case Nil => initialPartKit match {
+        case Some(partKit) => updatePartKit()
+        case _ => addNewPartKit()
       }
       case errors => {
         displayErrors(errors: _*)
@@ -77,7 +74,24 @@ class AddEditPartKit extends StatefulSnippet with Logger with SubmitAndCancelSni
     }
   }
 
-  private[this] def createPartKitAndAddToDatabase: Option[PartKit] = initialPartKit match {
+  private[this] def responseForAddOrUpdate(func: () => Option[PartKit], addOrUpdate: String): JsCmd = {
+    func() match {
+      case Some(pk) => S redirectTo cameFrom
+      case None => {
+        displayError("Failed To %s Part Kit. Please Submit an error report.".format(addOrUpdate))
+        Noop
+      }
+    }
+  }
+
+  private[this] def addNewPartKit(): JsCmd = responseForAddOrUpdate(createPartKitAndAddToDatabase, "Add")
+
+  private[this] def updatePartKit(): JsCmd = {
+    val kitId = initialPartKit.get.id.get
+    responseForAddOrUpdate(() => PartKit.update(kitId, dataHolder.partKit), "Update")
+  }
+
+  private[this] val createPartKitAndAddToDatabase: () => Option[PartKit] = () => initialPartKit match {
     case None => PartKit add dataHolder.partKit
     case Some(pk) => PartKit.update(pk.id.get, pk)
   }
@@ -107,7 +121,7 @@ class AddEditPartKit extends StatefulSnippet with Logger with SubmitAndCancelSni
   }
 
   private[this] def getPartKitFromDatabaseAndUpdateDataHolder(id: String): Option[PartKit] = {
-    PartKit findById new ObjectId(id) match {
+    PartKit.findById(id) match {
       case Some(pk) => {
         dataHolder.partKit = pk
         Some(pk)

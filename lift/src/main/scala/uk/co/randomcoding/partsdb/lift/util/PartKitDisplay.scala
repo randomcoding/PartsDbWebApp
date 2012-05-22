@@ -19,8 +19,9 @@
  */
 package uk.co.randomcoding.partsdb.lift.util
 
-import uk.co.randomcoding.partsdb.core.part.PartKit
 import scala.xml.NodeSeq
+
+import uk.co.randomcoding.partsdb.core.part.PartKit
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>

@@ -19,9 +19,10 @@
  */
 package uk.co.randomcoding.partsdb.lift.model
 
-import uk.co.randomcoding.partsdb.lift.model.document.NewLineItemDataHolder
-import net.liftweb.util.ValueCell
 import uk.co.randomcoding.partsdb.core.part.PartKit
+import uk.co.randomcoding.partsdb.lift.model.document.NewLineItemDataHolder
+
+import net.liftweb.util.ValueCell
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
