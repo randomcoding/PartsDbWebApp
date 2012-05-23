@@ -43,6 +43,8 @@ class AddEditPartKit extends StatefulSnippet with Logger with SubmitAndCancelSni
 
   override val dataHolder = new PartKitDataHolder
 
+  override val selectPartKits = false
+
   private[this] val initialPartKit = S param "id" match {
     case Full(id) => getPartKitFromDatabaseAndUpdateDataHolder(id)
     case _ => None
@@ -61,16 +63,14 @@ class AddEditPartKit extends StatefulSnippet with Logger with SubmitAndCancelSni
       renderSubmitAndCancel()
   }
 
-  override def processSubmit(): JsCmd = {
-    performValidation() match {
-      case Nil => initialPartKit match {
-        case Some(partKit) => updatePartKit()
-        case _ => addNewPartKit()
-      }
-      case errors => {
-        displayErrors(errors: _*)
-        Noop
-      }
+  override def processSubmit(): JsCmd = performValidation() match {
+    case Nil => initialPartKit match {
+      case Some(partKit) => updatePartKit()
+      case _ => addNewPartKit()
+    }
+    case errors => {
+      displayErrors(errors: _*)
+      Noop
     }
   }
 
@@ -86,10 +86,7 @@ class AddEditPartKit extends StatefulSnippet with Logger with SubmitAndCancelSni
 
   private[this] def addNewPartKit(): JsCmd = responseForAddOrUpdate(createPartKitAndAddToDatabase, "Add")
 
-  private[this] def updatePartKit(): JsCmd = {
-    val kitId = initialPartKit.get.id.get
-    responseForAddOrUpdate(() => PartKit.update(kitId, dataHolder.partKit), "Update")
-  }
+  private[this] def updatePartKit(): JsCmd = responseForAddOrUpdate(() => PartKit.update(initialPartKit.get.id.get, dataHolder.partKit), "Update")
 
   private[this] val createPartKitAndAddToDatabase: () => Option[PartKit] = () => initialPartKit match {
     case None => PartKit add dataHolder.partKit

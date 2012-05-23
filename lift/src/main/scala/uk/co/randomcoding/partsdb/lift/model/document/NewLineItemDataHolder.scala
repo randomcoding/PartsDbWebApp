@@ -11,6 +11,9 @@ import com.foursquare.rogue.Rogue._
 import net.liftweb.common.Logger
 import net.liftweb.util.Helpers._
 import net.liftweb.common.Full
+import net.liftweb.mongodb.record.MongoRecord
+import net.liftweb.mongodb.record.field.ObjectIdPk
+import uk.co.randomcoding.partsdb.core.part.PartKit
 
 /**
  * A data container for adding new line items via a page.
@@ -33,15 +36,24 @@ trait NewLineItemDataHolder extends LineItemsDataHolder with Logger {
   /**
    * The currently selected part for the line
    */
-  private val currentPartCell = ValueCell[Option[Part]](None)
+  private val currentPartCell = ValueCell[Option[MongoRecord[_] with ObjectIdPk[_]]](None)
 
   /**
    * Calculated value of the suppliers of a part
    */
   private val suppliersForPart = currentPartCell.lift(_ match {
-    case Some(part) => {
-      debug("Current Part is: %s. Generating list of suppliers who supply it")
-      (None, "Select Supplier") :: (suppliedBy(part.id.get) map (supplier => (Some(supplier), supplier.supplierName.get)))
+    case Some(item) => {
+      item match {
+        case part: Part => {
+          debug("Current Part is: %s. Generating list of suppliers who supply it")
+          (None, "Select Supplier") :: (suppliedBy(part.id.get) map (supplier => (Some(supplier), supplier.supplierName.get)))
+        }
+        case partKit: PartKit => List((None, "Select Supplier"), (Supplier where (_.supplierName eqs "C.A.T.9 Limited") get, "C.A.T.9 Limited"))
+        case other => {
+          error("Unhandled type of part entity %s.".format(other))
+          List((None, "Supplier Error"))
+        }
+      }
     }
     case _ => {
       debug("Current Part is not defined. Generating an empty list of suppliers")
@@ -67,7 +79,7 @@ trait NewLineItemDataHolder extends LineItemsDataHolder with Logger {
   private val currentPartBaseCostCell = currentPartCell.lift(currentSupplierCell)((_, _) match {
     case (Some(p), Some(s)) => s.suppliedParts.get filter (_.part.get == p.id.get) match {
       case Nil => {
-        error("Supplier %s does not suppli part %s".format(s.supplierName.get, p.partName.get))
+        error("Supplier %s does not supply part with id %s".format(s.supplierName.get, p.id.get))
         0.0d
       }
       case head :: tail => head.suppliedCost.get
@@ -145,7 +157,12 @@ trait NewLineItemDataHolder extends LineItemsDataHolder with Logger {
   /**
    * Set the value of the current part in the holder
    */
-  def currentPart(partOption: Option[Part]) = currentPartCell.set(partOption)
+  def currentPart_=(partOption: Option[MongoRecord[_] with ObjectIdPk[_]]) = currentPartCell.set(partOption)
+
+  /**
+   * Set the value of the current part in the holder to a PartKit
+   */
+  //def currentPart(partOption: Option[PartKit]) = currentPartCell.set(partOption)
 
   /**
    * Get the display cell for the current part's base cost.
