@@ -146,21 +146,22 @@ trait NewLineItemDataHolder extends LineItemsDataHolder with Logger {
       case (None, _) => // do nothing
       case (Some(part), q) if q <= 0 => {
         removeItem(part)
-        resetPartQuantityAndSupplier
+        resetPartQuantitySupplierAndMarkup
       }
       case (Some(part), q) => {
         val partCost = currentPartBaseCostCell.get
         val markupValue = markupCell.get.toDouble / 100.0
         addOrUpdateLineItem(partCost, markupValue, part, q)
-        resetPartQuantityAndSupplier
+        resetPartQuantitySupplierAndMarkup
       }
     }
   }
 
-  private def resetPartQuantityAndSupplier: Unit = {
+  private def resetPartQuantitySupplierAndMarkup: Unit = {
     currentSupplierCell set None
     currentPartCell set None
     quantityCell set 0
+    markupCell set DEFAULT_MARKUP
   }
 
   /**
