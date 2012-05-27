@@ -41,14 +41,24 @@ trait NewLineItemDataHolder extends LineItemsDataHolder with Logger {
   /**
    * Calculated value of the suppliers of a part
    */
-  private val suppliersForPart = currentPartCell.lift(_ match {
+  val suppliersForPart = currentPartCell.lift(_ match {
     case Some(item) => {
       item match {
         case part: Part => {
           debug("Current Part is: %s. Generating list of suppliers who supply it")
-          (None, "Select Supplier") :: (suppliedBy(part.id.get) map (supplier => (Some(supplier), supplier.supplierName.get)))
+          suppliedBy(part.id.get) match {
+            case s :: Nil => {
+              supplier(Some(s))
+              List((Some(s), s.supplierName.get))
+            }
+            case suppliers => (None, "Select Supplier") :: (suppliedBy(part.id.get) map (supplier => (Some(supplier), supplier.supplierName.get)))
+          }
         }
-        case partKit: PartKit => List((None, "Select Supplier"), (Supplier where (_.supplierName eqs "C.A.T.9 Limited") get, "C.A.T.9 Limited"))
+        case partKit: PartKit => {
+          val cat9 = Supplier.where(_.supplierName eqs "C.A.T.9 Limited").get
+          supplier(cat9)
+          List((cat9, "C.A.T.9 Limited"))
+        }
         case other => {
           error("Unhandled type of part entity %s.".format(other))
           List((None, "Supplier Error"))
@@ -77,12 +87,18 @@ trait NewLineItemDataHolder extends LineItemsDataHolder with Logger {
    * The cost is derived from the
    */
   private val currentPartBaseCostCell = currentPartCell.lift(currentSupplierCell)((_, _) match {
-    case (Some(p), Some(s)) => s.suppliedParts.get filter (_.part.get == p.id.get) match {
-      case Nil => {
-        error("Supplier %s does not supply part with id %s".format(s.supplierName.get, p.id.get))
-        0.0d
+    case (Some(p), Some(s)) => p match {
+      case part: Part => s.suppliedParts.get filter (_.part.get == p.id.get) match {
+        case Nil => {
+          error("Supplier %s does not supply part with id %s".format(s.supplierName.get, p.id.get))
+          0.0d
+        }
+        case head :: tail => head.suppliedCost.get
       }
-      case head :: tail => head.suppliedCost.get
+      case partKit: PartKit => {
+        markup("0")
+        partKit.kitPrice
+      }
     }
     case _ => {
       debug("Either part or supplier not set")
@@ -90,12 +106,12 @@ trait NewLineItemDataHolder extends LineItemsDataHolder with Logger {
     }
   })
 
-  private val quantityCell = ValueCell[Int](0)
+  val quantityCell = ValueCell[Int](0)
 
   /**
    * Holder for the current line's markup
    */
-  private val markupCell = ValueCell[Int](DEFAULT_MARKUP)
+  val markupCell = ValueCell[Int](DEFAULT_MARKUP)
 
   /**
    * Calculated value for the part cost of the current line.
