@@ -5,11 +5,8 @@ package uk.co.randomcoding.partsdb.lift.snippet.print
 
 import scala.io.Source
 import scala.xml.{ Text, NodeSeq }
-
 import org.bson.types.ObjectId
-
 import com.foursquare.rogue.Rogue._
-
 import uk.co.randomcoding.partsdb.core.address.Address
 import uk.co.randomcoding.partsdb.core.customer.Customer
 import uk.co.randomcoding.partsdb.core.document.DocumentType.{ Quote, Order, Invoice, DeliveryNote }
@@ -21,10 +18,10 @@ import uk.co.randomcoding.partsdb.core.util.CountryCodes
 import uk.co.randomcoding.partsdb.lift.util.DateHelpers._
 import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
 import uk.co.randomcoding.partsdb.lift.util.snippet.display.DocumentTotalsDisplay
-
 import net.liftweb.common.{ Logger, Full }
 import net.liftweb.http.{ StatefulSnippet, S }
 import net.liftweb.util.Helpers._
+import uk.co.randomcoding.partsdb.core.part.PartKit
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
@@ -112,15 +109,18 @@ class PrintDocument extends StatefulSnippet with DocumentTotalsDisplay with Logg
 
   private[this] def renderLineItem(lineItem: LineItem, isDeliveryNote: Boolean) = {
     "#lineNumber" #> Text("%d".format(lineItem.lineNumber.get)) &
-      "#partName" #> Text(nameForPart(lineItem.partId.get)) &
+      "#partName" #> Text(nameForPartOrKit(lineItem.partId.get)) &
       "#partQuantity" #> Text("%d".format(lineItem.quantity.get)) &
       "#partCost" #> (if (isDeliveryNote) Text("") else Text("£%.2f".format(lineItem.lineCost)))
   }
 
-  private[this] def nameForPart(partId: ObjectId) = {
+  private[this] def nameForPartOrKit(partId: ObjectId) = {
     Part findById partId match {
       case Some(p) => p.partName.get
-      case _ => "No part with id: %s".format(partId.toString)
+      case _ => PartKit.findById(partId) match {
+        case Some(pk) => pk.kitName.get
+        case _ => "No part with id: %s".format(partId.toString)
+      }
     }
   }
 
