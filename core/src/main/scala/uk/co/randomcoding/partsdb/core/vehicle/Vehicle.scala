@@ -20,7 +20,18 @@ import com.foursquare.rogue.Rogue._
 class Vehicle private () extends MongoRecord[Vehicle] with ObjectIdPk[Vehicle] {
   def meta = Vehicle
 
+  /**
+   * The name of the vehicle, limited to 50 characters
+   */
   object vehicleName extends StringField(this, 50)
+
+  /**
+   * The name of the pdf file that contains the details of this vehicle.
+   *
+   * This should be the file name '''only''' as this will be appended to the common path from
+   * [[uk.co.randomcoding.partsdb.core.system.SystemData]]
+   */
+  object pdfFile extends StringField(this, 50)
 
   override def equals(that: Any): Boolean = that.isInstanceOf[Vehicle] && that.asInstanceOf[Vehicle].vehicleName.get == vehicleName.get
 
@@ -63,15 +74,15 @@ object Vehicle extends Vehicle with MongoMetaRecord[Vehicle] {
   /**
    * Create a record but '''does not''' add it to the database
    */
-  def create(vehicleName: String): Vehicle = Vehicle.createRecord.vehicleName(vehicleName)
+  def create(vehicleName: String, pdfFile: String = ""): Vehicle = Vehicle.createRecord.vehicleName(vehicleName).pdfFile(pdfFile)
 
   /**
    * Rename all vehicles with `oldName` to `newName`.
    *
    * This '''should''' only affect a single record.
    */
-  def modify(oldName: String, newName: String) {
-    Vehicle where (_.vehicleName eqs oldName) modify (_.vehicleName setTo newName) updateMulti
+  def modify(oldName: String, newName: String, newPdfFile: String) {
+    Vehicle where (_.vehicleName eqs oldName) modify (_.vehicleName setTo newName) modify (_.pdfFile setTo newPdfFile) updateMulti
   }
 
   /**
