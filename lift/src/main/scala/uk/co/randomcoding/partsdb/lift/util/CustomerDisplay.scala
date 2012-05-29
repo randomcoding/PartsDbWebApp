@@ -3,7 +3,6 @@
  */
 package uk.co.randomcoding.partsdb.lift.util
 
-import scala.xml.NodeSeq.seqToNodeSeq
 import scala.xml.{ Text, NodeSeq }
 
 import uk.co.randomcoding.partsdb.core.address.Address

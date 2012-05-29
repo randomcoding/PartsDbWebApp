@@ -15,6 +15,8 @@ import net.liftweb.http.js.JsCmds.SetHtml
 import scala.xml.Attribute
 import scala.xml.Null
 import net.liftweb.common.Logger
+import uk.co.randomcoding.partsdb.core.part.PartKit
+import org.bson.types.ObjectId
 
 /**
  * Renders a collection of [[uk.co.randomcoding.partsdb.core.document.LineItem]]s with checkboxes that can be used
@@ -91,16 +93,21 @@ trait AvailableLineItemsDisplay extends Logger {
   }
 
   private[this] def renderAvailableItems(availableLineItems: Seq[LineItem]) = availableLineItems map (line => {
-    val partName = Part findById line.partId.get match {
-      case Some(p) => p.partName.get
-      case _ => "No Part"
-    }
-
     "#selected" #> styledAjaxCheckbox(false, checkBoxSelected(_, line)) &
-      "#partName" #> Text(partName) &
+      "#partName" #> Text(partOrKitName(line.partId.get)) &
       "#partQuantity" #> Text("%d".format(line.quantity.get)) &
       "#totalLineCost" #> Text("£%.2f".format(line.lineCost))
   })
+
+  private[this] def partOrKitName(oid: ObjectId) = {
+    Part.findById(oid) match {
+      case Some(p) => p.partName.get
+      case _ => PartKit.findById(oid) match {
+        case Some(pk) => pk.kitName.get
+        case _ => "No Part or PartKit"
+      }
+    }
+  }
 
   private[this] def idAttribute(id: String) = Attribute(None, "id", Text(id), Null)
 

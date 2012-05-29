@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html; charset=UTF-8" http-equiv="content-type" />
+<title>C.A.T.9 - Parts</title>
+</head>
+<body class="lift:content_id=main">
+  <div id="main" class="lift:surround?with=default;at=content">
+    <div class="lift:AddEditPartKit?form=POST&eager_eval=true">
+      <div style="width: 98%" align="center"></div>
+      <div class="form-title">
+        <span id="formTitle">Title</span>
+      </div>
+      <div class="column span-5 form-label">Part Kit Name:</div>
+      <div class="column span-14 last">
+        <span id="nameEntry">Part Kit Name Text Entry Here</span>
+      </div>
+      <div class="column span-5 form-label">Part Kit Description:</div>
+      <div class="column span-14 last">
+        <span id="descriptionEntry">Part Kit Description Text Entry Here</span>
+      </div>
+      <hr class="space" />
+      <div class="column span-19 last form-subtitle-no-ul">Add Items to Part Kit</div>
+      <div class="column span-19 last">
+        <span class="lift:embed?what=_add_item_line">Embedded part line addition</span>
+      </div>
+      <hr class="space" />
+      <div class="column span-19 last">
+        <table id="partKitContentsDisplay">
+          <thead>
+            <tr>
+              <th>Part Name</th>
+              <th>Quantity</th>
+              <th>Cost Price</th>
+              <th>Markup</th>
+              <th>Full Price</th>
+            </tr>
+          </thead>
+          <tbody id="partKitItems">
+            <tr id="partKitItem">
+              <td><span id="itemName">Name of Part Kit Item</span></td>
+              <td><span id="itemQuantity">Quantity of Part Kit Item</span></td>
+              <td><span id="itemCostPrice">Cost Price of Part Kit Item</span></td>
+              <td><span id="itemMarkup">Markup for Part Kit Item</span></td>
+              <td><span id="itemFullPrice">Full Price for Part Kit Item</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="column span-9 form-label" align="right">&nbsp;</div>
+      <div class="lift:embed?what=_submit_cancel">Submit and Cancel Buttons Here</div>
+    </div>
+  </div>
+</body>
+</html>

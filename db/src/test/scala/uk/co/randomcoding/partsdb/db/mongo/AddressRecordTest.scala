@@ -36,7 +36,7 @@ class AddressRecordTest extends MongoDbTestBase {
 
     val expectedAddress = createRecord.shortName("Addr1").addressText("An Address").country("UK")
 
-    (Address where (_.id exists true) fetch) should be(List(expectedAddress))
+    (Address fetch) should be(List(expectedAddress))
 
     findNamed("Addr1")(0).id.get should be(addr.get.id.get)
   }
@@ -82,7 +82,7 @@ class AddressRecordTest extends MongoDbTestBase {
     findNamed("Addr1") should be('empty)
     findById(addr1Id) should be('empty)
 
-    (Address where (_.id exists true) fetch) should be(List(addr2.get))
+    (Address fetch) should be(List(addr2.get))
   }
 
   test("Removing an address from an empty database") {

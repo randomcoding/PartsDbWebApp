@@ -33,7 +33,7 @@ class VehicleRecordTest extends MongoDbTestBase {
     namedVehicles should have size (1)
     namedVehicles(0).vehicleName.get should be("Vehicle 2")
 
-    val allVehicles = Vehicle where (_.id exists true) fetch
+    val allVehicles = Vehicle fetch
 
     allVehicles should have size (1)
     allVehicles(0).vehicleName.get should be("Vehicle 2")
@@ -45,7 +45,7 @@ class VehicleRecordTest extends MongoDbTestBase {
 
     remove("V2") should be(List(true))
 
-    val allVehicles = Vehicle where (_.id exists true) fetch
+    val allVehicles = Vehicle fetch
 
     allVehicles should have size (1)
 

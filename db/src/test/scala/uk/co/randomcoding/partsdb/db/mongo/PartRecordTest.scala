@@ -81,7 +81,7 @@ class PartRecordTest extends MongoDbTestBase {
 
     remove("Part 1") should be(List(true))
 
-    (Part where (_.id exists true) fetch) should be(List(part2.get))
+    (Part fetch) should be(List(part2.get))
   }
 
   test("Remove a part that is not present in a populated database") {

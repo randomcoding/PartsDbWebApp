@@ -11,7 +11,7 @@ import uk.co.randomcoding.partsdb.core.part.Part
 import uk.co.randomcoding.partsdb.core.transaction.Transaction
 import uk.co.randomcoding.partsdb.core.vehicle.Vehicle
 import org.bson.types.ObjectId
-import uk.co.randomcoding.partsdb.core.document.{Quote, LineItem, DocumentType, Document}
+import uk.co.randomcoding.partsdb.core.document.{ Quote, LineItem, DocumentType, Document }
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
@@ -73,10 +73,10 @@ class TransactionRecordTest extends MongoDbTestBase {
 
   test("Adding a new Record generates a new record if there is no matching record") {
     val t1 = Transaction.add("t1", cust1, Seq(doc1)).get
-    (Transaction where (_.id exists true) fetch) should be(List(t1))
+    (Transaction fetch) should be(List(t1))
 
     val t2 = Transaction.add("t2", cust2, Seq(doc2)).get
-    (Transaction where (_.id exists true) fetch) should (have size (2) and
+    (Transaction fetch) should (have size (2) and
       contain(t1) and
       contain(t2))
   }
@@ -86,7 +86,7 @@ class TransactionRecordTest extends MongoDbTestBase {
     val t2 = Transaction.add("t1", cust1, Seq(doc1)).get
 
     t2 should be(t1)
-    (Transaction where (_.id exists true) fetch) should be(List(t1))
+    (Transaction fetch) should be(List(t1))
   }
 
   test("Find Matching returns the correct record if the Object Id matches") {

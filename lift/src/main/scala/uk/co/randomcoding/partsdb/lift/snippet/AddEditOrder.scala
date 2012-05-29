@@ -50,7 +50,10 @@ class AddEditOrder extends StatefulValidatingErrorDisplaySnippet with Transactio
 
   private[this] val transactionHasValidAddress = () => if (customersAddress isDefined) Nil else (Seq("The parent transaction does not contain a valid customer address"))
 
-  private[this] def customersAddress = Address.findById(transaction.get.customer.get)
+  private[this] def customersAddress = Customer.findById(transaction.get.customer.get) match {
+    case Some(cust) => Address.findById(cust.businessAddress.get)
+    case _ => None
+  }
 
   override def processSubmit(): JsCmd = performValidation(validateQuoteCloseConfirmation) match {
     case Nil => generateOrder()

@@ -61,7 +61,7 @@ class CustomerRecordTest extends MongoDbTestBase {
 
     val expectedCustomer = create("cust1", addr, 30, contactDave)
 
-    (Customer where (_.id exists true) fetch) should be(List(expectedCustomer))
+    (Customer fetch) should be(List(expectedCustomer))
 
     findNamed("cust1")(0).id.get should be(cust.get.id.get)
   }
@@ -77,7 +77,7 @@ class CustomerRecordTest extends MongoDbTestBase {
     findNamed("cust1") should be('empty)
     findById(custId) should be('empty)
 
-    (Customer where (_.id exists true) fetch) should be(List(cust2))
+    (Customer fetch) should be(List(cust2))
   }
 
   test("Removing a customer from an empty database") {

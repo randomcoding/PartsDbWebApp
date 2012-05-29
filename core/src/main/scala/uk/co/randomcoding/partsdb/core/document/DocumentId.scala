@@ -32,7 +32,7 @@ class DocumentId private () extends MongoRecord[DocumentId] with ObjectIdPk[Docu
 object DocumentId extends DocumentId with MongoMetaRecord[DocumentId] {
   import com.foursquare.rogue.Rogue._
 
-  def nextId() = DocumentId where (_.id exists true) get match {
+  def nextId() = DocumentId get match {
     case None => DocumentId.createRecord.currentId(1).save match {
       case id: DocumentId => id
       case _ => DocumentId.createRecord.currentId(-1l)
