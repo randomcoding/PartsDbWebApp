@@ -43,6 +43,11 @@ object Vehicle extends Vehicle with MongoMetaRecord[Vehicle] {
   import org.bson.types.ObjectId
 
   /**
+   * Create a record but '''does not''' add it to the database
+   */
+  def apply(vehicleName: String, pdfFile: String): Vehicle = create(vehicleName, pdfFile)
+
+  /**
    * Find a vehicle with a given object id
    */
   def findById(objectId: ObjectId): Option[Vehicle] = Vehicle where (_.id eqs objectId) get
@@ -69,6 +74,7 @@ object Vehicle extends Vehicle with MongoMetaRecord[Vehicle] {
   /**
    * Add a new vehicle, if one does not already exist with the same name
    */
+  @deprecated("Use add(Vehicle) instead", "0.7")
   def add(name: String): Option[Vehicle] = add(create(name))
 
   /**
@@ -80,9 +86,25 @@ object Vehicle extends Vehicle with MongoMetaRecord[Vehicle] {
    * Rename all vehicles with `oldName` to `newName`.
    *
    * This '''should''' only affect a single record.
+   *
+   * @return The OPtional record of the vehicle with the new name
    */
-  def modify(oldName: String, newName: String, newPdfFile: String) {
-    Vehicle where (_.vehicleName eqs oldName) modify (_.vehicleName setTo newName) modify (_.pdfFile setTo newPdfFile) updateMulti
+  def rename(oldName: String, newName: String): Option[Vehicle] = {
+    Vehicle where (_.vehicleName eqs oldName) modify (_.vehicleName setTo newName) updateMulti
+
+    Vehicle.where(_.vehicleName eqs newName).get
+  }
+
+  /**
+   * Update the values of the `Vehicle` with the id of `oid` to have the field values
+   * of the `newVehicle`.
+   *
+   * @return An option of the modified record or `None` if no record with the given `oid` exists`
+   */
+  def modify(oid: ObjectId, newVehicle: Vehicle): Option[Vehicle] = {
+    Vehicle.where(_.id eqs oid) modify (_.vehicleName setTo newVehicle.vehicleName.get) and (_.pdfFile setTo newVehicle.pdfFile.get) updateMulti
+
+    findById(oid)
   }
 
   /**
