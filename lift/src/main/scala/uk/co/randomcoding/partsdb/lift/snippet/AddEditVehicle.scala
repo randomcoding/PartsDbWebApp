@@ -36,7 +36,7 @@ class AddEditVehicle extends StatefulSnippet with ErrorDisplay with SubmitAndCan
   }
 
   def render = {
-    "#formTitle" #> Text("Add Vehicle") &
+    "#formTitle" #> Text("%s Vehicle".format(if (initialVehicle.isDefined) "Edit" else "Add")) &
       "#nameEntry" #> styledText(vehicleName, vehicleName = _) &
       "#pdfFileEntry" #> styledText(pdfFile, pdfFile = _) &
       renderSubmitAndCancel()
