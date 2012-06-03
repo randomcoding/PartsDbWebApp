@@ -1,42 +1,35 @@
 package bootstrap.liftweb
 
-import com.mongodb.MongoException
-import uk.co.randomcoding.partsdb.core.user.Role.{ USER, Role, NO_ROLE, ADMIN }
-import uk.co.randomcoding.partsdb.core.user.User.addUser
-import uk.co.randomcoding.partsdb.db.mongo.MongoConfig
-import uk.co.randomcoding.partsdb.db.util.Helpers._
-import uk.co.randomcoding.partsdb.lift.model.Session
-import uk.co.randomcoding.partsdb.lift.util.search._
-import net.liftweb.common.{ Loggable, Full }
-import net.liftweb.http.LiftRulesMocker.toLiftRules
-import net.liftweb.http.{ S, ResourceServer, Req, RedirectResponse, LiftRules, Html5Properties, GetRequest }
-import net.liftweb.sitemap.Loc.LinkText.strToLinkText
-import net.liftweb.sitemap.Loc.{ Link, If, Hidden, ExtLink }
-import net.liftweb.sitemap.{ SiteMap, Menu, Loc }
-import net.liftweb.util.Vendor.valToVender
+import net.liftweb.common.{ Full, Loggable }
+import net.liftweb.http.{ LiftRules, Req, ResourceServer, GetRequest, Html5Properties, S, RedirectResponse }
+import net.liftweb.sitemap.Loc
+import net.liftweb.sitemap.Loc.{ If, Link, ExtLink, Hidden }
+import net.liftweb.sitemap.Menu
+import net.liftweb.sitemap.SiteMap
 import net.liftweb.util.Props
-import com.mongodb.Mongo
-import net.liftweb.mongodb.MongoDB
-import net.liftweb.mongodb.DefaultMongoIdentifier
-import scala.collection.JavaConversions._
-import uk.co.randomcoding.partsdb.core.document.Document
-import uk.co.randomcoding.partsdb.core.document.DocumentType
-import uk.co.randomcoding.partsdb.core.transaction.Transaction
-import uk.co.randomcoding.partsdb.core.customer.Customer
-import uk.co.randomcoding.partsdb.core.address.Address
-import com.foursquare.rogue.Rogue._
-import uk.co.randomcoding.partsdb.lift.util.mongo.DatabaseCleanupOperations
+import net.liftweb.util.Helpers.asInt
+
+import uk.co.randomcoding.partsdb.core.user.Role._
+import uk.co.randomcoding.partsdb.db.mongo.MongoConfig
+import uk.co.randomcoding.partsdb.lift.model.Session
+import uk.co.randomcoding.partsdb.lift.util.mongo.DatabaseMigration
+import uk.co.randomcoding.partsdb.lift.util.search.{ SearchProviders, CustomerSearchPageProvider }
 
 /**
  * A class that's instantiated early and run.  It allows the application
  * to modify lift's environment
  */
+
 class Boot extends Loggable {
   def boot {
-    // Initialise MongoDB
+    // Initialise MongoDB - MUST be run first
     MongoConfig.init(Props.get("mongo.db", "MainDb"))
 
-    DatabaseCleanupOperations.cleanUpDatabase()
+    // Perform any required database update operations
+    DatabaseMigration.migrateToVersion(asInt(Props.get("current.db.version", "-1")) match {
+      case Full(i) => i
+      case _ => -1
+    })
 
     configureAccessAndMenus
 
@@ -118,24 +111,6 @@ class Boot extends Loggable {
     // register search providers
     SearchProviders.register(CustomerSearchPageProvider)
     /*SearchProviders.register(QuoteSearchPageProvider)*/
-  }
-
-  // Default users to add to the DB to bootstrap the login process
-  private[this] def addBootstrapUsers: Unit = {
-    import uk.co.randomcoding.partsdb.core.user.User
-    try {
-      User.addUser("Dave", hash("dave123"), USER)
-      User.addUser("Adam", hash("adam123"), ADMIN)
-    }
-    catch {
-      case e: MongoException => {
-        if (e.getMessage startsWith "Collection not found") {
-          User.createRecord.username("Adam").password(hash("adam123")).role(ADMIN).save
-          //User.createRecord.username("Dave").password(hash("dave123")).role(USER).save
-        }
-        else logger.error("Exception whilst adding default users: %s".format(e.getMessage), e)
-      }
-    }
   }
 
   private[this] def configureLiftRules {
