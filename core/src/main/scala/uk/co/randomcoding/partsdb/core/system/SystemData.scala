@@ -63,7 +63,7 @@ class SystemData private () extends MongoRecord[SystemData] with ObjectIdPk[Syst
    * defaults to `C:/Documents and Settings/All Users/Vehicle PDF Data/`
    */
   private object vehiclePdfPath extends StringField(this, 255) {
-    override val defaultValue = "C:/Documents and Settings/All Users/Vehicle PDF Data/"
+    override val defaultValue = "C:/Documents and Settings/All Users/Vehicle PDF Data"
   }
 }
 
