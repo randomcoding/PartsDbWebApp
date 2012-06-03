@@ -101,7 +101,7 @@ class DisplayVehicle extends StatefulSnippet {
   private[this] def renderVehiclePdf = vehicle match {
     case Some(v) => v.pdfFile.get.trim match {
       case "" => noPdfFile
-      case fileName => buttonLink("Display Pdf File", "file://%s/%s".format(SystemData.vehiclePdfPath, fileName), noopFunction, List(("target" -> "_blank")))
+      case fileName => Text(fileName)
     }
     case _ => noPdfFile
   }
