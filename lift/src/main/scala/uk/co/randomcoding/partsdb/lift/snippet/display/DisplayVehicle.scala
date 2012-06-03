@@ -33,6 +33,7 @@ import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
 import net.liftweb.common.Full
 import net.liftweb.http.{ StatefulSnippet, S }
 import net.liftweb.util.Helpers._
+import net.liftweb.http.SHtml.ElemAttr
 
 /**
  * This snippet displays the details for a vehicle record.
@@ -100,7 +101,7 @@ class DisplayVehicle extends StatefulSnippet {
   private[this] def renderVehiclePdf = vehicle match {
     case Some(v) => v.pdfFile.get.trim match {
       case "" => noPdfFile
-      case fileName => buttonLink("Display Pdf File", "file://%s/%s".format(SystemData.vehiclePdfPath, fileName), noopFunction)
+      case fileName => buttonLink("Display Pdf File", "file://%s/%s".format(SystemData.vehiclePdfPath, fileName), noopFunction, List(("target" -> "_blank")))
     }
     case _ => noPdfFile
   }
