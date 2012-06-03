@@ -8,12 +8,12 @@ import net.liftweb.sitemap.Menu
 import net.liftweb.sitemap.SiteMap
 import net.liftweb.util.Props
 import net.liftweb.util.Helpers.asInt
-
 import uk.co.randomcoding.partsdb.core.user.Role._
 import uk.co.randomcoding.partsdb.db.mongo.MongoConfig
 import uk.co.randomcoding.partsdb.lift.model.Session
 import uk.co.randomcoding.partsdb.lift.util.mongo.DatabaseMigration
 import uk.co.randomcoding.partsdb.lift.util.search.{ SearchProviders, CustomerSearchPageProvider }
+import uk.co.randomcoding.partsdb.lift.util.mongo.DatabaseMigrationException
 
 /**
  * A class that's instantiated early and run.  It allows the application
@@ -25,11 +25,19 @@ class Boot extends Loggable {
     // Initialise MongoDB - MUST be run first
     MongoConfig.init(Props.get("mongo.db", "MainDb"))
 
-    // Perform any required database update operations
-    DatabaseMigration.migrateToVersion(asInt(Props.get("current.db.version", "-1")) match {
+    val newDatabaseVersion = asInt(Props.get("current.db.version", "-1")) match {
       case Full(i) => i
       case _ => -1
-    })
+    }
+
+    // Perform any required database update operations
+    DatabaseMigration.migrateToVersion(newDatabaseVersion) match {
+      case Nil => logger.info("Successfully migrated to database version: %d".format(newDatabaseVersion))
+      case errors => {
+        errors foreach (logger.error(_))
+        throw new DatabaseMigrationException("Failed Migrations: %s".format(errors.mkString("\n")))
+      }
+    }
 
     configureAccessAndMenus
 
