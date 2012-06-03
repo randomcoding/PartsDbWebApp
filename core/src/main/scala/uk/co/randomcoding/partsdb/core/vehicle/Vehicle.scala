@@ -31,7 +31,9 @@ class Vehicle private () extends MongoRecord[Vehicle] with ObjectIdPk[Vehicle] {
    * This should be the file name '''only''' as this will be appended to the common path from
    * [[uk.co.randomcoding.partsdb.core.system.SystemData]]
    */
-  object pdfFile extends StringField(this, 50)
+  object pdfFile extends StringField(this, 50) {
+    override val defaultValue = ""
+  }
 
   override def equals(that: Any): Boolean = that.isInstanceOf[Vehicle] && that.asInstanceOf[Vehicle].vehicleName.get == vehicleName.get
 
@@ -59,17 +61,30 @@ object Vehicle extends Vehicle with MongoMetaRecord[Vehicle] {
    */
   def findNamed(name: String): List[Vehicle] = Vehicle where (_.vehicleName eqs name) fetch
 
+  /**
+   * Finds a `Vehicle` record that has the same `vehicleName` as the provided one.
+   *
+   * @return An optional result containing the matching record or `None` if there was no match
+   */
   def findMatching(vehicle: Vehicle): Option[Vehicle] = findById(vehicle.id.get) match {
     case Some(v) => Some(v)
     case _ => findNamed(vehicle.vehicleName.get) headOption
   }
 
+  /**
+   * Add a new vehicle to the database unless there is already  one that matches
+   *
+   * A match is determined by using [[uk.co.randomcoding.partsdb.core.vehicle.Vehicle#findMatching(Vehicle)
+   * If a match is found the new vehicle is '''not''' added to the database.
+   *
+   * @return An option with the newly added vehicle if successful, or the matching vehicle if one was found
+   */
   def add(vehicle: Vehicle): Option[Vehicle] = findMatching(vehicle) match {
     case Some(v) => Some(v)
-    case _ => vehicle.save match {
+    case _ => vehicle.saveTheRecord /* match {
       case v: Vehicle => Some(v)
       case _ => None
-    }
+    }*/
   }
   /**
    * Add a new vehicle, if one does not already exist with the same name
