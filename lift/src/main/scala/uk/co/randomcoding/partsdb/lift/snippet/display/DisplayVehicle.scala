@@ -19,24 +19,30 @@
  */
 package uk.co.randomcoding.partsdb.lift.snippet.display
 
-import net.liftweb.http.StatefulSnippet
-import net.liftweb.http.S
-import net.liftweb.http.SHtml.span
-import uk.co.randomcoding.partsdb.core.vehicle.Vehicle
-import uk.co.randomcoding.partsdb.core.util.MongoHelpers._
-import net.liftweb.common.Full
-import net.liftweb.util.Helpers._
-import net.liftweb.http.js.JsCmds.Noop
-import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
 import scala.xml.Text
-import uk.co.randomcoding.partsdb.core.system.SystemData
-import uk.co.randomcoding.partsdb.core.part.Part
+
 import com.foursquare.rogue.Rogue._
-import net.liftweb.util.CssSel
+
+import uk.co.randomcoding.partsdb.core.part.Part
 import uk.co.randomcoding.partsdb.core.supplier.Supplier
+import uk.co.randomcoding.partsdb.core.system.SystemData
+import uk.co.randomcoding.partsdb.core.util.MongoHelpers._
+import uk.co.randomcoding.partsdb.core.vehicle.Vehicle
+import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
+
+import net.liftweb.common.Full
+import net.liftweb.http.{ StatefulSnippet, S }
+import net.liftweb.util.Helpers._
 
 /**
- * This snippet displays the details for a
+ * This snippet displays the details for a vehicle record.
+ *
+ * Shown is the Vehicle's name, MoD Id and details of the
+ * parts that are supplier for this vehicle.
+ *
+ * It relies on a request parameter of `id` being provided with the
+ * object id of a valid [[uk.co.randomcoding.partsdb.core.part.Part]]
+ *
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
 class DisplayVehicle extends StatefulSnippet {
@@ -72,24 +78,23 @@ class DisplayVehicle extends StatefulSnippet {
         case Some(id) => id
         case _ => "No MoD Id"
       }) &
-      "#vehiclePartSuppliers" #> renderSuppliersForPart(Supplier.where(_.suppliedParts.subfield(_.part) eqs part.id.get).orderAsc(_.supplierName).fetch, part)
+      "#vehiclePartSuppliers *" #> renderSuppliersForPart(Supplier.where(_.suppliedParts.subfield(_.part) eqs part.id.get).orderAsc(_.supplierName).fetch, part)
   })
 
-  private[this] val supplierEntrySpaces = Text("    ")
+  private[this] val supplierEntrySeparator = Text("; ")
 
   private[this] def renderSuppliersForPart(suppliers: List[Supplier], part: Part) = suppliers map (supplier => {
-    val nameNode = Text(supplier.supplierName.get)
     val supplierPartCost = supplier.suppliedParts.get.filter(_.part.get == part.id.get).headOption
-    val partIdNode = supplierPartCost match {
-      case Some(pc) => Text("Part Id: %s".format(pc.supplierPartNumber.get))
-      case _ => Text("Not Supplied") // should not see this
+    val partId = supplierPartCost match {
+      case Some(pc) => pc.supplierPartNumber.get
+      case _ => "Not Supplied" // should not see this
     }
-    val partCostNode = supplierPartCost match {
-      case Some(pc) => Text("Part Price: £%.2f".format(pc.suppliedCost.get))
-      case _ => Text("Not Supplied") // should not see this
+    val partCost = supplierPartCost match {
+      case Some(pc) => "£%.2f".format(pc.suppliedCost.get)
+      case _ => "Not Supplied" // should not see this
     }
 
-    span(nameNode ++ supplierEntrySpaces ++ partIdNode ++ supplierEntrySpaces ++ partCostNode, Noop)
+    Text("%s; Part Id: %s; Part Cost: %s".format(supplier.supplierName.get, partId, partCost))
   })
 
   private[this] def renderVehiclePdf = vehicle match {
