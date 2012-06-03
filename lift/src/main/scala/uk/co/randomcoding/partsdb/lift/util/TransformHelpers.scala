@@ -44,10 +44,12 @@ object TransformHelpers {
    *
    * @param linkText The text that it to be inside the button
    * @param linkTarget The url of the destination of the link
+   * @param buttonFunc The function to execute to button press. Defaults to a `noopFunction`
+   * @param attrs The additional attributes to set on the link
    * @return a [[scala.xml.NodeSeq]] for a link with an inner span and the class attribute of the `<a>` element set to `button`
    */
   def buttonLink(linkText: String, linkTarget: String, buttonFunc: () => Any = noopFunction, attrs: List[ElemAttr] = Nil): NodeSeq = {
-    span(attrLink(linkTarget, linkText, buttonFunc, attrs: _*), Noop, "class" -> "btn")
+    span(attrLink(linkText, linkTarget, buttonFunc, attrs: _*), Noop, "class" -> "btn")
   }
 
   /**
@@ -55,9 +57,10 @@ object TransformHelpers {
    *
    * @param linkText The text that it to be inside the button
    * @param linkTarget The url of the destination of the link
+   * @param buttonFunc The function to execute to button press. Defaults to a `noopFunction`
    */
-  def plainLink(linkText: String, linkTarget: String): NodeSeq = {
-    attrLink(linkTarget, linkText, noopFunction)
+  def plainLink(linkText: String, linkTarget: String, buttonFunc: () => Any = noopFunction): NodeSeq = {
+    attrLink(linkText, linkTarget, buttonFunc)
   }
 
   /**
