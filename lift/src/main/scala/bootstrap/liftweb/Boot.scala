@@ -26,6 +26,17 @@ class Boot extends Loggable {
     // Initialise MongoDB - MUST be run first
     MongoConfig.init(Props.get("mongo.db", "MainDb"))
 
+    migrateDatabaseVersion
+
+    configureAccessAndMenus
+
+    configureLiftRules
+
+    registerSearchProviders
+  }
+
+  @throws(classOf[DatabaseMigrationException])
+  private[this] def migrateDatabaseVersion {
     val newDatabaseVersion = asInt(Props.get("current.db.version", "-1")) match {
       case Full(i) => i
       case _ => -1
@@ -50,12 +61,6 @@ class Boot extends Loggable {
         }
       }
     }
-
-    configureAccessAndMenus
-
-    configureLiftRules
-
-    registerSearchProviders
   }
 
   private[this] def configureAccessAndMenus {
