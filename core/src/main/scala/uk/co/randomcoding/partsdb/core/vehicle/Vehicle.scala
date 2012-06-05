@@ -74,17 +74,14 @@ object Vehicle extends Vehicle with MongoMetaRecord[Vehicle] {
   /**
    * Add a new vehicle to the database unless there is already  one that matches
    *
-   * A match is determined by using [[uk.co.randomcoding.partsdb.core.vehicle.Vehicle#findMatching(Vehicle)
+   * A match is determined by using [[uk.co.randomcoding.partsdb.core.vehicle.Vehicle#findMatching(Vehicle)]]
    * If a match is found the new vehicle is '''not''' added to the database.
    *
    * @return An option with the newly added vehicle if successful, or the matching vehicle if one was found
    */
   def add(vehicle: Vehicle): Option[Vehicle] = findMatching(vehicle) match {
     case Some(v) => Some(v)
-    case _ => vehicle.saveTheRecord /* match {
-      case v: Vehicle => Some(v)
-      case _ => None
-    }*/
+    case _ => vehicle.saveTheRecord
   }
   /**
    * Add a new vehicle, if one does not already exist with the same name
