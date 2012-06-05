@@ -106,4 +106,24 @@ class DatabaseMigrationTest extends MongoDbTestBase with GivenWhenThen {
       contain(User("Dave", "freufeugregiue898", Role.USER)) and
       contain(User("Adam", "freufeugregiue898", Role.ADMIN)))
   }
+
+  test("Migration of an unversioned database with custom User records to version 1 drops all collections but preserves the User Accounts as well as adding the bootstrap users") {
+    given("A database with non default user accounts")
+    val user1 = User.addUser("Alan", "654fdut43thu", Role.USER).get
+    val user2 = User.addUser("Betty", "ghfdjvgfue4th3ugbrjgb", Role.ADMIN).get
+
+    when("The migration to version 1 completes successfully")
+    DatabaseMigration.migrateToVersion(1) should be(Nil)
+
+    then("All records in the database are now removed except the Users and System Data")
+    DatabaseMigration.allUsedDbCollections.filterNot(collection => collection == "users" || collection == "systemdatas") foreach (collection => recordCount(collection) should be(0))
+
+    and("The Users collection contains the original users as well as the bootstrap users")
+    recordCount("users") should be(4)
+    User.fetch() should (have size (4) and
+      contain(User("Dave", "freufeugregiue898", Role.USER)) and
+      contain(User("Adam", "freufeugregiue898", Role.ADMIN)) and
+      contain(user1) and
+      contain(user2))
+  }
 }
