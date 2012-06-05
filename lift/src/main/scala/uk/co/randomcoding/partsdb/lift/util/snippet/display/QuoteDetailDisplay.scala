@@ -26,7 +26,7 @@ object QuoteDetailDisplay extends DocumentTotalsDisplay with PrintDocumentSnippe
         "#quotedOn" #> new DateTime(quote.createdOn.get).toString("dd/MM/yyyy") &
         "#lineItems" #> LineItemDisplay(quote.lineItems.get) &
         renderDocumentTotals(quote) &
-        "#raiseOrder" #> buttonLink("/app/order?transactionId=%s".format(transactionId), "Raise Order") &
+        "#raiseOrder" #> buttonLink("Raise Order", "/app/order?transactionId=%s".format(transactionId)) &
         renderPrintDocument(quote)
     })
   }

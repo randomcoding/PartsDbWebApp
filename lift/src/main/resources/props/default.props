@@ -1,3 +1,3 @@
 mongo.db=MainDb
-app.version.number=0.7.0-SNAPSHOT
-current.db.version=0
+app.version.number=0.7.0
+current.db.version=1

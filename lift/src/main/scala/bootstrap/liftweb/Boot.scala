@@ -14,6 +14,7 @@ import uk.co.randomcoding.partsdb.lift.model.Session
 import uk.co.randomcoding.partsdb.lift.util.search.{ SearchProviders, CustomerSearchPageProvider }
 import uk.co.randomcoding.partsdb.lift.util.mongo.DatabaseMigrationException
 import uk.co.randomcoding.partsdb.db.mongo.DatabaseMigration
+import uk.co.randomcoding.partsdb.core.system.SystemData
 
 /**
  * A class that's instantiated early and run.  It allows the application
@@ -35,7 +36,10 @@ class Boot extends Loggable {
       case Nil => logger.info("Successfully migrated to database version: %d".format(newDatabaseVersion))
       case errors => {
         errors foreach (logger.error(_))
-        throw new DatabaseMigrationException("Failed Migrations: %s".format(errors.mkString("\n")))
+        val wrongVersionNumbersMessage = "New version (%d) was less than or equal to the current version (%d)".format(newDatabaseVersion, SystemData.databaseVersion)
+        val realErrors = errors.filterNot(_ == wrongVersionNumbersMessage)
+
+        if (realErrors.nonEmpty) throw new DatabaseMigrationException("Failed Migrations: %s".format(errors.mkString("\n")))
       }
     }
 

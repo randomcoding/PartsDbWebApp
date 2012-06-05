@@ -23,7 +23,7 @@ object OrderDetailDisplay extends DocumentTotalsDisplay with PrintDocumentSnippe
       "#orderedOn" #> dateString(order.createdOn.get) &
       "#lineItems" #> LineItemDisplay(order.lineItems.get) &
       renderDocumentTotals(order) &
-      "#raiseDelivery" #> buttonLink("/app/delivery?transactionId=%s".format(transactionId), "Raise Delivery Note") &
+      "#raiseDelivery" #> buttonLink("Raise Delivery Note", "/app/delivery?transactionId=%s".format(transactionId)) &
       renderPrintDocument(order)
   })
 }

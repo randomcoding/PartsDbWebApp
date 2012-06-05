@@ -22,6 +22,6 @@ trait PrintDocumentSnippet {
   private[this] def printTarget(document: Document): String = "/app/print/printdocument?documentId=%s".format(document.id.get)
 
   def renderPrintDocument(document: Document) = {
-    "#printDocument" #> buttonLink(printTarget(document), "Print Preview Document", attrs = List("target" -> "_blank"))
+    "#printDocument" #> buttonLink("Print Preview Document", printTarget(document), attrs = List("target" -> "_blank"))
   }
 }
