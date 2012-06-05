@@ -126,4 +126,16 @@ class DatabaseMigrationTest extends MongoDbTestBase with GivenWhenThen {
       contain(user1) and
       contain(user2))
   }
+
+  test("Invoking migration with a version that is less than the current version returns correct error") {
+    given("A database with a version of 4")
+    SystemData.databaseVersion = 4
+    SystemData.databaseVersion should be(4)
+
+    when("Migration to to version 2 is requested")
+    val migrationResponse = DatabaseMigration.migrateToVersion(2)
+
+    then("The response should indicate the new version is less than the current version")
+    migrationResponse should be(List("New version (2) was less than or equal to the current version (4)"))
+  }
 }
