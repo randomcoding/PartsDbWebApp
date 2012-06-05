@@ -17,7 +17,7 @@
  * Contributors:
  *    RandomCoder - initial API and implementation and/or initial documentation
  */
-package uk.co.randomcoding.partsdb.lift.util.mongo
+package uk.co.randomcoding.partsdb.db.mongo
 
 import com.foursquare.rogue.Rogue._
 import com.mongodb.MongoException
@@ -42,6 +42,11 @@ import uk.co.randomcoding.partsdb.db.util.Helpers._
  */
 object DatabaseMigration extends Logger {
 
+  /**
+   * The names of the collections in use by the database
+   */
+  val allUsedDbCollections = Seq("addresss", "customers", "documentids", "documents", "partkits", "parts", "payments", "suppliers", "transactions", "users", "vehicles", "systemdatas")
+
   private[this]type MigrationFunction = () => (String, Boolean)
 
   /**
@@ -54,12 +59,13 @@ object DatabaseMigration extends Logger {
    * All version numbers are expected to be '''sequential''' as the version should only change when there
    * are changes that require migration.
    */
-  val versionMigrationFunctions: Map[Int, List[MigrationFunction]] = Map((1 -> migrateToVersion1Functions)).withDefaultValue(List.empty)
+  lazy val versionMigrationFunctions: Map[Int, List[MigrationFunction]] = Map((1 -> migrateToVersion1Functions)).withDefaultValue(List.empty)
 
   /**
    * For migration to version 1 we essentially reset the database and ensure the default users are present.
    */
-  private[this] val migrateToVersion1Functions = List(resetDatabase, addBootstrapUsers)
+  private[this] val migrateToVersion1Functions = List(() => ("Database Reset v1", resetCollections(allUsedDbCollections.filterNot(_ == "users"): _*)),
+    () => ("Add Bootstrap Users", addBootstrapUsers))
 
   /**
    * Perform migration to the specified version from the current version as identified by the
@@ -73,6 +79,14 @@ object DatabaseMigration extends Logger {
 
     if (currentVersion < newVersion) {
       val migrationResults = (currentVersion to newVersion) flatMap (ver => versionMigrationFunctions(ver) map (func => func()))
+      /*val migrationResults = for {
+        ver <- (currentVersion to newVersion)
+        functions = versionMigrationFunctions(ver)
+        if (functions != Nil)
+        func <- functions
+      } yield {
+        func()
+      }*/
 
       migrationResults.toList.filter(_._2 == false) map (_._1) match {
         case Nil => {
@@ -83,37 +97,33 @@ object DatabaseMigration extends Logger {
       }
     }
     else {
-      List("New version (%d) was less than current version (%d)".format(newVersion, currentVersion))
+      List("New version (%d) was less than or equal to the current version (%d)".format(newVersion, currentVersion))
     }
   }
 
   /**
    * Reset all the tables in the database except the users table
    */
-  private[this] val resetDatabase = () => {
-    /*
-     * The names of the collections in use by the database
-     */
-    val appCollections = Seq("addresss", "customers", "documentids", "documents", "partkits", "parts", "payments", "suppliers", "transactions", "users", "vehicles", "systemdatas")
+  /*private[this] val resetDatabase = () => {
 
-    /*
+    
      * Name of collections not to drop.
      * 
      * By default, don't drop the user data as this is not related to the main running of the app and will deny people access.
-     */
+     
     val dontDrop = Seq("users")
 
-    /* 
+     
      * Drops all data from the named collections
      * 
      * If you want to exclude any collection from being dropped simply add its name to dontDrop above
      * 
      * Available collections are shown in the appCollections Seq
-     */
-    val resetSuccessful = resetCollections((appCollections filterNot (dontDrop contains _): _*))
+     
+    val resetSuccessful = resetCollections((allUsedDbCollections filterNot (dontDrop contains _): _*))
 
     ("Reset of Database", resetSuccessful)
-  }
+  }*/
 
   private[this] def resetCollections(collections: String*): Boolean = {
     MongoDB.getDb(DefaultMongoIdentifier) match {
@@ -143,7 +153,7 @@ object DatabaseMigration extends Logger {
    *
    *  The users are not added if they already exist
    */
-  private[this] val addBootstrapUsers = () => {
+  private[this] def addBootstrapUsers(): Boolean = {
     import uk.co.randomcoding.partsdb.core.user.User
     try {
       if (User.findUser("Dave") isEmpty) User.addUser("Dave", hash("dave123"), USER)
@@ -159,9 +169,7 @@ object DatabaseMigration extends Logger {
       }
     }
 
-    val usersAdded = User.findUser("Dave").isDefined && User.findUser("Adam").isDefined
-
-    ("Add Bootstrap Users", usersAdded)
+    User.findUser("Dave").isDefined && User.findUser("Adam").isDefined
   }
 
   /*

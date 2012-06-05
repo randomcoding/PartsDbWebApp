@@ -11,9 +11,9 @@ import net.liftweb.util.Helpers.asInt
 import uk.co.randomcoding.partsdb.core.user.Role._
 import uk.co.randomcoding.partsdb.db.mongo.MongoConfig
 import uk.co.randomcoding.partsdb.lift.model.Session
-import uk.co.randomcoding.partsdb.lift.util.mongo.DatabaseMigration
 import uk.co.randomcoding.partsdb.lift.util.search.{ SearchProviders, CustomerSearchPageProvider }
 import uk.co.randomcoding.partsdb.lift.util.mongo.DatabaseMigrationException
+import uk.co.randomcoding.partsdb.db.mongo.DatabaseMigration
 
 /**
  * A class that's instantiated early and run.  It allows the application
