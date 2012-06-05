@@ -79,14 +79,6 @@ object DatabaseMigration extends Logger {
 
     if (currentVersion < newVersion) {
       val migrationResults = (currentVersion to newVersion) flatMap (ver => versionMigrationFunctions(ver) map (func => func()))
-      /*val migrationResults = for {
-        ver <- (currentVersion to newVersion)
-        functions = versionMigrationFunctions(ver)
-        if (functions != Nil)
-        func <- functions
-      } yield {
-        func()
-      }*/
 
       migrationResults.toList.filter(_._2 == false) map (_._1) match {
         case Nil => {
@@ -100,30 +92,6 @@ object DatabaseMigration extends Logger {
       List("New version (%d) was less than or equal to the current version (%d)".format(newVersion, currentVersion))
     }
   }
-
-  /**
-   * Reset all the tables in the database except the users table
-   */
-  /*private[this] val resetDatabase = () => {
-
-    
-     * Name of collections not to drop.
-     * 
-     * By default, don't drop the user data as this is not related to the main running of the app and will deny people access.
-     
-    val dontDrop = Seq("users")
-
-     
-     * Drops all data from the named collections
-     * 
-     * If you want to exclude any collection from being dropped simply add its name to dontDrop above
-     * 
-     * Available collections are shown in the appCollections Seq
-     
-    val resetSuccessful = resetCollections((allUsedDbCollections filterNot (dontDrop contains _): _*))
-
-    ("Reset of Database", resetSuccessful)
-  }*/
 
   private[this] def resetCollections(collections: String*): Boolean = {
     MongoDB.getDb(DefaultMongoIdentifier) match {

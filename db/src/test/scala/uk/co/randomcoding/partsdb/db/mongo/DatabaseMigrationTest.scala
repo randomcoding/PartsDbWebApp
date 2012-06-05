@@ -20,15 +20,17 @@
 package uk.co.randomcoding.partsdb.db.mongo
 
 import org.scalatest.GivenWhenThen
-import uk.co.randomcoding.partsdb.core.system.SystemData
-import net.liftweb.mongodb.{ MongoDB, DefaultMongoIdentifier }
+
 import com.foursquare.rogue.Rogue._
-import uk.co.randomcoding.partsdb.core.user.User
-import uk.co.randomcoding.partsdb.core.user.Role
+
 import uk.co.randomcoding.partsdb.core.address.Address
-import uk.co.randomcoding.partsdb.core.vehicle.Vehicle
-import uk.co.randomcoding.partsdb.core.customer.Customer
 import uk.co.randomcoding.partsdb.core.contact.ContactDetails
+import uk.co.randomcoding.partsdb.core.customer.Customer
+import uk.co.randomcoding.partsdb.core.system.SystemData
+import uk.co.randomcoding.partsdb.core.user.{ User, Role }
+import uk.co.randomcoding.partsdb.core.vehicle.Vehicle
+
+import net.liftweb.mongodb.{ MongoDB, DefaultMongoIdentifier }
 
 /**
  * This should contain tests for each migration version
