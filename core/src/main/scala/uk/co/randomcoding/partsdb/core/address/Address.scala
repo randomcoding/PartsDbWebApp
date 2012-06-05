@@ -37,6 +37,8 @@ class Address private () extends MongoRecord[Address] with ObjectIdPk[Address] {
 object Address extends Address with MongoMetaRecord[Address] {
   import org.bson.types.ObjectId
 
+  def apply(shortName: String, addressText: String, country: String): Address = create(shortName, addressText, country)
+
   /**
    * Get the address with the given id.
    *
