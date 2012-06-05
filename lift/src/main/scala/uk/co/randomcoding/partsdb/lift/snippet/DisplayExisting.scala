@@ -43,7 +43,7 @@ object DisplayExisting extends ErrorDisplay with Logger {
 
     "#displayCurrentTitle" #> Text("%ss".format(entityType)) &
       "#details" #> displayTable(entityType) &
-      "#add" #> buttonLink("%s".format(entityType toLowerCase), addText)
+      "#add" #> buttonLink(addText, "%s".format(entityType toLowerCase))
   }
 
   private[this] def displayTable(entityType: String) = {

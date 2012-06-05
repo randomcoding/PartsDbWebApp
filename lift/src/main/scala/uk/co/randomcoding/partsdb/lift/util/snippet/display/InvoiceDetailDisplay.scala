@@ -34,7 +34,7 @@ object InvoiceDetailDisplay extends DocumentTotalsDisplay with PrintDocumentSnip
       "#billingAddressCountry" #> styledText(addressCountry, (s: String) => (), readonly) &
       "#lineItems" #> LineItemDisplay(invoice.lineItems.get) &
       renderDocumentTotals(invoice) &
-      "#payInvoice" #> buttonLink("/app/payInvoice?transactionId=%s&invoiceId=%s".format(transactionId, invoice.id.get.toString), "Pay Invoice") &
+      "#payInvoice" #> buttonLink("Pay Invoice", "/app/payInvoice?transactionId=%s&invoiceId=%s".format(transactionId, invoice.id.get.toString)) &
       renderPrintDocument(invoice)
   })
 }
