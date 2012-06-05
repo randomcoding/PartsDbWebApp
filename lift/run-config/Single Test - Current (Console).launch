@@ -8,7 +8,7 @@
 <listEntry value="4"/>
 </listAttribute>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="org.scalatest.tools.Runner"/>
-<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-p &quot;./target/scala-2.9.1/test-classes&quot; -oW -s ${java_type_name}"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-p &quot;./target/scala-2.9.1/test-classes&quot; -o -s ${java_type_name}"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="parts-db-app-lift"/>
 <stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Dtesting=yes"/>
 </launchConfiguration>
