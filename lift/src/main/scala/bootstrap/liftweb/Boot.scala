@@ -1,42 +1,47 @@
 package bootstrap.liftweb
 
-import com.mongodb.MongoException
-import uk.co.randomcoding.partsdb.core.user.Role.{ USER, Role, NO_ROLE, ADMIN }
-import uk.co.randomcoding.partsdb.core.user.User.addUser
-import uk.co.randomcoding.partsdb.db.mongo.MongoConfig
-import uk.co.randomcoding.partsdb.db.util.Helpers._
-import uk.co.randomcoding.partsdb.lift.model.Session
-import uk.co.randomcoding.partsdb.lift.util.search._
-import net.liftweb.common.{ Loggable, Full }
-import net.liftweb.http.LiftRulesMocker.toLiftRules
-import net.liftweb.http.{ S, ResourceServer, Req, RedirectResponse, LiftRules, Html5Properties, GetRequest }
-import net.liftweb.sitemap.Loc.LinkText.strToLinkText
-import net.liftweb.sitemap.Loc.{ Link, If, Hidden, ExtLink }
-import net.liftweb.sitemap.{ SiteMap, Menu, Loc }
-import net.liftweb.util.Vendor.valToVender
+import net.liftweb.common.{ Full, Loggable }
+import net.liftweb.http.{ LiftRules, Req, ResourceServer, GetRequest, Html5Properties, S, RedirectResponse }
+import net.liftweb.sitemap.Loc
+import net.liftweb.sitemap.Loc.{ If, Link, ExtLink, Hidden }
+import net.liftweb.sitemap.Menu
+import net.liftweb.sitemap.SiteMap
 import net.liftweb.util.Props
-import com.mongodb.Mongo
-import net.liftweb.mongodb.MongoDB
-import net.liftweb.mongodb.DefaultMongoIdentifier
-import scala.collection.JavaConversions._
-import uk.co.randomcoding.partsdb.core.document.Document
-import uk.co.randomcoding.partsdb.core.document.DocumentType
-import uk.co.randomcoding.partsdb.core.transaction.Transaction
-import uk.co.randomcoding.partsdb.core.customer.Customer
-import uk.co.randomcoding.partsdb.core.address.Address
-import com.foursquare.rogue.Rogue._
-import uk.co.randomcoding.partsdb.lift.util.mongo.DatabaseCleanupOperations
+import net.liftweb.util.Helpers.asInt
+import uk.co.randomcoding.partsdb.core.user.Role._
+import uk.co.randomcoding.partsdb.db.mongo.MongoConfig
+import uk.co.randomcoding.partsdb.lift.model.Session
+import uk.co.randomcoding.partsdb.lift.util.search.{ SearchProviders, CustomerSearchPageProvider }
+import uk.co.randomcoding.partsdb.lift.util.mongo.DatabaseMigrationException
+import uk.co.randomcoding.partsdb.db.mongo.DatabaseMigration
+import uk.co.randomcoding.partsdb.core.system.SystemData
 
 /**
  * A class that's instantiated early and run.  It allows the application
  * to modify lift's environment
  */
+
 class Boot extends Loggable {
   def boot {
-    // Initialise MongoDB
+    // Initialise MongoDB - MUST be run first
     MongoConfig.init(Props.get("mongo.db", "MainDb"))
 
-    DatabaseCleanupOperations.cleanUpDatabase()
+    val newDatabaseVersion = asInt(Props.get("current.db.version", "-1")) match {
+      case Full(i) => i
+      case _ => -1
+    }
+
+    // Perform any required database update operations
+    DatabaseMigration.migrateToVersion(newDatabaseVersion) match {
+      case Nil => logger.info("Successfully migrated to database version: %d".format(newDatabaseVersion))
+      case errors => {
+        errors foreach (logger.error(_))
+        val wrongVersionNumbersMessage = "New version (%d) was less than or equal to the current version (%d)".format(newDatabaseVersion, SystemData.databaseVersion)
+        val realErrors = errors.filterNot(_ == wrongVersionNumbersMessage)
+
+        if (realErrors.nonEmpty) throw new DatabaseMigrationException("Failed Migrations: %s".format(errors.mkString("\n")))
+      }
+    }
 
     configureAccessAndMenus
 
@@ -78,6 +83,7 @@ class Boot extends Loggable {
     val showParts = Menu(Loc("showParts", ExtLink("/app/show?entityType=Part"), "Parts", userLoggedIn))
     val showSuppliers = Menu(Loc("showSuppliers", ExtLink("/app/show?entityType=Supplier"), "Suppliers", userLoggedIn))
     val showVehicles = Menu(Loc("showVehicles", ExtLink("/app/show?entityType=Vehicle"), "Vehicles", userLoggedIn))
+    val showPartKits = Menu(Loc("showPartKits", ExtLink("/app/show?entityType=PartKit"), "Part Kits", userLoggedIn))
 
     // Search Button
     val searchLoc = Menu(Loc("search", new Link("app" :: "search" :: Nil, false), "Search", userLoggedIn))
@@ -85,8 +91,11 @@ class Boot extends Loggable {
     // Add Quote Button
     val addQuoteLoc = Menu(Loc("addQuote", new Link("app" :: "quote" :: Nil, false), "New Quote", userLoggedIn))
 
-    // Add Payment Button
+    // Payments Menu
+
+    // Payments Button
     val addPayment = Menu(Loc("recordPayment", new Link("app" :: "recordPayment" :: Nil, false), "Record Payment(s)", userLoggedIn))
+    val payInvoices = Menu(Loc("payInvoicesPayment", new Link("app" :: "payInvoices" :: Nil, false), "Pay Invoices", userLoggedIn))
 
     // Display... locs hidden
     val displayEntitiesLoc = Menu(Loc("displayEntities", new Link("app" :: "display" :: Nil, true), "Display Entities", Hidden, userLoggedIn))
@@ -103,7 +112,7 @@ class Boot extends Loggable {
     // Construct the menu list to use - separated into displayed and hidden
 
     // The order of addition here is the order the menus are displayed in the navigation bar
-    val displayedMenus = List(mainAppLoc, showCustomers, showParts, showVehicles, showSuppliers, searchLoc, addQuoteLoc, addPayment)
+    val displayedMenus = List(mainAppLoc, showCustomers, showParts, showPartKits, showVehicles, showSuppliers, searchLoc, addQuoteLoc, addPayment, payInvoices)
     val hiddenMenues = List(displayEntitiesLoc, printDocumentsLoc, adminLoc, rootLoc)
 
     val menus = displayedMenus ::: hiddenMenues
@@ -114,24 +123,6 @@ class Boot extends Loggable {
     // register search providers
     SearchProviders.register(CustomerSearchPageProvider)
     /*SearchProviders.register(QuoteSearchPageProvider)*/
-  }
-
-  // Default users to add to the DB to bootstrap the login process
-  private[this] def addBootstrapUsers: Unit = {
-    import uk.co.randomcoding.partsdb.core.user.User
-    try {
-      User.addUser("Dave", hash("dave123"), USER)
-      User.addUser("Adam", hash("adam123"), ADMIN)
-    }
-    catch {
-      case e: MongoException => {
-        if (e.getMessage startsWith "Collection not found") {
-          User.createRecord.username("Adam").password(hash("adam123")).role(ADMIN).save
-          //User.createRecord.username("Dave").password(hash("dave123")).role(USER).save
-        }
-        else logger.error("Exception whilst adding default users: %s".format(e.getMessage), e)
-      }
-    }
   }
 
   private[this] def configureLiftRules {

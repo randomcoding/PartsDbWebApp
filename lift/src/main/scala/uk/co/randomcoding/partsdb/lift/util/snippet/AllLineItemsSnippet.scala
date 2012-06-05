@@ -17,7 +17,7 @@ import scala.xml.NodeSeq
 import net.liftweb.common.Logger
 
 /**
- * A simple snippet to display all lineitems, either from a [[uk.co.randomcoding.partsdb.lift.model.document.LineItemsDataHolder]] or passed in directly
+ * A simple snippet to display all line items, either from a [[uk.co.randomcoding.partsdb.lift.model.document.LineItemsDataHolder]] or passed in directly
  * via [[uk.co.randomcoding.partsdb.lift.util.snippet.AllLineItemsSnippet#refreshLineItemDisplay(Seq[LineItem])]] or
  * [[uk.co.randomcoding.partsdb.lift.util.snippet.AllLineItemsSnippet#renderAllLineItems(Seq[LineItem])]]
  * @author RandomCoder <randomcoder@randomcoding.co.uk>

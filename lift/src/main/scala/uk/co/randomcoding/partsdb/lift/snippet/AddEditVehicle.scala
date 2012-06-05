@@ -3,7 +3,7 @@ package uk.co.randomcoding.partsdb.lift.snippet
 import scala.xml.Text
 
 import uk.co.randomcoding.partsdb.core.util.MongoHelpers._
-import uk.co.randomcoding.partsdb.core.vehicle.Vehicle.add
+import uk.co.randomcoding.partsdb.core.vehicle.Vehicle.{ add, modify, create }
 import uk.co.randomcoding.partsdb.core.vehicle.Vehicle
 import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
 import uk.co.randomcoding.partsdb.lift.util.snippet._
@@ -26,9 +26,9 @@ class AddEditVehicle extends StatefulSnippet with ErrorDisplay with SubmitAndCan
 
   override val cameFrom = S.referer openOr "/app/show?entityType=Vehicle"
 
-  var vehicleName = initialVehicle match {
-    case Some(v) => v.vehicleName.get
-    case _ => ""
+  var (vehicleName, pdfFile) = initialVehicle match {
+    case Some(v) => (v.vehicleName.get, v.pdfFile.get)
+    case _ => ("", "")
   }
 
   def dispatch = {
@@ -36,8 +36,9 @@ class AddEditVehicle extends StatefulSnippet with ErrorDisplay with SubmitAndCan
   }
 
   def render = {
-    "#formTitle" #> Text("Add Vehicle") &
+    "#formTitle" #> Text("%s Vehicle".format(if (initialVehicle.isDefined) "Edit" else "Add")) &
       "#nameEntry" #> styledText(vehicleName, vehicleName = _) &
+      "#pdfFileEntry" #> styledText(pdfFile, pdfFile = _) &
       renderSubmitAndCancel()
   }
 
@@ -53,8 +54,8 @@ class AddEditVehicle extends StatefulSnippet with ErrorDisplay with SubmitAndCan
   override def processSubmit() = performValidation() match {
     case Nil => {
       initialVehicle match {
-        case Some(v) => Vehicle.modify(v.vehicleName.get, vehicleName)
-        case _ => add(vehicleName)
+        case Some(v) => Vehicle.modify(v.id.get, Vehicle(vehicleName, pdfFile))
+        case _ => add(create(vehicleName, pdfFile))
       }
       S redirectTo "/app/show?entityType=Vehicle"
     }

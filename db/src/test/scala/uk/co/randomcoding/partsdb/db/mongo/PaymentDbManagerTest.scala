@@ -456,9 +456,9 @@ class PaymentDbManagerTest extends MongoDbTestBase with GivenWhenThen {
   private[this] implicit def itemToList[T](item: T): List[T] = List(item)
 
   private[this] def performDatabaseChecks(expectedPayments: List[Payment] = Nil, expectedDocuments: List[Document] = Nil, expectedTransactions: List[Transaction] = Nil) {
-    Payment where (_.id exists true) fetch () should be(expectedPayments)
-    Document where (_.id exists true) fetch () should be(expectedDocuments)
-    Transaction where (_.id exists true) fetch () should be(expectedTransactions)
+    Payment.fetch should be(expectedPayments)
+    Document.fetch should be(expectedDocuments)
+    Transaction.fetch should be(expectedTransactions)
   }
 
   private[this] def setupTransactionFor100Pounds: Transaction = setupTransaction(transactionFor100Pounds, invoiceFor100Pounds, orderFor100Pounds, deliveryFor100Pounds)

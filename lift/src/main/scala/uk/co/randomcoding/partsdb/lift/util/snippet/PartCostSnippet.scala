@@ -36,7 +36,7 @@ trait PartCostSnippet extends ErrorDisplay with DataValidation with Logger {
 
   var currentPartCosts: List[PartCost]
 
-  private val parts = Part where (_.id exists true) orderDesc (_.partName) fetch
+  private val parts = Part orderAsc (_.partName) fetch
   val partsSelect = (None, "Select Part") :: (parts map ((p: Part) => (Some(p), p.partName.get)))
 
   private var currentPart: Option[Part] = None
@@ -185,6 +185,7 @@ trait PartCostSnippet extends ErrorDisplay with DataValidation with Logger {
     debug("Current Part costs are now: %s".format(currentPartCosts.mkString("\n")))
   }
 
+  // TODO: These can be replaced with WiringUI.toNode
   private[this] def costEntryContent(): NodeSeq = styledAjaxText("%.2f".format(currentPartCost), updateAjaxValue(updateCurrentPartCost(_)))
 
   private[this] def refreshCostEntry(): JsCmd = Replace("costEntry", <span>{ costEntryContent }</span> % Attribute(None, "id", Text("costEntry"), Null))

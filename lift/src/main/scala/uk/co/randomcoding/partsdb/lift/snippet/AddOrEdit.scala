@@ -22,6 +22,7 @@ import net.liftweb.util.Helpers._
  *
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
+@deprecated("I think this is no longer used", "0.7.0")
 object AddOrEdit {
 
   /**

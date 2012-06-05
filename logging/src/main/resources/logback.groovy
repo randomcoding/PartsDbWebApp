@@ -53,13 +53,10 @@ def isTest = System.getProperty("testing", "no")
 if (HOST.equalsIgnoreCase("benjymouse")) {
 	addInfo("Using logging configuration for ${HOST}")
 	
-	def testingLogs = ["uk.co.randomcoding": INFO]
+	def testingLogs = ["uk.co.randomcoding": WARN]
 	
-	def defaultLogs = ["uk.co.randomcoding.partsdb.lift.snippet.RecordPayment": DEBUG,
-		"uk.co.randomcoding.partsdb.lift.snippet.PayInvoices": DEBUG,
-		"uk.co.randomcoding.partsdb.db.mongo.PaymentDbManager": DEBUG,
-		"uk.co.randomcoding.partsdb.core.transaction": DEBUG,
-		"uk.co.randomcoding.partsdb.lift.snippet.print": DEBUG ]
+	def defaultLogs = ["uk.co.randomcoding.partsdb.lift.model.document.NewLineItemDataHolder": DEBUG,
+		"uk.co.randomcoding.partsdb.lift.util.snippet.LineItemSnippet": DEBUG]
 
 	def logs = defaultLogs
 	if (isTest.equalsIgnoreCase("yes")) {

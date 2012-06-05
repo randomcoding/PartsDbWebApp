@@ -30,7 +30,7 @@ object LoggedInAs extends Logger {
 
   private def loggedIn(user: String, role: Role): NodeSeq = {
     val loggedInText = Text("Logged in as: %s (%s) - ".format(user, role))
-    val logoutLink = buttonLink("/logout", "logout", () => Session.currentUser(("", "")))
+    val logoutLink = plainLink("logout", "/logout", () => Session.currentUser(("", "")))
 
     span(loggedInText ++ logoutLink, Noop)
   }

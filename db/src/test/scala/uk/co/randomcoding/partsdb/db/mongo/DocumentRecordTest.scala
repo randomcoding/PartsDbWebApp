@@ -75,11 +75,11 @@ class DocumentRecordTest extends MongoDbTestBase {
     val expectedDocument1 = Document.create(Seq(line1), DocumentType.Invoice, 0.0).docNumber(1l)
     Document.add(Seq(line1), DocumentType.Invoice, 0.0) should be(Some(expectedDocument1))
 
-    (Document where (_.id exists true) fetch) should be(Seq(expectedDocument1))
+    (Document fetch) should be(Seq(expectedDocument1))
     val document2 = Document.create(Seq(line1), DocumentType.Invoice, 0.0).docNumber(2l)
     Document.add(document2) should be(Some(document2))
 
-    (Document where (_.id exists true) fetch) should (have size (2) and
+    (Document fetch) should (have size (2) and
       contain(expectedDocument1) and
       contain(document2))
   }
@@ -88,11 +88,11 @@ class DocumentRecordTest extends MongoDbTestBase {
     val document = Document.create(Seq(line2), DocumentType.Invoice, 0.0).docNumber(1l)
     val copyDocument = Document.create(Seq(line2), DocumentType.Invoice, 0.0).docNumber(1l)
     Document.add(document) should be(Some(document))
-    (Document where (_.id exists true) fetch) should be(List(document))
+    (Document fetch) should be(List(document))
 
     Document.add(copyDocument) should be(Some(document))
 
-    (Document where (_.id exists true) fetch) should be(List(document))
+    (Document fetch) should be(List(document))
   }
 
   test("Adding new documents correctly increments the document number") {
@@ -140,7 +140,7 @@ class DocumentRecordTest extends MongoDbTestBase {
 
     Document.remove(document1.id.get)
 
-    (Document where (_.id exists true) fetch) should be(List(document2))
+    (Document fetch) should be(List(document2))
   }
 
   test("Removing a Record from an empty database does not cause errors") {
@@ -152,7 +152,7 @@ class DocumentRecordTest extends MongoDbTestBase {
     val document2 = Document.add(Seq(line1), DocumentType.Invoice, 0.0).get
     Document.remove(new ObjectId)
 
-    (Document where (_.id exists true) fetch) should (have size (2) and
+    (Document fetch) should (have size (2) and
       contain(document1) and
       contain(document2))
   }

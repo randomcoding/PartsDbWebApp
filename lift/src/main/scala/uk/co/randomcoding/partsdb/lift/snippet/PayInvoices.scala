@@ -50,7 +50,7 @@ class PayInvoices extends StatefulSnippet with ErrorDisplay with Logger with Sub
       "#paymentRemaining" #> WiringUI.asText(dataHolder.unallocatedPaymentText) &
       "#invoiceToPaySelect" #> WiringUI.toNode(dataHolder.unpaidInvoices)(unpaidInvoices) &
       "#allocateValue" #> WiringUI.toNode(dataHolder.currentAllocatedAmount)(allocatedAmountEntry) &
-      "#allocateAllButton" #> styledAjaxButton("Allocate All", setAllocateAllAmountInDataHolder) &
+      "#allocateAllButton" #> styledAjaxButton("Whole Value", setAllocateAllAmountInDataHolder) &
       "#allocateToInvoiceButton" #> styledAjaxButton("Allocate", allocateToInvoice) &
       "#allocatedToInvoices" #> WiringUI.toNode(dataHolder.invoicePayments)(renderAllocatedValues) &
       renderSubmitAndCancel()

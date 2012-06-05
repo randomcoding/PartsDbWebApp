@@ -71,7 +71,7 @@ object DisplayTransaction extends TabDisplaySnippet with Logger {
     }
 
     "#formTitle" #> Text(transactionTitleText) &
-      "#backLink" #> buttonLink(cameFrom, " <- Back") &
+      "#backLink" #> buttonLink(" <- Back", cameFrom) &
       "#customerName" #> Text(customerNameText) &
       generateDocumentDisplays()
   }

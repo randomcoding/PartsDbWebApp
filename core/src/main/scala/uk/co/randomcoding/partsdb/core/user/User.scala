@@ -16,7 +16,7 @@ import Role.Role
  * Simple User class
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
-class User private() extends MongoRecord[User] with ObjectIdPk[User] {
+class User private () extends MongoRecord[User] with ObjectIdPk[User] {
   def meta = User
 
   /**
@@ -53,6 +53,8 @@ class User private() extends MongoRecord[User] with ObjectIdPk[User] {
 object User extends User with MongoMetaRecord[User] {
 
   import org.bson.types.ObjectId
+
+  def apply(userName: String, hashedPassword: String, role: Role) = User.createRecord.username(userName).password(hashedPassword).role(role)
 
   def findById(oid: ObjectId) = User where (_.id eqs oid) get
 
