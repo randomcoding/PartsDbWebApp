@@ -36,7 +36,7 @@ trait PartCostSnippet extends ErrorDisplay with DataValidation with Logger {
 
   var currentPartCosts: List[PartCost]
 
-  private val parts = Part orderDesc (_.partName) fetch
+  private val parts = Part orderAsc (_.partName) fetch
   val partsSelect = (None, "Select Part") :: (parts map ((p: Part) => (Some(p), p.partName.get)))
 
   private var currentPart: Option[Part] = None

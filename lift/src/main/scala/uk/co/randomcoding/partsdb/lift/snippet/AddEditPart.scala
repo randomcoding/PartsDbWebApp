@@ -40,7 +40,7 @@ class AddEditPart extends StatefulSnippet with ErrorDisplay with DataValidation 
   }
 
   val allVehicles: List[(Option[Vehicle], String)] = (None, "-- Select Vehicle --") :: {
-    (Vehicle where (_.vehicleName exists true) orderDesc (_.vehicleName) fetch) map (v => (Some(v), v.vehicleName.get))
+    (Vehicle where (_.vehicleName exists true) orderAsc (_.vehicleName) fetch) map (v => (Some(v), v.vehicleName.get))
   }
 
   def dispatch = {
