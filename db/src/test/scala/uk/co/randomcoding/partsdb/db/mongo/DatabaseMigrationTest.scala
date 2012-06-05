@@ -20,17 +20,15 @@
 package uk.co.randomcoding.partsdb.db.mongo
 
 import org.scalatest.GivenWhenThen
-
 import com.foursquare.rogue.Rogue._
-
 import uk.co.randomcoding.partsdb.core.address.Address
 import uk.co.randomcoding.partsdb.core.contact.ContactDetails
 import uk.co.randomcoding.partsdb.core.customer.Customer
 import uk.co.randomcoding.partsdb.core.system.SystemData
 import uk.co.randomcoding.partsdb.core.user.{ User, Role }
 import uk.co.randomcoding.partsdb.core.vehicle.Vehicle
-
 import net.liftweb.mongodb.{ MongoDB, DefaultMongoIdentifier }
+import uk.co.randomcoding.partsdb.core.supplier.Supplier
 
 /**
  * This should contain tests for each migration version
@@ -139,5 +137,22 @@ class DatabaseMigrationTest extends MongoDbTestBase with GivenWhenThen {
 
     then("The response should indicate the new version is less than the current version")
     migrationResponse should be(List("New version (2) was less than or equal to the current version (4)"))
+  }
+
+  test("Migration to version 2 adds the C.A.T.9 Supplier") {
+    given("An initial, empty database with a version of less than 2")
+    DatabaseMigration.allUsedDbCollections.filterNot(_ == "users") foreach (collection => recordCount(collection) should be(0))
+    SystemData.databaseVersion should be < (2)
+
+    when("The database is successfully migrated to version 2")
+    DatabaseMigration.migrateToVersion(2) should be(Nil)
+
+    then("There is a Supplier record for C.A.T.9")
+    val cat9Name = "C.A.T.9 Limited"
+    val addr = Address.where(_.shortName eqs "C.A.T.9 Business Address").get.get
+
+    val contacts = ContactDetails.create("Nicky", "01885 488 663", "", "nicky.morris@cat-9.co.uk", "01885 488 663", true)
+    val cat9 = Supplier.create(cat9Name, contacts, addr, Nil)
+    Supplier.where(_.supplierName eqs cat9Name).get should be((Some(cat9)))
   }
 }

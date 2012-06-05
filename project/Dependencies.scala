@@ -15,7 +15,6 @@ object Dependencies {
   val liftUtil = liftDep("lift-util", "compile")
   val liftCommon = liftDep("lift-common", "compile")
   val liftWebkit = liftDep("lift-webkit", "compile")
-  val liftJson = liftDep("lift-json", "compile")
   val liftMongoRecord = liftDep("lift-mongodb-record", "compile")
 
   // Rogue - used for Mongo DB Queries
@@ -36,7 +35,7 @@ object Dependencies {
 
   // Dependency groups
   val testDeps = Seq(scalatest)
-  val liftDeps = Seq(liftUtil, liftCommon, liftWebkit, liftJson, liftMongoRecord, rogue)
+  val liftDeps = Seq(liftUtil, liftCommon, liftWebkit, liftMongoRecord, rogue)
   val loggingDeps = Seq(logback, groovy, liftCommon)
   val jettyDeps = Seq(jetty)
   val jodaDeps = Seq(jodaTime, jodaConvert)

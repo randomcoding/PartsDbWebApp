@@ -26,6 +26,17 @@ class Boot extends Loggable {
     // Initialise MongoDB - MUST be run first
     MongoConfig.init(Props.get("mongo.db", "MainDb"))
 
+    migrateDatabaseVersion
+
+    configureAccessAndMenus
+
+    configureLiftRules
+
+    registerSearchProviders
+  }
+
+  @throws(classOf[DatabaseMigrationException])
+  private[this] def migrateDatabaseVersion {
     val newDatabaseVersion = asInt(Props.get("current.db.version", "-1")) match {
       case Full(i) => i
       case _ => -1
@@ -35,19 +46,21 @@ class Boot extends Loggable {
     DatabaseMigration.migrateToVersion(newDatabaseVersion) match {
       case Nil => logger.info("Successfully migrated to database version: %d".format(newDatabaseVersion))
       case errors => {
-        errors foreach (logger.error(_))
         val wrongVersionNumbersMessage = "New version (%d) was less than or equal to the current version (%d)".format(newDatabaseVersion, SystemData.databaseVersion)
+
+        errors.find(_ == wrongVersionNumbersMessage) match {
+          case Some(msg) => logger.warn(msg)
+          case _ => logger.error("There were problems migrating the database")
+        }
         val realErrors = errors.filterNot(_ == wrongVersionNumbersMessage)
 
-        if (realErrors.nonEmpty) throw new DatabaseMigrationException("Failed Migrations: %s".format(errors.mkString("\n")))
+        if (realErrors.nonEmpty) {
+          realErrors foreach (logger.error(_))
+
+          throw new DatabaseMigrationException("Failed Migrations: %s".format(errors.mkString("\n")))
+        }
       }
     }
-
-    configureAccessAndMenus
-
-    configureLiftRules
-
-    registerSearchProviders
   }
 
   private[this] def configureAccessAndMenus {
@@ -112,7 +125,7 @@ class Boot extends Loggable {
     // Construct the menu list to use - separated into displayed and hidden
 
     // The order of addition here is the order the menus are displayed in the navigation bar
-    val displayedMenus = List(mainAppLoc, showCustomers, showParts, showPartKits, showVehicles, showSuppliers, searchLoc, addQuoteLoc, addPayment, payInvoices)
+    val displayedMenus = List(mainAppLoc, showCustomers, showParts, showPartKits, showVehicles, showSuppliers, /*searchLoc,*/ addQuoteLoc, addPayment, payInvoices)
     val hiddenMenues = List(displayEntitiesLoc, printDocumentsLoc, adminLoc, rootLoc)
 
     val menus = displayedMenus ::: hiddenMenues

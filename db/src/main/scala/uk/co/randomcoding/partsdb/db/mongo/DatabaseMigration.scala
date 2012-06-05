@@ -21,12 +21,9 @@ package uk.co.randomcoding.partsdb.db.mongo
 
 import com.foursquare.rogue.Rogue._
 import com.mongodb.MongoException
-
 import net.liftweb.common.Logger
 import net.liftweb.mongodb.{ MongoDB, DefaultMongoIdentifier }
-
 import scala.collection.JavaConversions._
-
 import uk.co.randomcoding.partsdb.core.address.Address
 import uk.co.randomcoding.partsdb.core.customer.Customer
 import uk.co.randomcoding.partsdb.core.document.{ Document, DocumentType }
@@ -34,6 +31,8 @@ import uk.co.randomcoding.partsdb.core.system.SystemData
 import uk.co.randomcoding.partsdb.core.transaction.Transaction
 import uk.co.randomcoding.partsdb.core.user.Role.{ USER, Role, NO_ROLE, ADMIN }
 import uk.co.randomcoding.partsdb.db.util.Helpers._
+import uk.co.randomcoding.partsdb.core.supplier.Supplier
+import uk.co.randomcoding.partsdb.core.contact.ContactDetails
 
 /**
  * Provides the capability to migrate the database between different versions.
@@ -59,13 +58,19 @@ object DatabaseMigration extends Logger {
    * All version numbers are expected to be '''sequential''' as the version should only change when there
    * are changes that require migration.
    */
-  lazy val versionMigrationFunctions: Map[Int, List[MigrationFunction]] = Map((1 -> migrateToVersion1Functions)).withDefaultValue(List.empty)
+  lazy val versionMigrationFunctions: Map[Int, List[MigrationFunction]] = Map((1 -> migrateToVersion1Functions),
+    2 -> migrateVersion1ToVersion2Functions).withDefaultValue(List.empty)
 
   /**
    * For migration to version 1 we essentially reset the database and ensure the default users are present.
    */
   private[this] val migrateToVersion1Functions = List(() => ("Database Reset v1", resetCollections(allUsedDbCollections.filterNot(_ == "users"): _*)),
     () => ("Add Bootstrap Users", addBootstrapUsers))
+
+  /**
+   * V2 of the database ensures that there is a C.A.T.9 Supplier for Part Kits and 'services'
+   */
+  private[this] val migrateVersion1ToVersion2Functions = List(() => ("Ensure C.A.T.9 Supplier Exists", ensureCat9SupplierExists))
 
   /**
    * Perform migration to the specified version from the current version as identified by the
@@ -78,7 +83,8 @@ object DatabaseMigration extends Logger {
     val currentVersion = SystemData.databaseVersion
 
     if (currentVersion < newVersion) {
-      val migrationResults = (currentVersion to newVersion) flatMap (ver => versionMigrationFunctions(ver) map (func => func()))
+      info("Migrating database from version %d to version %d".format(currentVersion, newVersion))
+      val migrationResults = (currentVersion + 1 to newVersion) flatMap (ver => versionMigrationFunctions(ver) map (func => func()))
 
       migrationResults.toList.filter(_._2 == false) map (_._1) match {
         case Nil => {
@@ -138,6 +144,18 @@ object DatabaseMigration extends Logger {
     }
 
     User.findUser("Dave").isDefined && User.findUser("Adam").isDefined
+  }
+
+  private[this] def ensureCat9SupplierExists(): Boolean = {
+    val cat9Name = "C.A.T.9 Limited"
+    Supplier.where(_.supplierName eqs cat9Name).get match {
+      case None => {
+        val addr = Address.add("C.A.T.9 Business Address", "CAT 9\n2 Hackley Business Centre\nPencombe Lane\nBromyard\nHerefordshire\nHR74SP", "United Kingdom").get
+        val contacts = ContactDetails.create("Nicky", "01885 488 663", "", "nicky.morris@cat-9.co.uk", "01885 488 663", true)
+        Supplier.add(cat9Name, contacts, addr, Nil) isDefined
+      }
+      case Some(s) => true // do nothing
+    }
   }
 
   /*
