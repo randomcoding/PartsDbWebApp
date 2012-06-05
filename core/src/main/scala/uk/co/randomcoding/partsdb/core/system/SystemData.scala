@@ -45,7 +45,7 @@ class SystemData private () extends MongoRecord[SystemData] with ObjectIdPk[Syst
    * Default value is 1.
    */
   private object databaseVersion extends IntField(this) {
-    override val defaultValue = 1
+    override val defaultValue = -1
   }
 
   /**
@@ -80,13 +80,26 @@ object SystemData extends SystemData with MongoMetaRecord[SystemData] {
 
   def databaseVersion = dataRecord.databaseVersion.get
 
-  def databaseVersion_=(version: Int): Unit = SystemData.where(_.id exists true).modify(_.databaseVersion setTo version).updateMulti
+  def databaseVersion_=(version: Int): Unit = {
+    val record = dataRecord
+    record.databaseVersion.set(version)
+    record.save
+  }
+  //SystemData.where(_.id exists true).modify(_.databaseVersion setTo version).updateMulti
 
   def vatRate = dataRecord.vatRate.get
 
-  def vatRate_=(vat: Double): Unit = SystemData.where(_.id exists true).modify(_.vatRate setTo vat).updateMulti
+  def vatRate_=(vat: Double): Unit = {
+    val record = dataRecord
+    record.vatRate.set(vat)
+    record.save
+  }
 
   def vehiclePdfPath = dataRecord.vehiclePdfPath.get
 
-  def vehiclePdfPath_=(pdfPath: String): Unit = SystemData.where(_.id exists true).modify(_.vehiclePdfPath setTo pdfPath).updateMulti
+  def vehiclePdfPath_=(pdfPath: String): Unit = {
+    val record = dataRecord
+    record.vehiclePdfPath.set(pdfPath)
+    record.save
+  }
 }
