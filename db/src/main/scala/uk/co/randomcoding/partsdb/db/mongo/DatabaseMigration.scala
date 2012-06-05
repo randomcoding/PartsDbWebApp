@@ -83,7 +83,8 @@ object DatabaseMigration extends Logger {
     val currentVersion = SystemData.databaseVersion
 
     if (currentVersion < newVersion) {
-      val migrationResults = (currentVersion to newVersion) flatMap (ver => versionMigrationFunctions(ver) map (func => func()))
+      info("Migrating database from version %d to version %d".format(currentVersion, newVersion))
+      val migrationResults = (currentVersion + 1 to newVersion) flatMap (ver => versionMigrationFunctions(ver) map (func => func()))
 
       migrationResults.toList.filter(_._2 == false) map (_._1) match {
         case Nil => {
