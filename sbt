@@ -1,6 +1,6 @@
 #! /bin/bash
 
-SBT_VER="0.11.2"
+SBT_VER="0.11.3-2"
 JAVA_OPTS="-Dfile.encoding=UTF8 -Xmx256M -Xss1M -XX:+CMSClassUnloadingEnabled -XX:MaxPermSize=256m"
 
 SBT_ARGS=""
