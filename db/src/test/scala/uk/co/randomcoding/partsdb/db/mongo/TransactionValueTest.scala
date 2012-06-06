@@ -18,7 +18,6 @@ import uk.co.randomcoding.partsdb.core.contact.ContactDetails
 import uk.co.randomcoding.partsdb.core.address.Address
 import uk.co.randomcoding.partsdb.core.document._
 
-
 /**
  * Tests for the document value functions of a transaction
  *
@@ -60,7 +59,7 @@ class TransactionValueTest extends MongoDbTestBase {
   }
 
   test("Value of Documents is correct for a transaction with no documents") {
-    val transaction = Transaction.create("Trans", customer, Nil)
+    val transaction = Transaction.create(customer, Nil)
     transaction.valueOfDocuments(DocumentType.Quote) should be(0.0d)
     transaction.valueOfDocuments(DocumentType.Order) should be(0.0d)
     transaction.valueOfDocuments(DocumentType.DeliveryNote) should be(0.0d)
@@ -70,7 +69,7 @@ class TransactionValueTest extends MongoDbTestBase {
   test("Value of Documents is correct for a transaction with quotes only") {
     saveDocuments(DocumentType.Quote)
 
-    val transaction = Transaction.add("Trans 1", customer, Seq(quote1, quote2)).get
+    val transaction = Transaction.add(customer, Seq(quote1, quote2)).get
     transaction.valueOfDocuments(DocumentType.Quote) should be(quote1.documentValue + quote2.documentValue)
     transaction.valueOfDocuments(DocumentType.Order) should be(0.0d)
     transaction.valueOfDocuments(DocumentType.DeliveryNote) should be(0.0d)
@@ -80,7 +79,7 @@ class TransactionValueTest extends MongoDbTestBase {
   test("Value of Documents is correct for a transaction with quotes and orders") {
     saveDocuments(DocumentType.Quote, DocumentType.Order)
 
-    val transaction = Transaction.add("Trans 1", customer, Seq(quote1, quote2, order1, order2)).get
+    val transaction = Transaction.add(customer, Seq(quote1, quote2, order1, order2)).get
     transaction.valueOfDocuments(DocumentType.Quote) should be(quote1.documentValue + quote2.documentValue)
     transaction.valueOfDocuments(DocumentType.Order) should be(order1.documentValue + order2.documentValue)
     transaction.valueOfDocuments(DocumentType.DeliveryNote) should be(0.0d)
@@ -90,7 +89,7 @@ class TransactionValueTest extends MongoDbTestBase {
   test("Value of Documents is correct for a transaction with quotes, orders and delivery notes") {
     saveDocuments(DocumentType.Quote, DocumentType.Order, DocumentType.DeliveryNote)
 
-    val transaction = Transaction.add("Trans 1", customer, Seq(quote1, quote2, order1, order2, deliveryNote1, deliveryNote2)).get
+    val transaction = Transaction.add(customer, Seq(quote1, quote2, order1, order2, deliveryNote1, deliveryNote2)).get
     transaction.valueOfDocuments(DocumentType.Quote) should be(quote1.documentValue + quote2.documentValue)
     transaction.valueOfDocuments(DocumentType.Order) should be(order1.documentValue + order2.documentValue)
     transaction.valueOfDocuments(DocumentType.DeliveryNote) should be(deliveryNote1.documentValue + deliveryNote2.documentValue)
@@ -100,7 +99,7 @@ class TransactionValueTest extends MongoDbTestBase {
   test("Value of Documents is correct for a transaction with quotes, orders delivery notes and invoices") {
     saveDocuments(DocumentType.Quote, DocumentType.Order, DocumentType.DeliveryNote, DocumentType.Invoice)
 
-    val transaction = Transaction.add("Trans 1", customer, Seq(quote1, quote2, order1, order2, deliveryNote1, deliveryNote2, invoice)).get
+    val transaction = Transaction.add(customer, Seq(quote1, quote2, order1, order2, deliveryNote1, deliveryNote2, invoice)).get
     transaction.valueOfDocuments(DocumentType.Quote) should be(quote1.documentValue + quote2.documentValue)
     transaction.valueOfDocuments(DocumentType.Order) should be(order1.documentValue + order2.documentValue)
     transaction.valueOfDocuments(DocumentType.DeliveryNote) should be(deliveryNote1.documentValue + deliveryNote2.documentValue)
