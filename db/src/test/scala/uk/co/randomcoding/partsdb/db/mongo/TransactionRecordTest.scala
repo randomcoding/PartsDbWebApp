@@ -207,6 +207,16 @@ class TransactionRecordTest extends MongoDbTestBase {
       contain(doc2.id.get))
   }
 
+  test("Generation of Transaction Short Name (id)") {
+    val t1 = Transaction.add(cust1, Seq(doc3)).get
+    val t2 = Transaction.add(cust1, Seq(doc1)).get
+    Document.add(doc3)
+    Document.add(doc1)
+
+    t1.shortName should be("TRN003003")
+    t2.shortName should startWith("No Quote for Transaction ")
+  }
+
   test("Removing a Record that exists in the database successfully removes the entry from the database") {
     pending
   }

@@ -65,7 +65,7 @@ class Transaction private () extends MongoRecord[Transaction] with ObjectIdPk[Tr
    * contain the same documents (again, by `oid`)
    */
   override def equals(that: Any): Boolean = that match {
-    case other: Transaction => customer.get == other.customer.get && documents.get.toSet == other.documents.get.toSet //&& shortName.get == other.shortName.get
+    case other: Transaction => customer.get == other.customer.get && documents.get == other.documents.get // && shortName == other.shortName
     case _ => false
   }
 
@@ -80,7 +80,7 @@ class Transaction private () extends MongoRecord[Transaction] with ObjectIdPk[Tr
   def valueOfDocuments(documentType: DocumentType.DocType) = (Document where (_.id in documents.get) and (_.documentType eqs documentType) fetch).foldLeft(0.0d)(_ + _.documentValue)
 
   lazy val shortName: String = Document.where(_.id in documents.get).and(_.documentType eqs DocumentType.Quote).get() match {
-    case Some(q) => q.documentNumber
+    case Some(q) => "TRN%06d".format(q.docNumber.get)
     case _ => {
       val errorMessage = "No Quote for Transaction %s".format(id.get)
       error(errorMessage)
