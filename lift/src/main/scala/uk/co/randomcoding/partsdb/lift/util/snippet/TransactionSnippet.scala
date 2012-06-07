@@ -37,7 +37,7 @@ trait TransactionSnippet {
    * The name of the transaction and the customer associated to the transaction
    */
   lazy val (transactionName, customer, customerName) = transaction match {
-    case Some(t) => (t.shortName.get, customerFromTransaction(t), customerNameFromTransaction(t))
+    case Some(t) => (t.shortName, customerFromTransaction(t), customerNameFromTransaction(t))
     case _ => ("No Transaction", None, "No Transaction")
   }
 
@@ -48,7 +48,7 @@ trait TransactionSnippet {
 
   private[this] def customerNameFromTransaction(t: Transaction) = Customer findById t.customer.get match {
     case Some(c) => c.customerName.get
-    case _ => "No Customer for id %s in transaction %s".format(t.customer.get, t.shortName.get)
+    case _ => "No Customer for id %s in transaction %s".format(t.customer.get, t.shortName)
   }
 
   private[this] def customerFromTransaction(t: Transaction) = Customer findById t.customer.get match {

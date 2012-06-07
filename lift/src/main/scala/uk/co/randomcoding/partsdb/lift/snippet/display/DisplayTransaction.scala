@@ -58,7 +58,7 @@ object DisplayTransaction extends TabDisplaySnippet with Logger {
 
     debug("Rendering details for transaction: %s".format(transaction))
     val transactionTitleText = transaction match {
-      case Some(t) => t.shortName.get
+      case Some(t) => t.shortName
       case _ => "No Transaction"
     }
 
