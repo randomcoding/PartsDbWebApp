@@ -5,29 +5,29 @@ package uk.co.randomcoding.partsdb.core.transaction
 
 import java.util.Date
 
+import org.bson.types.ObjectId
+import org.joda.time.DateTime
+
 import com.foursquare.rogue.Rogue._
 
 import uk.co.randomcoding.partsdb.core.customer.Customer
 import uk.co.randomcoding.partsdb.core.document.{ DocumentType, Document }
 
-import net.liftweb.record.field._
+import net.liftweb.common.Logger
 import net.liftweb.mongodb.record.field._
 import net.liftweb.mongodb.record.{ MongoRecord, MongoMetaRecord }
-
-import org.joda.time.DateTime
-import net.liftweb.common.Logger
 
 /**
  * Encapsulates all the data for a transaction between the company and a customer.
  *
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
-class Transaction private () extends MongoRecord[Transaction] with ObjectIdPk[Transaction] {
+class Transaction private () extends MongoRecord[Transaction] with ObjectIdPk[Transaction] with Logger {
   def meta = Transaction
 
   private val defaultCompletionDate = new Date(0)
 
-  object shortName extends StringField(this, 50)
+  //object shortName extends StringField(this, 50)
 
   /**
    * The customer that this transaction is with.
@@ -65,11 +65,11 @@ class Transaction private () extends MongoRecord[Transaction] with ObjectIdPk[Tr
    * contain the same documents (again, by `oid`)
    */
   override def equals(that: Any): Boolean = that match {
-    case other: Transaction => customer.get == other.customer.get && documents.get.toSet == other.documents.get.toSet && shortName.get == other.shortName.get
+    case other: Transaction => customer.get == other.customer.get && documents.get == other.documents.get // && shortName == other.shortName
     case _ => false
   }
 
-  override def hashCode: Int = getClass.toString.hashCode + customer.get.hashCode + (documents.get map (_ hashCode) sum) + shortName.get.hashCode
+  override def hashCode: Int = getClass.toString.hashCode + customer.get.hashCode + (documents.get map (_ hashCode) sum) // + shortName.get.hashCode
 
   /**
    * Get the value of all the documents of a given type in this transaction
@@ -79,6 +79,14 @@ class Transaction private () extends MongoRecord[Transaction] with ObjectIdPk[Tr
    */
   def valueOfDocuments(documentType: DocumentType.DocType) = (Document where (_.id in documents.get) and (_.documentType eqs documentType) fetch).foldLeft(0.0d)(_ + _.documentValue)
 
+  lazy val shortName: String = Document.where(_.id in documents.get).and(_.documentType eqs DocumentType.Quote).get() match {
+    case Some(q) => "TRN%06d".format(q.docNumber.get)
+    case _ => {
+      val errorMessage = "No Quote for Transaction %s".format(id.get)
+      error(errorMessage)
+      errorMessage
+    }
+  }
   /**
    * Get the state of the transaction.
    *
@@ -117,7 +125,7 @@ object Transaction extends Transaction with MongoMetaRecord[Transaction] with Lo
   /**
    * Create a new transaction object, but '''do not''' save it in the database
    */
-  def create(shortName: String, customer: Customer, documents: Seq[Document]): Transaction = Transaction.createRecord.shortName(shortName).customer(customer.id.get).documents(documents.toList map (_.id.get))
+  def create(customer: Customer, documents: Seq[Document]): Transaction = Transaction.createRecord.customer(customer.id.get).documents(documents.toList map (_.id.get))
 
   /**
    * Add a new `Transaction` to the database.
@@ -145,7 +153,7 @@ object Transaction extends Transaction with MongoMetaRecord[Transaction] with Lo
    * @see [[uk.co.randomcoding.partsdb.core.transaction.Transaction#findMatching(Transaction)]])
    * @return A populated `Option[Transaction]` with either the matched or newly added record, if the add operation succeeded. Otherwise 'none'
    */
-  def add(shortName: String, customer: Customer, documents: Seq[Document]): Option[Transaction] = add(create(shortName, customer, documents))
+  def add(customer: Customer, documents: Seq[Document]): Option[Transaction] = add(create(customer, documents))
 
   /**
    * Find a `Transaction` by its `oid`.

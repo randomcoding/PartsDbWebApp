@@ -82,7 +82,7 @@ object PaymentDbManager extends Logger {
     Transaction where (_.documents contains invoiceId) get () match {
       case Some(t) => closeTransactionIfFullyPaid(t) match {
         case Some(_) => PaymentSuccessful
-        case _ => PaymentFailed("Error when attempting to close transaction %s. PLease file an error report".format(t.shortName.get))
+        case _ => PaymentFailed("Error when attempting to close transaction %s. Please file an error report".format(t.shortName))
       }
       case None => PaymentFailed("Unable to retrieve Tranasction containing invoice %s from the database".format(Document.findById(invoiceId).get.documentNumber))
     }
@@ -98,7 +98,7 @@ object PaymentDbManager extends Logger {
    *         If there was a problem with the close operation, this will be `None`
    */
   private[this] def closeTransactionIfFullyPaid(transaction: Transaction): Option[Transaction] = {
-    debug("Checking id transaction %s can be closed.".format(transaction.shortName.get))
+    debug("Checking id transaction %s can be closed.".format(transaction.shortName))
     val documents = Document where (_.id in transaction.documents.get) fetch ()
     val allDocumentsClosed = documents filter (_.editable.get == true) isEmpty
     val allInvoicesPaid = documents filter (_.documentType.get == DocumentType.Invoice) filter (_.remainingBalance > 0) isEmpty
