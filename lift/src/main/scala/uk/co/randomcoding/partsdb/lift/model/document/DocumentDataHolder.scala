@@ -4,16 +4,14 @@
 package uk.co.randomcoding.partsdb.lift.model.document
 
 import org.bson.types.ObjectId
-
 import com.foursquare.rogue.Rogue._
-
 import uk.co.randomcoding.partsdb.core.document.LineItem
 import uk.co.randomcoding.partsdb.core.part.Part
 import uk.co.randomcoding.partsdb.core.supplier.Supplier
-
 import net.liftweb.common.{ Logger, Full }
 import net.liftweb.util.Helpers._
 import net.liftweb.util.{ ValueCell, Cell }
+import uk.co.randomcoding.partsdb.core.system.SystemData
 
 /**
  * Encapsulates the basic data for the total costs of a [[uk.co.randomcoding.partsdb.core.document.Document]].
@@ -48,9 +46,9 @@ trait DocumentDataHolder extends Logger {
   val carriageCell = ValueCell[Double](DEFAULT_CARRIAGE)
 
   /**
-   * The tax rate. Set to 0.2 (20%)
+   * The tax rate. Set to value stored in the system data
    */
-  val taxRate = ValueCell(0.2d)
+  val taxRate = ValueCell(SystemData.vatRate)
 
   /**
    * The computed value of the amount of tax for the quote
@@ -101,10 +99,9 @@ trait DocumentDataHolder extends Logger {
    * If the input fails to parse as a double then the carriage is not updated
    */
   def carriage_=(carriageString: String) = {
-    debug("Setting carriage to: %s".format(carriageString))
     asDouble(carriageString) match {
       case Full(value) => carriageCell.set(value)
-      case _ => // do nothing
+      case _ => error("Unable to parse %s as numeric value. Not updating carriage".format(carriageString))
     }
   }
 

@@ -6,13 +6,11 @@ package uk.co.randomcoding.partsdb.core.document
 import net.liftweb.mongodb.record.{ MongoRecord, MongoMetaRecord }
 import net.liftweb.mongodb.record.field._
 import net.liftweb.record.field._
-
 import uk.co.randomcoding.partsdb.core.address.Address
-
 import java.util.Date
-
 import com.foursquare.rogue.Rogue._
 import uk.co.randomcoding.partsdb.core.transaction.Payment
+import uk.co.randomcoding.partsdb.core.system.SystemData
 
 /**
  * `Document`s are the basic objects that make up a [[uk.co.randomcoding.partsdb.core.transaction.Transaction]].
@@ -109,8 +107,7 @@ class Document private () extends MongoRecord[Document] with ObjectIdPk[Document
    */
   def documentValue: Double = {
     val lineItemCost = lineItems.get map (_.lineCost) sum
-    // FIXME: VAT Rate will be added to general DB Properties
-    val vatRate = if (documentAddress.get.country.get == "United Kingdom") 0.2d else 0.0d
+    val vatRate = if (documentAddress.get.country.get == "United Kingdom") SystemData.vatRate else 0.0d
 
     val subTotal = lineItemCost + carriage.get
 
