@@ -4,7 +4,7 @@
 package uk.co.randomcoding.partsdb.lift.util.snippet.display
 
 import scala.xml.Text
-import uk.co.randomcoding.partsdb.core.document.{LineItem, Document}
+import uk.co.randomcoding.partsdb.core.document.{ LineItem, Document }
 import uk.co.randomcoding.partsdb.lift.util.SnippetDisplayHelpers._
 import net.liftweb.util.Helpers._
 import net.liftweb.util.CssSel
@@ -12,6 +12,7 @@ import net.liftweb.http.js.JsCmds.SetHtml
 import scala.xml.Attribute
 import scala.xml.Null
 import scala.xml.NodeSeq
+import uk.co.randomcoding.partsdb.core.system.SystemData
 
 /**
  * Display the totals (subtotal, carriage, vat and grant total) of a [[uk.co.randomcoding.partsdb.core.document.Document]]
@@ -19,7 +20,7 @@ import scala.xml.NodeSeq
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
 trait DocumentTotalsDisplay {
-  private val vatRate = 0.2d
+  private val vatRate = SystemData.vatRate
 
   /**
    * Render the actual values from the provided [[uk.co.randomcoding.partsdb.core.document.Document]]
@@ -58,7 +59,7 @@ trait DocumentTotalsDisplay {
 
   private[this] def renderIdSpan(content: NodeSeq, id: String) = {
     <span>
-      {content}
+      { content }
     </span> % Attribute("id", Text(id), Null)
   }
 
