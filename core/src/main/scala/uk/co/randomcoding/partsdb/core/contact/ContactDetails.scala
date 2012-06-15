@@ -57,94 +57,17 @@ object ContactDetails extends ContactDetails with BsonMetaRecord[ContactDetails]
   import com.foursquare.rogue.Rogue._
 
   /**
-   * Create a new `ContactDetails` record, but '''does not''' add it to the database
+   * Create a new `ContactDetails` record
+   */
+  def apply(contactName: String, phoneNumber: String, mobileNumber: String, emailAddress: String, faxNumber: String, isPrimary: Boolean): ContactDetails = {
+    create(contactName, phoneNumber, mobileNumber, emailAddress, faxNumber, isPrimary)
+  }
+
+  /**
+   * Create a new `ContactDetails` record
    */
   def create(contactName: String, phoneNumber: String, mobileNumber: String, emailAddress: String, faxNumber: String, isPrimary: Boolean): ContactDetails = {
     ContactDetails.createRecord.contactName(contactName).phoneNumber(phoneNumber).mobileNumber(mobileNumber).emailAddress(emailAddress).faxNumber(faxNumber).isPrimary(isPrimary)
   }
 
-  /**
-   * Find all records that have a `contactName` field with the given value
-   */
-  //def findNamed(contactName: String): List[ContactDetails] = ContactDetails where (_.contactName eqs contactName) fetch
-
-  /**
-   * Find an optional record that is a `ContactDetails` and has the given `ObjectId`
-   */
-  //def findById(oid: ObjectId): Option[ContactDetails] = ContactDetails where (_.id eqs oid) get
-
-  /**
-   * Find a record that ''matches'' the provided one.
-   *
-   * A match is where:
-   *  * There is a `ContactDetails` with the same `ObjectId` as the provided one already present
-   * '''or'''
-   *  * There is a `Contact Details` with the same name and at least one of the `phone number`, `mobile number` or `email address` fields match
-   *
-   * @return an optional value that will be populated with a matching record if there is one already present in the database
-   */
-  /*def findMatching(contactDetails: ContactDetails): Option[ContactDetails] = findById(contactDetails.id.get) match {
-    case Some(c) => Some(c)
-    case _ => ContactDetails.where(_.contactName eqs contactDetails.contactName.get).or(
-      _.where(_.phoneNumber eqs contactDetails.phoneNumber.get),
-      _.where(_.mobileNumber eqs contactDetails.mobileNumber.get),
-      _.where(_.emailAddress eqs contactDetails.emailAddress.get),
-      _.where(_.faxNumber eqs contactDetails.faxNumber.get)).get
-  }*/
-
-  /**
-   * Adds a `Contact Details` to the database unless there is a record that ''matches'' (by `findMatched`).
-   *
-   * If there is a matching record that is returned, even if this new record is different.
-   *
-   * To update a Contact Details object use the `modify` method
-   *
-   * If there is already a matching entry (as determined by the result of `findMatching(ContactDetails)` then this will be returned,
-   * otherwise, the new record will be saved and if successful, will be returned as an `Option[ContactDetails]`.
-   * If the save operation fails then `None` is returned
-   */
-  /*def add(contactDetails: ContactDetails): Option[ContactDetails] = findMatching(contactDetails) match {
-    case Some(contacts) => Some(contacts)
-    case _ => contactDetails.save match {
-      case c: ContactDetails => Some(c)
-      case _ => None
-    }
-  }*/
-
-  /**
-   * Adds a `Contact Details` created from the provided parameters to the database.
-   *
-   * If there is already a matching entry (as determined by the result of `findMatching(ContactDetails)` then this will be returned,
-   * otherwise, the new record will be saved and if successful, will be returned as an `Option[ContactDetails]`.
-   * If the save operation fails then `None` is returned
-   */
-  /*def add(contactName: String, phoneNumber: String, mobileNumber: String, emailAddress: String, faxNumber: String, isPrimary: Boolean): Option[ContactDetails] = {
-    add(create(contactName, phoneNumber, mobileNumber, emailAddress, faxNumber, isPrimary))
-  }*/
-
-  /**
-   * Remove `ContactDetails` with the given `ObjectId` if they exist
-   */
-  //def remove(oid: ObjectId) = ContactDetails where (_.id eqs oid) bulkDelete_!!
-
-  /**
-   * Update the values of a record with the
-   *
-   * This will update '''ALL''' the fields so if you want to keep the same value for a field then pass it in as the new value
-   */
-  /*def modify(oid: ObjectId, newName: String, newPhoneNumber: String, newMobileNumber: String, newEMailAddress: String, newFaxNumber: String, isPrimary: Boolean): Unit = {
-    ContactDetails.where(_.id eqs oid).modify(_.contactName setTo newName) and
-      (_.phoneNumber setTo newPhoneNumber) and
-      (_.mobileNumber setTo newMobileNumber) and
-      (_.emailAddress setTo newEMailAddress) and
-      (_.faxNumber setTo newFaxNumber) and
-      (_.isPrimary setTo isPrimary) updateMulti
-  }*/
-
-  /**
-   * Modify a `ContactDetails` record by setting all its fields to match those of then `newDetails`
-   */
-  /*def modify(oid: ObjectId, newDetails: ContactDetails): Unit = {
-    modify(oid, newDetails.contactName.get, newDetails.phoneNumber.get, newDetails.mobileNumber.get, newDetails.faxNumber.get, newDetails.emailAddress.get, newDetails.isPrimary.get)
-  }*/
 }

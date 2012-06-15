@@ -12,6 +12,7 @@ import uk.co.randomcoding.partsdb.core.transaction.Transaction
 import uk.co.randomcoding.partsdb.core.vehicle.Vehicle
 import org.bson.types.ObjectId
 import uk.co.randomcoding.partsdb.core.document.{ Quote, LineItem, DocumentType, Document }
+import uk.co.randomcoding.partsdb.core.supplier.Supplier
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
@@ -19,15 +20,17 @@ import uk.co.randomcoding.partsdb.core.document.{ Quote, LineItem, DocumentType,
 class TransactionRecordTest extends MongoDbTestBase {
   override val dbName = "TransactionRecordTest"
 
-  val addr1 = Address.create("Addr1", "Addr1", "UK")
-  val addr2 = Address.create("Addr2", "Addr2", "UK")
-  val contacts1 = ContactDetails.create("Dave", "", "", "", "", true)
-  val contacts2 = ContactDetails.create("Alan", "", "", "", "", true)
-  val cust1 = Customer.create("Customer 1", addr1, 30, contacts1)
-  val cust2 = Customer.create("Customer 2", addr2, 45, contacts2)
+  private[this] val addr1 = Address.create("Addr1", "Addr1", "UK")
+  private[this] val addr2 = Address.create("Addr2", "Addr2", "UK")
+  private[this] val contacts1 = ContactDetails.create("Dave", "", "", "", "", true)
+  private[this] val contacts2 = ContactDetails.create("Alan", "", "", "", "", true)
+  private[this] val cust1 = Customer.create("Customer 1", addr1, 30, contacts1)
+  private[this] val cust2 = Customer.create("Customer 2", addr2, 45, contacts2)
 
-  val line1 = LineItem.create(1, Part.create("Part", Vehicle.create("Vehicle"), None), 1, 10.0, 0.1)
-  val lines = Seq(line1)
+  private[this] val supplier = Supplier("Supplier", ContactDetails("Dave", "", "", "", "", true), Address("Addr1", "Address 1", "UK"), Nil)
+
+  private[this] val line1 = LineItem.create(1, Part.create("Part", Vehicle.create("Vehicle"), None), 1, 10.0, 0.1, supplier)
+  private[this] val lines = Seq(line1)
   /*
    * Setting the id for doc1 avoids a funny hash collision problem where the object ids generated for
    * doc1 & cust2 and doc2 & cust1 are effectively sequential. This results in hash code collisions where

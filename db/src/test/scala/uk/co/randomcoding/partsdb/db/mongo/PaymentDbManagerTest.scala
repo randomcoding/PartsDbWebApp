@@ -23,6 +23,7 @@ import java.util.Date
 import uk.co.randomcoding.partsdb.core.document._
 import org.bson.types.ObjectId
 import net.liftweb.mongodb.record.field.ObjectIdPk
+import uk.co.randomcoding.partsdb.core.supplier.Supplier
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
@@ -445,7 +446,9 @@ class PaymentDbManagerTest extends MongoDbTestBase with GivenWhenThen {
    */
   private[this] val vehicle = Vehicle.create("Vehicle")
 
-  private[this] def lineItem(partName: String, quantity: Int, price: Double): LineItem = LineItem.create(Random.nextInt(1000), Part.create(partName, vehicle), quantity, price, 0d)
+  private[this] val supplier = Supplier("Supplier", ContactDetails("Dave", "", "", "", "", true), Address("Addr1", "Address 1", "UK"), Nil)
+
+  private[this] def lineItem(partName: String, quantity: Int, price: Double): LineItem = LineItem.create(Random.nextInt(1000), Part.create(partName, vehicle), quantity, price, 0d, supplier)
 
   private[this] def invoice(lines: Seq[LineItem], poRef: String, documentNumber: Int): Document = Invoice(lines, 0d, poRef).docNumber(documentNumber)
 

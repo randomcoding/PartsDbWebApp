@@ -4,13 +4,13 @@
 package uk.co.randomcoding.partsdb.db.mongo
 
 import org.bson.types.ObjectId
-
 import com.foursquare.rogue.Rogue._
-
 import uk.co.randomcoding.partsdb.core.address.Address
 import uk.co.randomcoding.partsdb.core.document.{ LineItem, DocumentType, DocumentId, Document }
 import uk.co.randomcoding.partsdb.core.part.Part
 import uk.co.randomcoding.partsdb.core.vehicle.Vehicle
+import uk.co.randomcoding.partsdb.core.supplier.Supplier
+import uk.co.randomcoding.partsdb.core.contact.ContactDetails
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
@@ -18,11 +18,13 @@ import uk.co.randomcoding.partsdb.core.vehicle.Vehicle
 class DocumentRecordTest extends MongoDbTestBase {
   override val dbName = "DocumentRecordTest"
 
-  val part1 = Part.create("Part 1", Vehicle.create("Vehicle 1"), None)
-  val part2 = Part.create("Part 2", Vehicle.create("Vehicle 1"), None)
+  private[this] val part1 = Part.create("Part 1", Vehicle.create("Vehicle 1"), None)
+  private[this] val part2 = Part.create("Part 2", Vehicle.create("Vehicle 1"), None)
 
-  val line1 = LineItem.create(1, part1, 1, 10, 0.1)
-  val line2 = LineItem.create(2, part2, 2, 20, 0.2)
+  private[this] val supplier = Supplier("Supplier", ContactDetails("Dave", "", "", "", "", true), Address("Addr1", "Address 1", "UK"), Nil)
+
+  private[this] val line1 = LineItem.create(1, part1, 1, 10, 0.1, supplier)
+  private[this] val line2 = LineItem.create(2, part2, 2, 20, 0.2, supplier)
 
   test("Create doucment with no line items throws expected exception") {
 
@@ -52,7 +54,7 @@ class DocumentRecordTest extends MongoDbTestBase {
   }
 
   test("Equality and HashCode of doucments with document numbers") {
-    val items = Seq(LineItem.create(1, part1, 1, 10.0, 0.1), LineItem.create(2, part2, 1, 100.0, 0.1))
+    val items = Seq(line1, line2)
     val doc1 = Document.create(items, DocumentType.Invoice, 0.0).docNumber(10)
     val doc2 = Document.create(items, DocumentType.Invoice, 0.0).docNumber(10)
     val doc3 = Document.create(items, DocumentType.Invoice, 0.0).docNumber(10)
