@@ -33,6 +33,8 @@ import uk.co.randomcoding.partsdb.core.user.Role.{ USER, Role, NO_ROLE, ADMIN }
 import uk.co.randomcoding.partsdb.db.util.Helpers._
 import uk.co.randomcoding.partsdb.core.supplier.Supplier
 import uk.co.randomcoding.partsdb.core.contact.ContactDetails
+import uk.co.randomcoding.partsdb.core.document.LineItem
+import org.bson.types.ObjectId
 
 /**
  * Provides the capability to migrate the database between different versions.
@@ -58,8 +60,9 @@ object DatabaseMigration extends Logger {
    * All version numbers are expected to be '''sequential''' as the version should only change when there
    * are changes that require migration.
    */
-  lazy val versionMigrationFunctions: Map[Int, List[MigrationFunction]] = Map((1 -> migrateToVersion1Functions),
-    2 -> migrateVersion1ToVersion2Functions).withDefaultValue(List.empty)
+  lazy val versionMigrationFunctions: Map[Int, List[MigrationFunction]] = Map(1 -> migrateToVersion1Functions,
+    2 -> migrateVersion1ToVersion2Functions,
+    3 -> migrateVersion2ToVersion3Functions).withDefaultValue(List.empty)
 
   /**
    * For migration to version 1 we essentially reset the database and ensure the default users are present.
@@ -71,6 +74,12 @@ object DatabaseMigration extends Logger {
    * V2 of the database ensures that there is a C.A.T.9 Supplier for Part Kits and 'services'
    */
   private[this] val migrateVersion1ToVersion2Functions = List(() => ("Ensure C.A.T.9 Supplier Exists", ensureCat9SupplierExists))
+
+  /**
+   * Version 3 of the database has Supplier information in the Line Items records so either all documents should be removed or
+   * we update the line items with the Supplier's id derived from the part and its cost.
+   */
+  private[this] val migrateVersion2ToVersion3Functions = List(() => ("Ensure Line Items have correct Supplier Id fields", ensureLineItemsHaveASupplierField))
 
   /**
    * Perform migration to the specified version from the current version as identified by the
@@ -155,6 +164,37 @@ object DatabaseMigration extends Logger {
         Supplier.add(cat9Name, contacts, addr, Nil) isDefined
       }
       case Some(s) => true // do nothing
+    }
+  }
+
+  private[this] def ensureLineItemsHaveASupplierField(): Boolean = {
+    def docsToUpdate(): Seq[Document] = Document.or(_.where(_.lineItems.subfield(_.partSupplier) exists false),
+      _.where(_.lineItems.subfield(_.partSupplier) eqs null)).fetch()
+
+    docsToUpdate() foreach (doc => {
+      val newLineItems = doc.lineItems.get map (lineItem => {
+        lineItem.partSupplier.get match {
+          case oid: ObjectId => lineItem
+          case _ => supplierForLineItemPart(lineItem) match {
+            case Some(oid) => lineItem.partSupplier(oid)
+            case _ => lineItem // return unchanged
+          }
+        }
+      })
+      val newDocument = doc.lineItems(newLineItems)
+
+      Document.update(doc.id.get, newDocument)
+    })
+
+    docsToUpdate().isEmpty
+  }
+
+  private[this] def supplierForLineItemPart(lineItem: LineItem): Option[ObjectId] = {
+    val itemPartId = lineItem.partId.get
+    val itemPrice = lineItem.basePrice.get
+    Supplier.where(_.suppliedParts.subfield(_.part) eqs itemPartId).and(_.suppliedParts.subfield(_.suppliedCost) eqs itemPrice).get() match {
+      case Some(s) => Some(s.id.get)
+      case _ => None
     }
   }
 

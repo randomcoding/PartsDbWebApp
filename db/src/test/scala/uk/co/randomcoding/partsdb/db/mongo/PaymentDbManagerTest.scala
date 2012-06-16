@@ -23,6 +23,7 @@ import java.util.Date
 import uk.co.randomcoding.partsdb.core.document._
 import org.bson.types.ObjectId
 import net.liftweb.mongodb.record.field.ObjectIdPk
+import uk.co.randomcoding.partsdb.core.supplier.Supplier
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
@@ -43,9 +44,9 @@ class PaymentDbManagerTest extends MongoDbTestBase with GivenWhenThen {
   private[this] lazy val deliveryFor150Pounds = DeliveryNote(Seq(lineFor100Pounds, lineFor50Pounds), 0, "PoRef2")
 
   private[this] lazy val transactionFor100PoundsDocuments = Seq(orderFor100Pounds, deliveryFor100Pounds, invoiceFor100Pounds)
-  private[this] lazy val transactionFor100Pounds = Transaction.create("Trans 1", customer("Customer"), transactionFor100PoundsDocuments)
+  private[this] lazy val transactionFor100Pounds = Transaction.create(customer("Customer"), transactionFor100PoundsDocuments)
   private[this] lazy val twoInvoiceTransactionDocuments = Seq(orderFor100Pounds, orderFor150Pounds, deliveryFor100Pounds, deliveryFor150Pounds, invoiceFor100Pounds, invoiceFor150Pounds)
-  private[this] lazy val transactionWithTwoInvoicesFor250Pounds = Transaction.create("Trans 3", customer("Customer"), twoInvoiceTransactionDocuments)
+  private[this] lazy val transactionWithTwoInvoicesFor250Pounds = Transaction.create(customer("Customer"), twoInvoiceTransactionDocuments)
 
   private[this] val successfulPaymentResponse = List(PaymentSuccessful)
 
@@ -445,7 +446,9 @@ class PaymentDbManagerTest extends MongoDbTestBase with GivenWhenThen {
    */
   private[this] val vehicle = Vehicle.create("Vehicle")
 
-  private[this] def lineItem(partName: String, quantity: Int, price: Double): LineItem = LineItem.create(Random.nextInt(1000), Part.create(partName, vehicle), quantity, price, 0d)
+  private[this] val supplier = Supplier("Supplier", ContactDetails("Dave", "", "", "", "", true), Address("Addr1", "Address 1", "UK"), Nil)
+
+  private[this] def lineItem(partName: String, quantity: Int, price: Double): LineItem = LineItem.create(Random.nextInt(1000), Part.create(partName, vehicle), quantity, price, 0d, supplier)
 
   private[this] def invoice(lines: Seq[LineItem], poRef: String, documentNumber: Int): Document = Invoice(lines, 0d, poRef).docNumber(documentNumber)
 

@@ -37,6 +37,20 @@ object CountryCodes {
     case None => None
   }
 
+  /**
+   * Gets the two letter code for the country name.
+   *
+   * This does a case insensitive match
+   *
+   * @return The two letter code or and empty String if no match was found
+   */
+  def keyForCountry(countryName: String): String = {
+    countryCodes.find(_._2.equalsIgnoreCase(countryName)) match {
+      case Some((tag, country)) => tag
+      case _ => ""
+    }
+  }
+
   private val countryCodeOrNameMatch = (input: String, countryCode: (String, String)) => countryCode._1 == input.toUpperCase || countryCode._2.equalsIgnoreCase(input)
 
   /**

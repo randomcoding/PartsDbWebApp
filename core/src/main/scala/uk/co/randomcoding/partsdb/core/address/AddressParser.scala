@@ -26,26 +26,27 @@ import uk.co.randomcoding.partsdb.core.util.CountryCode._
  */
 object AddressParser {
   /**
-   * Pattern matching on an address string
+   * Pattern matching on an input tuple of (short name, address lines, country) that attempts to create an
+   * [[uk.co.randomcoding.partsdb.core.address.Address]] from the input.
    *
-   * The input text is split into lines by commas or full stops and then the Country code is extracted from
-   * the address lines and matched to a country code in [[uk.co.randomcoding.partsdb.core.util.CountryCodes]].
-   * If there is a match (either on the country code or full name) then an [[uk.co.randomcoding.partsdb.core.address.Address]]
-   * is generated with a  and using the first line of the address
-   * as the `shortName` parameter. The address text is generated from the split input string (no trailing punctuation)
+   * If the first element of the tuple is empty then the first line of the address lines is used for the address's short name
+   * The address lines have any trailing commas of full stops removed and are then `trimmed`. Empty lines are then removed.
+   * Then the country is matched to a country code in [[uk.co.randomcoding.partsdb.core.util.CountryCodes]].
+   *
+   * If there is a country code match (either on the country code or full name) and the address lines are not basically empty,
+   * then an [[uk.co.randomcoding.partsdb.core.address.Address]] is generated and wrapped in an `Option`
    *
    * @return An Option[[[uk.co.randomcoding.partsdb.core.address.Address]]] if the input string matches
    */
-  def unapply(nameAndAddress: (String, String, String)): Option[Address] = {
-    val addressString = nameAndAddress._2
-    val lines = addressString.split("""[,\.]+""") map (_ trim)
+  def unapply(nameAndAddress: (String, Seq[String], String)): Option[Address] = {
+    val addressLines = nameAndAddress._2 map (_.replaceAll("""[,\.]$""", "") trim) filter (_ nonEmpty) //addressString.split("""[,\.]+""") map (_ trim)
     val shortName = nameAndAddress._1.trim match {
-      case "" => lines(0)
+      case "" => addressLines(0)
       case s => s
     }
 
     identifyCountry(nameAndAddress._3) match {
-      case Some(code) if (lines.size > 1) => Some(Address.createRecord.shortName(shortName).addressText(lines.mkString("\n")).country(code.countryName))
+      case Some(code) if (addressLines.size >= 1) => Some(Address(shortName, addressLines.mkString("\n"), code.countryName))
       case _ => None
     }
   }

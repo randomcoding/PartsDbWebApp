@@ -10,6 +10,7 @@ import net.liftweb.common.Logger
 import net.liftweb.mongodb.record.MongoRecord
 import net.liftweb.mongodb.record.field.ObjectIdPk
 import uk.co.randomcoding.partsdb.core.part.PartKit
+import uk.co.randomcoding.partsdb.core.supplier.Supplier
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
@@ -51,7 +52,7 @@ trait LineItemsDataHolder extends Logger {
    *
    * @param part The [[uk.co.randomcoding.partsdb.core.part.Part]] that identifies the [[uk.co.randomcoding.partsdb.core.document.LineItem]]s to remove
    */
-  def removeItem(part: MongoRecord[_] with ObjectIdPk[_]) = {
+  def removeItem(part: MongoRecord[_] with ObjectIdPk[_]) {
     lineItemsCell.atomicUpdate(_.filterNot(_.partId.get == part.id.get))
     renumberLines
   }
@@ -65,11 +66,11 @@ trait LineItemsDataHolder extends Logger {
    * @param part The [[uk.co.randomcoding.partsdb.core.part.Part]] for the line
    * @param quantity The number of parts in this line.
    */
-  def addOrUpdateLineItem(partCost: Double, markup: Double, part: MongoRecord[_] with ObjectIdPk[_], quantity: Int) {
+  def addOrUpdateLineItem(partCost: Double, markup: Double, part: MongoRecord[_] with ObjectIdPk[_], quantity: Int, supplier: Supplier) {
     lineItemsCell.atomicUpdate(items => items.find(_.partId.get == part.id.get) match {
       case Some(lineItem) => {
         val newItem: LineItem = part match {
-          case p: Part => LineItem.create(lineItem.lineNumber.get, p, quantity, partCost, markup)
+          case p: Part => LineItem.create(lineItem.lineNumber.get, p, quantity, partCost, markup, supplier)
           case pk: PartKit => LineItem.create(lineItem.lineNumber.get, pk, quantity, partCost, markup)
         }
         removeLineItem(lineItem)
@@ -78,7 +79,7 @@ trait LineItemsDataHolder extends Logger {
       }
       case _ => {
         val lineItem = part match {
-          case p: Part => LineItem.create(items.size, p, quantity, partCost, markup)
+          case p: Part => LineItem.create(items.size, p, quantity, partCost, markup, supplier)
           case pk: PartKit => LineItem.create(items.size, pk, quantity, partCost, markup)
         }
 
@@ -92,14 +93,16 @@ trait LineItemsDataHolder extends Logger {
    *
    * This preserves the current order, only the line numbers are changed.
    */
-  private def renumberLines = lineItemsCell.atomicUpdate(items => {
-    var index = 0
-    items sortBy (_.lineNumber.get) map (item => {
-      val newItem = item.lineNumber(index)
-      index += 1
-      newItem
+  private def renumberLines {
+    lineItemsCell.atomicUpdate(items => {
+      var index = 0
+      items sortBy (_.lineNumber.get) map (item => {
+        val newItem = item.lineNumber(index)
+        index += 1
+        newItem
+      })
     })
-  })
+  }
 
   /**
    * Update the quantity, cost and markup of a line item

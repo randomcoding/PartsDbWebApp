@@ -27,7 +27,8 @@ object QuoteDetailDisplay extends DocumentTotalsDisplay with PrintDocumentSnippe
         "#lineItems" #> LineItemDisplay(quote.lineItems.get) &
         renderDocumentTotals(quote) &
         "#raiseOrder" #> buttonLink("Raise Order", "/app/order?transactionId=%s".format(transactionId)) &
-        renderPrintDocument(quote)
+        renderPrintDocument(quote) &
+        "#editQuoteButton" #> buttonLink("Edit Quote", "/app/quote?id=%s".format(quote.id.get))
     })
   }
 }

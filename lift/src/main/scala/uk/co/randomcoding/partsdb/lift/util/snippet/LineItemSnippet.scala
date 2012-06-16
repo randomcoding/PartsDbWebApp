@@ -59,13 +59,14 @@ trait LineItemSnippet extends ErrorDisplay with AllLineItemsSnippet with Logger 
    * @param additionalAddLineAction The `JsCmd` to execute in addition to adding the line item to the `dataHolder`.
    * This is executed after the add operation and defaults to a `Noop`
    */
-  def renderAddEditLineItem(addButtonText: String = "Add Line", additionalAddLineAction: JsCmd = Noop) = {
+  def renderAddEditLineItem(addButtonText: String = "Add/Update Line", additionalAddLineAction: JsCmd = Noop) = {
     "#addLineButton" #> styledAjaxButton(addButtonText, (() => (addLine & additionalAddLineAction))) &
+      "#removeLineButton" #> styledAjaxButton("Remove Line", () => removeLine) &
       "#partName" #> partNameContent() & // these can be done with WiringUI.toNode
-      "#supplierName" #> WiringUI.toNode(dataHolder.suppliersForPart)(renderSupplierChoice) & /*suppliersContent() &*/
-      "#partQuantity" #> WiringUI.toNode(dataHolder.quantityCell)(renderPartQuantity) & //partQuantityContent() &
+      "#supplierName" #> WiringUI.toNode(dataHolder.suppliersForPart)(renderSupplierChoice) &
+      "#partQuantity" #> WiringUI.toNode(dataHolder.quantityCell)(renderPartQuantity) &
       "#basePartCost" #> WiringUI.asText(dataHolder.currentPartBaseCostDisplay) &
-      "#markup" #> WiringUI.toNode(dataHolder.markupCell)(renderEditableMarkup) //styledAjaxText(dataHolder.markup, updateAjaxValue(dataHolder.markup(_)))
+      "#markup" #> WiringUI.toNode(dataHolder.markupCell)(renderEditableMarkup)
   }
 
   private[this] val renderSupplierChoice: (List[(Option[Supplier], String)], NodeSeq) => NodeSeq = (s, nodes) => {
@@ -84,29 +85,7 @@ trait LineItemSnippet extends ErrorDisplay with AllLineItemsSnippet with Logger 
   }
 
   private[this] def partNameContent() = styledAjaxObjectSelect[Option[MongoRecord[_] with ObjectIdPk[_]]](lineItemPartsSelect, dataHolder.currentPart,
-    updateAjaxValue(dataHolder.currentPart = _ /*, refreshSuppliers*/ ), List(("id" -> "partName")))
-
-  /*private[this] def partQuantityContent() = styledAjaxText(dataHolder.quantity, updateAjaxValue(quantity => dataHolder.quantity(asInt(quantity) match {
-    case Full(q) => q
-    case _ => 0
-  })), List(("id" -> "partQuantity")))*/
-
-  /*private[this] val suppliersContent = () => styledAjaxObjectSelect[Option[Supplier]](dataHolder.suppliers, dataHolder.supplier,
-    updateAjaxValue(dataHolder.supplier(_)), List(("id" -> "supplierName")))*/
-
-  /*private[this] def refreshQuantity(): JsCmd = SHtml.ajaxInvoke(() => {
-    val html = partQuantityContent()
-    Replace("partQuantity", html)
-  })._2.cmd*/
-
-  /**
-   * Update the suppliers combo box based on the currently selected part (as stored in the Quote Holder
-   */
-  /*private[this] def refreshSuppliers(): JsCmd = SHtml.ajaxInvoke(() => {
-    val html = suppliersContent()
-    debug("Setting suppliers html to: %s".format(html))
-    Replace("supplierName", html)
-  })._2.cmd*/
+    updateAjaxValue(dataHolder.currentPart = _), List(("id" -> "partName")))
 
   /**
    * Update the part name combo based on the value in the Quote Holder
@@ -115,6 +94,32 @@ trait LineItemSnippet extends ErrorDisplay with AllLineItemsSnippet with Logger 
     val html = partNameContent()
     Replace("partName", html)
   })._2.cmd
+
+  private[this] def removeLine(): JsCmd = {
+    clearErrors
+    dataHolder.currentPart match {
+      case Some(part) => {
+        dataHolder.lineItems.find(_.partId.get == part.id.get) match {
+          case Some(p) => {
+            dataHolder.removeItem(part)
+            refreshLineItemDisplay() & refreshPartName()
+          }
+          case _ => {
+            displayError("There is no Line Item for %s".format(part match {
+              case pt: Part => pt.partName.get
+              case pk: PartKit => pk.kitName.get
+            }))
+            Noop
+          }
+        }
+      }
+      case _ => {
+        displayError("Please Select a Part")
+        Noop
+      }
+    }
+
+  }
 
   /**
    * Add a new line item to the quote holder and refresh the line items display.
@@ -132,6 +137,6 @@ trait LineItemSnippet extends ErrorDisplay with AllLineItemsSnippet with Logger 
       case (_, None) => displayErrors("Please specify a valid quantity", "Please select a Part")
     }
 
-    refreshLineItemDisplay() & refreshPartName() /* & refreshSuppliers() & refreshQuantity()*/
+    refreshLineItemDisplay() & refreshPartName()
   }
 }

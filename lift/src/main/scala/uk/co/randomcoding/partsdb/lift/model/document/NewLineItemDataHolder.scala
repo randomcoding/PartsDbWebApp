@@ -3,17 +3,19 @@
  */
 package uk.co.randomcoding.partsdb.lift.model.document
 
-import uk.co.randomcoding.partsdb.core.supplier.Supplier
 import org.bson.types.ObjectId
-import net.liftweb.util.ValueCell
-import uk.co.randomcoding.partsdb.core.part.Part
+
 import com.foursquare.rogue.Rogue._
-import net.liftweb.common.Logger
-import net.liftweb.util.Helpers._
-import net.liftweb.common.Full
+
+import uk.co.randomcoding.partsdb.core.document.LineItem
+import uk.co.randomcoding.partsdb.core.part.{ PartKit, Part }
+import uk.co.randomcoding.partsdb.core.supplier.Supplier
+
+import net.liftweb.common.{ Logger, Full }
 import net.liftweb.mongodb.record.MongoRecord
 import net.liftweb.mongodb.record.field.ObjectIdPk
-import uk.co.randomcoding.partsdb.core.part.PartKit
+import net.liftweb.util.Helpers._
+import net.liftweb.util.ValueCell
 
 /**
  * A data container for adding new line items via a page.
@@ -43,17 +45,10 @@ trait NewLineItemDataHolder extends LineItemsDataHolder with Logger {
    */
   val suppliersForPart = currentPartCell.lift(_ match {
     case Some(item) => {
+      debug("Current Part is: %s. Generating list of suppliers who supply it".format(item))
+
       item match {
-        case part: Part => {
-          debug("Current Part is: %s. Generating list of suppliers who supply it")
-          suppliedBy(part.id.get) match {
-            case s :: Nil => {
-              supplier(Some(s))
-              List((Some(s), s.supplierName.get))
-            }
-            case suppliers => (None, "Select Supplier") :: (suppliedBy(part.id.get) map (supplier => (Some(supplier), supplier.supplierName.get)))
-          }
-        }
+        case part: Part => suppliersOfPart(part)
         case partKit: PartKit => {
           val cat9 = Supplier.where(_.supplierName eqs "C.A.T.9 Limited").get
           supplier(cat9)
@@ -61,16 +56,47 @@ trait NewLineItemDataHolder extends LineItemsDataHolder with Logger {
         }
         case other => {
           error("Unhandled type of part entity %s.".format(other))
+          supplier(None)
           List((None, "Supplier Error"))
         }
       }
     }
     case _ => {
       debug("Current Part is not defined. Generating an empty list of suppliers")
+      supplier(None)
       List((None, "Select a Part"))
     }
   })
 
+  private[this] def suppliersOfPart(part: Part): List[(Option[Supplier], String)] = {
+    lineItems.find(_.partId.get == part.id.get) match {
+      case Some(lineItem) => suppliersFromLineItem(lineItem)
+      case _ => suppliersFromDatabase(part)
+    }
+  }
+
+  private[this] def suppliersFromDatabase(part: Part): List[(Option[Supplier], String)] = suppliedBy(part.id.get) match {
+    case s :: Nil => {
+      supplier(Some(s))
+      List((Some(s), s.supplierName.get))
+    }
+    case Nil => {
+      error("No Suppliers for part %s".format(part))
+      List((None, "Supplier Error"))
+    }
+    case suppliers => (None, "Select Supplier") :: (suppliedBy(part.id.get) map (supplier => (Some(supplier), supplier.supplierName.get)))
+  }
+
+  private[this] def suppliersFromLineItem(lineItem: LineItem): List[(Option[Supplier], String)] = Supplier.findById(lineItem.partSupplier.get) match {
+    case Some(s) => {
+      supplier(Some(s))
+      List((Some(s), s.supplierName.get))
+    }
+    case _ => {
+      error("Failed to identify Supplier for part in line item %s".format(lineItem))
+      List((None, "Supplier Error"))
+    }
+  }
   /**
    * The current supplier of the part
    */
@@ -137,21 +163,15 @@ trait NewLineItemDataHolder extends LineItemsDataHolder with Logger {
    * If `0` is used for the quantity then the line item with the same part id as the current part will be removed.
    *
    * If a line item has already been added for the current part, then the quantity and markup values are updated to the currently set values.
-   *
-   * @param quant The quantity of the current part to use for the line item.
    */
   def addLineItem(): Unit = {
     debug("Adding %d of %s with a price of %.2f and a %d markup".format(quantityCell.get, currentPart, currentPartBaseCostCell.get, markupCell.get))
-    (currentPart, quantityCell.get) match {
-      case (None, _) => // do nothing
-      case (Some(part), q) if q <= 0 => {
-        removeItem(part)
-        resetPartQuantitySupplierAndMarkup
-      }
-      case (Some(part), q) => {
-        val partCost = currentPartBaseCostCell.get
-        val markupValue = markupCell.get.toDouble / 100.0
-        addOrUpdateLineItem(partCost, markupValue, part, q)
+    (currentPart, quantityCell.get, supplier) match {
+      case (None, _, _) => error("Current Part was None when attempting to add a line item")
+      case (_, _, None) => error("Current Supplier was None when attempting to add a line item")
+      case (Some(part), q, Some(s)) => {
+        if (q <= 0) removeItem(part) else addOrUpdateLineItem(currentPartBaseCostCell.get, markupPercentValue, part, q, s)
+
         resetPartQuantitySupplierAndMarkup
       }
     }
@@ -177,11 +197,6 @@ trait NewLineItemDataHolder extends LineItemsDataHolder with Logger {
   def currentPart_=(partOption: Option[MongoRecord[_] with ObjectIdPk[_]]) = currentPartCell.set(partOption)
 
   /**
-   * Set the value of the current part in the holder to a PartKit
-   */
-  //def currentPart(partOption: Option[PartKit]) = currentPartCell.set(partOption)
-
-  /**
    * Get the display cell for the current part's base cost.
    *
    * If the current part is not set this will generate £0.00.
@@ -198,7 +213,9 @@ trait NewLineItemDataHolder extends LineItemsDataHolder with Logger {
    *
    * @return The current markup value as a string.
    */
-  def markup: String = "%d".format(markupCell.get.toInt)
+  def markup: String = "%d".format(markupCell.get)
+
+  def markupPercentValue: Double = markupCell.get.toDouble / 100.0
 
   /**
    * Set the value of the markup percentage the holder from a String.
@@ -212,7 +229,7 @@ trait NewLineItemDataHolder extends LineItemsDataHolder with Logger {
       case _ => DEFAULT_MARKUP
     })
 
-    debug("Markup is now: %d".format(markupCell.get.toInt))
+    debug("Markup is now: %d".format(markupCell.get))
   }
 
   def quantity = "%d".format(quantityCell.get)

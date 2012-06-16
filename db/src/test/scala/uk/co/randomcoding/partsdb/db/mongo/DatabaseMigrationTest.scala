@@ -29,6 +29,12 @@ import uk.co.randomcoding.partsdb.core.user.{ User, Role }
 import uk.co.randomcoding.partsdb.core.vehicle.Vehicle
 import net.liftweb.mongodb.{ MongoDB, DefaultMongoIdentifier }
 import uk.co.randomcoding.partsdb.core.supplier.Supplier
+import uk.co.randomcoding.partsdb.core.part.Part
+import uk.co.randomcoding.partsdb.core.part.PartCost
+import org.joda.time.DateTime
+import uk.co.randomcoding.partsdb.core.document.LineItem
+import uk.co.randomcoding.partsdb.core.document.Quote
+import uk.co.randomcoding.partsdb.core.document.Document
 
 /**
  * This should contain tests for each migration version
@@ -153,6 +159,38 @@ class DatabaseMigrationTest extends MongoDbTestBase with GivenWhenThen {
 
     val contacts = ContactDetails.create("Nicky", "01885 488 663", "", "nicky.morris@cat-9.co.uk", "01885 488 663", true)
     val cat9 = Supplier.create(cat9Name, contacts, addr, Nil)
-    Supplier.where(_.supplierName eqs cat9Name).get should be((Some(cat9)))
+    Supplier.where(_.supplierName eqs cat9Name).get should be(Some(cat9))
+  }
+
+  test("Migration from Version 2 to 3 with documents that have line items without suppliers correctly adds supplier ids") {
+    given("A Database which is at version 2")
+    SystemData.databaseVersion = 2
+    SystemData.databaseVersion should be(2)
+
+    and("Has a Vehicle, Part, Supplier and Part Cost Record")
+    val vehicle = Vehicle.add(Vehicle("Vehicle 1", "")).get
+    val part = Part.add("Part 1", vehicle, Some("MoD-Id")).get
+
+    val partCost = PartCost.create(part, 10.0, new DateTime(), "S-1234")
+    val supplier = Supplier.add("Supplier 1", ContactDetails("Dave", "", "", "", "", true), Address("Addr1", "Address 1", "United Kingdom"), Seq(partCost)).get
+
+    and("A Document that has a single line item without a Supplier field")
+    val lineItem = LineItem.createRecord.lineNumber(0).partId(part.id.get).quantity(1).markup(0.0).basePrice(10.0)
+    val doc = Quote.add(Seq(lineItem), 10.0, "", Nil).get
+    def docsToUpdate() = Document.or(_.where(_.lineItems.subfield(_.partSupplier) exists false),
+      _.where(_.lineItems.subfield(_.partSupplier) eqs null)).fetch()
+
+    docsToUpdate() should be(List(doc))
+
+    when("The database is successfully migrated to version 3")
+    DatabaseMigration.migrateToVersion(3) should be(Nil)
+
+    then("The document will have the correct supplier id for its line item")
+    val lineItems = Document.findById(doc.id.get).get.lineItems.get
+    lineItems should have size (1)
+    lineItems(0).partSupplier.get should be(supplier.id.get)
+
+    and("There are no documents that do not have a supplier field for any line item")
+    docsToUpdate() should be('empty)
   }
 }

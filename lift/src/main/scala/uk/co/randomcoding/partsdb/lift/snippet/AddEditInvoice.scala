@@ -22,6 +22,7 @@ import net.liftweb.util.Helpers._
 import uk.co.randomcoding.partsdb.lift.model.document.InvoiceDataHolder
 import uk.co.randomcoding.partsdb.lift.util.SnippetDisplayHelpers._
 import uk.co.randomcoding.partsdb.core.document.Invoice
+import uk.co.randomcoding.partsdb.core.system.SystemData
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
@@ -100,9 +101,8 @@ class AddEditInvoice extends StatefulValidatingErrorDisplaySnippet with Transact
 
   private[this] def deliveryNoteValue(deliveryNote: Document): Double = {
     val linesCost = deliveryNote.lineItems.get map (_.lineCost) sum
-    val vatRate = 0.2d
 
-    (linesCost + deliveryNote.carriage.get) * vatRate
+    (linesCost + deliveryNote.carriage.get) * SystemData.vatRate
   }
 
   private[this] val itemsToBeInvoiced = () => dataHolder.lineItems match {
