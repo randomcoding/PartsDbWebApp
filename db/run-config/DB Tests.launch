@@ -10,4 +10,5 @@
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="org.scalatest.tools.Runner"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-p &quot;./.target/scala-2.9.1/test-classes&quot; -o"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="parts-db-app-db"/>
+<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Dtesting=yes"/>
 </launchConfiguration>

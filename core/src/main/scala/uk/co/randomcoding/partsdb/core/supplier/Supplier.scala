@@ -69,6 +69,13 @@ object Supplier extends Supplier with MongoMetaRecord[Supplier] {
   /**
    * Create a new `Supplier` record but '''does not''' save it to the database
    */
+  def apply(name: String, contacts: ContactDetails, businessAddress: Address, partsSupplied: Seq[PartCost]): Supplier = {
+    create(name, contacts, businessAddress, partsSupplied)
+  }
+
+  /**
+   * Create a new `Supplier` record but '''does not''' save it to the database
+   */
   def create(name: String, contacts: ContactDetails, businessAddress: Address, partsSupplied: Seq[PartCost]): Supplier = {
     Supplier.createRecord.supplierName(name).contactDetails(contacts).businessAddress(businessAddress.id.get).suppliedParts(partsSupplied.toList)
   }

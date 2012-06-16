@@ -137,21 +137,15 @@ trait NewLineItemDataHolder extends LineItemsDataHolder with Logger {
    * If `0` is used for the quantity then the line item with the same part id as the current part will be removed.
    *
    * If a line item has already been added for the current part, then the quantity and markup values are updated to the currently set values.
-   *
-   * @param quant The quantity of the current part to use for the line item.
    */
   def addLineItem(): Unit = {
     debug("Adding %d of %s with a price of %.2f and a %d markup".format(quantityCell.get, currentPart, currentPartBaseCostCell.get, markupCell.get))
-    (currentPart, quantityCell.get) match {
-      case (None, _) => // do nothing
-      case (Some(part), q) if q <= 0 => {
-        removeItem(part)
-        resetPartQuantitySupplierAndMarkup
-      }
-      case (Some(part), q) => {
-        val partCost = currentPartBaseCostCell.get
-        val markupValue = markupCell.get.toDouble / 100.0
-        addOrUpdateLineItem(partCost, markupValue, part, q)
+    (currentPart, quantityCell.get, supplier) match {
+      case (None, _, _) => error("Current Part was None when attempting to add a line item")
+      case (_, _, None) => error("Current Supplier was None when attempting to add a line item")
+      case (Some(part), q, Some(s)) => {
+        if (q <= 0) removeItem(part) else addOrUpdateLineItem(currentPartBaseCostCell.get, markupPercentValue, part, q, s)
+
         resetPartQuantitySupplierAndMarkup
       }
     }
@@ -177,11 +171,6 @@ trait NewLineItemDataHolder extends LineItemsDataHolder with Logger {
   def currentPart_=(partOption: Option[MongoRecord[_] with ObjectIdPk[_]]) = currentPartCell.set(partOption)
 
   /**
-   * Set the value of the current part in the holder to a PartKit
-   */
-  //def currentPart(partOption: Option[PartKit]) = currentPartCell.set(partOption)
-
-  /**
    * Get the display cell for the current part's base cost.
    *
    * If the current part is not set this will generate £0.00.
@@ -198,7 +187,9 @@ trait NewLineItemDataHolder extends LineItemsDataHolder with Logger {
    *
    * @return The current markup value as a string.
    */
-  def markup: String = "%d".format(markupCell.get.toInt)
+  def markup: String = "%d".format(markupCell.get)
+  
+  def markupPercentValue: Double = markupCell.get.toDouble / 100.0
 
   /**
    * Set the value of the markup percentage the holder from a String.
@@ -212,7 +203,7 @@ trait NewLineItemDataHolder extends LineItemsDataHolder with Logger {
       case _ => DEFAULT_MARKUP
     })
 
-    debug("Markup is now: %d".format(markupCell.get.toInt))
+    debug("Markup is now: %d".format(markupCell.get))
   }
 
   def quantity = "%d".format(quantityCell.get)

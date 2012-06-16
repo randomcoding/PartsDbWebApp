@@ -14,7 +14,10 @@ import org.scalatest.GivenWhenThen
 import uk.co.randomcoding.partsdb.core.vehicle.Vehicle
 import util.Random
 import uk.co.randomcoding.partsdb.core.part.Part
-import uk.co.randomcoding.partsdb.core.document.{Invoice, Document, LineItem}
+import uk.co.randomcoding.partsdb.core.document.{ Invoice, Document, LineItem }
+import uk.co.randomcoding.partsdb.core.supplier.Supplier
+import uk.co.randomcoding.partsdb.core.contact.ContactDetails
+import uk.co.randomcoding.partsdb.core.address.Address
 
 /**
  * TODO: Class Documentation
@@ -28,7 +31,6 @@ class DocumentTest extends MongoDbTestBase with GivenWhenThen {
   private[this] lazy val lineFor50Pounds = lineItem("part2", 1, 50.0d)
   private[this] lazy val invoiceFor100Pounds = invoice(lineFor100Pounds, "PoRef", 101)
   private[this] lazy val invoiceFor150Pounds = invoice(Seq(lineFor100Pounds, lineFor50Pounds), "PoRef2", 202)
-
 
   test("Remaining balance for an invoice that has no payments and has not been closed") {
     given("An invoice that has had not payments against it in the database")
@@ -47,7 +49,9 @@ class DocumentTest extends MongoDbTestBase with GivenWhenThen {
 
   private[this] val vehicle = Vehicle.create("Vehicle")
 
-  private[this] def lineItem(partName: String, quantity: Int, price: Double): LineItem = LineItem.create(Random.nextInt(1000), Part.create(partName, vehicle), quantity, price, 0d)
+  private[this] val supplier = Supplier("Supplier", ContactDetails("Dave", "", "", "", "", true), Address("Addr1", "Address 1", "UK"), Nil)
+
+  private[this] def lineItem(partName: String, quantity: Int, price: Double): LineItem = LineItem.create(Random.nextInt(1000), Part.create(partName, vehicle), quantity, price, 0d, supplier)
 
   private[this] def invoice(lines: Seq[LineItem], poRef: String, documentNumber: Int): Document = Invoice(lines, 0d, poRef).docNumber(documentNumber)
 }

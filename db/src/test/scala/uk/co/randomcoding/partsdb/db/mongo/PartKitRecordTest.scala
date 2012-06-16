@@ -20,10 +20,12 @@
 package uk.co.randomcoding.partsdb.db.mongo
 
 import com.foursquare.rogue.Rogue._
-
 import uk.co.randomcoding.partsdb.core.document.LineItem
 import uk.co.randomcoding.partsdb.core.part.{ PartKit, Part }
 import uk.co.randomcoding.partsdb.core.vehicle.Vehicle
+import uk.co.randomcoding.partsdb.core.supplier.Supplier
+import uk.co.randomcoding.partsdb.core.contact.ContactDetails
+import uk.co.randomcoding.partsdb.core.address.Address
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
@@ -33,9 +35,10 @@ class PartKitRecordTest extends MongoDbTestBase {
   override val dbName = "PartKitTest"
 
   private[this] val part1 = Part.create("Part", Vehicle.create("Vehicle"), Some("modId"))
+  private[this] val supplier1 = Supplier("Supplier", ContactDetails("Dave", "", "", "", "", true), Address("Addr1", "Address 1", "UK"), Nil)
 
-  private[this] def line(lineNumber: Int = 0, part: Part = part1, quantity: Int = 1, price: Double = 100.0d, markup: Double = 0.0d): LineItem = {
-    LineItem.create(lineNumber, part, quantity, price, markup)
+  private[this] def line(lineNumber: Int = 0, part: Part = part1, quantity: Int = 1, price: Double = 100.0d, markup: Double = 0.0d, supplier: Supplier = supplier1): LineItem = {
+    LineItem.create(lineNumber, part, quantity, price, markup, supplier)
   }
 
   test("Hash Code and Equality for Part Kits That Should be Equals") {
@@ -49,9 +52,9 @@ class PartKitRecordTest extends MongoDbTestBase {
 
     emptyKit1.hashCode should (equal(emptyKit2.hashCode) and equal(emptyKit3.hashCode))
 
-    val kit1 = PartKit("Kit", Seq(LineItem.create(0, part1, 1, 100, 0)))
-    val kit2 = PartKit("Kit", Seq(LineItem.create(0, part1, 1, 100, 0)))
-    val kit3 = PartKit("Kit", Seq(LineItem.create(0, part1, 1, 100, 0)))
+    val kit1 = PartKit("Kit", Seq( /*LineItem.create(0, part1, 1, 100, 0, supplier)*/ line()))
+    val kit2 = PartKit("Kit", Seq( /*LineItem.create(0, part1, 1, 100, 0, supplier)*/ line()))
+    val kit3 = PartKit("Kit", Seq( /*LineItem.create(0, part1, 1, 100, 0, supplier)*/ line()))
 
     kit1 should (equal(kit2) and equal(kit3))
     kit2 should (equal(kit1) and equal(kit3))
@@ -71,9 +74,9 @@ class PartKitRecordTest extends MongoDbTestBase {
 
     emptyKit1.hashCode should (not equal (emptyKit2.hashCode) and not equal (emptyKit3.hashCode))
 
-    val kit1 = PartKit("Kit", Seq(LineItem.create(0, part1, 1, 100, 0)))
-    val kit2 = PartKit("Kit", Seq(LineItem.create(0, part1, 2, 100, 0)))
-    val kit3 = PartKit("Kit", Seq(LineItem.create(0, part1, 1, 200, 0)))
+    val kit1 = PartKit("Kit", Seq( /*LineItem.create(0, part1, 1, 100, 0)*/ line()))
+    val kit2 = PartKit("Kit", Seq( /*LineItem.create(0, part1, 2, 100, 0))*/ line(quantity = 2)))
+    val kit3 = PartKit("Kit", Seq( /*LineItem.create(0, part1, 1, 200, 0))*/ line(price = 200d)))
 
     kit1 should (not equal (kit2) and not equal (kit3))
     kit2 should (not equal (kit1) and not equal (kit3))
@@ -93,10 +96,10 @@ class PartKitRecordTest extends MongoDbTestBase {
   }
 
   test("Find Matching record by object id") {
-    val kit1 = PartKit("Kit1", Seq(LineItem.create(0, part1, 1, 100, 0)))
+    val kit1 = PartKit("Kit1", Seq( /*LineItem.create(0, part1, 1, 100, 0))*/ line()))
     val kitId = kit1.id.get
-    val kit2 = PartKit("Kit2", Seq(LineItem.create(0, part1, 2, 100, 0))).id(kitId)
-    val kit3 = PartKit("Kit3", Seq(LineItem.create(0, part1, 1, 200, 0))).id(kitId)
+    val kit2 = PartKit("Kit2", Seq( /*LineItem.create(0, part1, 2, 100, 0)*/ line(quantity = 2))).id(kitId)
+    val kit3 = PartKit("Kit3", Seq( /*LineItem.create(0, part1, 1, 200, 0)*/ line(price = 200d))).id(kitId)
 
     val addedKit = PartKit.add(kit1)
     addedKit should be(Some(kit1))
@@ -107,9 +110,9 @@ class PartKitRecordTest extends MongoDbTestBase {
   }
 
   test("Find Matching record by part kit name") {
-    val kit1 = PartKit("Kit", Seq(LineItem.create(0, part1, 1, 100, 0)))
-    val kit2 = PartKit("Kit", Seq(LineItem.create(0, part1, 2, 100, 0)))
-    val kit3 = PartKit("Kit", Seq(LineItem.create(0, part1, 1, 200, 0)))
+    val kit1 = PartKit("Kit", Seq( /*LineItem.create(0, part1, 1, 100, 0)*/ line()))
+    val kit2 = PartKit("Kit", Seq( /*LineItem.create(0, part1, 2, 100, 0)*/ line(quantity = 2)))
+    val kit3 = PartKit("Kit", Seq( /*LineItem.create(0, part1, 1, 200, 0)*/ line(price = 200d)))
 
     val addedKit = PartKit.add(kit1)
     addedKit should be(Some(kit1))
@@ -119,10 +122,10 @@ class PartKitRecordTest extends MongoDbTestBase {
   }
 
   test("Add record with matching object id returns the original record with the id and does not add extra records to the database") {
-    val kit1 = PartKit("Kit1", Seq(LineItem.create(0, part1, 1, 100, 0)))
+    val kit1 = PartKit("Kit1", Seq( /*LineItem.create(0, part1, 1, 100, 0)*/ line()))
     val kitId = kit1.id.get
-    val kit2 = PartKit("Kit2", Seq(LineItem.create(0, part1, 2, 100, 0))).id(kitId)
-    val kit3 = PartKit("Kit3", Seq(LineItem.create(0, part1, 1, 200, 0))).id(kitId)
+    val kit2 = PartKit("Kit2", Seq( /*LineItem.create(0, part1, 2, 100, 0)*/ line(quantity = 2))).id(kitId)
+    val kit3 = PartKit("Kit3", Seq( /*LineItem.create(0, part1, 1, 200, 0)*/ line(price = 200d))).id(kitId)
 
     val addedKit = PartKit.add(kit1)
     addedKit should be(Some(kit1))
@@ -135,9 +138,9 @@ class PartKitRecordTest extends MongoDbTestBase {
   }
 
   test("Add record with matching part kit name returns the original record with the id and does not add extra records to the database") {
-    val kit1 = PartKit("Kit", Seq(LineItem.create(0, part1, 1, 100, 0)))
-    val kit2 = PartKit("Kit", Seq(LineItem.create(0, part1, 2, 100, 0)))
-    val kit3 = PartKit("Kit", Seq(LineItem.create(0, part1, 1, 200, 0)))
+    val kit1 = PartKit("Kit", Seq(line()))
+    val kit2 = PartKit("Kit", Seq(line(quantity = 2)))
+    val kit3 = PartKit("Kit", Seq(line(price = 200d)))
 
     val addedKit = PartKit.add(kit1)
     addedKit should be(Some(kit1))
@@ -149,22 +152,22 @@ class PartKitRecordTest extends MongoDbTestBase {
   }
 
   test("Update record that exists") {
-    val kit1 = PartKit("Kit1", Seq(LineItem.create(0, part1, 1, 100, 0)))
+    val kit1 = PartKit("Kit1", Seq(line()))
     val oid = kit1.id.get
     PartKit.add(kit1)
     PartKit.findById(oid) should be(Some(kit1))
 
-    val kit2 = PartKit("Kit2", Seq(LineItem.create(0, part1, 2, 100, 0)))
+    val kit2 = PartKit("Kit2", Seq(line(quantity = 2)))
     PartKit.update(oid, kit2)
     PartKit.findById(oid) should be(Some(kit2))
 
-    val kit3 = PartKit("Kit3", Seq(LineItem.create(0, part1, 1, 200, 0)))
+    val kit3 = PartKit("Kit3", Seq(line(price = 200d)))
     PartKit.update(oid, kit3)
     PartKit.findById(oid) should be(Some(kit3))
   }
 
   test("Update record that does not exist returns None and does not add records to the database") {
-    val kit1 = PartKit("Kit", Seq(LineItem.create(0, part1, 1, 100, 0)))
+    val kit1 = PartKit("Kit", Seq(line()))
     val oid = kit1.id.get
     PartKit.update(oid, kit1) should be('empty)
 
