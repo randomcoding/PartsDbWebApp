@@ -99,19 +99,7 @@ object Customer extends Customer with MongoMetaRecord[Customer] with Logger {
    * which is not guaranteed to be the same as the query is not ordered.
    */
   def add(customerName: String, businessAddress: Address, termsDays: Int, contactDetails: ContactDetails): Option[Customer] = {
-    // TODO: This does too much, it should not worry about the address & contact details
-    val address = Address findMatching (businessAddress) match {
-      case Some(addr) => Some(addr)
-      case None => Address.add(businessAddress)
-    }
-
-    address match {
-      case Some(addr) => add(create(customerName, addr, termsDays, contactDetails))
-      case None => {
-        error("Failed to add Address %s".format(businessAddress))
-        None
-      }
-    }
+    add(create(customerName, businessAddress, termsDays, contactDetails))
   }
 
   /**
@@ -142,21 +130,19 @@ object Customer extends Customer with MongoMetaRecord[Customer] with Logger {
   /**
    * Update the values of '''''all''''' the fields of a `Customer`.
    *
-   * If the `newContacts` are not already
+   * The `newAddress` field is assumed to already be present in the database. If it is not
+   * this method '''''WILL NOT''''' add it.
    *
    * To keep a field with the same value, simply use the original value
+   *
+   * @return The modified record in an `Option` or `None` if there is no Customer with the given Object Id
    */
-  def modify(oid: ObjectId, newName: String, newAddress: Address, newTerms: Int, newContacts: List[ContactDetails]) {
-    val address = Address findMatching (newAddress) match {
-      case Some(addr) => Some(addr)
-      case None => Address.add(newAddress)
-    }
-
-    require(address isDefined, "Failed to get valid address from: %s".format(newAddress))
-
+  def modify(oid: ObjectId, newName: String, newAddress: Address, newTerms: Int, newContacts: List[ContactDetails]): Option[Customer] = {
     Customer.where(_.id eqs oid).modify(_.customerName setTo newName) and
-      (_.businessAddress setTo address.get.id.get) and
+      (_.businessAddress setTo newAddress.id.get) and
       (_.terms setTo newTerms) and
       (_.contactDetails setTo newContacts) updateMulti
+
+    findById(oid)
   }
 }
