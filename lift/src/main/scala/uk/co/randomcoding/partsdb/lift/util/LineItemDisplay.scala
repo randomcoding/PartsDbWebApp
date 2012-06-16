@@ -48,16 +48,16 @@ object LineItemDisplay extends TabularEntityDisplay {
     <td>{ lineItem.quantity.get }</td>
     <td>{ "£%.2f".format(lineItem.basePrice.get) }</td>
     <td>{ "%.0f%%".format(lineItem.markup.get * 100) }</td>
-    <td>{ "£" + totalCost(lineItem) }</td>
+    <td align="right" style="text-align: right">{ "£" + totalCost(lineItem) }</td>
   }
 
   private[this] def supplierPartInfo(supplierId: ObjectId, partOrKit: MongoRecord[_] with ObjectIdPk[_]) = {
     partOrKit match {
       case part: Part => Supplier.findById(supplierId) match {
         case Some(s) => <div>
-                          <strong>Supplier:</strong>{ s.supplierName.get }<br/>
-                          <strong>Supplier Part Id:</strong>{ supplierPartId(s, part) }<br/>
-                          <strong>Part Mod Id:</strong>{ part.modId.get.getOrElse("No MoD Id") }
+                          <strong>Supplier:</strong>{ "  %s".format(s.supplierName.get) }<br/>
+                          <strong>Part Id:</strong>{ "  %s".format(supplierPartId(s, part)) }<br/>
+                          <strong>MoD Id:</strong>{ "  %s".format(part.modId.get.getOrElse("No MoD Id")) }
                         </div>
         case _ => Text("No Supplier Identified")
       }
