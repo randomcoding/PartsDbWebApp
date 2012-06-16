@@ -23,16 +23,16 @@ object QuoteDisplay extends TabularEntityDisplay with Logger {
   override val rowHeadings = List("Quote Number")
 
   /**
-   * Generates html to display a customer.
+   * Generates html to display a Quote.
    *
-   * Currently displays the name, terms and contact details
+   * Currently displays the Quote Document Number
    *
-   * @param customer The [[uk.co.randomcoding.partsdb.core.customer.Customer]] to display
-   * @return A [[scala.xml.NodeSeq]] of `<td>` elements to display the customer details
+   * @param doc The [[uk.co.randomcoding.partsdb.core.document.Document]] to display
+   *
+   * @return A [[scala.xml.NodeSeq]] of `<td>` elements to display the quote details
    */
   override def displayEntity(doc: Document, editLink: Boolean = false, displayLink: Boolean = false): NodeSeq = {
     <td>{ doc.documentNumber }</td> ++
       emptyEditAndDisplayCells
-    //editEntityCell(editEntityLink("Quote", doc.id))
   }
 }
