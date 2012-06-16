@@ -5,14 +5,15 @@ package uk.co.randomcoding.partsdb.lift.util.snippet
 
 import scala.io.Source
 import scala.xml.Text
+
 import uk.co.randomcoding.partsdb.core.address.{ AddressParser, Address }
-import uk.co.randomcoding.partsdb.core.util.CountryCodes.countryCodes
-import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
-import net.liftweb.common.Logger
-import net.liftweb.http.SHtml._
-import net.liftweb.util.Helpers._
-import scala.xml.NodeSeq
 import uk.co.randomcoding.partsdb.core.customer.Customer
+import uk.co.randomcoding.partsdb.core.util.CountryCodes.{ keyForCountry, countryCodes }
+import uk.co.randomcoding.partsdb.core.util.CountryCode
+import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
+
+import net.liftweb.common.Logger
+import net.liftweb.util.Helpers._
 
 /**
  * A Snippet that renders and provides an [[uk.co.randomcoding.partsdb.core.address.Address]]
@@ -41,7 +42,7 @@ trait AddressSnippet extends Logger {
     addressShortName(addressLabel, customer) &
       "#addressLabel" #> Text(addressLabel) &
       "#billingAddressEntry" #> styledTextArea(addressText, addressText = _) &
-      "#billingAddressCountry" #> styledSelect(countryCodes, addressCountry, addressCountry = _)
+      "#billingAddressCountry" #> styledSelect(countryCodes, keyForCountry(addressCountry), addressCountry = _)
   }
 
   /**
