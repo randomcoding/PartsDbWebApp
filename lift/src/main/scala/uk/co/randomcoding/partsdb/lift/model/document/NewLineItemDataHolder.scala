@@ -3,17 +3,19 @@
  */
 package uk.co.randomcoding.partsdb.lift.model.document
 
-import uk.co.randomcoding.partsdb.core.supplier.Supplier
 import org.bson.types.ObjectId
-import net.liftweb.util.ValueCell
-import uk.co.randomcoding.partsdb.core.part.Part
+
 import com.foursquare.rogue.Rogue._
-import net.liftweb.common.Logger
-import net.liftweb.util.Helpers._
-import net.liftweb.common.Full
+
+import uk.co.randomcoding.partsdb.core.document.LineItem
+import uk.co.randomcoding.partsdb.core.part.{ PartKit, Part }
+import uk.co.randomcoding.partsdb.core.supplier.Supplier
+
+import net.liftweb.common.{ Logger, Full }
 import net.liftweb.mongodb.record.MongoRecord
 import net.liftweb.mongodb.record.field.ObjectIdPk
-import uk.co.randomcoding.partsdb.core.part.PartKit
+import net.liftweb.util.Helpers._
+import net.liftweb.util.ValueCell
 
 /**
  * A data container for adding new line items via a page.
@@ -43,17 +45,10 @@ trait NewLineItemDataHolder extends LineItemsDataHolder with Logger {
    */
   val suppliersForPart = currentPartCell.lift(_ match {
     case Some(item) => {
+      debug("Current Part is: %s. Generating list of suppliers who supply it".format(item))
+
       item match {
-        case part: Part => {
-          debug("Current Part is: %s. Generating list of suppliers who supply it")
-          suppliedBy(part.id.get) match {
-            case s :: Nil => {
-              supplier(Some(s))
-              List((Some(s), s.supplierName.get))
-            }
-            case suppliers => (None, "Select Supplier") :: (suppliedBy(part.id.get) map (supplier => (Some(supplier), supplier.supplierName.get)))
-          }
-        }
+        case part: Part => suppliersOfPart(part)
         case partKit: PartKit => {
           val cat9 = Supplier.where(_.supplierName eqs "C.A.T.9 Limited").get
           supplier(cat9)
@@ -61,16 +56,47 @@ trait NewLineItemDataHolder extends LineItemsDataHolder with Logger {
         }
         case other => {
           error("Unhandled type of part entity %s.".format(other))
+          supplier(None)
           List((None, "Supplier Error"))
         }
       }
     }
     case _ => {
       debug("Current Part is not defined. Generating an empty list of suppliers")
+      supplier(None)
       List((None, "Select a Part"))
     }
   })
 
+  private[this] def suppliersOfPart(part: Part): List[(Option[Supplier], String)] = {
+    lineItems.find(_.partId.get == part.id.get) match {
+      case Some(lineItem) => suppliersFromLineItem(lineItem)
+      case _ => suppliersFromDatabase(part)
+    }
+  }
+
+  private[this] def suppliersFromDatabase(part: Part): List[(Option[Supplier], String)] = suppliedBy(part.id.get) match {
+    case s :: Nil => {
+      supplier(Some(s))
+      List((Some(s), s.supplierName.get))
+    }
+    case Nil => {
+      error("No Suppliers for part %s".format(part))
+      List((None, "Supplier Error"))
+    }
+    case suppliers => (None, "Select Supplier") :: (suppliedBy(part.id.get) map (supplier => (Some(supplier), supplier.supplierName.get)))
+  }
+
+  private[this] def suppliersFromLineItem(lineItem: LineItem): List[(Option[Supplier], String)] = Supplier.findById(lineItem.partSupplier.get) match {
+    case Some(s) => {
+      supplier(Some(s))
+      List((Some(s), s.supplierName.get))
+    }
+    case _ => {
+      error("Failed to identify Supplier for part in line item %s".format(lineItem))
+      List((None, "Supplier Error"))
+    }
+  }
   /**
    * The current supplier of the part
    */
@@ -188,7 +214,7 @@ trait NewLineItemDataHolder extends LineItemsDataHolder with Logger {
    * @return The current markup value as a string.
    */
   def markup: String = "%d".format(markupCell.get)
-  
+
   def markupPercentValue: Double = markupCell.get.toDouble / 100.0
 
   /**
