@@ -82,29 +82,40 @@ trait AddressSnippet extends Logger {
     addressName = "%s Business Address".format(cust.customerName.get)
     "#addressNameEntry" #> Text(addressName)
   }
+
   private[this] def hiddenAddressName = "#addressNameSection" #> <div hidden="true">&nbsp;</div>
 
+  /**
+   * Try and generate an address from the input provided in the address entry fields.
+   *
+   * Uses the [[uk.co.randomcoding.partsdb.core.address.AddressParser]] with an input
+   * tuple `(name, addressText, addressCountry)`
+   *
+   * @return A populated `Option` with the parsed address if one could be generated, `None` otherwise.
+   */
   def addressFromInput(name: String): Option[Address] = {
-    trace("Input address: %s, country: %s".format(addressText, addressCountry))
-    val lines = Source.fromString(addressText).getLines toList
-    val addressLines = lines.map(_ replaceAll (",", "") trim)
-    trace("Generated Address Lines: %s".format(addressLines))
+    val addressLines = Source.fromString(addressText).getLines.toList
 
-    val address = addressLines mkString ("", ",", "")
-    debug("Generating Address (%s) from: %s".format(name, address))
+    debug("Attempting to generate address (%s) from: %s, %s".format(name, addressLines mkString ("", ",", ""), addressCountry))
 
-    (name, address, addressCountry) match {
+    (name, addressLines, addressCountry) match {
       case AddressParser(addr) => {
         debug("Created Address: %s".format(addr))
         Some(addr)
       }
       case _ => {
-        error("Null Adress Created from %s".format(address))
+        error("Null Adress Created from %s".format(addressLines mkString ("", ",", "")))
         None
       }
     }
   }
 
+  /**
+   * Update an address record in the database.
+   *
+   * If the address exists (a match is found) then the record is updated
+   * otherwise a new record is added.
+   */
   def updateAddress(address: Address): Option[Address] = {
     Address findMatching address match {
       case Some(a) => {
