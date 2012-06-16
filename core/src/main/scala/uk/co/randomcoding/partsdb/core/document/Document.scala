@@ -270,6 +270,26 @@ object Document extends Document with MongoMetaRecord[Document] {
     findById(document.id.get)
   }
 
+  /**
+   * Update the following fields of the document with the provided `ObjectId` to the values contained in `newDocument`
+   *   - carriage
+   *   - customer PO reference
+   *   - document address
+   *   - document print notes
+   *   - invoiced delivery notes
+   *   - line items
+   */
+  def update(oid: ObjectId, newDocument: Document): Option[Document] = {
+    Document.where(_.id eqs oid).modify(_.carriage setTo newDocument.carriage.get)
+      .and(_.customerPoReference setTo newDocument.customerPoReference.get)
+      .and(_.documentAddress setTo newDocument.documentAddress.get)
+      .and(_.documentPrintNotes setTo newDocument.documentPrintNotes.get)
+      .and(_.invoicedDeliveryNotes setTo newDocument.invoicedDeliveryNotes.get)
+      .and(_.lineItems setTo newDocument.lineItems.get).updateMulti
+
+    findById(oid)
+  }
+
 }
 
 /**
