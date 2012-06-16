@@ -96,8 +96,6 @@ class AddEditCustomer extends StatefulSnippet with ErrorDisplay with DataValidat
       case _ => -1
     }
 
-    trace("About to validate")
-
     performValidation() match {
       case Nil => {
         initialCustomer match {
@@ -124,8 +122,17 @@ class AddEditCustomer extends StatefulSnippet with ErrorDisplay with DataValidat
   }
 
   private def modifyCustomer(cust: Customer, billingAddress: Address, paymentTerms: Int, contact: ContactDetails): JsCmd = {
-    val contacts = contact :: cust.contactDetails.get filterNot (_ matches contact)
-    Customer.modify(cust.id.get, name, billingAddress, paymentTerms, contacts)
+    val address = Address.findMatching(billingAddress) match {
+      case Some(addr) => Address.modify(addr.id.get, billingAddress)
+      case _ => Address.add(billingAddress)
+    }
+
+    require(address.isDefined, "Failed to update or add the address for the modified customer")
+
+    val contacts = contact :: cust.contactDetails.get.filterNot(_ matches contact)
+
+    Customer.modify(cust.id.get, name, address.get, paymentTerms, contacts)
+
     S redirectTo cameFrom
   }
 }
