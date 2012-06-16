@@ -28,7 +28,9 @@ class LineItem private () extends BsonRecord[LineItem] {
   object quantity extends IntField(this)
   object basePrice extends DoubleField(this)
   object markup extends DoubleField(this)
-  object partSupplier extends ObjectIdRefField(this, Supplier)
+  object partSupplier extends ObjectIdRefField(this, Supplier) {
+    override val defaultValue = null
+  }
 
   /**
    * Calculates the cost of the line item.
