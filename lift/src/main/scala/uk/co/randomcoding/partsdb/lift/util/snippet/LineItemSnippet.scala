@@ -59,7 +59,7 @@ trait LineItemSnippet extends ErrorDisplay with AllLineItemsSnippet with Logger 
    * @param additionalAddLineAction The `JsCmd` to execute in addition to adding the line item to the `dataHolder`.
    * This is executed after the add operation and defaults to a `Noop`
    */
-  def renderAddEditLineItem(addButtonText: String = "Add Line", additionalAddLineAction: JsCmd = Noop) = {
+  def renderAddEditLineItem(addButtonText: String = "Add/Update Line", additionalAddLineAction: JsCmd = Noop) = {
     "#addLineButton" #> styledAjaxButton(addButtonText, (() => (addLine & additionalAddLineAction))) &
       "#partName" #> partNameContent() & // these can be done with WiringUI.toNode
       "#supplierName" #> WiringUI.toNode(dataHolder.suppliersForPart)(renderSupplierChoice) &
