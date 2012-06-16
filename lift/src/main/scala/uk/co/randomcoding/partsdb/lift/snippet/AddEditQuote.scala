@@ -37,24 +37,24 @@ class AddEditQuote extends StatefulSnippet with ErrorDisplay with DataValidation
 
   override val cameFrom = S.referer openOr "/app"
 
-  private[this] var customerName = originalQuote match {
-    case Some(q) => Transaction.where(_.documents contains q.id.get).get() match {
-      case Some(t) => Customer.findById(t.customer.get) match {
-        case Some(c) => c.customerName.get
-        case _ => "No Customer Name"
-      }
-      case _ => "Customer not Found"
-    }
-    case _ => ""
-  }
-
   override val dataHolder = new QuoteDocumentDataHolder
 
   if (originalQuote.isDefined) dataHolder.populate(originalQuote.get)
 
   private[this] val customers = Customer orderDesc (_.customerName) fetch
   private[this] val customersSelect = (None, "Select Customer") :: (customers map ((c: Customer) => (Some(c), c.customerName.get)))
-  private[this] var currentCustomer: Option[Customer] = None
+  private[this] var currentCustomer: Option[Customer] = originalQuote match {
+    case Some(q) => Transaction.where(_.documents contains q.id.get).get() match {
+      case Some(t) => Customer.findById(t.customer.get)
+      case _ => None
+    }
+    case _ => None
+  }
+
+  private[this] var customerName = currentCustomer match {
+    case Some(cust) => cust.customerName.get
+    case _ => ""
+  }
 
   def dispatch = {
     case "render" => render
@@ -62,7 +62,7 @@ class AddEditQuote extends StatefulSnippet with ErrorDisplay with DataValidation
 
   def render = {
     "#formTitle" #> Text("Add Quote") &
-      "#customerSelect" #> styledObjectSelect[Option[Customer]](customersSelect, None, currentCustomer = _) &
+      "#customerSelect" #> styledObjectSelect[Option[Customer]](customersSelect, currentCustomer, currentCustomer = _) &
       "#carriageEntry" #> styledAjaxText(dataHolder.carriageText, updateAjaxValue(dataHolder.carriage = _)) &
       renderAddEditLineItem() &
       renderSubmitAndCancel() &
