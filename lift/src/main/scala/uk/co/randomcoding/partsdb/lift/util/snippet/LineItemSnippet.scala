@@ -61,6 +61,7 @@ trait LineItemSnippet extends ErrorDisplay with AllLineItemsSnippet with Logger 
    */
   def renderAddEditLineItem(addButtonText: String = "Add/Update Line", additionalAddLineAction: JsCmd = Noop) = {
     "#addLineButton" #> styledAjaxButton(addButtonText, (() => (addLine & additionalAddLineAction))) &
+      "#removeLineButton" #> styledAjaxButton("Remove Line", () => removeLine) &
       "#partName" #> partNameContent() & // these can be done with WiringUI.toNode
       "#supplierName" #> WiringUI.toNode(dataHolder.suppliersForPart)(renderSupplierChoice) &
       "#partQuantity" #> WiringUI.toNode(dataHolder.quantityCell)(renderPartQuantity) &
@@ -93,6 +94,32 @@ trait LineItemSnippet extends ErrorDisplay with AllLineItemsSnippet with Logger 
     val html = partNameContent()
     Replace("partName", html)
   })._2.cmd
+
+  private[this] def removeLine(): JsCmd = {
+    clearErrors
+    dataHolder.currentPart match {
+      case Some(part) => {
+        dataHolder.lineItems.find(_.partId.get == part.id.get) match {
+          case Some(p) => {
+            dataHolder.removeItem(part)
+            refreshLineItemDisplay() & refreshPartName()
+          }
+          case _ => {
+            displayError("There is no Line Item for %s".format(part match {
+              case pt: Part => pt.partName.get
+              case pk: PartKit => pk.kitName.get
+            }))
+            Noop
+          }
+        }
+      }
+      case _ => {
+        displayError("Please Select a Part")
+        Noop
+      }
+    }
+
+  }
 
   /**
    * Add a new line item to the quote holder and refresh the line items display.
