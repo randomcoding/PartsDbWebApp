@@ -3,14 +3,17 @@
  */
 package uk.co.randomcoding.partsdb.lift.util.snippet.display
 
+import scala.xml.Text
+
 import org.joda.time.DateTime
+
 import uk.co.randomcoding.partsdb.core.document.Document
 import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
 import uk.co.randomcoding.partsdb.lift.util.snippet._
 import uk.co.randomcoding.partsdb.lift.util._
+
 import net.liftweb.util.Helpers._
 import net.liftweb.util.CssSel
-import scala.xml.Text
 
 /**
  * Displays a series of quotes using the template `_quote_detail_display.html`

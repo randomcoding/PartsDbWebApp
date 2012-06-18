@@ -36,7 +36,7 @@ object DeliveryNoteDetailDisplay extends DocumentTotalsDisplay with PrintDocumen
       "#billingAddressCountry" #> styledText(addressCountry, (s: String) => (), readonly) &
       "#lineItems" #> LineItemDisplay(deliveryNote.lineItems.get) &
       renderDocumentTotals(deliveryNote) &
-      "#raiseInvoice" #> buttonLink("Raise Invoice", "/app/invoice?transactionId=%s&deliveryId=%s".format(transactionId, deliveryNote.id.get.toString)) &
+      "#raiseInvoice" #> (if (deliveryNote.editable.get) buttonLink("Raise Invoice", "/app/invoice?transactionId=%s&deliveryId=%s".format(transactionId, deliveryNote.id.get.toString)) else Text("")) &
       renderPrintDocument(deliveryNote)
   })
 }
