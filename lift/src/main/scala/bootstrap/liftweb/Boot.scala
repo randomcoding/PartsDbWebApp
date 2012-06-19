@@ -15,6 +15,8 @@ import uk.co.randomcoding.partsdb.lift.util.search.{ SearchProviders, CustomerSe
 import uk.co.randomcoding.partsdb.lift.util.mongo.DatabaseMigrationException
 import uk.co.randomcoding.partsdb.db.mongo.DatabaseMigration
 import uk.co.randomcoding.partsdb.core.system.SystemData
+import net.liftweb.http.PermRedirectResponse
+import net.liftweb.common.Empty
 
 /**
  * A class that's instantiated early and run.  It allows the application
@@ -166,6 +168,14 @@ class Boot extends Loggable {
     ResourceServer.allow {
       case "css" :: _ => true
       case "js" :: _ => true
+    }
+
+    // Enforce https for production mode (set by a system variable -Drun.mode=production"
+    if (Props.productionMode) {
+      LiftRules.earlyResponse.append((req: Req) => req.request.scheme match {
+        case "https" => Full(PermRedirectResponse("https://%s%s".format(req.request.serverName, req.request.uri), req, req.cookies: _*))
+        case _ => Empty
+      })
     }
   }
 }
