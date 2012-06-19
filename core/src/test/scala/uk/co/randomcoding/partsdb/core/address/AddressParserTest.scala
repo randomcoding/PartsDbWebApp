@@ -97,6 +97,18 @@ class AddressParserTest extends FunSuite with ShouldMatchers {
     }
   }
 
+  test("Passing an empty list as the address text correctly returns None") {
+    ("", Nil, "") match {
+      case AddressParser(addr) => fail("No match expected for an empty list address text with empty short name and country")
+      case _ => // passed
+    }
+
+    ("Short", Nil, "United Kingdom") match {
+      case AddressParser(addr) => fail("No match expected for an empty list address text")
+      case _ => // passed
+    }
+  }
+
   private val verifyAddress = (expectedAddress: String, addr: Address, shortName: String, country: String) => {
     addr.shortName.get should be(shortName)
     addr.addressText.get should be(expectedAddress)

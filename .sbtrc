@@ -12,3 +12,6 @@ alias clean-test-db = ;project db;clean;test;project root
 alias clean-test-lift = ;project lift;clean;test;project root
 
 alias setup-eclipse = ;project root;eclipse skip-root;
+
+alias clean-package = ;project root;clean;package
+

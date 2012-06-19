@@ -9,7 +9,7 @@ import Keys._
 object BuildSettings {
 
   val buildOrganization = "uk.co.randomcoding"
-  val buildVersion = "0.8.0"
+  val buildVersion = "0.8.1"
   val buildScalaVersion = "2.9.1"
 
   val buildSettings = Defaults.defaultSettings ++ Seq(
