@@ -7,11 +7,30 @@
 
 APP_MODE='debug'
 
-for arg in $@
+APP_PATH="`pwd`/lift/target/webapp/"
+
+APP_NAME="am2app"
+
+while $? -gt 0
 do
-  case $arg in
+  case $1 in
     --production)
       APP_MODE='production'
+      shift
+      ;;
+    --app-name)
+      APP_NAME=$2
+      shift
+      shift
+      ;;
+    --app-path)
+      APP_PATH=$2
+      shift
+      shift
+      ;;
+    *)
+      echo "Unknown option $1"
+      shift
       ;;
   esac
 done
@@ -20,9 +39,6 @@ done
 
 vmc login
 
-APP_PATH="`pwd`/lift/target/webapp/"
-
-APP_NAME="am2app"
 
 vmc update ${APP_NAME} --path ${APP_PATH}
 
