@@ -90,7 +90,13 @@ UPDATE_STATUS=$?
 # Set other features based on mode
 echo "Setting VMC environment for ${APP_MODE} mode"
 if [ "${APP_MODE}" == "production" ] ; then
-  $VMC env-add ${APP_NAME} "JAVA_OPTS=-Drun.mode=production"
+  PROD_MODE=`${VMC} env ${APP_NAME} | grep 'run.mode=production'`
+  if [ -z "${PROD_MODE}" ] ; then
+    echo "Setting run mode to production"
+    $VMC env-add ${APP_NAME} "JAVA_OPTS=-Drun.mode=production"
+  else
+    echo "Already set to use production mode."
+  fi
 else
   $VMC env-del ${APP_NAME} "JAVA_OPTS"
 fi
