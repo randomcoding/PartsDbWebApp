@@ -9,6 +9,7 @@ APP_MODE='debug'
 APP_PATH="`pwd`/lift/target/webapp/"
 APP_NAME="cat9-test"
 SBT_BUILD='yes'
+VMC_LOGIN=''
 
 while [ $# -gt 0 ] 
 do
@@ -30,6 +31,11 @@ do
       ;;
     --no-build)
       SBT_BUILD='no'
+      shift
+      ;;
+    --vmc-login)
+      VMC_LOGIN=$2
+      shift
       shift
       ;;
     *)
@@ -74,7 +80,7 @@ echo "Deploying Application via VMC"
 VMC="/var/lib/gems/1.8/bin/vmc"
 
 # login via VMC
-$VMC login
+$VMC login ${VMC_LOGIN}
 
 # update the app
 $VMC update ${APP_NAME} --path ${APP_PATH}
