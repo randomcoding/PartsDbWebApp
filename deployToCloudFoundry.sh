@@ -6,16 +6,16 @@
 #############################################
 
 APP_MODE='debug'
-
 APP_PATH="`pwd`/lift/target/webapp/"
+APP_NAME="cat9-test"
+SBT_BUILD='yes'
 
-APP_NAME="am2app"
-
-while $? -gt 0
+while [ $# -gt 0 ] 
 do
   case $1 in
-    --production)
-      APP_MODE='production'
+    --app-mode)
+      APP_MODE=$2
+      shift
       shift
       ;;
     --app-name)
@@ -28,6 +28,10 @@ do
       shift
       shift
       ;;
+    --no-build)
+      SBT_BUILD='no'
+      shift
+      ;;
     *)
       echo "Unknown option $1"
       shift
@@ -35,29 +39,74 @@ do
   esac
 done
 
-# login
+echo "Deploying ${APP_NAME} in ${APP_MODE} mode from path ${APP_PATH}"
+read -p "Is this ok? (y/n) " CONT
 
-vmc login
+if [ ! "${CONT}" == "y" ] ; then
+  echo "User aborted deployment. Exiting..."
+  exit 2
+fi
 
+if [ "${SBT_BUILD}" == "yes" ] ; then
+  # run a clean package with sbt
+  echo "Performing a clean build and package of the app with SBT"
+  ./sbt clean-package
+else
+  echo "No SBT Build performed at user request"
+fi
 
-vmc update ${APP_NAME} --path ${APP_PATH}
+BUILD_OK=$?
+
+if [ ! $BUILD_OK -eq 0 ] ; then
+  echo "SBT Build Failed. Exiting..."
+  exit $BUILD_OK
+fi
+
+# Do any post build setup for production mode
+if [ "${APP_MODE}" == "production" ] ; then
+  echo "Performing post build updates for production mode"
+  # Move default properties to default production properties
+  PROPS_PATH="${APP_PATH}/WEB-INF/classes/props"
+  mv "${PROPS_PATH}/default.props" "${PROPS_PATH}/production.default.props"
+fi
+
+echo "Deploying Application via VMC"
+VMC="/var/lib/gems/1.8/bin/vmc"
+
+# login via VMC
+$VMC login
+
+# update the app
+$VMC update ${APP_NAME} --path ${APP_PATH}
 
 UPDATE_STATUS=$?
 
+# Set other features based on mode
+echo "Setting VMC environment for ${APP_MODE} mode"
 if [ "${APP_MODE}" == "production" ] ; then
-  vmc env-add ${APP_NAME} "JAVA_OPTS=-Drun.mode=production"
+  $VMC env-add ${APP_NAME} "JAVA_OPTS=-Drun.mode=production"
 else
-  vmc env-del ${APP_NAME} "JAVA_OPTS"
+  $VMC env-del ${APP_NAME} "JAVA_OPTS"
 fi
 
 ENV_STATUS=$?
 
 # display env
-vmc ${APP_NAME} env
-
-echo "Update (${UPDATE_STATUS}) Env (${ENV_STATUS})"
+$VMC 'env' ${APP_NAME}
 
 RETVAL=$(($UPDATE_STATUS + $ENV_STATUS))
+
+if [ $RETVAL -eq 0 ] ; then
+  echo "Deployment of app ${APP_NAME} Successful."
+else
+  echo "Deployment of app ${APP_NAME} Failed."
+  echo "Update/Deployment status (${UPDATE_STATUS})"
+  echo "Environment update status (${ENV_STATUS})"
+fi
+
+# Logout of VMC
+echo "Logging out of VMC"
+$VMC logout
 
 exit $RETVAL
 
