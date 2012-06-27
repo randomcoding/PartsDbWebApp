@@ -172,11 +172,14 @@ class Boot extends Loggable {
 
     // Enforce https for production mode (set by a system variable -Drun.mode=production"
     // From https://groups.google.com/d/topic/liftweb/NaROW_rc0To/discussion
-    if (Props.productionMode) {
-      LiftRules.earlyResponse.append((req: Req) => req.request.scheme match {
-        case "https" => Empty
-        case _ => Full(PermRedirectResponse("https://%s%s".format(req.request.serverName, req.request.uri), req, req.cookies: _*))
+
+    /*if (Props.productionMode) {
+      LiftRules.earlyResponse.append((req: Req) => if (req.request.scheme == "http") {
+        Full(PermRedirectResponse("https://%s%s".format(req.request.serverName, req.request.uri), req, req.cookies: _*))
+      }
+      else {
+        Empty
       })
-    }
+    }*/
   }
 }
