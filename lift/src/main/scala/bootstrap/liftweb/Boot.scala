@@ -17,6 +17,7 @@ import uk.co.randomcoding.partsdb.db.mongo.DatabaseMigration
 import uk.co.randomcoding.partsdb.core.system.SystemData
 import net.liftweb.http.PermRedirectResponse
 import net.liftweb.common.Empty
+import net.liftweb.common.Box
 
 /**
  * A class that's instantiated early and run.  It allows the application
@@ -84,6 +85,23 @@ class Boot extends Loggable {
       case ADMIN => "/admin"
       case _ => "/"
     }))
+
+    // create an object that does a redirect to the https server if the
+    // request is on http
+    /*object RequireSSL extends Loc.EarlyResponse(
+      () => {
+        if (Props.productionMode) {
+          for {
+            r <- S.request
+            lowLevelReq <- Box !! r.request
+            if lowLevelReq.scheme != "https"
+          } {
+            S.redirectTo("https://" + lowLevelReq.serverName + lowLevelReq.contextPath)
+          }
+          Empty
+        }
+        else Empty
+      })*/
 
     /*
      * Create the various menus here.
@@ -174,7 +192,8 @@ class Boot extends Loggable {
     // From https://groups.google.com/d/topic/liftweb/NaROW_rc0To/discussion
 
     /*if (Props.productionMode) {
-      LiftRules.earlyResponse.append((req: Req) => if (req.request.scheme == "http") {
+      LiftRules.earlyResponse.append((req: Req) => if (req.request.scheme != "https") {
+        logger.warn("Performing redirect from %s://%s%s to https://%s%s".format(req.request.scheme, req.request.serverName, req.request.uri, req.request.serverName, req.request.uri))
         Full(PermRedirectResponse("https://%s%s".format(req.request.serverName, req.request.uri), req, req.cookies: _*))
       }
       else {
