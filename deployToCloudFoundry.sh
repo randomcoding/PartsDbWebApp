@@ -10,6 +10,7 @@ APP_PATH="`pwd`/lift/target/webapp/"
 APP_NAME="cat9-test"
 SBT_BUILD='yes'
 VMC_LOGIN=''
+CLEAN_PAKCAGE='yes'
 
 while [ $# -gt 0 ] 
 do
@@ -38,6 +39,10 @@ do
       shift
       shift
       ;;
+    --no-clean)
+      CLEAN_PACKAHE='no'
+      shift
+      ;;
     *)
       echo "Unknown option $1"
       shift
@@ -54,9 +59,15 @@ if [ ! "${CONT}" == "y" ] ; then
 fi
 
 if [ "${SBT_BUILD}" == "yes" ] ; then
-  # run a clean package with sbt
-  echo "Performing a clean build and package of the app with SBT"
-  ./sbt clean-package
+  if [ "${CLEAN_PACKAGE}" == "yes" ] ; then
+    echo "Performing a clean build and package of the app with SBT"
+    SBT_CMD='clean-package'
+  else
+    echo "Performing an incremental build and package of the app with SBT"
+    SBT_CMD='package'
+  fi
+  # run the package with sbt
+  ./sbt ${SBT_CMD}
 else
   echo "No SBT Build performed at user request"
 fi
