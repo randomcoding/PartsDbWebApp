@@ -3,17 +3,17 @@
  */
 package uk.co.randomcoding.partsdb.lift.snippet
 
-import uk.co.randomcoding.partsdb.core.user.Role.{USER, NO_ROLE, ADMIN}
+import uk.co.randomcoding.partsdb.core.user.Role.{ USER, NO_ROLE, ADMIN }
 import uk.co.randomcoding.partsdb.db.mongo.MongoUserAccess._
-import uk.co.randomcoding.partsdb.db.util.Helpers.{hash => pwhash}
+import uk.co.randomcoding.partsdb.db.util.Helpers.{ hash => pwhash }
 import uk.co.randomcoding.partsdb.lift.model.Session
 import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
 
-import net.liftweb.common.StringOrNodeSeq.strTo
-import net.liftweb.common.Logger
+import net.liftweb.common.{ Logger, Full }
 import net.liftweb.http.SHtml._
 import net.liftweb.http.S
 import net.liftweb.util.Helpers._
+import net.liftweb.util.Props
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
