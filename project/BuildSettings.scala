@@ -9,7 +9,8 @@ import Keys._
 object BuildSettings {
 
   val buildOrganization = "uk.co.randomcoding"
-  val buildVersion = "0.9.0-SNAPSHOT"
+  //val buildVersion = "0.9.0-SNAPSHOT"
+  val buildVersion = readBuildVersionFromPropertiesFile
   val buildScalaVersion = "2.9.1"
 
   val buildSettings = Defaults.defaultSettings ++ Seq(
@@ -23,4 +24,14 @@ object BuildSettings {
     unmanagedSourceDirectories in Compile <<= (scalaSource in Compile)(Seq(_)),
     unmanagedSourceDirectories in Test <<= (scalaSource in Test)(Seq(_))
   )
+
+  private def readBuildVersionFromPropertiesFile: String = {
+    import scala.io.Source
+
+    val propsFile = "lift/src/main/resources/props/default.props"
+    Source.fromFile(propsFile).getLines.find(_.startsWith("app.version.number")) match {
+      case Some(line) => line.split("=")(1)
+      case _ => "Build-Version-Not-Defined"
+    }
+  }
 }

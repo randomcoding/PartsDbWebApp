@@ -15,6 +15,9 @@ import uk.co.randomcoding.partsdb.lift.util.search.{ SearchProviders, CustomerSe
 import uk.co.randomcoding.partsdb.lift.util.mongo.DatabaseMigrationException
 import uk.co.randomcoding.partsdb.db.mongo.DatabaseMigration
 import uk.co.randomcoding.partsdb.core.system.SystemData
+import net.liftweb.http.PermRedirectResponse
+import net.liftweb.common.Empty
+import net.liftweb.common.Box
 
 /**
  * A class that's instantiated early and run.  It allows the application

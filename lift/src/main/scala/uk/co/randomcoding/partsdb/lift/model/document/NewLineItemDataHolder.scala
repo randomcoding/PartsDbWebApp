@@ -82,7 +82,7 @@ trait NewLineItemDataHolder extends LineItemsDataHolder with Logger {
     }
     case Nil => {
       error("No Suppliers for part %s".format(part))
-      List((None, "Supplier Error"))
+      List((None, "No Supplier for %s".format(part.partName.get)))
     }
     case suppliers => (None, "Select Supplier") :: (suppliedBy(part.id.get) map (supplier => (Some(supplier), supplier.supplierName.get)))
   }
@@ -94,7 +94,7 @@ trait NewLineItemDataHolder extends LineItemsDataHolder with Logger {
     }
     case _ => {
       error("Failed to identify Supplier for part in line item %s".format(lineItem))
-      List((None, "Supplier Error"))
+      List((None, "Supplier Error for Line Item %d".format(lineItem.lineNumber.get)))
     }
   }
   /**

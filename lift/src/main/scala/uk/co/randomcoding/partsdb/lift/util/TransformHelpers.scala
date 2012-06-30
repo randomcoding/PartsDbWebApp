@@ -57,10 +57,10 @@ object TransformHelpers {
    *
    * @param linkText The text that it to be inside the button
    * @param linkTarget The url of the destination of the link
-   * @param buttonFunc The function to execute to button press. Defaults to a `noopFunction`
+   * @param linkFunc The function to execute when the link is selected. Defaults to a `noopFunction`
    */
-  def plainLink(linkText: String, linkTarget: String, buttonFunc: () => Any = noopFunction): NodeSeq = {
-    attrLink(linkText, linkTarget, buttonFunc)
+  def plainLink(linkText: String, linkTarget: String, linkFunc: () => Any = noopFunction): NodeSeq = {
+    attrLink(linkText, linkTarget, linkFunc)
   }
 
   /**

@@ -21,12 +21,15 @@ statusListener(OnConsoleStatusListener)
 
 def HOST = hostname;
 
-scan()
+def runMode = System.getProperty("run.mode", "debug")
+
+// Only scan the log config if we are not in production mode.
+if (!runMode.equals("production") ) {
+	scan()
+}
 
 appender("STDOUT", ConsoleAppender) {
-    encoder(PatternLayoutEncoder) {
-        pattern = "%d{HH:mm:ss.SSS} %-5level %logger{10} - %msg%n"
-    }
+	encoder(PatternLayoutEncoder) { pattern = "%d{HH:mm:ss.SSS} %-5level %logger{10} - %msg%n" }
 }
 
 logger("*", WARN)
@@ -52,24 +55,24 @@ def isTest = System.getProperty("testing", "no")
 
 if (HOST.equalsIgnoreCase("benjymouse")) {
 	addInfo("Using logging configuration for ${HOST}")
-	
+
 	def testingLogs = ["uk.co.randomcoding": WARN]
-	
+
 	def defaultLogs = ["uk.co.randomcoding.partsdb.lift.model.document.NewLineItemDataHolder": DEBUG,
-		"uk.co.randomcoding.partsdb.lift.util.snippet.LineItemSnippet": DEBUG]
+				"uk.co.randomcoding.partsdb.lift.util.snippet.LineItemSnippet": DEBUG]
 
 	def logs = defaultLogs
 	if (isTest.equalsIgnoreCase("yes")) {
 		addInfo("Using tests logging configuration")
 		logs = testingLogs
-	}	
-	
-	logs.each() { key, value -> logger(key, value) }    
+	}
 
-    rootLogLevel = DEBUG
+	logs.each() { key, value -> logger(key, value) }
+
+	rootLogLevel = DEBUG
 }
 else {
-    addInfo("Using default logging configuration")
+	addInfo("Using default logging configuration")
 }
 
 addInfo("Setting Root Logger to use ${rootLogLevel} level");
