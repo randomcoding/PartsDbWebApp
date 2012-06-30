@@ -10,7 +10,8 @@ APP_PATH="`pwd`/lift/target/webapp/"
 APP_NAME="cat9-test"
 SBT_BUILD='yes'
 VMC_LOGIN=''
-CLEAN_PAKCAGE='yes'
+CLEAN_PACKAGE='yes'
+NO_LOGIN=''
 
 while [ $# -gt 0 ] 
 do
@@ -40,7 +41,11 @@ do
       shift
       ;;
     --no-clean)
-      CLEAN_PACKAHE='no'
+      CLEAN_PACKAGE='no'
+      shift
+      ;;
+    --no-login)
+      NO_LOGIN='yes'
       shift
       ;;
     *)
@@ -90,10 +95,13 @@ fi
 echo "Deploying Application via VMC"
 VMC="/var/lib/gems/1.8/bin/vmc"
 
-# login via VMC
-$VMC login ${VMC_LOGIN}
+if [ "${NO_LOGIN}" != "yes" ] ; then
+  # login via VMC
+  $VMC login ${VMC_LOGIN}
+fi
 
 # update the app
+echo "Updating deployment of ${APP_NAME}"
 $VMC update ${APP_NAME} --path ${APP_PATH}
 
 UPDATE_STATUS=$?
@@ -127,9 +135,11 @@ else
   echo "Environment update status (${ENV_STATUS})"
 fi
 
-# Logout of VMC
-echo "Logging out of VMC"
-$VMC logout
+if [ "${NO_LOGIN}" != "yes" ] ; then
+  # Logout of VMC
+  echo "Logging out of VMC"
+  $VMC logout
+fi
 
 exit $RETVAL
 
