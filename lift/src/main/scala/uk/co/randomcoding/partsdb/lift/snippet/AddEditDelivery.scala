@@ -96,7 +96,7 @@ class AddEditDelivery extends StatefulValidatingErrorDisplaySnippet with Transac
 
   private[this] lazy val confirmOrderClose = () => if (confirmCloseOrder) Nil else Seq("Please confirm it is ok to close the Order before generating this Delivery Note")
 
-  private[this] lazy val confirmAllOrderedItemsSelected = () => if (dataHolder.availableLineItems filterNot (item => dataHolder.deliveredItems.contains(item)) isEmpty) Nil else Seq("Please Select all Line Items to be added to the Delivery Note")
+  private[this] lazy val confirmAllOrderedItemsSelected = () => if (dataHolder.availableLineItems filterNot (item => dataHolder.lineItems.contains(item)) isEmpty) Nil else Seq("Please Select all Line Items to be added to the Delivery Note")
 
   private[this] lazy val additionalValidations = Seq(itemsToBeDelivered, confirmAddressSelectedOrEntered, confirmOrderClose, confirmAllOrderedItemsSelected)
 
@@ -104,6 +104,9 @@ class AddEditDelivery extends StatefulValidatingErrorDisplaySnippet with Transac
     case Nil => generateDeliveryNote()
     case errors => {
       displayErrors(errors: _*)
+      dataHolder.lineItems foreach (dataHolder.removeLineItem)
+      updateOrderValue(None)
+      refreshLineItemEntries
       Noop
     }
   }
@@ -130,7 +133,7 @@ class AddEditDelivery extends StatefulValidatingErrorDisplaySnippet with Transac
   }
 
   private[this] val updateOrderValue = (value: Option[Document]) => {
-    dataHolder selectedOrder = value
+    dataHolder.selectedOrder = value
     dataHolder.lineItemsCell.set(Nil)
   }
 
