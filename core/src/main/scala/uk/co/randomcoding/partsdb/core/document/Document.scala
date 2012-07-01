@@ -101,17 +101,30 @@ class Document private () extends MongoRecord[Document] with ObjectIdPk[Document
   lazy val documentNumber = "%s%06d".format(documentType.get, docNumber.get)
 
   /**
+   * Calculate the amount of VAT for this document
+   */
+  def documentVat: Double = {
+    documentAddress.get.country.get match {
+      case "United Kingdom" => {
+        val vattableCost = lineItems.get.foldLeft(carriage.get)(_ + _.lineCost)
+
+        vattableCost * SystemData.vatRate
+      }
+      case _ => 0d
+    }
+  }
+
+  /**
    * Calculates the value of a document
    *
    * This is the sum of the value of the line items and the carriage plus the VAT on that total if applicable
    */
   def documentValue: Double = {
     val lineItemCost = lineItems.get map (_.lineCost) sum
-    val vatRate = if (documentAddress.get.country.get == "United Kingdom") SystemData.vatRate else 0.0d
 
     val subTotal = lineItemCost + carriage.get
 
-    subTotal + (subTotal * vatRate)
+    subTotal + documentVat
   }
 
   /**

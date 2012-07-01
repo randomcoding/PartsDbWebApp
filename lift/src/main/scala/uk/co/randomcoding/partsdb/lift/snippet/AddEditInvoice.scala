@@ -31,9 +31,10 @@ class AddEditInvoice extends StatefulValidatingErrorDisplaySnippet with Transact
 
   override val dataHolder = new InvoiceDataHolder
 
+  dataHolder.customer = customer
+
   override var addressText = ""
   override var addressCountry = ""
-  //override val addressLabel = "Invoice Address"
 
   private[this] lazy val previousInvoices = documentsOfType(DocumentType.Invoice)
   private[this] lazy val deliveries = documentsOfType(DocumentType.DeliveryNote).toList

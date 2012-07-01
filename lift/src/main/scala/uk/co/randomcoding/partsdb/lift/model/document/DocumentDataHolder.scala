@@ -12,6 +12,8 @@ import net.liftweb.common.{ Logger, Full }
 import net.liftweb.util.Helpers._
 import net.liftweb.util.{ ValueCell, Cell }
 import uk.co.randomcoding.partsdb.core.system.SystemData
+import uk.co.randomcoding.partsdb.core.customer.Customer
+import uk.co.randomcoding.partsdb.core.address.Address
 
 /**
  * Encapsulates the basic data for the total costs of a [[uk.co.randomcoding.partsdb.core.document.Document]].
@@ -33,6 +35,8 @@ trait DocumentDataHolder extends Logger {
    */
   def preTaxTotal: Cell[Double]
 
+  private[this] val customerCell = ValueCell[Option[Customer]](None)
+
   /**
    * This contains the total value of all the line items before tax and without carriage
    *
@@ -46,19 +50,34 @@ trait DocumentDataHolder extends Logger {
   val carriageCell = ValueCell[Double](DEFAULT_CARRIAGE)
 
   /**
-   * The tax rate. Set to value stored in the system data
+   * The tax rate. Depends on the country of the current Customer
    */
-  val taxRate = ValueCell(SystemData.vatRate)
+  private[this] lazy val taxRate = customerCell.lift(_ match {
+    case Some(cust) => {
+      debug("Calculating Tax Rate for customer: %s".format(cust))
+      Address.findById(cust.businessAddress.get) match {
+        case Some(addr) => {
+          debug("Calculating VAT for Address: %s".format(addr))
+          if (Seq("UK", "United Kingdom").contains(addr.country.get)) SystemData.vatRate else 0d
+        }
+        case _ => {
+          error("Could not find address for customer %s".format(cust.customerName.get))
+          SystemData.vatRate
+        }
+      }
+    }
+    case _ => SystemData.vatRate
+  })
 
   /**
    * The computed value of the amount of tax for the quote
    */
-  private lazy val tax = preTaxTotal.lift(taxRate)(_ * _)
+  private[this] lazy val tax = preTaxTotal.lift(taxRate)(_ * _)
 
   /**
    * Calculated total cost of all line items
    */
-  private lazy val total = preTaxTotal.lift(tax)(_ + _)
+  private[this] lazy val total = preTaxTotal.lift(tax)(_ + _)
 
   // Values for display in the GUI
 
@@ -124,4 +143,11 @@ trait DocumentDataHolder extends Logger {
    * @return The value of the carriage cell as a Double
    */
   def carriageValue = carriageCell.get
+
+  def customer = customerCell.get
+
+  def customer_=(cust: Option[Customer]) = {
+    debug("Setting customer to: %s".format(cust))
+    customerCell.set(cust)
+  }
 }

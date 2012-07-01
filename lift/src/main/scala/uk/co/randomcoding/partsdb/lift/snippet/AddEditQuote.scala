@@ -43,15 +43,15 @@ class AddEditQuote extends StatefulSnippet with ErrorDisplay with DataValidation
 
   private[this] val customers = Customer orderDesc (_.customerName) fetch
   private[this] val customersSelect = (None, "Select Customer") :: (customers map ((c: Customer) => (Some(c), c.customerName.get)))
-  private[this] var currentCustomer: Option[Customer] = originalQuote match {
+  /*private[this] var currentCustomer: Option[Customer] = originalQuote match {
     case Some(q) => Transaction.where(_.documents contains q.id.get).get() match {
       case Some(t) => Customer.findById(t.customer.get)
       case _ => None
     }
     case _ => None
-  }
+  }*/
 
-  private[this] var customerName = currentCustomer match {
+  private[this] var customerName = dataHolder.customer match {
     case Some(cust) => cust.customerName.get
     case _ => ""
   }
@@ -62,7 +62,7 @@ class AddEditQuote extends StatefulSnippet with ErrorDisplay with DataValidation
 
   def render = {
     "#formTitle" #> Text("Add Quote") &
-      "#customerSelect" #> styledObjectSelect[Option[Customer]](customersSelect, currentCustomer, currentCustomer = _) &
+      "#customerSelect" #> styledAjaxObjectSelect[Option[Customer]](customersSelect, dataHolder.customer, updateAjaxValue[Option[Customer]](dataHolder.customer = _)) &
       "#carriageEntry" #> styledAjaxText(dataHolder.carriageText, updateAjaxValue(dataHolder.carriage = _)) &
       renderAddEditLineItem() &
       renderSubmitAndCancel() &
@@ -75,8 +75,8 @@ class AddEditQuote extends StatefulSnippet with ErrorDisplay with DataValidation
   override def processSubmit(): JsCmd = {
     performValidation(ensureAtLeastOneLineItemIsQuoted) match {
       case Nil => originalQuote match {
-        case Some(quote) => updateQuote(quote, currentCustomer.get)
-        case _ => addQuote(currentCustomer.get)
+        case Some(quote) => updateQuote(quote, dataHolder.customer.get)
+        case _ => addQuote(dataHolder.customer.get)
       }
       case errors => {
         displayErrors(errors: _*)
@@ -85,10 +85,10 @@ class AddEditQuote extends StatefulSnippet with ErrorDisplay with DataValidation
     }
   }
 
-  override def validationItems() = Seq(ValidationItem(dataHolder.carriageValue, "Carriage"), ValidationItem(currentCustomer, "Quote Customer"))
+  override def validationItems() = Seq(ValidationItem(dataHolder.carriageValue, "Carriage"), ValidationItem(dataHolder.customer, "Quote Customer"))
 
   private[this] def updateQuote(quote: Document, cust: Customer): JsCmd = {
-    val newQuote: Document = Quote.create(dataHolder.lineItems, dataHolder.carriageValue).documentAddress(Address.findById(currentCustomer.get.businessAddress.get).get)
+    val newQuote: Document = Quote.create(dataHolder.lineItems, dataHolder.carriageValue).documentAddress(Address.findById(dataHolder.customer.get.businessAddress.get).get)
 
     Document.update(originalQuote.get.id.get, newQuote) match {
       case Some(doc) if doc == quote => S.redirectTo("/app/")
@@ -106,7 +106,7 @@ class AddEditQuote extends StatefulSnippet with ErrorDisplay with DataValidation
   }
 
   private[this] def addQuote(cust: Customer): JsCmd = {
-    val quote: Document = Quote.create(dataHolder.lineItems, dataHolder.carriageValue).documentAddress(Address.findById(currentCustomer.get.businessAddress.get).get)
+    val quote: Document = Quote.create(dataHolder.lineItems, dataHolder.carriageValue).documentAddress(Address.findById(dataHolder.customer.get.businessAddress.get).get)
 
     Document.add(quote) match {
       case Some(q) => Transaction.add(cust, Seq(q)) match {
@@ -120,7 +120,7 @@ class AddEditQuote extends StatefulSnippet with ErrorDisplay with DataValidation
         }
       }
       case _ => {
-        error("Failed to add quote  with items %s".format(dataHolder.lineItems.mkString("[", "\n", "]")))
+        error("Failed to add quote with items %s".format(dataHolder.lineItems.mkString("[", "\n", "]")))
         Noop
       }
     }

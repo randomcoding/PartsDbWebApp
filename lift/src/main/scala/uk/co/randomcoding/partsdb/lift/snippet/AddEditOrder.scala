@@ -20,6 +20,7 @@ import net.liftweb.http.js.JsCmd
 import net.liftweb.http.{ StatefulSnippet, S }
 import net.liftweb.util.Helpers._
 import uk.co.randomcoding.partsdb.core.address.Address
+import net.liftweb.util.ValueCell
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
@@ -29,6 +30,7 @@ class AddEditOrder extends StatefulValidatingErrorDisplaySnippet with Transactio
   override val cameFrom = S.referer openOr "/app/"
 
   override val dataHolder = new OrderDocumentDataHolder
+  dataHolder.customer = customer
 
   private var customerPoRef = ""
   private var confirmCloseQuote = false
@@ -89,7 +91,7 @@ class AddEditOrder extends StatefulValidatingErrorDisplaySnippet with Transactio
       "#customerName" #> Text(customerName) &
       renderDocumentTotals() &
       "#customerPoRefEntry" #> styledText(customerPoRef, customerPoRef = _) &
-      renderAvailableLineItems(lineItems) &
+      renderAvailableLineItems(ValueCell(lineItems)) &
       renderAllLineItems() &
       "#quoteId" #> Text(quoteId) &
       "#confirmCloseQuote" #> styledCheckbox(false, confirmCloseQuote = _) &

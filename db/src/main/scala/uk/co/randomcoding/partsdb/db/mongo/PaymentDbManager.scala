@@ -115,7 +115,7 @@ object PaymentDbManager extends Logger {
     val okToCloseTransaction = (invoiceValue == dNoteValue && dNoteValue == orderValue && allDocumentsClosed && allInvoicesPaid)
     debug("Ok To Close: %s".format(okToCloseTransaction))
 
-    if (okToCloseTransaction) Transaction.close(transaction.id.get) else Some(transaction)
+    if (okToCloseTransaction) Transaction.close(transaction.id.get) else None //Some(transaction)
   }
 
   private[this] def processInvoiceClosureForPayments(invoicePayments: Seq[InvoicePayment]): Seq[PaymentResult] = {

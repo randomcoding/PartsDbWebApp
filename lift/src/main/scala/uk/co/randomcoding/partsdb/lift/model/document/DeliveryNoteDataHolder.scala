@@ -8,11 +8,14 @@ import net.liftweb.util.ValueCell
 import uk.co.randomcoding.partsdb.core.document.Document
 import uk.co.randomcoding.partsdb.core.address.Address
 import uk.co.randomcoding.partsdb.core.document.LineItem
+import uk.co.randomcoding.partsdb.core.system.SystemData
+import uk.co.randomcoding.partsdb.core.customer.Customer
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
 class DeliveryNoteDataHolder extends DocumentDataHolder with LineItemsDataHolder {
+
   /**
    * The total computed base cost of the line items, before tax
    */
@@ -74,6 +77,8 @@ class DeliveryNoteDataHolder extends DocumentDataHolder with LineItemsDataHolder
    * @return The line items from the current order that are not already present in the `deliveredItems`
    */
   def availableLineItems = lineItemsFromOrder.get filterNot (deliveredItems contains _)
+
+  def availableLineItemsCell = lineItemsFromOrder.lift(_ filterNot (deliveredItems contains _))
 
   /**
    * Set the items that have already been delivered

@@ -59,7 +59,9 @@ if (HOST.equalsIgnoreCase("benjymouse")) {
 	def testingLogs = ["uk.co.randomcoding": WARN]
 
 	def defaultLogs = ["uk.co.randomcoding.partsdb.lift.model.document.NewLineItemDataHolder": DEBUG,
-				"uk.co.randomcoding.partsdb.lift.util.snippet.LineItemSnippet": DEBUG]
+				"uk.co.randomcoding.partsdb.lift.util.snippet.LineItemSnippet": DEBUG,
+				"uk.co.randomcoding.partsdb.lift.model.document.DocumentDataHolder": DEBUG,
+				"uk.co.randomcoding.partsdb.lift.model.document": DEBUG]
 
 	def logs = defaultLogs
 	if (isTest.equalsIgnoreCase("yes")) {
