@@ -12,11 +12,12 @@ package uk.co.randomcoding.partsdb.lift.util.snippet
 
 import net.liftweb.util.ValueCell
 import uk.co.randomcoding.partsdb.core.customer.Customer
-import uk.co.randomcoding.partsdb.core.document.{DocumentType, Document}
-import uk.co.randomcoding.partsdb.core.transaction.{Transaction, InvoicePayment, Payment}
+import uk.co.randomcoding.partsdb.core.document.{ DocumentType, Document }
+import uk.co.randomcoding.partsdb.core.transaction.{ Transaction, InvoicePayment, Payment }
 import com.foursquare.rogue.Rogue._
 import net.liftweb.util.Helpers.asDouble
-import net.liftweb.common.{Logger, Full}
+import net.liftweb.common.{ Logger, Full }
+import java.util.Date
 
 /**
  * Data holder for invoice the payment page.
@@ -42,17 +43,15 @@ class InvoicePaymentDataHolder extends Logger {
 
   private[this] val currentCustomer = ValueCell[Option[Customer]](None)
 
-  // Correct version - cannot use until #96 is fixed
-  //private[this] def outstandingTransactions = (Transaction where (_.completionDate eqs new Date(0)) fetch) filter (_.transactionState == "Invoiced")
-  private[this] def outstandingTransactions = Transaction fetch() filter (_.transactionState == "Invoiced")
+  private[this] def outstandingTransactions = Transaction.where(_.completionDate eqs Transaction.defaultCompletionDate).fetch().filter(_.transactionState == "Invoiced")
 
-  private[this] def customersWithUnpaidInvoices = Customer where (_.id in outstandingTransactions.map(_.customer.get)) fetch()
+  private[this] def customersWithUnpaidInvoices = Customer where (_.id in outstandingTransactions.map(_.customer.get)) fetch ()
 
   private[this] def unpaidInvoicesSelectCell = unpaidInvoices.lift(invoices => (None, "Select Invoice") :: (invoices map (inv => (Some(inv), inv.documentNumber))))
 
   private[this] def unpaidInvoicesForCustomer(c: Customer) = {
     val docIdsForCustomerTransactions = outstandingTransactions.filter(_.customer.get == c.id.get).flatMap(_.documents.get)
-    val docs = Document where (_.id in docIdsForCustomerTransactions) and (_.documentType eqs DocumentType.Invoice) and (_.editable eqs true) fetch()
+    val docs = Document where (_.id in docIdsForCustomerTransactions) and (_.documentType eqs DocumentType.Invoice) and (_.editable eqs true) fetch ()
 
     docs filter (_.remainingBalance > 0.0)
   }
