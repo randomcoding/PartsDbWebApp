@@ -37,7 +37,7 @@ class AddEditQuote extends StatefulSnippet with ErrorDisplay with DataValidation
 
   override val cameFrom = S.referer openOr "/app"
 
-  override val dataHolder = new QuoteDocumentDataHolder
+  override val dataHolder = new QuoteDocumentDataHolder(None)
 
   if (originalQuote.isDefined) dataHolder.populate(originalQuote.get)
 
@@ -62,7 +62,10 @@ class AddEditQuote extends StatefulSnippet with ErrorDisplay with DataValidation
 
   def render = {
     "#formTitle" #> Text("Add Quote") &
-      "#customerSelect" #> styledObjectSelect[Option[Customer]](customersSelect, currentCustomer, currentCustomer = _) &
+      "#customerSelect" #> styledObjectSelect[Option[Customer]](customersSelect, currentCustomer, (cust: Option[Customer]) => {
+        currentCustomer = cust
+        dataHolder.customerCell.set(cust)
+      }) &
       "#carriageEntry" #> styledAjaxText(dataHolder.carriageText, updateAjaxValue(dataHolder.carriage = _)) &
       renderAddEditLineItem() &
       renderSubmitAndCancel() &

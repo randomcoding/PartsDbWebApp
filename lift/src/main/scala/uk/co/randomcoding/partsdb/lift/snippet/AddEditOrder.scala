@@ -28,7 +28,7 @@ class AddEditOrder extends StatefulValidatingErrorDisplaySnippet with Transactio
 
   override val cameFrom = S.referer openOr "/app/"
 
-  override val dataHolder = new OrderDocumentDataHolder
+  override val dataHolder = new OrderDocumentDataHolder(customer)
 
   private var customerPoRef = ""
   private var confirmCloseQuote = false

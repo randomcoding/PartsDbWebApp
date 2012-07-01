@@ -28,11 +28,10 @@ import net.liftweb.util.Helpers._
  */
 class AddEditDelivery extends StatefulValidatingErrorDisplaySnippet with TransactionSnippet with AvailableLineItemsDisplay with AllLineItemsSnippet with DocumentDataHolderTotalsDisplay with AddressSnippet with SubmitAndCancelSnippet {
 
-  override val dataHolder = new DeliveryNoteDataHolder
+  override val dataHolder = new DeliveryNoteDataHolder(customer)
 
   override var addressText: String = ""
   override var addressCountry: String = ""
-  //override val addressLabel = "Delivery Address"
 
   private[this] lazy val previousDeliveryNotes = documentsOfType(DocumentType.DeliveryNote)
   private[this] lazy val orders = documentsOfType(DocumentType.Order).toList
@@ -92,11 +91,15 @@ class AddEditDelivery extends StatefulValidatingErrorDisplaySnippet with Transac
     case _ => Nil
   }
 
-  private[this] val confirmAddressSelectedOrEntered = () => if (deliverToAddress isDefined) Nil else Seq("Please Select or Enter a New Delivery Address")
+  private[this] lazy val confirmAddressSelectedOrEntered = () => if (deliverToAddress isDefined) Nil else Seq("Please Select or Enter a New Delivery Address")
 
-  private[this] val confirmOrderClose = () => if (confirmCloseOrder) Nil else Seq("Please confirm it is ok to close the Order before generating this Delivery Note")
+  private[this] lazy val confirmOrderClose = () => if (confirmCloseOrder) Nil else Seq("Please confirm it is ok to close the Order before generating this Delivery Note")
 
-  override def processSubmit(): JsCmd = performValidation(itemsToBeDelivered, confirmAddressSelectedOrEntered, confirmOrderClose) match {
+  private[this] lazy val confirmAllOrderedItemsSelected = () => if (dataHolder.availableLineItems filterNot (item => dataHolder.deliveredItems.contains(item)) isEmpty) Nil else Seq("Please Select all Line Items to be added to the Delivery Note")
+
+  private[this] lazy val additionalValidations = Seq(itemsToBeDelivered, confirmAddressSelectedOrEntered, confirmOrderClose, confirmAllOrderedItemsSelected)
+
+  override def processSubmit(): JsCmd = performValidation(additionalValidations: _*) match {
     case Nil => generateDeliveryNote()
     case errors => {
       displayErrors(errors: _*)

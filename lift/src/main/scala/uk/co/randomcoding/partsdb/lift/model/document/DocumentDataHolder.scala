@@ -12,6 +12,8 @@ import net.liftweb.common.{ Logger, Full }
 import net.liftweb.util.Helpers._
 import net.liftweb.util.{ ValueCell, Cell }
 import uk.co.randomcoding.partsdb.core.system.SystemData
+import uk.co.randomcoding.partsdb.core.customer.Customer
+import uk.co.randomcoding.partsdb.core.address.Address
 
 /**
  * Encapsulates the basic data for the total costs of a [[uk.co.randomcoding.partsdb.core.document.Document]].
@@ -25,6 +27,16 @@ trait DocumentDataHolder extends Logger {
    * The default markup rate for new lines
    */
   private val DEFAULT_CARRIAGE = 0.0d
+
+  val customerCell = ValueCell[Option[Customer]](None)
+
+  private[this] val useVat = customerCell.lift(_ match {
+    case Some(cust) => Address.findById(cust.businessAddress.get) match {
+      case Some(addr) => Seq("UK", "United Kingdom") find (_ == addr.country.get) isDefined
+      case _ => true
+    }
+    case _ => true
+  })
 
   /**
    * The total computed base cost of the line items, before tax
@@ -48,7 +60,7 @@ trait DocumentDataHolder extends Logger {
   /**
    * The tax rate. Set to value stored in the system data
    */
-  val taxRate = ValueCell(SystemData.vatRate)
+  val taxRate = useVat.lift(if (_) SystemData.vatRate else 0d) // ValueCell(if (useVat.get) SystemData.vatRate else 0d)
 
   /**
    * The computed value of the amount of tax for the quote
