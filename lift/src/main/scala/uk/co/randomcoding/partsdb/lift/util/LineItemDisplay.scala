@@ -42,7 +42,7 @@ object LineItemDisplay extends TabularEntityDisplay {
   }
 
   private[this] def row(lineItem: LineItem, p: MongoRecord[_] with ObjectIdPk[_]) = {
-    <td>{ lineItem.lineNumber }</td>
+    <td>{ lineItem.lineNumber.get + 1 }</td>
     <td>{ partOrKitName(p) }</td>
     <td>{ supplierPartInfo(lineItem.partSupplier.get, p) }</td>
     <td>{ lineItem.quantity.get }</td>
