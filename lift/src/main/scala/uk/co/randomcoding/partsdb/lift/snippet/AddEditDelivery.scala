@@ -29,10 +29,10 @@ import net.liftweb.util.Helpers._
 class AddEditDelivery extends StatefulValidatingErrorDisplaySnippet with TransactionSnippet with AvailableLineItemsDisplay with AllLineItemsSnippet with DocumentDataHolderTotalsDisplay with AddressSnippet with SubmitAndCancelSnippet {
 
   override val dataHolder = new DeliveryNoteDataHolder
+  dataHolder.customer = customer
 
   override var addressText: String = ""
   override var addressCountry: String = ""
-  //override val addressLabel = "Delivery Address"
 
   private[this] lazy val previousDeliveryNotes = documentsOfType(DocumentType.DeliveryNote)
   private[this] lazy val orders = documentsOfType(DocumentType.Order).toList
@@ -75,11 +75,11 @@ class AddEditDelivery extends StatefulValidatingErrorDisplaySnippet with Transac
     "#formTitle" #> Text("Create Delivery Note") &
       renderTransactionDetails() &
       "#carriage" #> WiringUI.asText(dataHolder.carriage) &
-      "#selectOrder" #> styledAjaxObjectSelect(ordersSelection, None, updateAjaxValue[Option[Document]](updateOrderValue(_), refreshLineItemEntries())) &
+      "#selectOrder" #> styledAjaxObjectSelect(ordersSelection, None, updateAjaxValue[Option[Document]](updateOrderValue(_) /*, refreshLineItemEntries()*/ )) &
       "#customerPoRefEntry" #> WiringUI.asText(dataHolder.poReference) &
       "#addressSelect" #> styledAjaxObjectSelect(addressSelection, None, updateAjaxValue[Option[Address]](dataHolder.deliveryAddress = _)) &
       renderEditableAddress("Delivery Address", customer) &
-      renderAvailableLineItems(dataHolder.availableLineItems) &
+      renderAvailableLineItems(dataHolder.availableLineItemsCell) &
       renderAllLineItems() &
       renderDocumentTotals() &
       "#orderId" #> WiringUI.asText(dataHolder.orderId) &
@@ -92,14 +92,21 @@ class AddEditDelivery extends StatefulValidatingErrorDisplaySnippet with Transac
     case _ => Nil
   }
 
-  private[this] val confirmAddressSelectedOrEntered = () => if (deliverToAddress isDefined) Nil else Seq("Please Select or Enter a New Delivery Address")
+  private[this] lazy val confirmAddressSelectedOrEntered = () => if (deliverToAddress isDefined) Nil else Seq("Please Select or Enter a New Delivery Address")
 
-  private[this] val confirmOrderClose = () => if (confirmCloseOrder) Nil else Seq("Please confirm it is ok to close the Order before generating this Delivery Note")
+  private[this] lazy val confirmOrderClose = () => if (confirmCloseOrder) Nil else Seq("Please confirm it is ok to close the Order before generating this Delivery Note")
 
-  override def processSubmit(): JsCmd = performValidation(itemsToBeDelivered, confirmAddressSelectedOrEntered, confirmOrderClose) match {
+  private[this] lazy val confirmAllOrderedItemsSelected = () => if (dataHolder.availableLineItems filterNot (item => dataHolder.lineItems.contains(item)) isEmpty) Nil else Seq("Please Select all Line Items to be added to the Delivery Note")
+
+  private[this] lazy val additionalValidations = Seq(itemsToBeDelivered, confirmAddressSelectedOrEntered, confirmOrderClose, confirmAllOrderedItemsSelected)
+
+  override def processSubmit(): JsCmd = performValidation(additionalValidations: _*) match {
     case Nil => generateDeliveryNote()
     case errors => {
       displayErrors(errors: _*)
+      dataHolder.lineItems foreach (dataHolder.removeLineItem)
+      updateOrderValue(None)
+      //refreshLineItemEntries
       Noop
     }
   }
@@ -126,12 +133,12 @@ class AddEditDelivery extends StatefulValidatingErrorDisplaySnippet with Transac
   }
 
   private[this] val updateOrderValue = (value: Option[Document]) => {
-    dataHolder selectedOrder = value
+    dataHolder.selectedOrder = value
     dataHolder.lineItemsCell.set(Nil)
   }
 
-  private[this] def refreshLineItemEntries(): JsCmd = ajaxInvoke(() => refreshAvailableLineItems(dataHolder.availableLineItems) &
-    refreshLineItemDisplay())._2.cmd
+  /*private[this] def refreshLineItemEntries(): JsCmd = ajaxInvoke(() => refreshAvailableLineItems(dataHolder.availableLineItems) &
+    refreshLineItemDisplay())._2.cmd*/
 
   override def validationItems = Seq(ValidationItem(dataHolder.selectedOrder, "Selected Order"))
 

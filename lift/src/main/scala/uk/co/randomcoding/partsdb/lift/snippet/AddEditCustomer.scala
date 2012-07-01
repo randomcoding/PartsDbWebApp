@@ -111,11 +111,20 @@ class AddEditCustomer extends StatefulSnippet with ErrorDisplay with DataValidat
   }
 
   private def addCustomer(billingAddress: Address, paymentTerms: Int, contact: ContactDetails): JsCmd = {
-    Customer add (name, billingAddress, paymentTerms, contact) match {
-      case Some(c) => S redirectTo cameFrom
+    Address.add(billingAddress) match {
+      case Some(addr) => {
+        Customer.add(name, billingAddress, paymentTerms, contact) match {
+          case Some(c) => S redirectTo cameFrom
+          case _ => {
+            error("Failed to add new customer, [name: %s, address: %s, terms: %s, contact: %s".format(name, billingAddress, paymentTerms, contact))
+            displayError("Failed to add Customer")
+            Noop
+          }
+        }
+      }
       case _ => {
-        error("Failed to add new customer, [name: %s, address: %s, terms: %s, contact: %s".format(name, billingAddress, paymentTerms, contact))
-        displayError("Failed to add Customer")
+        error("Failed to add address for new customer, [name: %s, address: %s, terms: %s, contact: %s".format(name, billingAddress, paymentTerms, contact))
+        displayError("Failed to add Address for Customer")
         Noop
       }
     }

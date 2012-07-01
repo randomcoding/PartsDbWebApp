@@ -32,30 +32,17 @@ trait DocumentTotalsDisplay {
    * - ''total'' The total of the ''subtotal'', ''carriage'' and ''vat'' fields. This is calculated
    */
   def renderDocumentTotals(document: Document): CssSel = {
-    renderDocumentTotals(document.lineItems.get, document.carriage.get)
+    "#subtotal *" #> renderSubtotal(document.lineItems.get) &
+      "#carriage *" #> Text(currencyFormat(document.carriage.get)) &
+      "#vat *" #> renderVat(document) &
+      "#total *" #> renderTotal(document)
   }
 
-  /**
-   * Render the actual values from the provided [[uk.co.randomcoding.partsdb.core.document.LineItem]]s and carriage value
-   *
-   * Expects the elements with the following ids
-   * - ''subtotal'' - Displays the pre-tax total of all the goods in all [[uk.co.randomcoding.partsdb.core.document.LineItem]]s from the [[uk.co.randomcoding.partsdb.core.document.Document]]
-   * - ''carriage'' - Displays the carriage value from the [[uk.co.randomcoding.partsdb.core.document.Document]]
-   * - ''vat'' - Displays the VAT amount for the ''subtotal'' and ''carriage''
-   * - ''total'' The total of the ''subtotal'', ''carriage'' and ''vat'' fields. This is calculated
-   */
-  def renderDocumentTotals(lineItems: Seq[LineItem], carriage: Double): CssSel = {
-    "#subtotal *" #> renderSubtotal(lineItems) &
-      "#carriage *" #> Text(currencyFormat(carriage)) &
-      "#vat *" #> renderVat(lineItems, carriage) &
-      "#total *" #> renderTotal(lineItems, carriage)
-  }
+  private[this] def renderSubtotal(lineItems: Seq[LineItem]) = renderIdSpan(Text(currencyFormat(lineItemSubTotal(lineItems))), "subtotal")
 
-  private[this] def renderSubtotal(lineItems: Seq[LineItem]) = renderIdSpan(Text(currencyFormat(subTotal(lineItems))), "subtotal")
+  private[this] def renderVat(document: Document) = renderIdSpan(Text(currencyFormat(document.documentVat)), "vat")
 
-  private[this] def renderVat(lineItems: Seq[LineItem], carriage: Double) = renderIdSpan(Text(currencyFormat(vatAmount(lineItems, carriage))), "vat")
-
-  private[this] def renderTotal(lineItems: Seq[LineItem], carriage: Double) = renderIdSpan(Text(currencyFormat(total(lineItems, carriage))), "total")
+  private[this] def renderTotal(document: Document) = renderIdSpan(Text(currencyFormat(document.documentValue)), "total")
 
   private[this] def renderIdSpan(content: NodeSeq, id: String) = {
     <span>
@@ -65,15 +52,11 @@ trait DocumentTotalsDisplay {
 
   def refreshSubtotal(lineItems: Seq[LineItem]) = SetHtml("subtotal", renderSubtotal(lineItems))
 
-  def refreshVat(lineItems: Seq[LineItem], carriage: Double) = SetHtml("vat", Text(currencyFormat(vatAmount(lineItems, carriage))))
+  def refreshVat(document: Document) = SetHtml("vat", Text(currencyFormat(document.documentVat)))
 
-  def refreshTotal(lineItems: Seq[LineItem], carriage: Double) = SetHtml("total", Text(currencyFormat(total(lineItems, carriage))))
+  def refreshTotal(document: Document) = SetHtml("total", Text(currencyFormat(document.documentValue)))
 
-  def refreshTotals(lineItems: Seq[LineItem], carriage: Double) = refreshSubtotal(lineItems) & refreshVat(lineItems, carriage) & refreshTotal(lineItems, carriage)
+  def refreshTotals(document: Document) = refreshSubtotal(document.lineItems.get) & refreshVat(document) & refreshTotal(document)
 
-  private def subTotal(lineItems: Seq[LineItem]) = lineItems map (_.lineCost) sum
-
-  private def vatAmount(lineItems: Seq[LineItem], carriage: Double) = (subTotal(lineItems) + carriage) * vatRate
-
-  private def total(lineItems: Seq[LineItem], carriage: Double) = subTotal(lineItems) + carriage + vatAmount(lineItems, carriage)
+  private[this] def lineItemSubTotal(lineItems: Seq[LineItem]) = lineItems map (_.lineCost) sum
 }

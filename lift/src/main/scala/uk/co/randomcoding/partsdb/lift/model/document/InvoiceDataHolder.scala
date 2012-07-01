@@ -8,11 +8,13 @@ import net.liftweb.util.ValueCell
 import uk.co.randomcoding.partsdb.core.document.Document
 import uk.co.randomcoding.partsdb.core.address.Address
 import uk.co.randomcoding.partsdb.core.document.LineItem
+import uk.co.randomcoding.partsdb.core.customer.Customer
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
 class InvoiceDataHolder extends DocumentDataHolder with LineItemsDataHolder {
+
   /**
    * The total computed base cost of the line items, before tax
    */

@@ -25,7 +25,7 @@ import net.liftweb.mongodb.record.{ MongoRecord, MongoMetaRecord }
 class Transaction private () extends MongoRecord[Transaction] with ObjectIdPk[Transaction] with Logger {
   def meta = Transaction
 
-  private val defaultCompletionDate = new Date(0)
+  val defaultCompletionDate = new Date(0)
 
   //object shortName extends StringField(this, 50)
 
