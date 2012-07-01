@@ -20,6 +20,10 @@ do
       JAVA_OPTS="${JAVA_OPTS} -Dtesting=yes"
       SBT_ARGS="${SBT_ARGS} ${ARG}"
       ;;
+    --production)
+      echo "Setting Production Mode"
+      JAVA_OPTS="${JAVA_OPTS} -Drun.mode=production"
+      ;;
     *)
       SBT_ARGS="${SBT_ARGS} ${ARG}"
       ;;
