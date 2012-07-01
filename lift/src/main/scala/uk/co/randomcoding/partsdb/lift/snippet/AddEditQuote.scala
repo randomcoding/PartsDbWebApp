@@ -120,7 +120,7 @@ class AddEditQuote extends StatefulSnippet with ErrorDisplay with DataValidation
         }
       }
       case _ => {
-        error("Failed to add quote  with items %s".format(dataHolder.lineItems.mkString("[", "\n", "]")))
+        error("Failed to add quote with items %s".format(dataHolder.lineItems.mkString("[", "\n", "]")))
         Noop
       }
     }
