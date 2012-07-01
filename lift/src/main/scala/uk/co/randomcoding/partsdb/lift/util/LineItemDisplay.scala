@@ -27,7 +27,7 @@ object LineItemDisplay extends TabularEntityDisplay {
 
   override type EntityType = LineItem
 
-  override val rowHeadings = List("Line No.", "Part", "Supplier Info", "Quantity", "Base Price", "Markup", "Total")
+  override val rowHeadings = List("Line No.", "Part", "Supplier Info", "Quantity", "Base Price/Unit", "Markup", "Total")
 
   override def displayEntity(lineItem: LineItem, editLink: Boolean = false, displayLink: Boolean = false): NodeSeq = {
     partOrKit(lineItem.partId.get) match {
@@ -61,7 +61,7 @@ object LineItemDisplay extends TabularEntityDisplay {
                         </div>
         case _ => Text("No Supplier Identified")
       }
-      case kit: PartKit => Text("C.A.T.9")
+      case kit: PartKit => Text("C.A.T.9 (Part Kit)")
     }
   }
 
