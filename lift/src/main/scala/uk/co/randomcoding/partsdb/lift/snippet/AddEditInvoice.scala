@@ -29,11 +29,12 @@ import uk.co.randomcoding.partsdb.core.system.SystemData
  */
 class AddEditInvoice extends StatefulValidatingErrorDisplaySnippet with TransactionSnippet with AllLineItemsSnippet with DocumentDataHolderTotalsDisplay with AddressSnippet with SubmitAndCancelSnippet {
 
-  override val dataHolder = new InvoiceDataHolder(customer)
+  override val dataHolder = new InvoiceDataHolder
+
+  dataHolder.customer = customer
 
   override var addressText = ""
   override var addressCountry = ""
-  //override val addressLabel = "Invoice Address"
 
   private[this] lazy val previousInvoices = documentsOfType(DocumentType.Invoice)
   private[this] lazy val deliveries = documentsOfType(DocumentType.DeliveryNote).toList

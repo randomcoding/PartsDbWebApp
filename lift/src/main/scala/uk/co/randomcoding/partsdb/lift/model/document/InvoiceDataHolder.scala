@@ -13,8 +13,7 @@ import uk.co.randomcoding.partsdb.core.customer.Customer
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
-class InvoiceDataHolder(customer: Option[Customer]) extends DocumentDataHolder with LineItemsDataHolder {
-  customerCell.set(customer)
+class InvoiceDataHolder extends DocumentDataHolder with LineItemsDataHolder {
 
   /**
    * The total computed base cost of the line items, before tax

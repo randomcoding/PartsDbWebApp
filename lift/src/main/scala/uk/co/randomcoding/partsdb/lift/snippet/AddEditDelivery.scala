@@ -28,7 +28,8 @@ import net.liftweb.util.Helpers._
  */
 class AddEditDelivery extends StatefulValidatingErrorDisplaySnippet with TransactionSnippet with AvailableLineItemsDisplay with AllLineItemsSnippet with DocumentDataHolderTotalsDisplay with AddressSnippet with SubmitAndCancelSnippet {
 
-  override val dataHolder = new DeliveryNoteDataHolder(customer)
+  override val dataHolder = new DeliveryNoteDataHolder
+  dataHolder.customer = customer
 
   override var addressText: String = ""
   override var addressCountry: String = ""

@@ -3,15 +3,17 @@
  */
 package uk.co.randomcoding.partsdb.lift.model.document
 
+import com.foursquare.rogue.Rogue._
+
 import uk.co.randomcoding.partsdb.core.document.{ DocumentType, Document }
 import net.liftweb.util.Cell
 import uk.co.randomcoding.partsdb.core.customer.Customer
+import uk.co.randomcoding.partsdb.core.transaction.Transaction
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
-class QuoteDocumentDataHolder(customer: Option[Customer]) extends DocumentDataHolder with NewLineItemDataHolder {
-  customerCell.set(customer)
+class QuoteDocumentDataHolder extends DocumentDataHolder with NewLineItemDataHolder {
 
   /**
    * The total computed base cost of the line items, before tax
@@ -30,5 +32,10 @@ class QuoteDocumentDataHolder(customer: Option[Customer]) extends DocumentDataHo
     require(quote.documentType.get == DocumentType.Quote, "Document must be a Quote")
     carriage = quote.carriage.get
     quote.lineItems.get foreach (addLineItem)
+
+    customer = Transaction.where(_.documents contains quote.id.get).get match {
+      case Some(trans) => Customer.findById(trans.customer.get)
+      case _ => None
+    }
   }
 }
