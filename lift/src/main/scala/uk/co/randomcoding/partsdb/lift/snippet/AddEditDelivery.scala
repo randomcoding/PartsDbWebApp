@@ -75,11 +75,11 @@ class AddEditDelivery extends StatefulValidatingErrorDisplaySnippet with Transac
     "#formTitle" #> Text("Create Delivery Note") &
       renderTransactionDetails() &
       "#carriage" #> WiringUI.asText(dataHolder.carriage) &
-      "#selectOrder" #> styledAjaxObjectSelect(ordersSelection, None, updateAjaxValue[Option[Document]](updateOrderValue(_), refreshLineItemEntries())) &
+      "#selectOrder" #> styledAjaxObjectSelect(ordersSelection, None, updateAjaxValue[Option[Document]](updateOrderValue(_) /*, refreshLineItemEntries()*/ )) &
       "#customerPoRefEntry" #> WiringUI.asText(dataHolder.poReference) &
       "#addressSelect" #> styledAjaxObjectSelect(addressSelection, None, updateAjaxValue[Option[Address]](dataHolder.deliveryAddress = _)) &
       renderEditableAddress("Delivery Address", customer) &
-      renderAvailableLineItems(dataHolder.availableLineItems) &
+      renderAvailableLineItems(dataHolder.availableLineItemsCell) &
       renderAllLineItems() &
       renderDocumentTotals() &
       "#orderId" #> WiringUI.asText(dataHolder.orderId) &
@@ -106,7 +106,7 @@ class AddEditDelivery extends StatefulValidatingErrorDisplaySnippet with Transac
       displayErrors(errors: _*)
       dataHolder.lineItems foreach (dataHolder.removeLineItem)
       updateOrderValue(None)
-      refreshLineItemEntries
+      //refreshLineItemEntries
       Noop
     }
   }
@@ -137,8 +137,8 @@ class AddEditDelivery extends StatefulValidatingErrorDisplaySnippet with Transac
     dataHolder.lineItemsCell.set(Nil)
   }
 
-  private[this] def refreshLineItemEntries(): JsCmd = ajaxInvoke(() => refreshAvailableLineItems(dataHolder.availableLineItems) &
-    refreshLineItemDisplay())._2.cmd
+  /*private[this] def refreshLineItemEntries(): JsCmd = ajaxInvoke(() => refreshAvailableLineItems(dataHolder.availableLineItems) &
+    refreshLineItemDisplay())._2.cmd*/
 
   override def validationItems = Seq(ValidationItem(dataHolder.selectedOrder, "Selected Order"))
 

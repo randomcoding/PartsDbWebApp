@@ -78,6 +78,8 @@ class DeliveryNoteDataHolder extends DocumentDataHolder with LineItemsDataHolder
    */
   def availableLineItems = lineItemsFromOrder.get filterNot (deliveredItems contains _)
 
+  def availableLineItemsCell = lineItemsFromOrder.lift(_ filterNot (deliveredItems contains _))
+
   /**
    * Set the items that have already been delivered
    */
