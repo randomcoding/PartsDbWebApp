@@ -18,6 +18,7 @@ import uk.co.randomcoding.partsdb.core.system.SystemData
 import net.liftweb.http.PermRedirectResponse
 import net.liftweb.common.Empty
 import net.liftweb.common.Box
+import net.liftweb.sitemap.Loc.LocGroup
 
 /**
  * A class that's instantiated early and run.  It allows the application
@@ -95,25 +96,24 @@ class Boot extends Loggable {
     val mainAppLoc = Menu(Loc("mainApp", new Link("app" :: Nil, true), "Home", userLoggedIn))
 
     // Create links for the show... parts here
-    val showCustomers = Menu(Loc("showCustomers", ExtLink("/app/show?entityType=Customer"), "Customers", userLoggedIn))
-    val showParts = Menu(Loc("showParts", ExtLink("/app/show?entityType=Part"), "Parts", userLoggedIn))
-    val showSuppliers = Menu(Loc("showSuppliers", ExtLink("/app/show?entityType=Supplier"), "Suppliers", userLoggedIn))
-    val showVehicles = Menu(Loc("showVehicles", ExtLink("/app/show?entityType=Vehicle"), "Vehicles", userLoggedIn))
-    val showPartKits = Menu(Loc("showPartKits", ExtLink("/app/show?entityType=PartKit"), "Part Kits", userLoggedIn))
+    val showParts = Menu(Loc("showParts", ExtLink("/app/show?entityType=Part"), "Parts", userLoggedIn, Hidden, LocGroup("partsetc")))
+    val showPartKits = Menu(Loc("showPartKits", ExtLink("/app/show?entityType=PartKit"), "Part Kits", userLoggedIn, Hidden, LocGroup("partsetc")))
+    val showVehicles = Menu(Loc("showVehicles", ExtLink("/app/show?entityType=Vehicle"), "Vehicles", userLoggedIn, Hidden, LocGroup("partsetc")))
+    val showSuppliers = Menu(Loc("showSuppliers", ExtLink("/app/show?entityType=Supplier"), "Suppliers", userLoggedIn, Hidden, LocGroup("partsetc")))
 
     // Search Button
     val searchLoc = Menu(Loc("search", new Link("app" :: "search" :: Nil, false), "Search", userLoggedIn))
 
+    // Customers
+    val showCustomers = Menu(Loc("showCustomers", ExtLink("/app/show?entityType=Customer"), "Customers", userLoggedIn, Hidden, LocGroup("customersetc")))
     // Add Quote Button
-    val addQuoteLoc = Menu(Loc("addQuote", new Link("app" :: "quote" :: Nil, false), "New Quote", userLoggedIn))
+    val addQuoteLoc = Menu(Loc("addQuote", new Link("app" :: "quote" :: Nil, false), "New Quote", userLoggedIn, Hidden, LocGroup("customersetc")))
 
-    // Payments Menu
+    // Payments Group
+    val addPayment = Menu(Loc("recordPayment", new Link("app" :: "recordPayment" :: Nil, false), "Record Payment(s)", userLoggedIn, Hidden, LocGroup("payments")))
+    val payInvoices = Menu(Loc("payInvoicesPayment", new Link("app" :: "payInvoices" :: Nil, false), "Pay Invoices", userLoggedIn, Hidden, LocGroup("payments")))
 
-    // Payments Button
-    val addPayment = Menu(Loc("recordPayment", new Link("app" :: "recordPayment" :: Nil, false), "Record Payment(s)", userLoggedIn))
-    val payInvoices = Menu(Loc("payInvoicesPayment", new Link("app" :: "payInvoices" :: Nil, false), "Pay Invoices", userLoggedIn))
-
-    // Display... locs hidden
+    // Main Menu Locs that are hidden - allows navigation
     val displayEntitiesLoc = Menu(Loc("displayEntities", new Link("app" :: "display" :: Nil, true), "Display Entities", Hidden, userLoggedIn))
 
     // Allow access to printing documents
@@ -128,7 +128,7 @@ class Boot extends Loggable {
     // Construct the menu list to use - separated into displayed and hidden
 
     // The order of addition here is the order the menus are displayed in the navigation bar
-    val displayedMenus = List(mainAppLoc, showCustomers, showParts, showPartKits, showVehicles, showSuppliers, /*searchLoc,*/ addQuoteLoc, addPayment, payInvoices)
+    val displayedMenus = List(mainAppLoc, showParts, showPartKits, showVehicles, showSuppliers, showCustomers, addQuoteLoc, addPayment, payInvoices)
     val hiddenMenues = List(displayEntitiesLoc, printDocumentsLoc, adminLoc, rootLoc)
 
     val menus = displayedMenus ::: hiddenMenues

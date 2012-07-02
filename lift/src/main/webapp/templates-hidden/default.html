@@ -1,5 +1,4 @@
-<html xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:lift="http://liftweb.net/">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:lift="http://liftweb.net/">
 <head>
 <meta http-equiv="content-type" content="text/html; charset=UTF-8"></meta>
 <meta name="description" content=""></meta>
@@ -7,27 +6,39 @@
 <title class="lift:Menu.title">C.A.T.9 Application:</title>
 <style class="lift:CSS.blueprint"></style>
 <style class="lift:CSS.fancyType"></style>
-<script id="jquery" src="/classpath/js/jquery/jquery-1.6.2.min.js"
-	type="text/javascript"></script>
-<script id="jquery-ui"
-	src="/classpath/js/jquery/jquery-ui-1.8.16.custom.min.js"
-	type="text/javascript"></script>
+<script id="jquery" src="/classpath/js/jquery/jquery-1.6.2.min.js" type="text/javascript"></script>
+<script id="jquery-ui" src="/classpath/js/jquery/jquery-ui-1.8.16.custom.min.js" type="text/javascript"></script>
 <script id="json" src="/classpath/json.js" type="text/javascript"></script>
-<link rel="stylesheet"
-	href="/classpath/css/jqueryui-theme/jquery-ui-1.8.16.custom.css"
-	type="text/css"></link>
+<link rel="stylesheet" href="/classpath/css/jqueryui-theme/jquery-ui-1.8.16.custom.css" type="text/css"></link>
 <link rel="stylesheet" href="/classpath/css/styles.css" type="text/css"></link>
 <link rel="shortcut icon" href="/favicon.png"></link>
-<script id="buttons" src="/classpath/js/jquery/buttons.js"
-	type="text/javascript"></script>
+<script id="buttons" src="/classpath/js/jquery/buttons.js" type="text/javascript"></script>
 </head>
 <body>
   <div class="container">
     <span class="lift:embed?what=_page_header">Page Header</span>
     <hr></hr>
     <div class="column span-4 colborder sidebar btn">
-      <h2 style="text-indent: 10px">Navigation</h2>
+      <h2 style="text-indent: 10px; text-decoration: underline; font-weight: bold;">Navigation</h2>
       <span class="lift:Menu.builder?linkToSelf=true&li_item:class=selected">Menu</span>
+      <hr class="space"></hr>
+      <ul>
+        <lift:Menu.group group="partsetc">
+          <li><menu:bind /></li>
+        </lift:Menu.group>
+      </ul>
+      <hr class="space"></hr>
+      <ul>
+        <lift:Menu.group group="customersetc">
+          <li><menu:bind /></li>
+        </lift:Menu.group>
+      </ul>
+      <hr class="space"></hr>
+      <ul>
+        <lift:Menu.group group="payments">
+          <li><menu:bind /></li>
+        </lift:Menu.group>
+      </ul>
       <hr class="space"></hr>
       <ul>
         <li><a href="/app/" target="_blank" style="min-width: 133px" class="ui-button">New Window</a></li>
