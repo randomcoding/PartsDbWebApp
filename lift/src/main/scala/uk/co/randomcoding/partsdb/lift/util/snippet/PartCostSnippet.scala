@@ -3,7 +3,6 @@
  */
 package uk.co.randomcoding.partsdb.lift.util.snippet
 
-import scala.Array.canBuildFrom
 import scala.xml.{ Text, Null, NodeSeq, Attribute }
 
 import org.joda.time.DateTime
@@ -12,16 +11,14 @@ import com.foursquare.rogue.Rogue._
 
 import uk.co.randomcoding.partsdb.core.address.Address
 import uk.co.randomcoding.partsdb.core.contact.ContactDetails
-import uk.co.randomcoding.partsdb.core.part.{ PartCost, Part }
+import uk.co.randomcoding.partsdb.core.part.{ Part, PartCost }
 import uk.co.randomcoding.partsdb.core.supplier.Supplier
-import uk.co.randomcoding.partsdb.lift.util.DateHelpers.dateString
+import uk.co.randomcoding.partsdb.lift.util.DateHelpers._
 import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
-import uk.co.randomcoding.partsdb.lift.util.snippet._
 import uk.co.randomcoding.partsdb.lift.util._
 
 import net.liftweb.common.{ Logger, Full }
 import net.liftweb.http.js.JsCmds.{ SetHtml, Replace, Noop }
-import net.liftweb.http.js.JsCmd.unitToJsCmd
 import net.liftweb.http.js.JsCmd
 import net.liftweb.http.SHtml
 import net.liftweb.util.Helpers._
@@ -36,16 +33,16 @@ trait PartCostSnippet extends ErrorDisplay with DataValidation with Logger {
 
   var currentPartCosts: List[PartCost]
 
-  private val parts = Part orderAsc (_.partName) fetch
-  val partsSelect = (None, "Select Part") :: (parts map ((p: Part) => (Some(p), p.partName.get)))
+  private[this] val parts = Part orderAsc (_.partName) fetch
+  private[this] val partsSelect = (None, "Select Part") :: (parts map ((p: Part) => (Some(p), p.partName.get)))
 
-  private var currentPart: Option[Part] = None
-  private var currentPartCost: Double = 0.0d
+  private[this] var currentPart: Option[Part] = None
+  private[this] var currentPartCost: Double = 0.0d
 
-  val defaultDate = new DateTime(1970, 1, 1, 12, 00)
+  //val defaultDate = new DateTime(1970, 1, 1, 12, 00)
 
-  private var currentPartLastSuppliedDate: DateTime = defaultDate
-  private var supplierPartNumber = ""
+  private[this] var currentPartLastSuppliedDate: Option[DateTime] = None
+  private[this] var supplierPartNumber = ""
 
   def renderAddPartCost() = {
     "#partSelect" #> styledAjaxObjectSelect(partsSelect, currentPart, updateAjaxValue[Option[Part]](currentPart = _, currentPartUpdated())) &
@@ -67,7 +64,7 @@ trait PartCostSnippet extends ErrorDisplay with DataValidation with Logger {
           }
           case _ => {
             updateCurrentPartCost("0.00")
-            updateCurrentPartLastSuppliedDate(dateString(defaultDate))
+            updateCurrentPartLastSuppliedDate("")
             updateSupplierPartNumber("")
 
           }
@@ -96,14 +93,22 @@ trait PartCostSnippet extends ErrorDisplay with DataValidation with Logger {
   private[this] def updateCurrentPartLastSuppliedDate(dateString: String) = {
     debug("Updating last supplied date to string %s".format(dateString))
     currentPartLastSuppliedDate = {
-      val dateParts = dateString split ("/") map (asInt(_) openOr -1)
-      if (dateParts contains -1) {
-        displayError("Cannot create Date from: %s".format(dateString))
-        defaultDate
-      }
-      else {
-        debug("Using d: %d m: %d y: %d".format(dateParts(0), dateParts(1), dateParts(2)))
-        new DateTime(dateParts(2), dateParts(1), dateParts(0), 12, 0)
+
+      val dateParts = dateString.split("/").toList.map(asInt(_) openOr -1)
+
+      dateParts match {
+        case badValues: List[_] if badValues.contains(-1) => {
+          displayError("Cannot create Date from: %s".format(dateString))
+          None
+        }
+        case List(d, m, y) => date("%02d/%02d/%04d".format(d, m, y)) match {
+          case dateTime: DateTime => Some(dateTime)
+          case _ => None
+        }
+        case _ => {
+          displayError("Cannot create Date from: %s".format(dateString))
+          None
+        }
       }
     }
   }
@@ -129,7 +134,7 @@ trait PartCostSnippet extends ErrorDisplay with DataValidation with Logger {
 
     validate(validations(): _*) match {
       case Nil => {
-        updatePartCosts(PartCost.create(currentPart.get, currentPartCost, currentPartLastSuppliedDate, supplierPartNumber))
+        updatePartCosts(PartCost.create(currentPart.get, currentPartCost, currentPartLastSuppliedDate.get, supplierPartNumber))
         clearErrorsAndRefresh
       }
       case errors => {
@@ -156,14 +161,14 @@ trait PartCostSnippet extends ErrorDisplay with DataValidation with Logger {
   }
 
   private[this] def clearErrorsAndRefresh(): JsCmd = {
-    clearErrors &
-      refreshPartCostDisplay
+    clearErrors
+    refreshPartCostDisplay
   }
 
   private[this] def resetCurrentPartCost() = {
     currentPart = None
     currentPartCost = 0.0d
-    currentPartLastSuppliedDate = defaultDate
+    currentPartLastSuppliedDate = None
   }
 
   private[this] def updatePartCosts(partCost: PartCost) = {
@@ -190,7 +195,13 @@ trait PartCostSnippet extends ErrorDisplay with DataValidation with Logger {
 
   private[this] def refreshCostEntry(): JsCmd = Replace("costEntry", <span>{ costEntryContent }</span> % Attribute(None, "id", Text("costEntry"), Null))
 
-  private[this] def lastSuppliedDateContent(): NodeSeq = styledAjaxText(dateString(currentPartLastSuppliedDate), updateAjaxValue(updateCurrentPartLastSuppliedDate(_)))
+  private[this] def lastSuppliedDateAsString = currentPartLastSuppliedDate match {
+    case Some(date) => dateString(date)
+    case _ => ""
+  }
+
+  private[this] def lastSuppliedDateContent(): NodeSeq = styledAjaxDatePicker("paymentDateEntry", lastSuppliedDateAsString, updateAjaxValue(updateCurrentPartLastSuppliedDate(_)), datePickerAttrs = List("readonly" -> "true"))
+  //styledAjaxText(lastSuppliedDateAsString, updateAjaxValue(updateCurrentPartLastSuppliedDate(_)))
 
   private[this] def refreshLastSuppliedDate(): JsCmd = Replace("lastSuppliedEntry", <span>{ lastSuppliedDateContent }</span> % Attribute(None, "id", Text("lastSuppliedEntry"), Null))
 
