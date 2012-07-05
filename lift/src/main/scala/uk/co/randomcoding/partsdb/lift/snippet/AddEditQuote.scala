@@ -43,13 +43,6 @@ class AddEditQuote extends StatefulSnippet with ErrorDisplay with DataValidation
 
   private[this] val customers = Customer orderDesc (_.customerName) fetch
   private[this] val customersSelect = (None, "Select Customer") :: (customers map ((c: Customer) => (Some(c), c.customerName.get)))
-  /*private[this] var currentCustomer: Option[Customer] = originalQuote match {
-    case Some(q) => Transaction.where(_.documents contains q.id.get).get() match {
-      case Some(t) => Customer.findById(t.customer.get)
-      case _ => None
-    }
-    case _ => None
-  }*/
 
   private[this] var customerName = dataHolder.customer match {
     case Some(cust) => cust.customerName.get
