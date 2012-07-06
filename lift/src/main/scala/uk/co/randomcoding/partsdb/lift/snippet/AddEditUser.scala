@@ -29,7 +29,7 @@ class AddEditUser extends StatefulSnippet with ErrorDisplay with DataValidation 
     case _ => None
   }
 
-  override val cameFrom = S.referer openOr "/admin/"
+  override val cameFrom = () => S.referer openOr "/admin/"
 
   private[this] var (userName, userRole) = initialUser match {
     case Some(u) => (u.username.get, u.role.get.toString)

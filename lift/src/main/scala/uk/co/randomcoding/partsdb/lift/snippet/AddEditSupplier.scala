@@ -24,7 +24,7 @@ import net.liftweb.util.Helpers._
  */
 class AddEditSupplier extends StatefulSnippet with AddressSnippet with ContactDetailsSnippet with PartCostSnippet with SubmitAndCancelSnippet with DataValidation with ErrorDisplay with Logger {
 
-  override val cameFrom = S.referer openOr "app/show?entityType=Supplier"
+  override val cameFrom = () => S.referer openOr "app/show?entityType=Supplier"
   /*
    * Have we been called with an id= param that is the id of a Supplier?
    */
@@ -99,10 +99,10 @@ class AddEditSupplier extends StatefulSnippet with AddressSnippet with ContactDe
         initialSupplier match {
           case Some(s) => {
             modifySupplier(s, supplierName, contacts.get, newAddress.get, currentPartCosts)
-            S redirectTo cameFrom
+            S redirectTo cameFrom()
           }
           case _ => addSupplier(supplierName, contacts.get, newAddress.get, currentPartCosts) match {
-            case Some(s) => S redirectTo cameFrom
+            case Some(s) => S redirectTo cameFrom()
             case _ => Noop
           }
         }

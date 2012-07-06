@@ -69,7 +69,7 @@ class AddEditInvoice extends StatefulValidatingErrorDisplaySnippet with Transact
 
   private[this] var confirmCloseDeliveryNotes = false
 
-  override lazy val cameFrom = customer match {
+  override val cameFrom = () => customer match {
     case Some(c) => "/app/display/customer?id=%s".format(c.id.get.toString)
     case _ => "/app/show?entityType=Customer"
   }

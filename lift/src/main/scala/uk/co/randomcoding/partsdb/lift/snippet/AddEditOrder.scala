@@ -27,10 +27,15 @@ import net.liftweb.util.ValueCell
  */
 class AddEditOrder extends StatefulValidatingErrorDisplaySnippet with TransactionSnippet with DocumentDataHolderTotalsDisplay with SubmitAndCancelSnippet with AllLineItemsSnippet with AvailableLineItemsDisplay {
 
-  override val cameFrom = S.referer openOr "/app/"
+  private[this] val defaultCameFrom = S.referer openOr "/app"
 
   override val dataHolder = new OrderDocumentDataHolder
   dataHolder.customer = customer
+
+  override val cameFrom = () => dataHolder.customer match {
+    case Some(cust) => "/app/display/customer?id=%s".format(cust.id.get)
+    case _ => defaultCameFrom
+  }
 
   private var customerPoRef = ""
   private var confirmCloseQuote = false

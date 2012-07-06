@@ -32,7 +32,7 @@ class AddEditPart extends StatefulSnippet with ErrorDisplay with DataValidation 
     case _ => None
   }
 
-  override val cameFrom = S.referer openOr "/app/show?entityType=Part"
+  override val cameFrom = () => S.referer openOr "/app/show?entityType=Part"
 
   var (partName, vehicle, modId) = initialPart match {
     case Some(part) => (part.partName.get, Vehicle.findById(part.vehicle.get), part.modId.get.getOrElse(""))

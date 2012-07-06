@@ -24,7 +24,7 @@ import net.liftweb.util.Helpers._
 class AddEditCustomer extends StatefulSnippet with ErrorDisplay with DataValidation with AddressSnippet with ContactDetailsSnippet with SubmitAndCancelSnippet with Logger {
   val terms = List(("30" -> "30"), ("45" -> "45"), ("60" -> "60"), ("90" -> "90"))
 
-  override val cameFrom = S.referer openOr "/app/show?entityType=Customer"
+  override val cameFrom = () => S.referer openOr "/app/show?entityType=Customer"
 
   val initialCustomer = S param "id" match {
     case Full(id) => Customer findById id
@@ -114,7 +114,7 @@ class AddEditCustomer extends StatefulSnippet with ErrorDisplay with DataValidat
     Address.add(billingAddress) match {
       case Some(addr) => {
         Customer.add(name, billingAddress, paymentTerms, contact) match {
-          case Some(c) => S redirectTo cameFrom
+          case Some(c) => S redirectTo cameFrom()
           case _ => {
             error("Failed to add new customer, [name: %s, address: %s, terms: %s, contact: %s".format(name, billingAddress, paymentTerms, contact))
             displayError("Failed to add Customer")
@@ -142,6 +142,6 @@ class AddEditCustomer extends StatefulSnippet with ErrorDisplay with DataValidat
 
     Customer.modify(cust.id.get, name, address.get, paymentTerms, contacts)
 
-    S redirectTo cameFrom
+    S redirectTo cameFrom()
   }
 }

@@ -19,7 +19,7 @@ trait SubmitAndCancelSnippet {
   /**
    * The location this page was reached from
    */
-  val cameFrom: String
+  val cameFrom: () => String
 
   /**
    * Renders buttons in the divs (or spans) with ids ''submit'' and ''cancel''
@@ -39,5 +39,5 @@ trait SubmitAndCancelSnippet {
   /**
    * Function called when the '''Cancel''' button is pressed
    */
-  def processCancel(): JsCmd = S redirectTo cameFrom
+  def processCancel(): JsCmd = S redirectTo cameFrom()
 }

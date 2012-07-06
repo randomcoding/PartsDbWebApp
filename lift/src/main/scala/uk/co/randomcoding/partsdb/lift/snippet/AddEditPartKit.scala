@@ -39,7 +39,7 @@ import net.liftweb.util.Helpers._
  */
 class AddEditPartKit extends StatefulSnippet with Logger with SubmitAndCancelSnippet with LineItemSnippet with AllLineItemsSnippet with ErrorDisplay with DataValidation {
 
-  override val cameFrom = S.referer openOr "/app/"
+  override val cameFrom = () => S.referer openOr "/app/"
 
   override val dataHolder = new PartKitDataHolder
 
@@ -76,7 +76,7 @@ class AddEditPartKit extends StatefulSnippet with Logger with SubmitAndCancelSni
 
   private[this] def responseForAddOrUpdate(func: () => Option[PartKit], addOrUpdate: String): JsCmd = {
     func() match {
-      case Some(pk) => S redirectTo cameFrom
+      case Some(pk) => S redirectTo cameFrom()
       case None => {
         displayError("Failed To %s Part Kit. Please Submit an error report.".format(addOrUpdate))
         Noop
