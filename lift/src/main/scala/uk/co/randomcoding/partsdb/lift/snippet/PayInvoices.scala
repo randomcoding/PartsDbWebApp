@@ -40,7 +40,7 @@ class PayInvoices extends StatefulSnippet with ErrorDisplay with Logger with Sub
 
   private[this] def textForPayment(payment: Payment): String = payment.unallocatedBalance == payment.paymentAmount.get match {
     case true => "%s %s (£%.2f)".format(payment.paymentReference.get, dateString(payment.paymentDate.get), payment.paymentAmount.get)
-    case false => "%s %s (£%.2f or £%.2f)".format(payment.paymentReference.get, dateString(payment.paymentDate.get), payment.unallocatedBalance, payment.paymentAmount.get)
+    case false => "%s %s (£%.2f of £%.2f)".format(payment.paymentReference.get, dateString(payment.paymentDate.get), payment.unallocatedBalance, payment.paymentAmount.get)
   }
 
   private[this] def paymentSelection: Seq[(Option[Payment], String)] = (None, "Select Payment") :: availablePayments
