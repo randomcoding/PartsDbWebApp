@@ -20,8 +20,6 @@ import uk.co.randomcoding.partsdb.core.system.SystemData
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
 trait DocumentTotalsDisplay {
-  private val vatRate = SystemData.vatRate
-
   /**
    * Render the actual values from the provided [[uk.co.randomcoding.partsdb.core.document.Document]]
    *
