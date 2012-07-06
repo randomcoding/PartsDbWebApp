@@ -36,7 +36,12 @@ class PayInvoices extends StatefulSnippet with ErrorDisplay with Logger with Sub
 
   private[this] val dataHolder = new InvoicePaymentDataHolder
 
-  private[this] def availablePayments = Payment.fetch() filterNot (_.isFullyAllocated) map (payment => (Some(payment), "%s %s (£%.2f)".format(payment.paymentReference.get, dateString(payment.paymentDate.get), payment.paymentAmount.get)))
+  private[this] def availablePayments = Payment.fetch() filterNot (_.isFullyAllocated) map (payment => (Some(payment), textForPayment(payment)))
+
+  private[this] def textForPayment(payment: Payment): String = payment.unallocatedBalance == payment.paymentAmount.get match {
+    case true => "%s %s (£%.2f)".format(payment.paymentReference.get, dateString(payment.paymentDate.get), payment.paymentAmount.get)
+    case false => "%s %s (£%.2f or £%.2f)".format(payment.paymentReference.get, dateString(payment.paymentDate.get), payment.unallocatedBalance, payment.paymentAmount.get)
+  }
 
   private[this] def paymentSelection: Seq[(Option[Payment], String)] = (None, "Select Payment") :: availablePayments
 
@@ -60,7 +65,6 @@ class PayInvoices extends StatefulSnippet with ErrorDisplay with Logger with Sub
     debug("Submit Pressed")
     performValidation() match {
       case Nil => {
-        // can commit to db
         val payment = dataHolder.payment.get
         debug("Committing payment %s to database with invoice payments %s".format(payment, dataHolder.payments.mkString("[", "\n", "]")))
 
