@@ -108,8 +108,8 @@ class PrintDocument extends StatefulSnippet with DocumentTotalsDisplay with Logg
   }
 
   private[this] def renderLineItem(lineItem: LineItem, isDeliveryNote: Boolean) = {
-    "#lineNumber" #> Text("%d".format(lineItem.lineNumber.get)) &
-      "#partName" #> Text(nameForPartOrKit(lineItem.partId.get)) &
+    /*"#lineNumber" #> Text("%d".format(lineItem.lineNumber.get) + 1) &*/
+    "#partName" #> Text(nameForPartOrKit(lineItem.partId.get)) &
       "#partQuantity" #> Text("%d".format(lineItem.quantity.get)) &
       "#partCost" #> (if (isDeliveryNote) Text("") else Text("£%.2f".format(lineItem.lineCost)))
   }
