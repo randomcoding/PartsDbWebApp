@@ -3,6 +3,11 @@
 	color: red;
 }
 
+.error-message {
+	color: red;
+	font-weight: bold;
+}
+
 .sidebar ul {
 	margin: 0;
 	padding: 0;
