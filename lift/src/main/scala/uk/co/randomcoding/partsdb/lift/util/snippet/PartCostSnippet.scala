@@ -97,18 +97,12 @@ trait PartCostSnippet extends ErrorDisplay with DataValidation with Logger {
       val dateParts = dateString.split("/").toList.map(asInt(_) openOr -1)
 
       dateParts match {
-        case badValues: List[_] if badValues.contains(-1) => {
-          displayError("Cannot create Date from: %s".format(dateString))
-          None
-        }
+        case badValues: List[_] if badValues.contains(-1) => None
         case List(d, m, y) => date("%02d/%02d/%04d".format(d, m, y)) match {
           case dateTime: DateTime => Some(dateTime)
           case _ => None
         }
-        case _ => {
-          displayError("Cannot create Date from: %s".format(dateString))
-          None
-        }
+        case _ => None
       }
     }
   }
@@ -201,7 +195,6 @@ trait PartCostSnippet extends ErrorDisplay with DataValidation with Logger {
   }
 
   private[this] def lastSuppliedDateContent(): NodeSeq = styledAjaxDatePicker("paymentDateEntry", lastSuppliedDateAsString, updateAjaxValue(updateCurrentPartLastSuppliedDate(_)), datePickerAttrs = List("readonly" -> "true"))
-  //styledAjaxText(lastSuppliedDateAsString, updateAjaxValue(updateCurrentPartLastSuppliedDate(_)))
 
   private[this] def refreshLastSuppliedDate(): JsCmd = Replace("lastSuppliedEntry", <span>{ lastSuppliedDateContent }</span> % Attribute(None, "id", Text("lastSuppliedEntry"), Null))
 
