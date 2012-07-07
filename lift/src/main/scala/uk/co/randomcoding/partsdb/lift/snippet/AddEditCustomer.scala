@@ -104,7 +104,7 @@ class AddEditCustomer extends StatefulSnippet with ErrorDisplay with DataValidat
         }
       }
       case errors => {
-        errors foreach (error => displayError(error))
+        displayErrors(errors: _*)
         Noop
       }
     }

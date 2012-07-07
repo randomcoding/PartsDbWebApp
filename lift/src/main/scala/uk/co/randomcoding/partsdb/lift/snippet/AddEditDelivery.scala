@@ -137,9 +137,6 @@ class AddEditDelivery extends StatefulValidatingErrorDisplaySnippet with Transac
     dataHolder.lineItemsCell.set(Nil)
   }
 
-  /*private[this] def refreshLineItemEntries(): JsCmd = ajaxInvoke(() => refreshAvailableLineItems(dataHolder.availableLineItems) &
-    refreshLineItemDisplay())._2.cmd*/
-
   override def validationItems = Seq(ValidationItem(dataHolder.selectedOrder, "Selected Order"))
 
   override def checkBoxSelected(selected: Boolean, line: LineItem): JsCmd = {

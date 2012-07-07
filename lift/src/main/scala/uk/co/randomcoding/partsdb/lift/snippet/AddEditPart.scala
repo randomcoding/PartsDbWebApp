@@ -82,7 +82,7 @@ class AddEditPart extends StatefulSnippet with ErrorDisplay with DataValidation 
         S redirectTo "/app/show?entityType=Part"
       }
       case errors => {
-        errors foreach (error => displayError(error))
+        displayErrors(errors: _*)
         Noop
       }
     }
