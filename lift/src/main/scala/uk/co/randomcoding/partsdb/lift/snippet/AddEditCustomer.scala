@@ -40,7 +40,7 @@ import net.liftweb.util.Helpers._
 class AddEditCustomer extends StatefulSnippet with ErrorDisplay with DataValidation with AddressSnippet with ContactDetailsSnippet with SubmitAndCancelSnippet with Logger {
   val terms = List(("30" -> "30"), ("45" -> "45"), ("60" -> "60"), ("90" -> "90"))
 
-  override val cameFrom = () => S.referer openOr "/app/show?entityType=Customer"
+  override val cameFrom = () => "/app/show?entityType=Customer"
 
   val initialCustomer = S param "id" match {
     case Full(id) => Customer findById id
