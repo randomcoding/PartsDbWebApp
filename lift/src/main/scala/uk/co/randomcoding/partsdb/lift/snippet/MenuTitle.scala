@@ -57,7 +57,6 @@ object MenuTitle extends Logger {
     debug("Query Params: %s".format(if (queryParams.isEmpty) "Empty" else queryParams.mkString("[", ", ", "]")))
 
     "*" #> <title>{ titleForPage(url, queryParams) }</title>
-
   }
 
   private[this] def title(title: String) = "%s %s".format(titlePrefix, title)
@@ -78,13 +77,7 @@ object MenuTitle extends Logger {
       case "app" :: "invoice" :: Nil => title("New Invoice")
       case "app" :: "recordPayment" :: Nil => title("Record Payments")
       case "app" :: "payInvoices" :: Nil => title("Pay Invoices")
-      case "app" :: "print" :: "printdocument" :: Nil => title("Print - %s".format(queryParams.get("documentId") match {
-        case Some(docId) => Document.findById(docId) match {
-          case Some(doc) => doc.documentNumber
-          case _ => "Unknown Document"
-        }
-        case _ => "Unknown Document"
-      }))
+      case "app" :: "print" :: "printdocument" :: Nil => title("Print - %s".format(titleForPrintDocument(queryParams.get("documentId"))))
       case "app" :: entityType :: Nil => title(queryParams.get("id") match {
         case Some(id) => title(entityNameForTitle(entityType, id))
         case _ => title("New %s".format(upperTitle(entityType)))
@@ -94,7 +87,15 @@ object MenuTitle extends Logger {
     }
   }
 
-  def upperTitle(name: String) = name match {
+  private[this] def titleForPrintDocument(docIdParam: Option[String]) = docIdParam match {
+    case Some(docId) => Document.findById(docId) match {
+      case Some(doc) => doc.documentNumber
+      case _ => "Unknown Document"
+    }
+    case _ => "Unknown Document"
+  }
+
+  private[this] def upperTitle(name: String) = name match {
     case "supplier" => "Supplier"
     case "vehicle" => "Vehicle"
     case "part" => "Part"
