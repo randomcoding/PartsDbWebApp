@@ -17,33 +17,32 @@
  * Contributors:
  *    RandomCoder - initial API and implementation and/or initial documentation
  */
-
-/**
- *
- */
 package uk.co.randomcoding.partsdb.lift.snippet.print
 
 import scala.io.Source
 import scala.xml.{ Text, NodeSeq }
-import org.bson.types.ObjectId
+
 import com.foursquare.rogue.Rogue._
+
 import uk.co.randomcoding.partsdb.core.address.Address
 import uk.co.randomcoding.partsdb.core.customer.Customer
 import uk.co.randomcoding.partsdb.core.document.DocumentType.{ Quote, Order, Invoice, DeliveryNote }
 import uk.co.randomcoding.partsdb.core.document.{ LineItem, DocumentType, Document }
-import uk.co.randomcoding.partsdb.core.part.Part
+import uk.co.randomcoding.partsdb.core.part.{ PartKit, Part }
 import uk.co.randomcoding.partsdb.core.transaction.Transaction
 import uk.co.randomcoding.partsdb.core.util.MongoHelpers._
 import uk.co.randomcoding.partsdb.core.util.CountryCodes
 import uk.co.randomcoding.partsdb.lift.util.DateHelpers._
 import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
 import uk.co.randomcoding.partsdb.lift.util.snippet.display.DocumentTotalsDisplay
+
 import net.liftweb.common.{ Logger, Full }
 import net.liftweb.http.{ StatefulSnippet, S }
 import net.liftweb.util.Helpers._
-import uk.co.randomcoding.partsdb.core.part.PartKit
 
 /**
+ * Snippet to display the printable preview of a [[uk.co.randomcoding.partsdb.core.document.Document]]
+ *
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
 class PrintDocument extends StatefulSnippet with DocumentTotalsDisplay with Logger {
@@ -134,7 +133,7 @@ class PrintDocument extends StatefulSnippet with DocumentTotalsDisplay with Logg
       "#partCost" #> (if (isDeliveryNote) Text("") else Text("£%.2f".format(lineItem.lineCost)))
   }
 
-  private[this] def nameForPartOrKit(partId: ObjectId) = {
+  private[this] def nameForPartOrKit(partId: String) = {
     Part findById partId match {
       case Some(p) => p.partName.get
       case _ => PartKit.findById(partId) match {

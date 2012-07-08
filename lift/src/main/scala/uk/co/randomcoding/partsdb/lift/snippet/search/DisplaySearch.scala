@@ -17,10 +17,6 @@
  * Contributors:
  *    RandomCoder - initial API and implementation and/or initial documentation
  */
-
-/**
- *
- */
 package uk.co.randomcoding.partsdb.lift.snippet.search
 
 import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
@@ -35,6 +31,7 @@ import net.liftweb.util.Helpers._
 
 /**
  * Displays the search options and results.
+ *
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
 class DisplaySearch extends Logger {

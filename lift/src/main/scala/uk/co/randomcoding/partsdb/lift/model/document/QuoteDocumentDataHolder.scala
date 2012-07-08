@@ -17,10 +17,6 @@
  * Contributors:
  *    RandomCoder - initial API and implementation and/or initial documentation
  */
-
-/**
- *
- */
 package uk.co.randomcoding.partsdb.lift.model.document
 
 import com.foursquare.rogue.Rogue._
@@ -31,6 +27,8 @@ import uk.co.randomcoding.partsdb.core.customer.Customer
 import uk.co.randomcoding.partsdb.core.transaction.Transaction
 
 /**
+ * Data Holder class for creation of a `Quote`
+ *
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
 class QuoteDocumentDataHolder extends DocumentDataHolder with NewLineItemDataHolder {

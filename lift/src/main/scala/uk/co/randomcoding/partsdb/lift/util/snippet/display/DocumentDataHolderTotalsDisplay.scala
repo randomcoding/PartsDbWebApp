@@ -17,10 +17,6 @@
  * Contributors:
  *    RandomCoder - initial API and implementation and/or initial documentation
  */
-
-/**
- *
- */
 package uk.co.randomcoding.partsdb.lift.util.snippet.display
 
 import uk.co.randomcoding.partsdb.lift.model.document.DocumentDataHolder

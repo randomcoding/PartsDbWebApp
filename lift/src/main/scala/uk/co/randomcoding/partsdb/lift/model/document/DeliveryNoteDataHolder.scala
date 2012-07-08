@@ -17,21 +17,16 @@
  * Contributors:
  *    RandomCoder - initial API and implementation and/or initial documentation
  */
-
-/**
- *
- */
 package uk.co.randomcoding.partsdb.lift.model.document
 
-import net.liftweb.util.Cell
-import net.liftweb.util.ValueCell
-import uk.co.randomcoding.partsdb.core.document.Document
 import uk.co.randomcoding.partsdb.core.address.Address
-import uk.co.randomcoding.partsdb.core.document.LineItem
-import uk.co.randomcoding.partsdb.core.system.SystemData
-import uk.co.randomcoding.partsdb.core.customer.Customer
+import uk.co.randomcoding.partsdb.core.document.{ LineItem, Document }
+
+import net.liftweb.util.{ ValueCell, Cell }
 
 /**
+ * Data Holder for new `Delivery Note`s
+ *
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
 class DeliveryNoteDataHolder extends DocumentDataHolder with LineItemsDataHolder {
@@ -58,8 +53,6 @@ class DeliveryNoteDataHolder extends DocumentDataHolder with LineItemsDataHolder
     case Some(o) => o.lineItems.get
     case _ => Nil
   })
-
-  // Accessor functions
 
   def selectedOrder = selectedOrderCell.get
 

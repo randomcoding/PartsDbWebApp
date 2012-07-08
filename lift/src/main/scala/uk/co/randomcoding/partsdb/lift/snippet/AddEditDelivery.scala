@@ -17,10 +17,6 @@
  * Contributors:
  *    RandomCoder - initial API and implementation and/or initial documentation
  */
-
-/**
- *
- */
 package uk.co.randomcoding.partsdb.lift.snippet
 
 import scala.xml.Text
@@ -126,7 +122,6 @@ class AddEditDelivery extends StatefulValidatingErrorDisplaySnippet with Transac
       displayErrors(errors: _*)
       dataHolder.lineItems foreach (dataHolder.removeLineItem)
       updateOrderValue(None)
-      //refreshLineItemEntries
       Noop
     }
   }

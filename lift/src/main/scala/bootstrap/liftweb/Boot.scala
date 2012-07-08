@@ -65,7 +65,6 @@ class Boot extends Loggable {
       case _ => -1
     }
 
-    // Perform any required database update operations
     DatabaseMigration.migrateToVersion(newDatabaseVersion) match {
       case Nil => logger.info("Successfully migrated to database version: %d".format(newDatabaseVersion))
       case errors => {

@@ -17,10 +17,6 @@
  * Contributors:
  *    RandomCoder - initial API and implementation and/or initial documentation
  */
-
-/**
- *
- */
 package uk.co.randomcoding.partsdb.lift.snippet.js
 
 import net.liftweb.http.js._
@@ -28,6 +24,8 @@ import net.liftweb.http.js.JsCmds._
 import net.liftweb.http.js.JE._
 
 /**
+ * Common versions of JQuery Scripts to embed in pages.
+ *
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
 object JsScripts {

@@ -17,10 +17,6 @@
  * Contributors:
  *    RandomCoder - initial API and implementation and/or initial documentation
  */
-
-/**
- *
- */
 package uk.co.randomcoding.partsdb.lift.snippet.display
 
 import scala.xml.Text
@@ -39,15 +35,14 @@ import net.liftweb.http.S
 import net.liftweb.util.Helpers._
 
 /**
+ * Snippet to display the data for a [[uk.co.randomcoding.partsdb.core.transaction.Transaction]]
+ *
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
 object DisplayTransaction extends TabDisplaySnippet with Logger {
 
   override val tabTitles = Seq(("quoteResults", "Quoted"), ("orderResults", "Ordered"), ("deliveryNoteResults", "Delivered"), ("invoiceResults", "Invoiced"))
 
-  /*
-   * Form a closure over passed in data to enable the rendering of the correct info
-   */
   def render = {
     val cameFrom = S.referer openOr "/app/show?entityType=Customer"
 
@@ -71,10 +66,6 @@ object DisplayTransaction extends TabDisplaySnippet with Logger {
           "#invoices *" #> InvoiceDetailDisplay(documents filter (_.documentType.get == Invoice), transactionId)
       }
     }
-
-    /*
-     * Perform actual render of page
-     */
 
     debug("Rendering details for transaction: %s".format(transaction))
     val transactionTitleText = transaction match {

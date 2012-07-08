@@ -17,10 +17,6 @@
  * Contributors:
  *    RandomCoder - initial API and implementation and/or initial documentation
  */
-
-/**
- *
- */
 package uk.co.randomcoding.partsdb.lift.model.document
 
 import uk.co.randomcoding.partsdb.core.document.LineItem
@@ -33,6 +29,12 @@ import uk.co.randomcoding.partsdb.core.part.PartKit
 import uk.co.randomcoding.partsdb.core.supplier.Supplier
 
 /**
+ * Data Holder for a collection of [[uk.co.randomcoding.partsdb.core.document.LineItem]]s
+ *
+ * Provides means to add and remove items from the backing collection.
+ *
+ * Utilises [[net.liftweb.util.Cell]]s to enable use with lift's [[net.liftweb.http.WiringUI]]
+ *
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
 trait LineItemsDataHolder extends Logger {

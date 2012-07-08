@@ -17,10 +17,6 @@
  * Contributors:
  *    RandomCoder - initial API and implementation and/or initial documentation
  */
-
-/**
- *
- */
 package uk.co.randomcoding.partsdb.lift.snippet.display
 
 import scala.xml.Text
@@ -40,12 +36,14 @@ import net.liftweb.http.{ StatefulSnippet, S }
 import net.liftweb.util.Helpers._
 
 /**
+ * Snippet to display the general details and transactions associated with a [[uk.co.randomcoding.partsdb.core.customer.Customer]]
+ *
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
 class DisplayCustomer extends StatefulSnippet with ErrorDisplay with AddressSnippet with ContactDetailsSnippet with TabDisplaySnippet with Logger {
   override val tabTitles = Seq(("quoteResults", "Quoted"), ("orderResults", "Ordered"), ("deliveryNoteResults", "Delivered"), ("invoiceResults", "Invoiced"), ("completedResults", "Completed"))
 
-  private val cameFrom = S.referer openOr "/app/show?entityType=Customer"
+  private val cameFrom = "/app/show?entityType=Customer"
 
   private val initialCustomer = S param "id" match {
     case Full(id) => Customer findById id

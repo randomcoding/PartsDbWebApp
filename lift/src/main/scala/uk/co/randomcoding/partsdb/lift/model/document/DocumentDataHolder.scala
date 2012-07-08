@@ -17,10 +17,6 @@
  * Contributors:
  *    RandomCoder - initial API and implementation and/or initial documentation
  */
-
-/**
- *
- */
 package uk.co.randomcoding.partsdb.lift.model.document
 
 import org.bson.types.ObjectId
@@ -98,8 +94,6 @@ trait DocumentDataHolder extends Logger {
    * Calculated total cost of all line items
    */
   private[this] lazy val total = preTaxTotal.lift(tax)(_ + _)
-
-  // Values for display in the GUI
 
   /**
    * Display the pre-tax total for the line items only in £0.00 format.

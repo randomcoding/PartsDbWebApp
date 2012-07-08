@@ -17,10 +17,6 @@
  * Contributors:
  *    RandomCoder - initial API and implementation and/or initial documentation
  */
-
-/**
- *
- */
 package uk.co.randomcoding.partsdb.lift.model.document
 
 import org.bson.types.ObjectId
@@ -52,8 +48,6 @@ trait NewLineItemDataHolder extends LineItemsDataHolder with Logger {
    * The default markup rate for new lines
    */
   val DEFAULT_MARKUP = 25;
-
-  // Cells to maintain values for current new line values
 
   /**
    * The currently selected part for the line

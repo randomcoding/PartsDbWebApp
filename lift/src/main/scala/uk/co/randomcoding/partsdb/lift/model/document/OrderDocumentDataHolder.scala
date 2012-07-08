@@ -17,16 +17,14 @@
  * Contributors:
  *    RandomCoder - initial API and implementation and/or initial documentation
  */
-
-/**
- *
- */
 package uk.co.randomcoding.partsdb.lift.model.document
 
 import net.liftweb.util.Cell
 import uk.co.randomcoding.partsdb.core.customer.Customer
 
 /**
+ * Data Holder class for the creation of an `Order`
+ *
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
 class OrderDocumentDataHolder extends DocumentDataHolder with LineItemsDataHolder {

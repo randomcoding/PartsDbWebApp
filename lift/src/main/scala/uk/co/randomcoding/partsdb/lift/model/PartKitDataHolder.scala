@@ -25,6 +25,8 @@ import uk.co.randomcoding.partsdb.lift.model.document.NewLineItemDataHolder
 import net.liftweb.util.ValueCell
 
 /**
+ * Data Holder class for [[uk.co.randomcoding.partsdb.core.part.PartKit]] creation
+ *
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
 class PartKitDataHolder extends NewLineItemDataHolder {
