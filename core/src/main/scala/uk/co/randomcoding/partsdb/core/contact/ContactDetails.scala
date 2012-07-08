@@ -1,12 +1,26 @@
-/**
+/*
+ * Copyright (C) 2012 RandomCoder <randomcoder@randomcoding.co.uk>
  *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * Contributors:
+ *    RandomCoder - initial API and implementation and/or initial documentation
  */
 package uk.co.randomcoding.partsdb.core.contact
 
-import net.liftweb.mongodb.record.field._
 import net.liftweb.mongodb.record._
 import net.liftweb.record.field._
-import scala.math.Ordering.String
 
 /**
  * Some contact details for a customer or supplier.
@@ -16,14 +30,20 @@ import scala.math.Ordering.String
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  *
  */
-class ContactDetails private () extends BsonRecord[ContactDetails] { // with ObjectIdPk[ContactDetails] {
+class ContactDetails private () extends BsonRecord[ContactDetails] {
+
   def meta = ContactDetails
 
   object contactName extends StringField(this, 50)
+
   object phoneNumber extends StringField(this, 50)
+
   object mobileNumber extends StringField(this, 50)
+
   object emailAddress extends StringField(this, 50)
+
   object faxNumber extends StringField(this, 50)
+
   object isPrimary extends BooleanField(this)
 
   override def equals(that: Any): Boolean = that match {
@@ -53,8 +73,6 @@ class ContactDetails private () extends BsonRecord[ContactDetails] { // with Obj
 }
 
 object ContactDetails extends ContactDetails with BsonMetaRecord[ContactDetails] {
-  import org.bson.types.ObjectId
-  import com.foursquare.rogue.Rogue._
 
   /**
    * Create a new `ContactDetails` record

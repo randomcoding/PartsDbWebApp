@@ -1,11 +1,26 @@
-/**
+/*
+ * Copyright (C) 2012 RandomCoder <randomcoder@randomcoding.co.uk>
  *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * Contributors:
+ *    RandomCoder - initial API and implementation and/or initial documentation
  */
 package uk.co.randomcoding.partsdb.core.address
 
 import uk.co.randomcoding.partsdb.core.util.CountryCodes._
 import uk.co.randomcoding.partsdb.core.util.CountryCode
-import uk.co.randomcoding.partsdb.core.util.CountryCode._
 
 /**
  * Parses address strings into [[uk.co.randomcoding.partsdb.core.address.Address]]es
@@ -36,7 +51,7 @@ object AddressParser {
    * If there is a country code match (either on the country code or full name) and the address lines are not basically empty,
    * then an [[uk.co.randomcoding.partsdb.core.address.Address]] is generated and wrapped in an `Option`
    *
-   * @return An Option[[[uk.co.randomcoding.partsdb.core.address.Address]]] if the input string matches
+   * @return An Option[[[ uk.co.randomcoding.partsdb.core.address.Address]]] if the input string matches
    */
   def unapply(nameAndAddress: (String, Seq[String], String)): Option[Address] = {
     nameAndAddress match {
@@ -66,32 +81,4 @@ object AddressParser {
    * This needs a better means of country identification
    */
   private def identifyCountry(country: String): Option[CountryCode] = matchToCountryCode(country)
-
-  /**
-   * Performs shortcut matching on addresses.
-   *
-   * This allows an address's country to be identified without it being explicitly stated in the address text
-   * as is likely to be the case for UK addresses.
-   *
-   * Currently identifies a UK Post Code and returns `Some("UK")`
-   *
-   * @return An `Option[String]` with the country's code is a quick match was possible, otherwise returns `None`
-   */
-  /*private def quickCountryMatch(addressLines: Seq[String]): Option[String] = {
-    var quickMatch: Option[String] = None
-    if (hasPostCode(addressLines)) quickMatch = Some("UK")
-
-    quickMatch
-  }
-
-  private val postCodeRegex = """[A-Z]{1,2}[1-9][0-9]? [0-9][A-Z]{2}""".r
-  private val zipCodeRegex = """[0-9]{5,6}""".r
-
-  private val zipCodeOption = (addressLine: String) => zipCodeRegex.findFirstIn(addressLine)
-
-  private val postCodeOption = (addressLine: String) => postCodeRegex.findFirstIn(addressLine)
-
-  private val isCode = (line: String, codeMatchOption: (String => Option[String])) => codeMatchOption(line) isDefined
-
-  private val hasPostCode = (addressLines: Seq[String]) => addressLines.find(isCode(_, postCodeOption)).isDefined*/
 }
