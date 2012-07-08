@@ -1,4 +1,23 @@
 <!DOCTYPE html>
+<!--
+  ~ Copyright (C) 2012 RandomCoder <randomcoder@randomcoding.co.uk>
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU Affero General Public License as
+  ~ published by the Free Software Foundation, either version 3 of the
+  ~ License, or (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU Affero General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  ~
+  ~ Contributors:
+  ~    RandomCoder - initial API and implementation and/or initial documentation
+  -->
 <html>
 <head>
 <meta content="text/html; charset=UTF-8" http-equiv="content-type" />
@@ -6,6 +25,7 @@
 </head>
 <body class="lift:content_id=main">
   <div id="main" class="lift:surround?with=default;at=content">
+    <script class="lift:js/JsScripts.calendarScript?eager_eval=true"></script>
     <div class="lift:AddEditSupplier?form=POST&eager_eval=true">
       <div style="width: 98%" align="center"></div>
       <div class="form-title">
@@ -15,16 +35,16 @@
       <div class="column span-14 last">
         <span id="nameEntry">Supplier Name Text Entry Here</span>
       </div>
-      <span class="lift:embed?what=_address_display">Embedded Address details</span> 
-      <span class="lift:embed?what=_contact_details_display">Embedded Contact Details details</span>
+      <span class="lift:embed?what=_address_display">Embedded Address details</span> <span
+        class="lift:embed?what=_contact_details_display">Embedded Contact Details details</span>
       <hr class="space" />
       <div class="column span-19 last form-label">Add Part Cost</div>
-      <div class="column span-5 form-label">Part</div>
+      <div class="column span-4 form-label">Part</div>
       <div class="coumn span-2 form-label">Cost (&pound;)</div>
-      <div class="coumn span-3 form-label">Last Supplied</div>
+      <div class="coumn span-4 form-label">Last Supplied</div>
       <div class="coumn span-4 form-label">Supplier Part No.</div>
       <div class="column span-5 last form-label">&nbsp;</div>
-      <div class="column span-5">
+      <div class="column span-4">
         <span id="partSelect">Part Selection</span>
       </div>
       <div class="coumn span-2">
@@ -32,7 +52,7 @@
           <span id="costEntry">Cost Entry</span>
         </div>
       </div>
-      <div class="coumn span-3">
+      <div class="coumn span-4">
         <span id="lastSuppliedEntry">Last Supplied Date</span>
       </div>
       <div class="coumn span-4">

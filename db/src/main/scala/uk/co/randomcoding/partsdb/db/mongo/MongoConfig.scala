@@ -1,5 +1,21 @@
-/**
+/*
+ * Copyright (C) 2011 RandomCoder <randomcoder@randomcoding.co.uk>
  *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * Contributors:
+ *    RandomCoder - initial API and implementation and/or initial documentation
  */
 package uk.co.randomcoding.partsdb.db.mongo
 
@@ -25,7 +41,7 @@ object MongoConfig extends Logger {
   private var usingCloudfoundry = false
   private var cloudfoundryDbName = ""
 
-  // Case classes required to parse CloudFoundry JSON                                                                                                      
+  // Case classes required to parse CloudFoundry JSON
   case class CloudFoundryMongo(name: String, label: String, plan: String, credentials: CloudFoundryMongoCredentials)
   case class CloudFoundryMongoCredentials(hostname: String, port: String, username: String, password: String, name: String, db: String)
 
@@ -103,7 +119,7 @@ object MongoConfig extends Logger {
   }
 
   private[this] def extractConfigFromCfJson(ary: Seq[JValue]) = {
-    // TODO: This loop could/should be made to identify the element it wants and then use just that one 
+    // TODO: This loop could/should be made to identify the element it wants and then use just that one
     var config: Option[MongoConnectionConfig] = None
 
     ary foreach { mongoJson =>

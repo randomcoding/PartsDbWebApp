@@ -1,5 +1,21 @@
-/**
+/*
+ * Copyright (C) 2012 RandomCoder <randomcoder@randomcoding.co.uk>
  *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * Contributors:
+ *    RandomCoder - initial API and implementation and/or initial documentation
  */
 package uk.co.randomcoding.partsdb.lift.snippet.display
 
@@ -20,12 +36,14 @@ import net.liftweb.http.{ StatefulSnippet, S }
 import net.liftweb.util.Helpers._
 
 /**
+ * Snippet to display the general details and transactions associated with a [[uk.co.randomcoding.partsdb.core.customer.Customer]]
+ *
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
 class DisplayCustomer extends StatefulSnippet with ErrorDisplay with AddressSnippet with ContactDetailsSnippet with TabDisplaySnippet with Logger {
   override val tabTitles = Seq(("quoteResults", "Quoted"), ("orderResults", "Ordered"), ("deliveryNoteResults", "Delivered"), ("invoiceResults", "Invoiced"), ("completedResults", "Completed"))
 
-  private val cameFrom = S.referer openOr "/app/show?entityType=Customer"
+  private val cameFrom = "/app/show?entityType=Customer"
 
   private val initialCustomer = S param "id" match {
     case Full(id) => Customer findById id

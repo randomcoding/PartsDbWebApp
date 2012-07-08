@@ -1,11 +1,11 @@
 /*
  * Copyright (C) 2012 RandomCoder <randomcoder@randomcoding.co.uk>
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -13,7 +13,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  * Contributors:
  *    RandomCoder - initial API and implementation and/or initial documentation
  */
@@ -39,7 +39,7 @@ import net.liftweb.util.Helpers._
  */
 class AddEditPartKit extends StatefulSnippet with Logger with SubmitAndCancelSnippet with LineItemSnippet with AllLineItemsSnippet with ErrorDisplay with DataValidation {
 
-  override val cameFrom = S.referer openOr "/app/"
+  override val cameFrom = () => "/app/show?entityType=PartKit"
 
   override val dataHolder = new PartKitDataHolder
 
@@ -76,7 +76,7 @@ class AddEditPartKit extends StatefulSnippet with Logger with SubmitAndCancelSni
 
   private[this] def responseForAddOrUpdate(func: () => Option[PartKit], addOrUpdate: String): JsCmd = {
     func() match {
-      case Some(pk) => S redirectTo cameFrom
+      case Some(pk) => S redirectTo cameFrom()
       case None => {
         displayError("Failed To %s Part Kit. Please Submit an error report.".format(addOrUpdate))
         Noop

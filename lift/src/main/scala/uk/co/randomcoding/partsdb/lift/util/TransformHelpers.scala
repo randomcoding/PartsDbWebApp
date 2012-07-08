@@ -1,5 +1,21 @@
-/**
+/*
+ * Copyright (C) 2012 RandomCoder <randomcoder@randomcoding.co.uk>
  *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * Contributors:
+ *    RandomCoder - initial API and implementation and/or initial documentation
  */
 package uk.co.randomcoding.partsdb.lift.util
 
@@ -46,7 +62,7 @@ object TransformHelpers {
    * @param linkTarget The url of the destination of the link
    * @param buttonFunc The function to execute to button press. Defaults to a `noopFunction`
    * @param attrs The additional attributes to set on the link
-   * @return a [[scala.xml.NodeSeq]] for a link with an inner span and the class attribute of the `<a>` element set to `button`
+   * @return a [[scala.xml.NodeSeq]] for a link with an inner span and the class attribute of the `<a>` element set to `btn`
    */
   def buttonLink(linkText: String, linkTarget: String, buttonFunc: () => Any = noopFunction, attrs: List[ElemAttr] = Nil): NodeSeq = {
     span(attrLink(linkText, linkTarget, buttonFunc, attrs: _*), Noop, "class" -> "btn")
@@ -58,9 +74,10 @@ object TransformHelpers {
    * @param linkText The text that it to be inside the button
    * @param linkTarget The url of the destination of the link
    * @param linkFunc The function to execute when the link is selected. Defaults to a `noopFunction`
+   * @param attrs The additional attributes to set on the link
    */
-  def plainLink(linkText: String, linkTarget: String, linkFunc: () => Any = noopFunction): NodeSeq = {
-    attrLink(linkText, linkTarget, linkFunc)
+  def plainLink(linkText: String, linkTarget: String, linkFunc: () => Any = noopFunction, attrs: List[ElemAttr] = Nil): NodeSeq = {
+    attrLink(linkText, linkTarget, linkFunc, attrs: _*)
   }
 
   /**

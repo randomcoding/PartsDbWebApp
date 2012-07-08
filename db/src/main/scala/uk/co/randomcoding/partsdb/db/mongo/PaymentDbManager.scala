@@ -1,9 +1,18 @@
 /*
- * Copyright (c) 2012 RandomCoder <randomcoder@randomcoding.co.uk>
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (C) 2012 RandomCoder <randomcoder@randomcoding.co.uk>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  * Contributors:
  *    RandomCoder - initial API and implementation and/or initial documentation
@@ -37,7 +46,7 @@ object PaymentDbManager extends Logger {
 
   /*
    * By the time we get here all the validation checks have passed so all invoices referenced in the `invoicePayments` are in the database
-   * and the payments do not overpay the invoices.
+   * and the payments do not over pay the invoices.
    *
    * Here we add the payments to the database and if that went ok then update the relevant invoices and transactions
    */
@@ -138,7 +147,6 @@ object PaymentDbManager extends Logger {
    *         If there is an error in the close operation then this will be `None`
    */
   private[this] def closeInvoiceIfFullyPaid(invPayment: InvoicePayment): Option[Document] = {
-    // if the payment is for the remaining balance of the invoice close the invoice
     val invoiceId = invPayment.paidInvoice.get
     val invoice = Document.findById(invoiceId).get
 

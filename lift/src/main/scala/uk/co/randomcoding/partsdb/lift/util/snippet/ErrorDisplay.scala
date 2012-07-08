@@ -1,5 +1,21 @@
-/**
+/*
+ * Copyright (C) 2012 RandomCoder <randomcoder@randomcoding.co.uk>
  *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * Contributors:
+ *    RandomCoder - initial API and implementation and/or initial documentation
  */
 package uk.co.randomcoding.partsdb.lift.util.snippet
 
@@ -10,38 +26,25 @@ import net.liftweb.http.S
  */
 trait ErrorDisplay {
   private[this] val ERROR_MESSAGE_ELEMENT_ID = "errorMessages"
-  /**
-   * Displays an error message from a snippet
-   *
-   * @param formId The id of the element on the form web page to display the error at.
-   * @param errorMessage The text of the error message to display
-   */
-  @deprecated("Use displayError(String) instead", "0.1")
-  def displayError(formId: String, errorMessage: String): Unit = displayError(errorMessage)
 
   /**
    * Displays an error message from a snippet
    *
    * @param errorMessage The text of the error message to display
    */
-  def displayError(errorMessage: String): Unit = S.error(ERROR_MESSAGE_ELEMENT_ID, errorMessage)
+  def displayError(errorMessage: String): Unit = displayErrors(errorMessage)
 
   /**
    * Display a series of error messages
    */
-  def displayErrors(errorMessages: String*): Unit = errorMessages foreach displayError
+  def displayErrors(errorMessages: String*): Unit = {
+    val errorNodes = errorMessages map (message => <li class="error-message">{ message }</li>)
 
-  /**
-   * Delegate to [[uk.co.randomcoding.partsdb.lift.util.snippet.ErrorDisplay#displayError(String,String)]]
-   *
-   * @param errors One or more `Tuple2[String, String]` which are mapped to the parameters of the delegated method
-   */
-  @deprecated("Use displayErrors(String*) instead", "0.1")
-  def displayError(errors: (String, String)*): Unit = errors foreach { error => displayError(error._2) }
+    S.error(ERROR_MESSAGE_ELEMENT_ID, <ul>{ errorNodes }</ul>)
+  }
 
   /**
    * Remove all errors from the display
    */
-  def clearErrors: Unit = S.error(Nil)
-
+  def clearErrors: Unit = S.error(ERROR_MESSAGE_ELEMENT_ID, Nil)
 }

@@ -1,5 +1,21 @@
-/**
+/*
+ * Copyright (C) 2012 RandomCoder <randomcoder@randomcoding.co.uk>
  *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * Contributors:
+ *    RandomCoder - initial API and implementation and/or initial documentation
  */
 package uk.co.randomcoding.partsdb.lift.snippet
 
@@ -60,10 +76,10 @@ class AddEditDelivery extends StatefulValidatingErrorDisplaySnippet with Transac
 
   private[this] var confirmCloseOrder = false
 
-  override lazy val cameFrom = S.referer openOr (customer match {
+  override val cameFrom = () => customer match {
     case Some(c) => "/app/display/customer?id=%s".format(c.id.get.toString)
     case _ => "/app/show?entityType=Customer"
-  })
+  }
 
   override def dispatch = {
     case "render" => render
@@ -106,7 +122,6 @@ class AddEditDelivery extends StatefulValidatingErrorDisplaySnippet with Transac
       displayErrors(errors: _*)
       dataHolder.lineItems foreach (dataHolder.removeLineItem)
       updateOrderValue(None)
-      //refreshLineItemEntries
       Noop
     }
   }
@@ -136,9 +151,6 @@ class AddEditDelivery extends StatefulValidatingErrorDisplaySnippet with Transac
     dataHolder.selectedOrder = value
     dataHolder.lineItemsCell.set(Nil)
   }
-
-  /*private[this] def refreshLineItemEntries(): JsCmd = ajaxInvoke(() => refreshAvailableLineItems(dataHolder.availableLineItems) &
-    refreshLineItemDisplay())._2.cmd*/
 
   override def validationItems = Seq(ValidationItem(dataHolder.selectedOrder, "Selected Order"))
 
