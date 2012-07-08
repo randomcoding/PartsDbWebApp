@@ -39,7 +39,7 @@ import net.liftweb.util.Helpers._
  */
 class AddEditPartKit extends StatefulSnippet with Logger with SubmitAndCancelSnippet with LineItemSnippet with AllLineItemsSnippet with ErrorDisplay with DataValidation {
 
-  override val cameFrom = () => S.referer openOr "/app/"
+  override val cameFrom = () => "/app/show?entityType=PartKit"
 
   override val dataHolder = new PartKitDataHolder
 

@@ -24,7 +24,7 @@ class AddEditVehicle extends StatefulSnippet with ErrorDisplay with SubmitAndCan
     case _ => None
   }
 
-  override val cameFrom = () => S.referer openOr "/app/show?entityType=Vehicle"
+  override val cameFrom = () => "/app/show?entityType=Vehicle"
 
   var (vehicleName, pdfFile) = initialVehicle match {
     case Some(v) => (v.vehicleName.get, v.pdfFile.get)
