@@ -61,9 +61,9 @@ object MenuTitle extends Logger {
     "*" #> <title>{ titleForPage(uri, queryParams) }</title>
   }
 
-  private[this] def title(title: String) = "%s %s".format(titlePrefix, title)
-
   private[this] def titleForPage(pageUrl: String, queryParams: Map[String, String]): String = {
+    val title = (title: String) => "%s %s".format(titlePrefix, title)
+
     debug("Page URL: %s".format(pageUrl))
     val urlParts = pageUrl.split("/").toList.drop(1)
     debug("URL Parts: %s".format(urlParts.mkString(", ")))
@@ -81,8 +81,8 @@ object MenuTitle extends Logger {
       case "app" :: "payInvoices" :: Nil => title("Pay Invoices")
       case "app" :: "print" :: "printdocument" :: Nil => title("Print - %s".format(titleForPrintDocument(queryParams.get("documentId"))))
       case "app" :: entityType :: Nil => title(queryParams.get("id") match {
-        case Some(id) => title(entityNameForTitle(entityType, id))
-        case _ => title("New %s".format(upperTitle(entityType)))
+        case Some(id) => "Edit %s".format(entityNameForTitle(entityType, id))
+        case _ => "New %s".format(upperTitle(entityType))
       })
       case Nil => title("Login")
       case other => title("Unknown path: %s".format(other.mkString("/")))
@@ -107,11 +107,11 @@ object MenuTitle extends Logger {
 
   private[this] def titleForQuotePage(queryParams: Map[String, String]) = {
     queryParams.isEmpty match {
-      case true => title("New Quote")
-      case _ => title(Document.findById(queryParams("id")) match {
+      case true => "New Quote"
+      case _ => Document.findById(queryParams("id")) match {
         case Some(doc) => "Edit Quote %s".format(doc.documentNumber)
         case _ => "Edit Unknown Quote"
-      })
+      }
     }
   }
 
