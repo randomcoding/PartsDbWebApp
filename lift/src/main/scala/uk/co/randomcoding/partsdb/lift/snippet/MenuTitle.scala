@@ -34,13 +34,15 @@ import net.liftweb.common.Logger
 import uk.co.randomcoding.partsdb.core.transaction.Transaction
 
 /**
- * Generate the title for a page
+ * Generates the title for a page based on the URL and the query parameters.
+ *
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
 object MenuTitle extends Logger {
   private[this] val titlePrefix = "C.A.T.9 Application:"
+
   def render = {
-    val url = S.request match {
+    val uri = S.request match {
       case Full(req) => req.request.uri
       case _ => "Unknonw URL"
     }
@@ -56,7 +58,7 @@ object MenuTitle extends Logger {
 
     debug("Query Params: %s".format(if (queryParams.isEmpty) "Empty" else queryParams.mkString("[", ", ", "]")))
 
-    "*" #> <title>{ titleForPage(url, queryParams) }</title>
+    "*" #> <title>{ titleForPage(uri, queryParams) }</title>
   }
 
   private[this] def title(title: String) = "%s %s".format(titlePrefix, title)
