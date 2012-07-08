@@ -41,7 +41,7 @@ import net.liftweb.util.Helpers._
 
 class PayInvoices extends StatefulSnippet with ErrorDisplay with Logger with SubmitAndCancelSnippet with DataValidation {
 
-  override val cameFrom = () => S.referer openOr "/app/"
+  override val cameFrom = () => "/app/"
 
   private[this] val dataHolder = new InvoicePaymentDataHolder
 

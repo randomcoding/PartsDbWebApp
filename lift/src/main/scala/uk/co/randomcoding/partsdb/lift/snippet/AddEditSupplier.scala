@@ -40,7 +40,7 @@ import net.liftweb.util.Helpers._
  */
 class AddEditSupplier extends StatefulSnippet with AddressSnippet with ContactDetailsSnippet with PartCostSnippet with SubmitAndCancelSnippet with DataValidation with ErrorDisplay with Logger {
 
-  override val cameFrom = () => "app/show?entityType=Supplier"
+  override val cameFrom = () => "/app/show?entityType=Supplier"
   /*
    * Have we been called with an id= param that is the id of a Supplier?
    */

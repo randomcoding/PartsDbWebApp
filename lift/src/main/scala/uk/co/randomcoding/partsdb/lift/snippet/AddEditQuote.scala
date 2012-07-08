@@ -51,7 +51,7 @@ class AddEditQuote extends StatefulSnippet with ErrorDisplay with DataValidation
     case _ => None
   }
 
-  override val cameFrom = () => S.referer openOr "/app"
+  override val cameFrom = () => "/app"
 
   override val dataHolder = new QuoteDocumentDataHolder
 

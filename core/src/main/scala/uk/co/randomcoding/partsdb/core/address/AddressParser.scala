@@ -51,7 +51,7 @@ object AddressParser {
    * If there is a country code match (either on the country code or full name) and the address lines are not basically empty,
    * then an [[uk.co.randomcoding.partsdb.core.address.Address]] is generated and wrapped in an `Option`
    *
-   * @return An Option[[[ uk.co.randomcoding.partsdb.core.address.Address]]] if the input string matches
+   * @return An optional [[uk.co.randomcoding.partsdb.core.address.Address]] if the input string matches
    */
   def unapply(nameAndAddress: (String, Seq[String], String)): Option[Address] = {
     nameAndAddress match {
