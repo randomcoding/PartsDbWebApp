@@ -1,10 +1,26 @@
-/**
+/*
+ * Copyright (C) 2012 RandomCoder <randomcoder@randomcoding.co.uk>
  *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * Contributors:
+ *    RandomCoder - initial API and implementation and/or initial documentation
  */
 package uk.co.randomcoding.partsdb.core.address
 
 import net.liftweb.mongodb.record.field._
-import net.liftweb.mongodb.record.{ MongoRecord, MongoMetaRecord }
+import net.liftweb.mongodb.record.{MongoRecord, MongoMetaRecord}
 import net.liftweb.record.field.StringField
 import com.foursquare.rogue.Rogue._
 
@@ -14,11 +30,13 @@ import com.foursquare.rogue.Rogue._
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  *
  */
-class Address private () extends MongoRecord[Address] with ObjectIdPk[Address] {
+class Address private() extends MongoRecord[Address] with ObjectIdPk[Address] {
   def meta = Address
 
   object shortName extends StringField(this, 50)
+
   object addressText extends StringField(this, 300)
+
   object country extends StringField(this, 50)
 
   override def equals(that: Any): Boolean = {
@@ -35,6 +53,7 @@ class Address private () extends MongoRecord[Address] with ObjectIdPk[Address] {
 }
 
 object Address extends Address with MongoMetaRecord[Address] {
+
   import org.bson.types.ObjectId
 
   def apply(shortName: String, addressText: String, country: String): Address = create(shortName, addressText, country)
@@ -100,6 +119,7 @@ object Address extends Address with MongoMetaRecord[Address] {
   def create(shortName: String, addressText: String, country: String): Address = {
     Address.createRecord.shortName(shortName).addressText(addressText).country(country)
   }
+
   /**
    * Add a new address unless a matching record is found.
    *
@@ -117,9 +137,9 @@ object Address extends Address with MongoMetaRecord[Address] {
    * Find an `Address` that ''matches'' the provided one
    *
    * An `Address` matches if one of the  following is true:
-   *  * There is an address with the same `ObjectId`
-   *  * There is a record with the same `short name`
-   *  * There is a record with the same `address text`
+   * * There is an address with the same `ObjectId`
+   * * There is a record with the same `short name`
+   * * There is a record with the same `address text`
    *
    * @return An optional `Address` that is populated if a match is found, or `None` otherwise
    */
