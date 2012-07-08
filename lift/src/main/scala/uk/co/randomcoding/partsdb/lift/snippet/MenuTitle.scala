@@ -58,34 +58,33 @@ object MenuTitle extends Logger {
 
     debug("Query Params: %s".format(if (queryParams.isEmpty) "Empty" else queryParams.mkString("[", ", ", "]")))
 
-    "*" #> <title>{ titleForPage(uri, queryParams) }</title>
+    "*" #> <title>{ "%s %s".format(titlePrefix, titleForPage(uri, queryParams)) }</title>
   }
 
   private[this] def titleForPage(pageUrl: String, queryParams: Map[String, String]): String = {
-    val title = (title: String) => "%s %s".format(titlePrefix, title)
 
     debug("Page URL: %s".format(pageUrl))
     val urlParts = pageUrl.split("/").toList.drop(1)
     debug("URL Parts: %s".format(urlParts.mkString(", ")))
 
     urlParts match {
-      case "admin" :: Nil => title("Admin Pages")
-      case "app" :: Nil => title("Home")
-      case "app" :: "show" :: appPath => title("Show %ss".format(queryParams("entityType")))
-      case "app" :: "display" :: entityType :: Nil => title("Display - %s".format(entityNameForTitle(entityType, queryParams("id"))))
-      case "app" :: "quote" :: Nil => title(titleForQuotePage(queryParams))
-      case "app" :: "order" :: Nil => title("New Order")
-      case "app" :: "delivery" :: Nil => title("New Delivery Note")
-      case "app" :: "invoice" :: Nil => title("New Invoice")
-      case "app" :: "recordPayment" :: Nil => title("Record Payments")
-      case "app" :: "payInvoices" :: Nil => title("Pay Invoices")
-      case "app" :: "print" :: "printdocument" :: Nil => title("Print - %s".format(titleForPrintDocument(queryParams.get("documentId"))))
-      case "app" :: entityType :: Nil => title(queryParams.get("id") match {
-        case Some(id) => "Edit %s".format(entityNameForTitle(entityType, id))
+      case "admin" :: Nil => "Admin Pages"
+      case "app" :: Nil => "Home"
+      case "app" :: "show" :: appPath => "Show %ss".format(queryParams("entityType"))
+      case "app" :: "display" :: entityType :: Nil => "Display - %s".format(entityNameForTitle(entityType, queryParams("id")))
+      case "app" :: "quote" :: Nil => titleForQuotePage(queryParams)
+      case "app" :: "order" :: Nil => "New Order"
+      case "app" :: "delivery" :: Nil => "New Delivery Note"
+      case "app" :: "invoice" :: Nil => "New Invoice"
+      case "app" :: "recordPayment" :: Nil => "Record Payments"
+      case "app" :: "payInvoices" :: Nil => "Pay Invoices"
+      case "app" :: "print" :: "printdocument" :: Nil => "Print - %s".format(titleForPrintDocument(queryParams.get("documentId")))
+      case "app" :: entityType :: Nil => queryParams.get("id") match {
+        case Some(id) => "Edit - %s".format(entityNameForTitle(entityType, id))
         case _ => "New %s".format(upperTitle(entityType))
-      })
-      case Nil => title("Login")
-      case other => title("Unknown path: %s".format(other.mkString("/")))
+      }
+      case Nil => "Login"
+      case other => "Unknown path: %s".format(other.mkString("/"))
     }
   }
 
