@@ -1,5 +1,21 @@
-/**
+/*
+ * Copyright (C) 2012 RandomCoder <randomcoder@randomcoding.co.uk>
  *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * Contributors:
+ *    RandomCoder - initial API and implementation and/or initial documentation
  */
 package uk.co.randomcoding.partsdb.lift.snippet
 
@@ -24,7 +40,7 @@ import net.liftweb.util.Helpers._
 class AddEditCustomer extends StatefulSnippet with ErrorDisplay with DataValidation with AddressSnippet with ContactDetailsSnippet with SubmitAndCancelSnippet with Logger {
   val terms = List(("30" -> "30"), ("45" -> "45"), ("60" -> "60"), ("90" -> "90"))
 
-  override val cameFrom = S.referer openOr "/app/show?entityType=Customer"
+  override val cameFrom = () => "/app/show?entityType=Customer"
 
   val initialCustomer = S param "id" match {
     case Full(id) => Customer findById id
@@ -104,7 +120,7 @@ class AddEditCustomer extends StatefulSnippet with ErrorDisplay with DataValidat
         }
       }
       case errors => {
-        errors foreach (error => displayError(error))
+        displayErrors(errors: _*)
         Noop
       }
     }
@@ -114,7 +130,7 @@ class AddEditCustomer extends StatefulSnippet with ErrorDisplay with DataValidat
     Address.add(billingAddress) match {
       case Some(addr) => {
         Customer.add(name, billingAddress, paymentTerms, contact) match {
-          case Some(c) => S redirectTo cameFrom
+          case Some(c) => S redirectTo cameFrom()
           case _ => {
             error("Failed to add new customer, [name: %s, address: %s, terms: %s, contact: %s".format(name, billingAddress, paymentTerms, contact))
             displayError("Failed to add Customer")
@@ -142,6 +158,6 @@ class AddEditCustomer extends StatefulSnippet with ErrorDisplay with DataValidat
 
     Customer.modify(cust.id.get, name, address.get, paymentTerms, contacts)
 
-    S redirectTo cameFrom
+    S redirectTo cameFrom()
   }
 }

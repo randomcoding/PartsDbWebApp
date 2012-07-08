@@ -1,5 +1,21 @@
-/**
+/*
+ * Copyright (C) 2012 RandomCoder <randomcoder@randomcoding.co.uk>
  *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * Contributors:
+ *    RandomCoder - initial API and implementation and/or initial documentation
  */
 package uk.co.randomcoding.partsdb.lift.snippet
 
@@ -35,7 +51,7 @@ class AddEditQuote extends StatefulSnippet with ErrorDisplay with DataValidation
     case _ => None
   }
 
-  override val cameFrom = S.referer openOr "/app"
+  override val cameFrom = () => "/app"
 
   override val dataHolder = new QuoteDocumentDataHolder
 
@@ -43,13 +59,6 @@ class AddEditQuote extends StatefulSnippet with ErrorDisplay with DataValidation
 
   private[this] val customers = Customer orderDesc (_.customerName) fetch
   private[this] val customersSelect = (None, "Select Customer") :: (customers map ((c: Customer) => (Some(c), c.customerName.get)))
-  /*private[this] var currentCustomer: Option[Customer] = originalQuote match {
-    case Some(q) => Transaction.where(_.documents contains q.id.get).get() match {
-      case Some(t) => Customer.findById(t.customer.get)
-      case _ => None
-    }
-    case _ => None
-  }*/
 
   private[this] var customerName = dataHolder.customer match {
     case Some(cust) => cust.customerName.get

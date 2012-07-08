@@ -1,9 +1,18 @@
 /*
- * Copyright (c) 2012 RandomCoder <randomcoder@randomcoding.co.uk>
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (C) 2012 RandomCoder <randomcoder@randomcoding.co.uk>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  * Contributors:
  *    RandomCoder - initial API and implementation and/or initial documentation
@@ -32,11 +41,16 @@ import net.liftweb.util.Helpers._
 
 class PayInvoices extends StatefulSnippet with ErrorDisplay with Logger with SubmitAndCancelSnippet with DataValidation {
 
-  override val cameFrom = S.referer openOr "/app/"
+  override val cameFrom = () => "/app/"
 
   private[this] val dataHolder = new InvoicePaymentDataHolder
 
-  private[this] def availablePayments = Payment.fetch() filterNot (_.isFullyAllocated) map (payment => (Some(payment), "%s %s (£%.2f)".format(payment.paymentReference.get, dateString(payment.paymentDate.get), payment.paymentAmount.get)))
+  private[this] def availablePayments = Payment.fetch() filterNot (_.isFullyAllocated) map (payment => (Some(payment), textForPayment(payment)))
+
+  private[this] def textForPayment(payment: Payment): String = payment.unallocatedBalance == payment.paymentAmount.get match {
+    case true => "%s %s (£%.2f)".format(payment.paymentReference.get, dateString(payment.paymentDate.get), payment.paymentAmount.get)
+    case false => "%s %s (£%.2f of £%.2f)".format(payment.paymentReference.get, dateString(payment.paymentDate.get), payment.unallocatedBalance, payment.paymentAmount.get)
+  }
 
   private[this] def paymentSelection: Seq[(Option[Payment], String)] = (None, "Select Payment") :: availablePayments
 
@@ -60,7 +74,6 @@ class PayInvoices extends StatefulSnippet with ErrorDisplay with Logger with Sub
     debug("Submit Pressed")
     performValidation() match {
       case Nil => {
-        // can commit to db
         val payment = dataHolder.payment.get
         debug("Committing payment %s to database with invoice payments %s".format(payment, dataHolder.payments.mkString("[", "\n", "]")))
 

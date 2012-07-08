@@ -1,5 +1,21 @@
-/**
+/*
+ * Copyright (C) 2012 RandomCoder <randomcoder@randomcoding.co.uk>
  *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * Contributors:
+ *    RandomCoder - initial API and implementation and/or initial documentation
  */
 package uk.co.randomcoding.partsdb.lift.snippet
 
@@ -69,10 +85,10 @@ class AddEditInvoice extends StatefulValidatingErrorDisplaySnippet with Transact
 
   private[this] var confirmCloseDeliveryNotes = false
 
-  override lazy val cameFrom = S.referer openOr (customer match {
+  override val cameFrom = () => customer match {
     case Some(c) => "/app/display/customer?id=%s".format(c.id.get.toString)
     case _ => "/app/show?entityType=Customer"
-  })
+  }
 
   override def dispatch = {
     case "render" => render
@@ -96,17 +112,11 @@ class AddEditInvoice extends StatefulValidatingErrorDisplaySnippet with Transact
       "#selected" #> styledAjaxCheckbox(false, checkBoxSelected(_, deliveryNote)) &
         "#deliveryNoteId" #> Text(deliveryNote.documentNumber) &
         "#raisedOn" #> Text(dateString(deliveryNote.createdOn.get)) &
-        "#totalDeliveryValue" #> Text(currencyFormat(deliveryNoteValue(deliveryNote)))
+        "#totalDeliveryValue" #> Text(currencyFormat(deliveryNote.documentValue))
     })
   }
 
-  private[this] def deliveryNoteValue(deliveryNote: Document): Double = {
-    val linesCost = deliveryNote.lineItems.get map (_.lineCost) sum
-
-    (linesCost + deliveryNote.carriage.get) * SystemData.vatRate
-  }
-
-  private[this] val itemsToBeInvoiced = () => dataHolder.lineItems match {
+  private[this] val checkThereAreItemsToBeInvoiced = () => dataHolder.lineItems match {
     case Nil => Seq("Please Select at least one Delivery Note to be Invoiced")
     case _ => Nil
   }
@@ -116,7 +126,7 @@ class AddEditInvoice extends StatefulValidatingErrorDisplaySnippet with Transact
     case false => Seq("Please confirm it is ok to close the Order before generating this Delivery Note")
   }
 
-  override def processSubmit(): JsCmd = performValidation(itemsToBeInvoiced, confirmAddressSelectedOrEntered, checkConfirmCloseDeliveryNotes) match {
+  override def processSubmit(): JsCmd = performValidation(checkThereAreItemsToBeInvoiced, confirmAddressSelectedOrEntered, checkConfirmCloseDeliveryNotes) match {
     case Nil => generateInvoice()
     case errors => {
       displayErrors(errors: _*)
