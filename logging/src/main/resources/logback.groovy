@@ -61,6 +61,7 @@ if (HOST.equalsIgnoreCase("benjymouse")) {
 	def defaultLogs = ["uk.co.randomcoding.partsdb.lift.model.document.NewLineItemDataHolder": DEBUG,
 				"uk.co.randomcoding.partsdb.lift.util.snippet.LineItemSnippet": DEBUG,
 				"uk.co.randomcoding.partsdb.lift.model.document.DocumentDataHolder": DEBUG,
+				"uk.co.randomcoding.partsdb.lift.snippet.MenuTitle": DEBUG,
 				"uk.co.randomcoding.partsdb.lift.model.document": DEBUG]
 
 	def logs = defaultLogs
