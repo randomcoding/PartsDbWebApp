@@ -32,4 +32,6 @@ object MongoHelpers {
    * Convert a String to a BSON `ObjectId`. If the String is not a valid `ObjectId` this implicit conversion will fail at runtime
    */
   implicit def stringToObjectId(oid: String): ObjectId = new ObjectId(oid)
+
+  implicit def objectIdToString(oid: ObjectId): String = oid.toString
 }
