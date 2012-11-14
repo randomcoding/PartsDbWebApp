@@ -5,7 +5,7 @@ object ProjectBuild extends Build {
 	import BuildSettings._
 	import ShellPrompt._
 	import Dependencies._
-	import com.github.siasia.WebPlugin._
+	import com.github.siasia.WebPlugin.webSettings
 
 	lazy val root = Project("root", 
 		file("."),
