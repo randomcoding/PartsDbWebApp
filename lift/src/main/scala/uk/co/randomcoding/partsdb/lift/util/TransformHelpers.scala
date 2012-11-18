@@ -34,6 +34,7 @@ import net.liftweb.util.Helpers._
  *
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
+@deprecated("1.0.1", "Use version in utilities project instead")
 object TransformHelpers {
 
   /**
