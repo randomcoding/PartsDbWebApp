@@ -108,8 +108,8 @@ object PaymentDbManager extends Logger {
    */
   private[this] def closeTransactionIfFullyPaid(transaction: Transaction): Option[Transaction] = {
     debug("Checking id transaction %s can be closed.".format(transaction.shortName))
-    val documents = Document where (_.id in transaction.documents.get) fetch ()
-    val allDocumentsClosed = documents filter (_.editable.get == true) isEmpty
+    val documents = Document.where(_.id in transaction.documents.get).fetch
+    val allDocumentsClosed = documents.filter(_.editable.get == true).isEmpty
     val allInvoicesPaid = documents filter (_.documentType.get == DocumentType.Invoice) filter (_.remainingBalance > 0) isEmpty
 
     val orderValue = transaction.valueOfDocuments(DocumentType.Order)
@@ -124,7 +124,11 @@ object PaymentDbManager extends Logger {
     val okToCloseTransaction = (invoiceValue == dNoteValue && dNoteValue == orderValue && allDocumentsClosed && allInvoicesPaid)
     debug("Ok To Close: %s".format(okToCloseTransaction))
 
-    if (okToCloseTransaction) Transaction.close(transaction.id.get) else None //Some(transaction)
+    (okToCloseTransaction, allInvoicesPaid) match {
+      case (true, true) => Transaction.close(transaction.id.get)
+      case (false, false) => Some(transaction) // This is due to a partial payment
+      case _ => None // There is a problem of some sort
+    }
   }
 
   private[this] def processInvoiceClosureForPayments(invoicePayments: Seq[InvoicePayment]): Seq[PaymentResult] = {

@@ -20,19 +20,20 @@
 package uk.co.randomcoding.partsdb.lift.snippet
 
 import scala.xml.Text
-
 import uk.co.randomcoding.partsdb.core.user.Role.stringToRole
 import uk.co.randomcoding.partsdb.core.user.User
 import uk.co.randomcoding.partsdb.core.util.MongoHelpers._
 import uk.co.randomcoding.partsdb.db.mongo.MongoUserAccess._
+import uk.co.randomcoding.partsdb.db.util.Helpers.{ hash => pwhash }
 import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
 import uk.co.randomcoding.partsdb.lift.util.auth.PasswordValidation.passwordErrors
 import uk.co.randomcoding.partsdb.lift.util.snippet._
-
 import net.liftweb.common.{ Logger, Full }
 import net.liftweb.http.js.JsCmds.Noop
 import net.liftweb.http.{ StatefulSnippet, S }
 import net.liftweb.util.Helpers._
+import net.liftweb.http.js.jquery.JqJsCmds
+import net.liftweb.http.SHtml.ElemAttr._
 
 /**
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
@@ -45,7 +46,7 @@ class AddEditUser extends StatefulSnippet with ErrorDisplay with DataValidation 
     case _ => None
   }
 
-  override val cameFrom = () => S.referer openOr "/admin/"
+  override val cameFrom = () => "/admin/"
 
   private[this] var (userName, userRole) = initialUser match {
     case Some(u) => (u.username.get, u.role.get.toString)
@@ -62,12 +63,27 @@ class AddEditUser extends StatefulSnippet with ErrorDisplay with DataValidation 
   def render = {
     "#formTitle" #> Text("Add User") &
       "#nameEntry" #> styledText(userName, userName = _) &
-      "#userRoleEntry" #> styledSelect(roles, "User", userRole = _) &
+      "#userRoleEntry" #> (initialUser match {
+        case Some(user) => styledSelect(roles, "User", userRole = _, List(("disabled", "disabled"))) ++ Text("  Please remove and re-add this user to change their role")
+        case _ => styledSelect(roles, "User", userRole = _)
+      }) &
       "#passwordEntry" #> styledPassword(password, password = _) &
       "#confirmPasswordEntry" #> styledPassword(confirmPassword, confirmPassword = _) &
+      "#removeUser" #> (initialUser match {
+        case Some(u) => styledButton("Remove User", removeUser)
+        case _ => Text("")
+      }) &
       renderSubmitAndCancel()
   }
 
+  private[this] val removeUser = () => {
+    User.remove(initialUser.get) match {
+      case true => // Do nothing
+      case false => displayError("Failed to  Remove User: %s".format(initialUser.get.username.get))
+    }
+
+    S.redirectTo("/admin/")
+  }
   /**
    * Method called when the submit button is pressed.
    *
@@ -86,16 +102,18 @@ class AddEditUser extends StatefulSnippet with ErrorDisplay with DataValidation 
 
   private[this] def addOrUpdateUser = initialUser match {
     case Some(u) => {
-      User.modify(u.username.get, userName, password match {
-        case "" => u.password.get
-        case p => hash(p)
-      }, userRole)
+      debug("Update User: %s".format(u))
+      val hashPw = password match {
+        case "" => u.password.get // Password is not updated
+        case p => pwhash(p) // password is updated
+      }
+      User.modify(u.username.get, userName, hashPw, userRole)
       S.redirectTo("/admin/")
     }
-    case _ => addNewUser(userName, password, userRole) match {
-      case None => S.redirectTo("/admin/")
-      case Some(message) => {
-        displayError(message)
+    case _ => User.addUser(User(userName, pwhash(password), userRole)) match {
+      case Some(user) => S.redirectTo("/admin/")
+      case _ => {
+        displayError("Failed to add new user with name %s and role %s".format(userName, userRole))
         Noop
       }
     }
