@@ -80,12 +80,10 @@ class TransactionRecordTest extends MongoDbTestBase {
     val t5 = Transaction.create(cust1, Seq(doc2))
     val t6 = Transaction.create(cust1, Seq(doc1))
 
-    t1 should (not equal (t4) and not equal (t5) and not equal (t6))
     t4 should (not equal (t1) and not equal (t5) and not equal (t6))
     t5 should (not equal (t1) and not equal (t4) and not equal (t6))
-    t6 should (not equal (t1) and not equal (t4) and not equal (t5))
+    t6 should (not equal (t4) and not equal (t5))
 
-    t1.hashCode should (not be (t4.hashCode) and not be (t5.hashCode) and not be (t6.hashCode))
     t4.hashCode should (not be (t5.hashCode) and not be (t6.hashCode))
     t5.hashCode should not be (t6.hashCode)
   }
