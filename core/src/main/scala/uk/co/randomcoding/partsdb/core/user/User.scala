@@ -70,26 +70,111 @@ object User extends User with MongoMetaRecord[User] {
 
   import org.bson.types.ObjectId
 
+  /**
+   * Create a user record but do not add it to the database
+   *
+   * @param userName The name for the new user
+   * @param hashedPassword The hashed version of the password to store in the database
+   * @param role The role of the user, either an Admin or normal User
+   *
+   * @return The newly created user
+   */
   def apply(userName: String, hashedPassword: String, role: Role) = User.createRecord.username(userName).password(hashedPassword).role(role)
 
+  /**
+   * Find a user record by the record's Object Id
+   *
+   * @return A populated option if there is a User record with the given object id, or None if there is not one
+   */
   def findById(oid: ObjectId) = User where (_.id eqs oid) get
 
+  /**
+   * Find a user by name
+   *
+   * @return A populated option if there is a User record with the given name, or None if there is not one
+   */
   def findUser(userName: String): Option[User] = User where (_.username eqs userName) get
 
-  def modify(originalName: String, newName: String, newHashedPassword: String, newRole: Role) {
-    User where (_.username eqs originalName) modify (_.username setTo newName) and (_.password setTo newHashedPassword) and (_.role setTo newRole) updateMulti
+  /**
+   * Modify a user record
+   *
+   * To keep the same value for a field, you need to provide the existing value from the user record.
+   *
+   * @param originalName The name of the user record to modify
+   * @param newName The new name to assign to the user
+   * @param newHashedPassword The new password to give the user
+   * @param newRole The new role to give the user.
+   */
+  def modify(originalName: String, newName: String, newHashedPassword: String, newRole: Role): Option[User] = {
+    User.where(_.username eqs originalName).modify(_.username setTo newName).and(_.password setTo newHashedPassword).and(_.role setTo newRole).updateMulti
+    User.where(_.username eqs newName).get
   }
 
-  def addUser(userName: String, hashedPassword: String, role: Role) = findUser(userName) match {
-    case None => role match {
-      case NO_ROLE => None
-      case _ => Some(User.createRecord.username(userName).password(hashedPassword).role(role).save)
+  /**
+   * Find a user record that matches the provided one.
+   *
+   * A match is made if there is a record with the same Object Id or the same User Name as the provided record
+   *
+   * @param user The User record to locate a match for
+   *
+   * @return An optional User record if there is a match or None otherwise
+   */
+  def findMatching(user: User): Option[User] = findById(user.id.get) match {
+    case Some(u) => Some(u)
+    case _ => findUser(user.username.get)
+  }
+
+  /**
+   * Add a user record unless a matching one already exists
+   *
+   * @return An optional User record if the add is successful or None if it failed or if there was a matching record
+   */
+  def addUser(user: User): Option[User] = findMatching(user) match {
+    case None => user.role.get match {
+      case ADMIN => user.saveTheRecord
+      case USER => user.saveTheRecord
+      case _ => None
     }
     case _ => None
   }
 
-  def authenticate(userName: String, hashedPassword: String) = User where (_.username eqs userName) and (_.password eqs hashedPassword) get
+  @deprecated("1.0.1", "Use addUser(User) instead")
+  def addUser(userName: String, hashedPassword: String, role: Role): Option[User] = findUser(userName) match {
+    case None => role match {
+      case NO_ROLE => None
+      case _ => User(userName, hashedPassword, role).saveTheRecord
+    }
+    case _ => None
+  }
 
+  /**
+   * Attempt to authenticate a user and password pair
+   *
+   * @param userName The username to attempt to authenticate as
+   * @param hashedPassword The pre-hashed password to attempt the authentication with
+   *
+   * @return The user record (as an option) if there is a record with the given name and password
+   */
+  def authenticate(userName: String, hashedPassword: String): Option[User] = User where (_.username eqs userName) and (_.password eqs hashedPassword) get
+
+  /**
+   * Remove a user record if it exists
+   *
+   * @param user The user record to remove
+   *
+   * @return `true` if the removal was successful or `false` if there was no record to remove or if the remove failed
+   */
+  def remove(user: User): Boolean = findMatching(user) match {
+    case Some(u) => u.delete_!
+    case _ => false
+  }
+
+  /**
+   * Remove a user record if it exists
+   *
+   * @param username The name of the user record to remove
+   */
+  @deprecated("1.0.1", "Use remove(User) instead")
   def remove(username: String): Boolean = findUser(username) match {
     case Some(user) => user.delete_!
     case _ => false

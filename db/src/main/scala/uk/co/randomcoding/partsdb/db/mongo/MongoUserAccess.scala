@@ -30,6 +30,7 @@ import uk.co.randomcoding.partsdb.core.user.Role._
  *
  * @author RandomCoder <randomcoder@randomcoding.co.uk>
  */
+@deprecated("1.0.1", "Use User access methodds directly")
 object MongoUserAccess extends Loggable {
   /**
    * Add a new user to the user database.

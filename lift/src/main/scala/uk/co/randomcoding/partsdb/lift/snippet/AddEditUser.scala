@@ -86,16 +86,17 @@ class AddEditUser extends StatefulSnippet with ErrorDisplay with DataValidation 
 
   private[this] def addOrUpdateUser = initialUser match {
     case Some(u) => {
-      User.modify(u.username.get, userName, password match {
+      val hashPw = password match {
         case "" => u.password.get
         case p => hash(p)
-      }, userRole)
+      }
+      User.modify(u.username.get, userName, hashPw, userRole)
       S.redirectTo("/admin/")
     }
-    case _ => addNewUser(userName, password, userRole) match {
-      case None => S.redirectTo("/admin/")
-      case Some(message) => {
-        displayError(message)
+    case _ => User.addUser(User(userName, hash(password), userRole)) match {
+      case Some(user) => S.redirectTo("/admin/")
+      case _ => {
+        displayError("Failed to add new user with name %s and role %s".format(userName, userRole))
         Noop
       }
     }

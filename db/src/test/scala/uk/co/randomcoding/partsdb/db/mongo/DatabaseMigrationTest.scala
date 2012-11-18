@@ -115,8 +115,8 @@ class DatabaseMigrationTest extends MongoDbTestBase with GivenWhenThen {
 
   test("Migration of an unversioned database with custom User records to version 1 drops all collections but preserves the User Accounts as well as adding the bootstrap users") {
     given("A database with non default user accounts")
-    val user1 = User.addUser("Alan", "654fdut43thu", Role.USER).get
-    val user2 = User.addUser("Betty", "ghfdjvgfue4th3ugbrjgb", Role.ADMIN).get
+    val user1 = User.addUser(User("Alan", "654fdut43thu", Role.USER)).get
+    val user2 = User.addUser(User("Betty", "ghfdjvgfue4th3ugbrjgb", Role.ADMIN)).get
 
     when("The migration to version 1 completes successfully")
     DatabaseMigration.migrateToVersion(1) should be(Nil)

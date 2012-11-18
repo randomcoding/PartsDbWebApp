@@ -102,8 +102,7 @@ object DatabaseMigration extends Logger {
         }
         case errors => errors
       }
-    }
-    else {
+    } else {
       List("New version (%d) was less than or equal to the current version (%d)".format(newVersion, currentVersion))
     }
   }
@@ -139,16 +138,14 @@ object DatabaseMigration extends Logger {
   private[this] def addBootstrapUsers(): Boolean = {
     import uk.co.randomcoding.partsdb.core.user.User
     try {
-      if (User.findUser("Dave") isEmpty) User.addUser("Dave", hash("dave123"), USER)
-      if (User.findUser("Adam") isEmpty) User.addUser("Adam", hash("adam123"), ADMIN)
-    }
-    catch {
+      if (User.findUser("Dave") isEmpty) User.addUser(User("Dave", hash("dave123"), USER))
+      if (User.findUser("Adam") isEmpty) User.addUser(User("Adam", hash("adam123"), ADMIN))
+    } catch {
       case e: MongoException => {
         if (e.getMessage startsWith "Collection not found") {
           User.createRecord.username("Adam").password(hash("adam123")).role(ADMIN).save
           User.createRecord.username("Dave").password(hash("dave123")).role(USER).save
-        }
-        else error("Exception whilst adding default users: %s".format(e.getMessage), e)
+        } else error("Exception whilst adding default users: %s".format(e.getMessage), e)
       }
     }
 
