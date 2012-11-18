@@ -24,6 +24,7 @@ import uk.co.randomcoding.partsdb.core.user.Role.stringToRole
 import uk.co.randomcoding.partsdb.core.user.User
 import uk.co.randomcoding.partsdb.core.util.MongoHelpers._
 import uk.co.randomcoding.partsdb.db.mongo.MongoUserAccess._
+import uk.co.randomcoding.partsdb.db.util.Helpers.{ hash => pwhash }
 import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
 import uk.co.randomcoding.partsdb.lift.util.auth.PasswordValidation.passwordErrors
 import uk.co.randomcoding.partsdb.lift.util.snippet._
@@ -101,14 +102,15 @@ class AddEditUser extends StatefulSnippet with ErrorDisplay with DataValidation 
 
   private[this] def addOrUpdateUser = initialUser match {
     case Some(u) => {
+      debug("Update User: %s".format(u))
       val hashPw = password match {
-        case "" => u.password.get
-        case p => hash(p)
+        case "" => u.password.get // Password is not updated
+        case p => pwhash(p) // password is updated
       }
       User.modify(u.username.get, userName, hashPw, userRole)
       S.redirectTo("/admin/")
     }
-    case _ => User.addUser(User(userName, hash(password), userRole)) match {
+    case _ => User.addUser(User(userName, pwhash(password), userRole)) match {
       case Some(user) => S.redirectTo("/admin/")
       case _ => {
         displayError("Failed to add new user with name %s and role %s".format(userName, userRole))

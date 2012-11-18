@@ -65,7 +65,7 @@ if (HOST.equalsIgnoreCase("benjymouse")) {
     // Only log at WARN level for testing by default
     def testingLogs = ["uk.co.randomcoding": WARN]
 
-    def debugLogs = []
+    def debugLogs = ["uk.co.randomcoding.partsdb.lift.snippet": DEBUG]
 
     def logs = debugLogs
     if (isTest.equalsIgnoreCase("yes")) {
