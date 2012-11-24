@@ -13,6 +13,24 @@ VMC_LOGIN=''
 CLEAN_PACKAGE='yes'
 NO_LOGIN=''
 
+function showUsage 
+{
+  cat << END
+$0 --app-name <Name> --app-path <Path> [--app-mode production] [--no-build] [--vmc-login user@email.com] [--no-clean] [--no-login]
+
+--app-name     The name of the application to deploy on cloudfoundry
+--app-path     The path to deploy the app from
+--app-mode     The mode to deploy the app into. Currently only supports production
+--no-build     Do not perform a build before deploying
+--vmc-login    The login name to use for vmc
+--no-clean     Do not clean the project before building. Otherwise perform an incremental build.
+               Has no effect if --no-build if specified
+--no-login     Assume that a currently active vmc login exists. Otherwise the script will 
+               login and logout at the end of the deployment.
+
+END
+}
+
 while [ $# -gt 0 ] 
 do
   case $1 in
@@ -48,6 +66,10 @@ do
       NO_LOGIN='yes'
       shift
       ;;
+    -h|--help)
+      showUsage
+      exit 1
+      ;;
     *)
       echo "Unknown option $1"
       shift
@@ -73,11 +95,11 @@ if [ "${SBT_BUILD}" == "yes" ] ; then
   fi
   # run the package with sbt
   ./sbt ${SBT_CMD}
+  BUILD_OK=$?
 else
   echo "No SBT Build performed at user request"
+  BUILD_OK=-1
 fi
-
-BUILD_OK=$?
 
 if [ ! $BUILD_OK -eq 0 ] ; then
   echo "SBT Build Failed. Exiting..."
