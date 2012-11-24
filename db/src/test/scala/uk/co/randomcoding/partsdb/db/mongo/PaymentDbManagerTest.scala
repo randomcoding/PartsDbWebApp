@@ -45,6 +45,8 @@ class PaymentDbManagerTest extends MongoDbTestBase with GivenWhenThen {
 
   private[this] lazy val lineFor100Pounds = lineItem("part1", 1, 100.0d)
   private[this] lazy val lineFor50Pounds = lineItem("part2", 1, 50.0d)
+  private[this] lazy val quoteFor100Pounds = quote(lineFor100Pounds)
+  private[this] lazy val quoteFor150Pounds = quote(Seq(lineFor100Pounds, lineFor50Pounds))
   private[this] lazy val invoiceFor100Pounds = invoice(lineFor100Pounds, "PoRef", 101)
   private[this] lazy val invoiceFor150Pounds = invoice(Seq(lineFor100Pounds, lineFor50Pounds), "PoRef2", 202)
   private[this] lazy val orderFor100Pounds = Order(lineFor100Pounds, 0, "PoRef")
@@ -52,7 +54,7 @@ class PaymentDbManagerTest extends MongoDbTestBase with GivenWhenThen {
   private[this] lazy val orderFor150Pounds = Order(Seq(lineFor100Pounds, lineFor50Pounds), 0, "PoRef2")
   private[this] lazy val deliveryFor150Pounds = DeliveryNote(Seq(lineFor100Pounds, lineFor50Pounds), 0, "PoRef2")
 
-  private[this] lazy val transactionFor100PoundsDocuments = Seq(orderFor100Pounds, deliveryFor100Pounds, invoiceFor100Pounds)
+  private[this] lazy val transactionFor100PoundsDocuments = Seq(quoteFor100Pounds, orderFor100Pounds, deliveryFor100Pounds, invoiceFor100Pounds)
   private[this] lazy val transactionFor100Pounds = Transaction.create(customer("Customer"), transactionFor100PoundsDocuments)
   private[this] lazy val twoInvoiceTransactionDocuments = Seq(orderFor100Pounds, orderFor150Pounds, deliveryFor100Pounds, deliveryFor150Pounds, invoiceFor100Pounds, invoiceFor150Pounds)
   private[this] lazy val transactionWithTwoInvoicesFor250Pounds = Transaction.create(customer("Customer"), twoInvoiceTransactionDocuments)
@@ -62,19 +64,6 @@ class PaymentDbManagerTest extends MongoDbTestBase with GivenWhenThen {
   /*
   * Payments that have errors
   */
-  test("Attempt to commit a new payment that does not have sufficient value to pay all the invoices") {
-    given("An Invoice Payment for £100")
-    val invoicePayment = InvoicePayment(invoiceFor100Pounds, 100.0d)
-    and("A Payment object for £50 with no invoices already paid by it")
-    val payment = Payment(50.0, "pay1", Nil)
-    when("The payment is committed to the database")
-    val response = PaymentDbManager.commitPayment(payment, invoicePayment)
-    then("An error is raised")
-    response should contain(PaymentFailed("The payment does not have sufficient available balance to pay £100.00").asInstanceOf[PaymentResult])
-    and("The database is not updated")
-    performDatabaseChecks()
-  }
-
   test("Attempt to commit a payment that has already been partially allocated to some invoices that does not have sufficient value to pay all the additional invoices") {
     given("An Invoice Payment for £100")
     val invoicePayment = InvoicePayment(invoiceFor100Pounds, 100.0d)
@@ -209,7 +198,7 @@ class PaymentDbManagerTest extends MongoDbTestBase with GivenWhenThen {
     response should contain(PaymentFailed("Invoice INV000101 only has £50.00 outstanding. It is not possible to allocate £75.00 to this invoice").asInstanceOf[PaymentResult])
     and("The database is not updated with any of the details from the second payment")
     performDatabaseChecks(expectedPayments = List(Payment(50.0, "pay303", invPay1)),
-      expectedDocuments = List(invoiceFor100Pounds, orderFor100Pounds, deliveryFor100Pounds),
+      expectedDocuments = List(quoteFor100Pounds, invoiceFor100Pounds, orderFor100Pounds, deliveryFor100Pounds),
       expectedTransactions = List(Transaction.findById(transId).get))
   }
 
@@ -459,6 +448,8 @@ class PaymentDbManagerTest extends MongoDbTestBase with GivenWhenThen {
 
   private[this] def lineItem(partName: String, quantity: Int, price: Double): LineItem = LineItem.create(Random.nextInt(1000), Part.create(partName, vehicle), quantity, price, 0d, supplier)
 
+  private[this] def quote(lines: Seq[LineItem]): Document = Quote(lines, 0d)
+
   private[this] def invoice(lines: Seq[LineItem], poRef: String, documentNumber: Int): Document = Invoice(lines, 0d, poRef).docNumber(documentNumber)
 
   private[this] def customer(customerName: String): Customer = Customer.create(customerName, Address.create("Address", "Address", "United Kingdom"), 30, ContactDetails.create("Dave", "", "", "", "", true))
@@ -473,7 +464,7 @@ class PaymentDbManagerTest extends MongoDbTestBase with GivenWhenThen {
     Transaction.fetch should be(expectedTransactions)
   }
 
-  private[this] def setupTransactionFor100Pounds: Transaction = setupTransaction(transactionFor100Pounds, invoiceFor100Pounds, orderFor100Pounds, deliveryFor100Pounds)
+  private[this] def setupTransactionFor100Pounds: Transaction = setupTransaction(transactionFor100Pounds, quoteFor100Pounds, invoiceFor100Pounds, orderFor100Pounds, deliveryFor100Pounds)
 
   private[this] def setupTransaction(transaction: Transaction, documents: Document*): Transaction = {
     // Sanity check that the transaction contains all the documents in the documents list

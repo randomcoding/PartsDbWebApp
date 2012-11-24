@@ -5,7 +5,7 @@ object ProjectBuild extends Build {
 	import BuildSettings._
 	import ShellPrompt._
 	import Dependencies._
-	import com.github.siasia.WebPlugin._
+	import com.github.siasia.WebPlugin.webSettings
 
 	lazy val root = Project("root", 
 		file("."),
@@ -19,7 +19,6 @@ object ProjectBuild extends Build {
 
 	lazy val coreProject: Project = Project("core",
 		file("core"),
-		delegates = root :: Nil,
 		settings = buildSettings ++ Seq(libraryDependencies ++= coreProjectDeps,
 			name := "parts-db-app-core"
 		)

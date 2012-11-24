@@ -20,11 +20,10 @@
 package uk.co.randomcoding.partsdb.lift.snippet
 
 import uk.co.randomcoding.partsdb.core.user.Role.{ USER, NO_ROLE, ADMIN }
-import uk.co.randomcoding.partsdb.db.mongo.MongoUserAccess._
+import uk.co.randomcoding.partsdb.core.user.User
 import uk.co.randomcoding.partsdb.db.util.Helpers.{ hash => pwhash }
 import uk.co.randomcoding.partsdb.lift.model.Session
 import uk.co.randomcoding.partsdb.lift.util.TransformHelpers._
-
 import net.liftweb.common.{ Logger, Full }
 import net.liftweb.http.SHtml._
 import net.liftweb.http.S
@@ -41,15 +40,19 @@ object Login extends Logger {
     var password = ""
 
     def processLogin() = {
-      authenticateUser(username, pwhash(password)) match {
-        case Some(role) if role != NO_ROLE => {
+      User.authenticate(username, pwhash(password)) match {
+        case Some(user) if user.role.get != NO_ROLE => {
+          val role = user.role.get
           Session.currentUser.set(username, role)
           S.redirectTo(role match {
             case USER => "/app/"
             case ADMIN => "/admin/"
           })
         }
-        case _ => S.redirectTo("/")
+        case _ => {
+          error("Failed to authenticate user: %s".format(username))
+          S.redirectTo("/")
+        }
       }
     }
 
